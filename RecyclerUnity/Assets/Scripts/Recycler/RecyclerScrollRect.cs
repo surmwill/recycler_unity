@@ -50,9 +50,11 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     // "Active" = both visible, and non-visible but cached entries 
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _activeEntries = new();
 
-    private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _cachedStartEntries = new();
-    private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _cachedEndEntries = new();
-    
+    //private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _cachedStartEntries = new();
+    //private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _cachedEndEntries = new();
+
+    private SlidingWindow<TEntryData> _slidingWindow;
+
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _possibleEntriesToRecycleThisFrame = new();
     private Dictionary<int, Queue<RecyclerScrollRectEntry<TEntryData>>> _recycledEntries = new();
 
@@ -60,14 +62,27 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private readonly List<TEntryData> _pendingAppendEntryData = new();
     private readonly List<TEntryData> _pendingPrependEntryData = new();
     
-    private int _shownStartIndex;
-    private int _shownEndIndex;
+    //private int _shownStartIndex;
+    //private int _shownEndIndex;
     
-    private int? _lastShownStartIndex;
-    private int? _lastShownEndIndex;
+    //private int? _lastShownStartIndex;
+    //private int? _lastShownEndIndex;
     
     private Vector2 _onStartPivot;
     private RecyclerEndcap<TEntryData> _endcap;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        
+        // The base ScrollRect has [ExecuteAlways] but the recycler does not work as such
+        if (!Application.isPlaying)
+        {
+            return;
+        }
+
+        _slidingWindow = new SlidingWindow<TEntryData>(_numCachedBeforeStart);
+    }
 
     protected override void OnEnable()
     {
@@ -107,11 +122,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         {
             RecycleEndcap();
         }
-        
-        // Check the state of the entry we are creating
-        bool isVisible = index >= _shownStartIndex && index <= _shownEndIndex;
-        bool isInStartCache = index >= _shownStartIndex - _numCachedBeforeStart && index < _shownStartIndex;
-        bool isInEndCache = index > _shownEndIndex && index <= _shownEndIndex + _numCachedAfterEnd;
 
         // Shift all existing indices. Note that no transforms are actually moved
         _entryData.Insert(index, entryData);
@@ -121,7 +131,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         }
 
         // Entry will get created when we scroll to it
-        if (!isVisible && !isInStartCache && !isInEndCache)
+        if (!_slidingWindow.Contains(index))
         {
             return;
         }
