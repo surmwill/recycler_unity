@@ -47,7 +47,7 @@ public abstract class RecyclerScrollRect<TEntryData> : ScrollRect
     [SerializeField]
     private bool _onSizeRecalculationGrowShrinkUpwards = false;
 
-    // "Active" = both visible and non-visible but cached entries 
+    // "Active" = both visible, and non-visible but cached entries 
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _activeEntries = new();
 
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _cachedStartEntries = new();
@@ -72,15 +72,21 @@ public abstract class RecyclerScrollRect<TEntryData> : ScrollRect
     protected override void OnEnable()
     {
         base.OnEnable();
-        if (Application.isPlaying)
+        
+        // The base ScrollRect has [ExecuteAlways] but the recycler does not work as such
+        if (!Application.isPlaying)
         {
-            AddPendingEntries();
+            return;
         }
+        
+        AddPendingEntries();
     }
 
     protected override void Start()
     {
         base.Start();
+        
+        // The base ScrollRect has [ExecuteAlways] but the recycler does not work as such
         if (!Application.isPlaying)
         {
             return;
@@ -422,10 +428,11 @@ public abstract class RecyclerScrollRect<TEntryData> : ScrollRect
 
     protected override void LateUpdate()
     {
-        // The base ScrollRect has [ExecuteInEditMode]. Our LateUpdate is not meant to work in EditMode
+        base.LateUpdate();
+        
+        // The base ScrollRect has [ExecuteAlways] but the recycler does not work as such
         if (!Application.isPlaying)
         {
-            base.LateUpdate();
             return;
         }
 
@@ -488,11 +495,7 @@ public abstract class RecyclerScrollRect<TEntryData> : ScrollRect
         
         // Our window of visible entries are up to date. We can check if the end-cap fits now,
         UpdateEndcap();
-        
-        // The base ScrollRect.LateUpdate fires a position change event when it completes. We wouldn't want to fire this prior to
-        // adding/removing entries and modifying the position.
-        base.LateUpdate();
-        
+
         // Sanity checks
         if (Application.isEditor)
         {
