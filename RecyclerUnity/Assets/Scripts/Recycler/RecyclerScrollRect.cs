@@ -53,7 +53,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     //private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _cachedStartEntries = new();
     //private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _cachedEndEntries = new();
 
-    private SlidingWindow<TEntryData> _slidingWindow;
+    private SlidingIndexWindow _indexWindow;
 
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _possibleEntriesToRecycleThisFrame = new();
     private Dictionary<int, Queue<RecyclerScrollRectEntry<TEntryData>>> _recycledEntries = new();
@@ -81,7 +81,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             return;
         }
 
-        _slidingWindow = new SlidingWindow<TEntryData>(_numCachedBeforeStart);
+        _indexWindow = new SlidingIndexWindow(_numCachedBeforeStart);
     }
 
     protected override void OnEnable()
@@ -131,7 +131,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         }
 
         // Entry will get created when we scroll to it
-        if (!_slidingWindow.Contains(index))
+        if (!_indexWindow.Contains(index))
         {
             return;
         }

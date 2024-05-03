@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SlidingWindow<TEntryData>
+public class SlidingIndexWindow
 {
     private readonly int _numCached;
     
@@ -37,7 +37,23 @@ public class SlidingWindow<TEntryData>
 
     public void Insert(int index)
     {
-        VisibleEndIndex += Contains(index) ? 1 : 0;
+        if (Contains(index))
+        {
+            VisibleEndIndex++;
+        }
+    }
+
+    public void Remove(int index)
+    {
+        if (IsInStartCache(index))
+        {
+            VisibleStartIndex--;
+            VisibleEndIndex--;
+        }
+        else if (IsVisible(index))
+        {
+            VisibleEndIndex--;
+        }
     }
 
     public bool IsVisible(int index)
@@ -60,7 +76,7 @@ public class SlidingWindow<TEntryData>
         return IsVisible(index) || IsInStartCache(index) || IsInEndCache(index);
     }
 
-    public SlidingWindow(int numCached)
+    public SlidingIndexWindow(int numCached)
     {
         
     }
