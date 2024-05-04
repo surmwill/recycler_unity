@@ -434,10 +434,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         UpdateVisibility();
         
         // If the window of shown entries changes we'll need to update the cache accordingly
-        while (_lastShownStartIndex != _shownStartIndex || _lastShownEndIndex != _shownEndIndex)
+        while (_indexWindow.IsDirty)
         {
-            (_lastShownStartIndex, _lastShownEndIndex) = (_shownStartIndex, _shownEndIndex);
-
             // Determine what entries belong and don't belong in the cache
             (List<int> newCachedStartIndices, List<int> newCachedEndIndices) = (UpdateStartCache(), UpdateEndCache());
             
@@ -471,7 +469,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
                 // Comment this to print
                 return;
                 
-                Debug.Log($"Visible indices ({_shownStartIndex}, {_shownEndIndex})");
+                Debug.Log(_indexWindow.PrintRange());
                 
                 if (newCachedStartIndices != null)
                 {
