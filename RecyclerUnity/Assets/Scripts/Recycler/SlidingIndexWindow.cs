@@ -15,7 +15,7 @@ public class SlidingIndexWindow
     public int VisibleStartIndex
     {
         get => _visibleStartIndex;
-        private set
+        set
         {
             IsDirty = value != _visibleStartIndex;
             _visibleStartIndex = value;
@@ -25,7 +25,7 @@ public class SlidingIndexWindow
     public int VisibleEndIndex
     {
         get => _visibleEndIndex;
-        private set
+        set
         {
             IsDirty = value != _visibleEndIndex;
             _visibleEndIndex = value;

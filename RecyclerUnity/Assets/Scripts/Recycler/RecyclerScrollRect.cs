@@ -120,7 +120,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             RecycleEndcap();
         }
 
-        // Shift all existing indices. Note that no transforms are actually moved
+        // Shift all existing indices in preparation for the new insertion
         bool isInStartCache = _indexWindow.IsInStartCache(index);
         bool isInEndCache = _indexWindow.IsInEndCache(index);
         
@@ -128,7 +128,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         _indexWindow.Insert(index);
         ShiftEntries(index, true);
 
-            // Entry will get created when we scroll to it
+        // We don't need to create the entry yet, it will get created when we scroll to it
         if (!_indexWindow.Contains(index))
         {
             return;
@@ -329,11 +329,11 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
         if (shouldAppend)
         {
-            _dataForEntries.Append(newEntries);
+            _dataForEntries.AddRange(newEntries);
         }
         else
         {
-            _dataForEntries.Prepend(newEntries);
+            _dataForEntries.InsertRange(0, newEntries.Reverse());
         }
         
         SetCacheDirty();
@@ -585,17 +585,15 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         void EntryIsVisible(RecyclerScrollRectEntry<TEntryData> entry)
         {
             _entriesToRecycleThisFrame.Remove(entry.Index);
-            _cachedStartEntries.Remove(entry.Index);
-            _cachedEndEntries.Remove(entry.Index);
 
             int entryIndex = entry.Index;
-            if (entryIndex < _shownStartIndex)
+            if (entryIndex < _indexWindow.VisibleStartIndex)
             {
-                _shownStartIndex = entryIndex;
+                _indexWindow.VisibleStartIndex = entryIndex;
             }
-            else if (entryIndex > _shownEndIndex)
+            else if (entryIndex > _indexWindow.VisibleEndIndex)
             {
-                _shownEndIndex = entryIndex;
+                _indexWindow.VisibleEndIndex = entryIndex;
             }
         }
 
@@ -608,24 +606,24 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
             if (_isTopDown)
             {
-                if (wentOffTop && _shownStartIndex <= entryIndex)
+                if (wentOffTop && _indexWindow.VisibleStartIndex <= entryIndex)
                 {
-                    _shownStartIndex = entryIndex + 1;
+                    _indexWindow.VisibleStartIndex = entryIndex + 1;
                 }
-                else if (!wentOffTop && _shownEndIndex >= entryIndex)
+                else if (!wentOffTop && _indexWindow.VisibleEndIndex >= entryIndex)
                 {
-                    _shownEndIndex = entryIndex - 1;
+                    _indexWindow.VisibleEndIndex = entryIndex - 1;
                 }
             }
             else
             {
-                if (wentOffTop && _shownEndIndex >= entryIndex)
+                if (wentOffTop && _indexWindow.VisibleEndIndex >= entryIndex)
                 {
-                    _shownEndIndex = entryIndex - 1;
+                    _indexWindow.VisibleEndIndex = entryIndex - 1;
                 }
-                else if (!wentOffTop && _shownStartIndex <= entryIndex)
+                else if (!wentOffTop && _indexWindow.VisibleStartIndex <= entryIndex)
                 {
-                    _shownStartIndex = entryIndex + 1;
+                    _indexWindow.VisibleStartIndex = entryIndex + 1;
                 }
             }
         }
