@@ -9,10 +9,10 @@ public class SlidingIndexWindow
     
     public bool IsDirty { get; private set; }
 
-    private int _visibleStartIndex;
-    private int _visibleEndIndex;
+    private int? _visibleStartIndex;
+    private int? _visibleEndIndex;
     
-    public int VisibleStartIndex
+    public int? VisibleStartIndex
     {
         get => _visibleStartIndex;
         set
@@ -22,7 +22,7 @@ public class SlidingIndexWindow
         }
     }
 
-    public int VisibleEndIndex
+    public int? VisibleEndIndex
     {
         get => _visibleEndIndex;
         set
@@ -32,8 +32,8 @@ public class SlidingIndexWindow
         }
     }
 
-    public int CachedStartIndex => Mathf.Max(VisibleStartIndex - _numCached, 0);
-    public int CachedEndIndex => Mathf.Max(VisibleEndIndex + _numCached);
+    public int CachedStartIndex => Mathf.Max(VisibleStartIndex.GetValueOrDefault() - _numCached, 0);
+    public int CachedEndIndex => Mathf.Max(VisibleEndIndex.GetValueOrDefault() + _numCached, 0);
 
     public void Insert(int index)
     {

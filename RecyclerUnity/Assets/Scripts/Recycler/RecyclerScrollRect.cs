@@ -583,13 +583,14 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         void EntryIsVisible(RecyclerScrollRectEntry<TEntryData> entry)
         {
             _entriesToRecycleThisFrame.Remove(entry.Index);
-
             int entryIndex = entry.Index;
-            if (entryIndex < _indexWindow.VisibleStartIndex)
+            
+            if (!_indexWindow.VisibleStartIndex.HasValue || entryIndex < _indexWindow.VisibleStartIndex)
             {
                 _indexWindow.VisibleStartIndex = entryIndex;
             }
-            else if (entryIndex > _indexWindow.VisibleEndIndex)
+            
+            if (!_indexWindow.VisibleEndIndex.HasValue || entryIndex > _indexWindow.VisibleEndIndex)
             {
                 _indexWindow.VisibleEndIndex = entryIndex;
             }
