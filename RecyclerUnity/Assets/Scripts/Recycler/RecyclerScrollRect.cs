@@ -185,19 +185,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     public void RemoveAt(int index, bool? shrinkUpwards = null)
     {
-        // Recycle the entry if it exists in the scene
+        // Immediately recycle the entry if it exists in the scene
         bool shouldRecycle = _activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData> activeEntry);
         if (shouldRecycle)
         {
             SendToRecycling(activeEntry, shrinkUpwards);
         }
         
-        // Stop bookkeeping the entry
-        _activeEntries.Remove(index);
-        _cachedStartEntries.Remove(index);
-        _cachedEndEntries.Remove(index);
-        _entriesToRecycleThisFrame.Remove(index);
-
         // Unbind any entries that are waiting in recycling
         if (!_recycledEntries.TryGetValue(RecyclerScrollRectEntry<TEntryData>.UnboundIndex, out Queue<RecyclerScrollRectEntry<TEntryData>> unboundEntries))
         {
@@ -468,7 +462,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             {
                 SendToRecycling(entry);
             }
-            _entriesToRecycleThisFrame.Clear();
 
             // Create any new cached entries
             foreach (int entryIndex in newCachedStartIndices ?? Enumerable.Empty<int>())
@@ -708,11 +701,12 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     private void SendToRecycling(RecyclerScrollRectEntry<TEntryData> entry, bool? shrinkUpwards = null)
     {
+        // Handle the GameObject
         RectTransform entryTransform = entry.RectTransform;
         RemoveFromContent(entryTransform, shrinkUpwards);
         entryTransform.SetParent(_poolParent);
 
-        // Mark the entry as ready for re-use
+        // Mark the entry for re-use
         if (!_recycledEntries.TryGetValue(entry.Index, out Queue<RecyclerScrollRectEntry<TEntryData>> recycled))
         {
             recycled = new Queue<RecyclerScrollRectEntry<TEntryData>>();
@@ -720,7 +714,11 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         }
         recycled.Enqueue(entry);
 
+        // Bookkeeping
         _activeEntries.Remove(entry.Index);
+        _entriesToRecycleThisFrame.Remove(entry.Index);
+        
+        // Callback
         entry.OnRecycled();
     }
 
