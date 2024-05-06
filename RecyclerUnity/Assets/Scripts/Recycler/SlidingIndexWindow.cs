@@ -77,11 +77,6 @@ public class SlidingIndexWindow
         return IsVisible(index) || IsInStartCache(index) || IsInEndCache(index);
     }
 
-    public IEnumerable<int> GetRange()
-    {
-        return Enumerable.Range(CachedStartIndex, CachedEndIndex - CachedStartIndex + 1);
-    }
-
     public string PrintRange()
     {
         return $"Visible Index Range ({_visibleStartIndex},{_visibleEndIndex})";

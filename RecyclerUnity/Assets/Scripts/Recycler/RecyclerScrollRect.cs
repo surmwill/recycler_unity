@@ -179,7 +179,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             SendToRecycling(activeEntry, shrinkUpwards);
         }
         
-        // Unbind any entries that are waiting in recycling
+        // Unbind any entries that were waiting for a re-bind in recycling
         if (!_recycledEntries.TryGetValue(RecyclerScrollRectEntry<TEntryData>.UnboundIndex, out Queue<RecyclerScrollRectEntry<TEntryData>> unboundEntries))
         {
             unboundEntries = new Queue<RecyclerScrollRectEntry<TEntryData>>();
@@ -200,13 +200,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         
         // Shift all existing indices. Note that no transforms are actually moved
         _dataForEntries.RemoveAt(index);
+        _indexWindow.Remove(index);
         ShiftEntries(index, false);
         
         // Update the visibility if we removed something
         if (shouldRecycle)
         {
-            UpdateVisibility();  
-            SetCacheDirty();
+            UpdateVisibility();
         }
     }
 
@@ -325,89 +325,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         {
             _dataForEntries.InsertRange(0, newEntries.Reverse());
         }
-        
-        SetCacheDirty();
-    }
-
-    private void SetCacheDirty()
-    {
-        (_lastShownStartIndex, _lastShownStartIndex) = (null, null);
-    }
-
-    /// <summary>
-    /// Background: apart from filling up the screen with entries we also append a couple (user defined amount) entries
-    /// before and after the first and last entries on screen, effectively creating a bigger list than the view.
-    /// This ensures we have something to scroll into instead of creating that something on the fly.
-    ///
-    /// This updates those appended entries before the first entry that appears on screen. Returns the indices of any new entries
-    /// that need to be created and updates our list of entries to recycle
-    /// </summary>
-    private List<int> UpdateStartCache()
-    {
-        // Check out-of-bounds
-        foreach (RecyclerScrollRectEntry<TEntryData> outOfLimitEntry in _cachedStartEntries
-                     .RemoveWhere(kvp => kvp.Value.Index >= _shownStartIndex || kvp.Value.Index < _shownStartIndex - _numCachedBeforeStart)
-                     .Select(kvp => kvp.Value))
-        {
-            _entriesToRecycleThisFrame[outOfLimitEntry.Index] = outOfLimitEntry;
-        }
-        
-        List<int> createNewEntries = null;
-        for (int i = _shownStartIndex - 1; i >= _shownStartIndex - _numCachedBeforeStart && i >= -_dataForEntries.BackwardCount; i--)
-        {
-            // If we were originally going to recycle it but now we need it in the cache, don't recycle it
-            if (_entriesToRecycleThisFrame.TryGetValue(i, out RecyclerScrollRectEntry<TEntryData> entry))
-            {
-                _cachedStartEntries[entry.Index] = entry;
-                _entriesToRecycleThisFrame.Remove(entry.Index);
-            }
-            
-            // If it's not already waiting in the cache then create it
-            if (!_cachedStartEntries.ContainsKey(i))
-            {
-                (createNewEntries ??= new List<int>()).Add(i);
-            }
-        }
-
-        return createNewEntries;
-    }
-
-    /// <summary>
-    /// Background: apart from filling up the screen with entries we also append a couple (user defined amount) entries
-    /// before and after the first and last entries on screen, effectively creating a bigger list than the view.
-    /// This ensures we have something to scroll into instead of creating that something on the fly.
-    ///
-    /// This updates those appended entries after the last entry that appears on screen. Returns the indices of any new entries
-    /// that need to be created and updates our list of entries to recycle
-    /// </summary>
-    private List<int> UpdateEndCache()
-    {
-        // Check out-of-bounds
-        foreach (RecyclerScrollRectEntry<TEntryData> outOfLimitEntry in _cachedEndEntries
-                     .RemoveWhere(kvp => kvp.Value.Index <= _shownEndIndex || kvp.Value.Index > _shownEndIndex + _numCachedAfterEnd)
-                     .Select(kvp => kvp.Value))
-        {
-            _entriesToRecycleThisFrame[outOfLimitEntry.Index] = outOfLimitEntry;
-        }
-
-        List<int> createNewEntries = null;
-        for (int i = _shownEndIndex + 1; i <= _shownEndIndex + _numCachedAfterEnd && i < _dataForEntries.ForwardCount; i++)
-        {
-            // If we were originally going to recycle it but now we need it in the cache, don't recycle it
-            if (_entriesToRecycleThisFrame.TryGetValue(i, out RecyclerScrollRectEntry<TEntryData> entry))
-            {
-                _cachedEndEntries[entry.Index] = entry;
-                _entriesToRecycleThisFrame.Remove(entry.Index);
-            }
-         
-            // If it's not already waiting in the cache then create it
-            if (!_cachedEndEntries.ContainsKey(i))
-            {
-                (createNewEntries ??= new List<int>()).Add(i);
-            }
-        }
-
-        return createNewEntries;
     }
 
     protected override void LateUpdate()
@@ -498,14 +415,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         {
             return;
         }
-        
-        int maxPossibleIndex = _dataForEntries.ForwardCount - 1;
-        bool maxEntryExists = _cachedEndEntries.ContainsKey(maxPossibleIndex) ||
-                              _cachedStartEntries.ContainsKey(maxPossibleIndex) ||
-                              maxPossibleIndex >= _shownStartIndex && maxPossibleIndex <= _shownEndIndex;
-        
+
         // End-cap used to exist but we scrolled away from the end, get rid of it
-        if (!maxEntryExists)
+        if (_endcap.gameObject.activeSelf && !_indexWindow.Contains(_dataForEntries.Count - 1))
         {
             RecycleEndcap();
             return;
@@ -656,19 +568,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         
         // Clear state
         _activeEntries.Clear();
-        
-        _cachedStartEntries.Clear();
-        _cachedEndEntries.Clear();
-        
         _recycledEntries.Clear();
-        _entriesToRecycleThisFrame.Clear();
-        
+
         _dataForEntries.Clear();
         _pendingAppendEntryData.Clear();
         _pendingPrependEntryData.Clear();
-        
-        (_shownStartIndex, _shownEndIndex) = (0, 0);
-        (_lastShownStartIndex, _lastShownEndIndex) = (null, null);
+
+        _indexWindow = new SlidingIndexWindow(_numCachedBeforeStart);
 
         // Reset our pivot to whatever its initial value was
         content.pivot = _onStartPivot;
@@ -691,12 +597,11 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             recycled = new Queue<RecyclerScrollRectEntry<TEntryData>>();
             _recycledEntries.Add(entry.Index, recycled);
         }
-        recycled.Enqueue(entry);
-
-        // Bookkeeping
-        _activeEntries.Remove(entry.Index);
-        _entriesToRecycleThisFrame.Remove(entry.Index);
         
+        // Bookkeeping
+        recycled.Enqueue(entry);
+        _activeEntries.Remove(entry.Index);
+
         // Callback
         entry.OnRecycled();
     }
