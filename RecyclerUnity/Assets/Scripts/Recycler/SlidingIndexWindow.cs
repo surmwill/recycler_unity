@@ -79,7 +79,7 @@ public class SlidingIndexWindow
 
     public string PrintRange()
     {
-        return $"Visible Index Range ({_visibleStartIndex},{_visibleEndIndex})";
+        return $"Visible Index Range ({_visibleStartIndex.GetValueOrDefault()},{_visibleEndIndex.GetValueOrDefault()})";
     }
 
     public SlidingIndexWindow(int numCached)

@@ -106,6 +106,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     public void Insert(int index, TEntryData entryData, bool? growUpwards = null)
     {
+        Debug.Log("INSERTED");
+        
         // Inserting at the end
         if (index == _dataForEntries.Count || index == 0)
         {
@@ -121,8 +123,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         ShiftEntries(index, true);
 
         // We don't need to create the entry yet, it will get created when we scroll to it
-        if (!_indexWindow.Contains(index))
+        if (_indexWindow.VisibleStartIndex.HasValue && _indexWindow.VisibleEndIndex.HasValue && !_indexWindow.Contains(index))
         {
+            Debug.Log("DOES NOT CONTAINED " + _indexWindow.PrintRange() + " " + index);
             return;
         }
 
@@ -341,7 +344,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // UpdateVisibility();
 
         // If the window of shown entries changes we'll need to update the cache accordingly
-        while (_indexWindow.IsDirty)
+        if (_indexWindow.IsDirty)
         {
             List<int> newCachedStartEntries = new();
             List<int> newCachedEndEntries = new();
@@ -411,6 +414,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     private void UpdateEndcap()
     {
+        return;
+        
         if (_endcap == null)
         {
             return;
@@ -438,6 +443,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     private void RecycleEndcap()
     {
+        return;
         if (_endcap.gameObject.activeSelf)
         {
             RemoveFromContent(_endcap.RectTransform, !_isTopDown).SetParent(_endcapParent);
