@@ -8,7 +8,7 @@ public class SlidingIndexWindow
 {
     private readonly int _numCached;
     
-    public bool IsDirty { get; private set; }
+    public bool IsDirty { get; set; }
 
     private int? _visibleStartIndex;
     private int? _visibleEndIndex;
@@ -69,7 +69,7 @@ public class SlidingIndexWindow
 
     public bool IsInEndCache(int index)
     {
-        return index > CachedEndIndex && index <= CachedEndIndex + _numCached;
+        return index >= CachedEndIndex && index <= CachedEndIndex + _numCached;
     }
 
     public bool Contains(int index)
@@ -79,7 +79,9 @@ public class SlidingIndexWindow
 
     public string PrintRange()
     {
-        return $"Visible Index Range ({_visibleStartIndex.GetValueOrDefault()},{_visibleEndIndex.GetValueOrDefault()})";
+        return $"Visible Index Range: [{VisibleStartIndex},{VisibleEndIndex}]\n" +
+               $"Start Cache Range: [{CachedStartIndex}, {VisibleStartIndex})\n" +
+               $"End Cache Range: ({VisibleEndIndex}, {CachedEndIndex}]";
     }
 
     public SlidingIndexWindow(int numCached)

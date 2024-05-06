@@ -342,6 +342,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
         // Determine what is shown TODO: is this needed?
         // UpdateVisibility();
+        
+        Debug.Log(_indexWindow.PrintRange());
 
         // If the window of shown entries changes we'll need to update the cache accordingly
         if (_indexWindow.IsDirty)
@@ -351,7 +353,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             List<int> toRecycleEntries = new();
             
             // Determine any new entries needing creation in the start and end caches
-            for (int i = _indexWindow.VisibleStartIndex.Value - 1; i >= _indexWindow.CachedStartIndex; i--)
+            for (int i = _indexWindow.VisibleStartIndex.Value - 1; i >= _indexWindow.CachedStartIndex && i >= 0; i--)
             {
                 if (!_activeEntries.ContainsKey(i))
                 {
@@ -359,7 +361,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
                 }
             }
 
-            for (int i = _indexWindow.VisibleEndIndex.Value; i <= _indexWindow.CachedEndIndex; i++)
+            for (int i = _indexWindow.VisibleEndIndex.Value; i <= _indexWindow.CachedEndIndex && i < _dataForEntries.Count; i++)
             {
                 if (!_activeEntries.ContainsKey(i))
                 {
@@ -393,7 +395,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             {
                 CreateAndAddEntry(index, _isTopDown ? content.transform.childCount : 0, !_isTopDown);
             }
-            
+
             // We just added/removed entries. Update the visibility of the new entries and see if we need to do it again
             UpdateVisibility();
         }
@@ -453,6 +455,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     private RecyclerScrollRectEntry<TEntryData> CreateAndAddEntry(int dataIndex, int siblingIndex, bool? growUpwards = null)
     {
+        Debug.Log("CREATING ENTRY " + dataIndex + " " + _dataForEntries.Count);
+        
         if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TEntryData> entry))
         {
             entry = Instantiate(_recyclerEntryPrefab, content);
@@ -478,6 +482,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     private void UpdateVisibility()
     {
+        _indexWindow.IsDirty = false;
+        
         foreach (RecyclerScrollRectEntry<TEntryData> entry in _activeEntries.Values)
         {
             bool isVisible = entry.RectTransform.Overlaps(viewport);
