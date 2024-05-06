@@ -47,24 +47,16 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     [SerializeField]
     private bool _onSizeRecalculationGrowShrinkUpwards = false;
 
-    // All the entries, visible and cached
+    // All the entries: visible and cached
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _activeEntries = new();
-
-    private SlidingIndexWindow _indexWindow;
-
-    private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _entriesToRecycleThisFrame = new();
     private Dictionary<int, Queue<RecyclerScrollRectEntry<TEntryData>>> _recycledEntries = new();
-
+    
+    private SlidingIndexWindow _indexWindow;
+    
     private readonly List<TEntryData> _dataForEntries = new();
     private readonly List<TEntryData> _pendingAppendEntryData = new();
     private readonly List<TEntryData> _pendingPrependEntryData = new();
-    
-    //private int _shownStartIndex;
-    //private int _shownEndIndex;
-    
-    //private int? _lastShownStartIndex;
-    //private int? _lastShownEndIndex;
-    
+
     private Vector2 _onStartPivot;
     private RecyclerEndcap<TEntryData> _endcap;
 
@@ -173,7 +165,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // Create the entry
         CreateAndAddEntry(index, siblingIndex, isInStartCache ? _isTopDown : (isInEndCache ? !_isTopDown : growUpwards));
         UpdateVisibility();
-        SetCacheDirty();
     }
 
     /// <summary>
@@ -225,8 +216,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private void ShiftEntries(int startIndex, bool shiftForwards)
     {
         Shift(ref _activeEntries);
-        Shift(ref _entriesToRecycleThisFrame);
-        
+
         Dictionary<int, Queue<RecyclerScrollRectEntry<TEntryData>>> shiftedRecycledEntries = new Dictionary<int, Queue<RecyclerScrollRectEntry<TEntryData>>>();
         foreach ((int index, Queue<RecyclerScrollRectEntry<TEntryData>> recycledEntries) in _recycledEntries
                      .Where(kvp => kvp.Key != RecyclerScrollRectEntry<TEntryData>.UnboundIndex))
@@ -430,58 +420,62 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             return;
         }
 
-        // Determine what is shown
-        UpdateVisibility();
-        
+        // Determine what is shown TODO: is this needed?
+        // UpdateVisibility();
+
         // If the window of shown entries changes we'll need to update the cache accordingly
         while (_indexWindow.IsDirty)
         {
-            // Determine what entries belong and don't belong in the cache
-            (List<int> newCachedStartIndices, List<int> newCachedEndIndices) = (UpdateStartCache(), UpdateEndCache());
+            List<int> newCachedStartEntries = new();
+            List<int> newCachedEndEntries = new();
+            List<int> toRecycleEntries = new();
             
-            #if UNITY_EDITOR
-            DebugPrint();
-            #endif
-
-            // Recycle any entries that aren't visible and don't belong in the cache
-            foreach ((int _, RecyclerScrollRectEntry<TEntryData> entry) in _entriesToRecycleThisFrame)
+            // Determine any new entries needing creation in the start and end caches
+            for (int i = _indexWindow.VisibleStartIndex.Value - 1; i >= _indexWindow.CachedStartIndex; i--)
             {
-                SendToRecycling(entry);
+                if (!_activeEntries.ContainsKey(i))
+                {
+                    newCachedStartEntries.Add(i);
+                }
+            }
+
+            for (int i = _indexWindow.VisibleEndIndex.Value; i <= _indexWindow.CachedEndIndex; i++)
+            {
+                if (!_activeEntries.ContainsKey(i))
+                {
+                    newCachedEndEntries.Add(i);
+                }
+            }
+            
+            // Determine any entries that went off screen, don't belong in the cache, and need to get recycled
+            foreach ((int index, RecyclerScrollRectEntry<TEntryData> _) in _activeEntries)
+            {
+                if (!_indexWindow.Contains(index))
+                {
+                    toRecycleEntries.Add(index);   
+                }
+            }
+
+            // Recycle unneeded entries
+            foreach (int index in toRecycleEntries)
+            {
+                SendToRecycling(_activeEntries[index]);
+                _activeEntries.Remove(index);
             }
 
             // Create any new cached entries
-            foreach (int entryIndex in newCachedStartIndices ?? Enumerable.Empty<int>())
+            foreach (int index in newCachedStartEntries)
             {
-                CreateAndAddEntry(entryIndex, _isTopDown ? 0 : content.transform.childCount, _isTopDown);
+                CreateAndAddEntry(index, _isTopDown ? 0 : content.transform.childCount, _isTopDown);
             }
             
-            foreach (int entryIndex in newCachedEndIndices ?? Enumerable.Empty<int>())
+            foreach (int index in newCachedEndEntries)
             {
-                CreateAndAddEntry(entryIndex, _isTopDown ? content.transform.childCount : 0, !_isTopDown);
+                CreateAndAddEntry(index, _isTopDown ? content.transform.childCount : 0, !_isTopDown);
             }
             
             // We just added/removed entries. Update the visibility of the new entries and see if we need to do it again
             UpdateVisibility();
-
-            #if UNITY_EDITOR
-            void DebugPrint()
-            {
-                // Comment this to print
-                return;
-                
-                Debug.Log(_indexWindow.PrintRange());
-                
-                if (newCachedStartIndices != null)
-                {
-                    Debug.Log("New cached start entries " + string.Join(",", newCachedStartIndices));   
-                }
-
-                if (newCachedEndIndices != null)
-                {
-                    Debug.Log("New cached end entries " + string.Join(",", newCachedEndIndices));  
-                }
-            }
-            #endif
         }
         
         // Our window of visible entries are up to date. We can check if the end-cap fits now,
@@ -582,9 +576,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // Visible
         void EntryIsVisible(RecyclerScrollRectEntry<TEntryData> entry)
         {
-            _entriesToRecycleThisFrame.Remove(entry.Index);
             int entryIndex = entry.Index;
-            
+
             if (!_indexWindow.VisibleStartIndex.HasValue || entryIndex < _indexWindow.VisibleStartIndex)
             {
                 _indexWindow.VisibleStartIndex = entryIndex;
@@ -600,8 +593,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         void EntryIsNotVisible(RecyclerScrollRectEntry<TEntryData> entry)
         {
             int entryIndex = entry.Index;
+
+            // TODO: how does this handle horizontally?
             bool wentOffTop = entry.RectTransform.position.y > viewport.transform.position.y;
-            _entriesToRecycleThisFrame[entryIndex] = entry;
 
             if (_isTopDown)
             {

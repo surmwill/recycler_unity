@@ -6,7 +6,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Contains editor and debugging calls for our recycler scroll rect
 /// </summary>
-public partial class RecyclerScrollRect<TEntryData> : ScrollRect
+public partial class RecyclerScrollRect<TEntryData>
 {
     protected override void OnValidate()
     {
