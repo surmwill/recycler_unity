@@ -340,14 +340,16 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             return;
         }
 
-        // Determine what is shown TODO: is this needed?
-        // UpdateVisibility();
-        
-        Debug.Log(_indexWindow.PrintRange());
+        // Determine changes in the visible window
+        UpdateVisibility();
 
         // If the window of shown entries changes we'll need to update the cache accordingly
-        if (_indexWindow.IsDirty)
+        while (_indexWindow.IsDirty)
         {
+            Debug.Log(_indexWindow.PrintRange());
+            
+            _indexWindow.IsDirty = false;
+            
             List<int> newCachedStartEntries = new();
             List<int> newCachedEndEntries = new();
             List<int> toRecycleEntries = new();
@@ -372,6 +374,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             // Determine any entries that went off screen, don't belong in the cache, and need to get recycled
             foreach ((int index, RecyclerScrollRectEntry<TEntryData> _) in _activeEntries)
             {
+                Debug.Log("Removing all not in range " + _indexWindow.PrintRange());
                 if (!_indexWindow.Contains(index))
                 {
                     toRecycleEntries.Add(index);   
@@ -482,8 +485,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     private void UpdateVisibility()
     {
-        _indexWindow.IsDirty = false;
-        
         foreach (RecyclerScrollRectEntry<TEntryData> entry in _activeEntries.Values)
         {
             bool isVisible = entry.RectTransform.Overlaps(viewport);
@@ -598,6 +599,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     private void SendToRecycling(RecyclerScrollRectEntry<TEntryData> entry, bool? shrinkUpwards = null)
     {
+        Debug.Log("RECYCLED: " + entry.Index);
+        
         // Handle the GameObject
         RectTransform entryTransform = entry.RectTransform;
         RemoveFromContent(entryTransform, shrinkUpwards);

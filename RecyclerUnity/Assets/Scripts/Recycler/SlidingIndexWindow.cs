@@ -69,7 +69,7 @@ public class SlidingIndexWindow
 
     public bool IsInEndCache(int index)
     {
-        return index >= CachedEndIndex && index <= CachedEndIndex + _numCached;
+        return index > VisibleEndIndex && index <= CachedEndIndex + _numCached;
     }
 
     public bool Contains(int index)
