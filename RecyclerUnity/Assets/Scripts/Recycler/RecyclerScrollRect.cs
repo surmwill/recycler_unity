@@ -118,9 +118,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         bool isInStartCache = _indexWindow.IsInStartCache(index);
         bool isInEndCache = _indexWindow.IsInEndCache(index);
         
-        _dataForEntries.Insert(index, entryData);
         _indexWindow.Insert(index);
-        ShiftEntries(index, true);
+        _dataForEntries.Insert(index, entryData);
+        ShiftEntries(index, true, 1);
 
         // We don't need to create the entry yet, it will get created when we scroll to it
         if (_indexWindow.VisibleStartIndex.HasValue && _indexWindow.VisibleEndIndex.HasValue && !_indexWindow.Contains(index))
@@ -202,9 +202,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         _recycledEntries[RecyclerScrollRectEntry<TEntryData>.UnboundIndex] = unboundEntries;
         
         // Shift all existing indices. Note that no transforms are actually moved
-        _dataForEntries.RemoveAt(index);
         _indexWindow.Remove(index);
-        ShiftEntries(index, false);
+        _dataForEntries.RemoveAt(index);
+        ShiftEntries(index, false, -1);
         
         // Update the visibility if we removed something
         if (shouldRecycle)
@@ -216,7 +216,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// <summary>
     /// Shifts the indices of entries forward or back by 1. Update bookkeeping to reflect this
     /// </summary>
-    private void ShiftEntries(int startIndex, bool shiftForwards)
+    private void ShiftEntries(int startIndex, bool isDirectionForward, int shiftAmount)
     {
         Shift(ref _activeEntries);
 
@@ -250,9 +250,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         
         int GetShiftedIndex(int index)
         {
-            if (shiftForwards && index >= startIndex || !shiftForwards && index <= startIndex)
+            if (isDirectionForward && index >= startIndex || !isDirectionForward && index <= startIndex)
             {
-                return index + (shiftForwards ? 1 : -1);
+                return index + shiftAmount;
             }
             return index;
         }
@@ -305,28 +305,32 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     private void AddEntries(IEnumerable<TEntryData> newEntries, bool shouldAppend)
     {
-        if (!newEntries.Any())
+        if (newEntries == null)
         {
             return;
         }
+
+        Queue<TEntryData> entries = new Queue<TEntryData>(newEntries);
 
         // Entries request more entries to be created; however, we start out with no entries and therefore need to kick
         // off the creation cycle by creating one ourselves. Insertion causes an immediate creation and so we use that.
         bool areInitialEntries = _dataForEntries.Count == 0;
         if (areInitialEntries)
         {
-            TEntryData first = newEntries.First();
+            TEntryData first = entries.Dequeue();
             Insert(0, first);
-            newEntries = newEntries.Skip(1);
         }
 
         if (shouldAppend)
         {
-            _dataForEntries.AddRange(newEntries);
+            _indexWindow.InsertRange(_dataForEntries.Count, entries.Count);
+            _dataForEntries.AddRange(entries);
         }
         else
         {
+            _indexWindow.InsertRange(0, newEntries.Count());
             _dataForEntries.InsertRange(0, newEntries.Reverse());
+            ShiftEntries(0, true, newEntries.Count());
         }
     }
 

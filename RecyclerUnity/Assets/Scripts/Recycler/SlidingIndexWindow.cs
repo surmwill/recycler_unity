@@ -38,20 +38,34 @@ public class SlidingIndexWindow
 
     public void Insert(int index)
     {
-        if (Contains(index))
+        InsertRange(index, 1);
+    }
+
+    public void InsertRange(int index, int num)
+    {
+        IsDirty = true;
+
+        if (index == VisibleStartIndex)
         {
-            VisibleEndIndex++;
+            VisibleStartIndex += num;
+        }
+        
+        if (index >= VisibleStartIndex && index <= VisibleEndIndex)
+        {
+            VisibleEndIndex += num;
         }
     }
 
     public void Remove(int index)
     {
-        if (IsInStartCache(index))
+        IsDirty = true;
+
+        if (index == VisibleStartIndex)
         {
-            VisibleStartIndex--;
-            VisibleEndIndex--;
+            VisibleStartIndex++;
         }
-        else if (IsVisible(index))
+
+        if (index >= VisibleStartIndex && index <= VisibleEndIndex)
         {
             VisibleEndIndex--;
         }
