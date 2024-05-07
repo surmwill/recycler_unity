@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -29,7 +30,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private int _numCachedAfterEnd = 2;
 
     [SerializeField]
-    private AppendLocation _appendAt = AppendLocation.Bot;
+    private RecyclerTransformPosition _appendAt = RecyclerTransformPosition.Bot;
 
     [SerializeField]
     private RectTransform _poolParent = null;
@@ -46,6 +47,15 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     [Tooltip("The direction a growing entry should push itself and consequently the entries above/below it")]
     [SerializeField]
     private bool _onSizeRecalculationGrowShrinkUpwards = false;
+
+    // In the scene hierarchy, are our entries' indices increasing as we go down the sibling list.
+    // Increasing entries mean our first entry with index 0 is at the top, and so is our start cache.
+    // Decreasing entries mean our first entry with index 0 is at the bottom, and so is our start cache.
+    private bool _areEntriesIncreasing => _appendAt == RecyclerTransformPosition.Bot;
+    
+    private RecyclerTransformPosition StartCacheTransformPosition => InverseRecyclerTransformPosition(_appendAt);
+
+    private RecyclerTransformPosition EndCacheTransformPosition => InverseRecyclerTransformPosition(StartCacheTransformPosition);
 
     // All the entries: visible and cached
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _activeEntries = new();
@@ -138,15 +148,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             
             if (activeEntry != null && activeEntry.Index == index - 1)
             {
-                // Top-down: the 0th entry will the top-most transform. Insert after the entry bound with the previous index
-                if (_appendAt == AppendLocation.Bot)
+                // Top-down: insertion comes one after the entry bound with the previous index
+                if (_areEntriesIncreasing)
                 {
                     siblingIndex++;
-                    break;
                 }
-            
-                // Bottom-up: the 0th entry will be the bottom-most transform. Insert before the entry bound with the previous index
-                if (_appendAt == AppendLocation.Top)
+                // Bottom-up: insertion comes one before the entry bound with the previous index
+                else
                 {
                     siblingIndex--;
                     break;
@@ -159,11 +167,11 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // Create the entry
         if (willBeInStartCache)
         {
-            CreateAndAddEntry(index, siblingIndex, _appendAt == AppendLocation.Bot);
+            CreateAndAddEntry(index, siblingIndex, StartCacheTransformPosition == RecyclerTransformPosition.Top);
         }
         else if (willBeInEndCache)
         {
-            CreateAndAddEntry(index, siblingIndex, _appendAt == AppendLocation.Top);
+            CreateAndAddEntry(index, siblingIndex, EndCacheTransformPosition == RecyclerTransformPosition.Top);
         }
         else
         {
@@ -402,12 +410,12 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             // Create any new cached entries
             foreach (int index in newCachedStartEntries)
             {
-                CreateAndAddEntry(index, _appendAt == AppendLocation.Bot ? 0 : content.transform.childCount, _appendAt == AppendLocation.Bot);
+                CreateAndAddEntry(index, _appendAt == RecyclerTransformPosition.Bot ? 0 : content.transform.childCount, StartCacheTransformPosition == RecyclerTransformPosition.Top);
             }
             
             foreach (int index in newCachedEndEntries)
             {
-                CreateAndAddEntry(index, _appendAt == AppendLocation.Bot ? content.transform.childCount : 0, _appendAt == AppendLocation.Top);
+                CreateAndAddEntry(index, _appendAt == RecyclerTransformPosition.Bot ? content.transform.childCount : 0, EndCacheTransformPosition == RecyclerTransformPosition.Top);
             }
 
             // We just added/removed entries. Update the visibility of the new entries and see if we need to do it again
@@ -537,24 +545,30 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
             // TODO: how does this handle horizontally?
             bool wentOffTop = entry.RectTransform.position.y > viewport.transform.position.y;
-
-            if (_appendAt == AppendLocation.Bot)
+            
+            // Entries are increasing (entry 0 is at the top along with our start cache)
+            if (_areEntriesIncreasing)
             {
+                // Anything off the top means we are scrolling down, away from entry 0, away from lesser indices
                 if (wentOffTop && _indexWindow.VisibleStartIndex <= entryIndex)
                 {
                     _indexWindow.VisibleStartIndex = entryIndex + 1;
                 }
+                // Anything off the bot means we are scrolling up, toward entry 0, toward lesser indices
                 else if (!wentOffTop && _indexWindow.VisibleEndIndex >= entryIndex)
                 {
                     _indexWindow.VisibleEndIndex = entryIndex - 1;
                 }
             }
+            // Entries are decreasing (entry 0 is at the bottom along with our start cache)
             else
             {
+                // Anything off the top means we are scrolling down, toward entry 0, toward lesser indices
                 if (wentOffTop && _indexWindow.VisibleEndIndex >= entryIndex)
                 {
                     _indexWindow.VisibleEndIndex = entryIndex - 1;
                 }
+                // Anything off the bottom means we are scrolling up, away from entry 0, away from lesser indices
                 else if (!wentOffTop && _indexWindow.VisibleStartIndex <= entryIndex)
                 {
                     _indexWindow.VisibleStartIndex = entryIndex + 1;
@@ -773,8 +787,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             
         // Special case: (example) if we receive a new text message and we are at the very bottom of the conversation then we should
         // automatically scroll down and show the new message. We should not maintain our view in cases like these 
-        bool shouldMaintainTopmost = _appendAt == AppendLocation.Bot && growShrinkUpwards && (Mathf.Approximately(normalizedPosition.y, 1f) || normalizedPosition.y > 1f);
-        bool shouldMaintainBotmost = _appendAt == AppendLocation.Top && !growShrinkUpwards && (Mathf.Approximately(normalizedPosition.y, 0f) || normalizedPosition.y < 0f);
+        // TODO: does this work?
+        bool shouldMaintainTopmost = _appendAt == RecyclerTransformPosition.Bot && growShrinkUpwards && normalizedPosition.y >= 1f;
+        bool shouldMaintainBotmost = _appendAt == RecyclerTransformPosition.Top && !growShrinkUpwards && normalizedPosition.y <= 0f;
 
         // Temporarily set the pivot to only push itself and the elements above or below it, and rebuild (1)
         content.SetPivotWithoutMoving(content.pivot.WithY(growShrinkUpwards ? 0f : 1f));
@@ -802,7 +817,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // Since Unity handles ScrollRects differently if we have a full viewport or not, this bridges the gap between non-full and full viewports with consistent behaviour.
         if (!initIsScrollable)
         {
-            normalizedPosition = normalizedPosition.WithY(_appendAt == AppendLocation.Bot ? 1f : 0f);
+            normalizedPosition = normalizedPosition.WithY(_areEntriesIncreasing ? 1f : 0f);
             return;
         }
         
@@ -847,5 +862,20 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)
     {
         Array.ForEach(behaviours, l => l.enabled = isEnabled);
+    }
+
+    private static RecyclerTransformPosition InverseRecyclerTransformPosition(RecyclerTransformPosition position)
+    {
+        switch (position)
+        {
+            case RecyclerTransformPosition.Bot:
+                return RecyclerTransformPosition.Top;
+            
+            case RecyclerTransformPosition.Top:
+                return RecyclerTransformPosition.Bot;
+            
+            default:
+                throw new InvalidOperationException();
+        }
     }
 }
