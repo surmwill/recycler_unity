@@ -33,6 +33,8 @@ public class SlidingIndexWindow
         }
     }
 
+    public bool IsInitialized => VisibleStartIndex.HasValue && VisibleEndIndex.HasValue;
+
     public int CachedStartIndex => Mathf.Max(VisibleStartIndex.GetValueOrDefault() - _numCached, 0);
     public int CachedEndIndex => Mathf.Max(VisibleEndIndex.GetValueOrDefault() + _numCached, 0);
 
@@ -73,17 +75,17 @@ public class SlidingIndexWindow
 
     public bool IsVisible(int index)
     {
-        return index >= VisibleStartIndex && index <= VisibleEndIndex;
+        return IsInitialized && index >= VisibleStartIndex && index <= VisibleEndIndex;
     }
 
     public bool IsInStartCache(int index)
     {
-        return index >= CachedStartIndex && index < VisibleStartIndex;
+        return IsInitialized && index >= CachedStartIndex && index < VisibleStartIndex;
     }
 
     public bool IsInEndCache(int index)
     {
-        return index > VisibleEndIndex && index <= CachedEndIndex + _numCached;
+        return IsInitialized && index > VisibleEndIndex && index <= CachedEndIndex + _numCached;
     }
 
     public bool Contains(int index)

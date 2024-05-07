@@ -45,9 +45,9 @@ public partial class RecyclerScrollRect<TEntryData>
         }
         
         // Set anchors and pivot according to configuration (top-down or bottom-up)
-        content.pivot = content.pivot.WithY(_isTopDown ? 1 : 0);
-        content.anchorMin = new Vector2(0f, _isTopDown ? 1 : 0);
-        content.anchorMax = new Vector2(1f, _isTopDown ? 1 : 0);
+        content.pivot = content.pivot.WithY(_appendAt == AppendLocation.Bot ? 1 : 0);
+        content.anchorMin = new Vector2(0f, _appendAt == AppendLocation.Bot ? 1 : 0);
+        content.anchorMax = new Vector2(1f, _appendAt == AppendLocation.Bot ? 1 : 0);
         content.anchoredPosition = Vector2.zero;
         (content.offsetMin, content.offsetMax) = (Vector2.zero, Vector2.zero);
 

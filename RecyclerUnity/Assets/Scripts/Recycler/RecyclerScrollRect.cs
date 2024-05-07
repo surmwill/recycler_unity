@@ -29,7 +29,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private int _numCachedAfterEnd = 2;
 
     [SerializeField]
-    private bool _isTopDown = true;
+    private AppendLocation _appendAt = AppendLocation.Bot;
 
     [SerializeField]
     private RectTransform _poolParent = null;
@@ -113,19 +113,20 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         {
             RecycleEndcap();
         }
-
-        // Shift all existing indices in preparation for the new insertion
-        bool isInStartCache = _indexWindow.IsInStartCache(index);
-        bool isInEndCache = _indexWindow.IsInEndCache(index);
         
+        // Determine where the new insertion will be going
+        bool willBeInStartCache = _indexWindow.IsInStartCache(index);
+        bool willBeInEndCache = _indexWindow.IsInEndCache(index);
+        bool willBeVisible = _indexWindow.IsVisible(index);
+        
+        // Shift all existing indices in preparation for the new insertion
         _indexWindow.Insert(index);
         _dataForEntries.Insert(index, entryData);
         ShiftIndicesBoundEntries(index, true, 1);
 
         // We don't need to create the entry yet, it will get created when we scroll to it
-        if (_indexWindow.VisibleStartIndex.HasValue && _indexWindow.VisibleEndIndex.HasValue && !_indexWindow.Contains(index))
+        if (_indexWindow.IsInitialized && !willBeInStartCache && !willBeInEndCache && !willBeVisible)
         {
-            Debug.Log("DOES NOT CONTAINED " + _indexWindow.PrintRange() + " " + index);
             return;
         }
 
@@ -133,40 +134,43 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         int siblingIndex = 0;
         foreach (Transform entryTransform in content)
         {
-            RecyclerScrollRectEntry<TEntryData> entry = entryTransform.GetComponent<RecyclerScrollRectEntry<TEntryData>>();
-            if (entry == null)
-            {
-               continue;
-            }
+            RecyclerScrollRectEntry<TEntryData> activeEntry = entryTransform.GetComponent<RecyclerScrollRectEntry<TEntryData>>();
             
-            // Top-down
-            if (_isTopDown)
+            if (activeEntry != null && activeEntry.Index == index - 1)
             {
-                if (entry.Index == index - 1)
+                // Top-down: the 0th entry will the top-most transform. Insert after the entry bound with the previous index
+                if (_appendAt == AppendLocation.Bot)
                 {
-                    siblingIndex = entryTransform.GetSiblingIndex() + 1;   
+                    siblingIndex++;
+                    break;
                 }
-                else if (entry.Index == index + 1)
+            
+                // Bottom-up: the 0th entry will be the bottom-most transform. Insert before the entry bound with the previous index
+                if (_appendAt == AppendLocation.Top)
                 {
-                    siblingIndex = entryTransform.GetSiblingIndex();
+                    siblingIndex--;
+                    break;
                 }
             }
-            // Bottom-up
-            else
-            {
-                if (entry.Index == index - 1)
-                {
-                    siblingIndex = entryTransform.GetSiblingIndex();
-                }
-                else if (entry.Index == index + 1)
-                {
-                    siblingIndex = entryTransform.GetSiblingIndex() + 1;   
-                }
-            }
+
+            siblingIndex++;
         }
 
         // Create the entry
-        CreateAndAddEntry(index, siblingIndex, isInStartCache ? _isTopDown : (isInEndCache ? !_isTopDown : growUpwards));
+        if (willBeInStartCache)
+        {
+            CreateAndAddEntry(index, siblingIndex, _appendAt == AppendLocation.Bot);
+        }
+        else if (willBeInEndCache)
+        {
+            CreateAndAddEntry(index, siblingIndex, _appendAt == AppendLocation.Top);
+        }
+        else
+        {
+            CreateAndAddEntry(index, siblingIndex, growUpwards);
+        }
+        
+        // Update which entries are shown and subsequently which ones need to be cached
         UpdateVisibility();
     }
 
@@ -398,12 +402,12 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             // Create any new cached entries
             foreach (int index in newCachedStartEntries)
             {
-                CreateAndAddEntry(index, _isTopDown ? 0 : content.transform.childCount, _isTopDown);
+                CreateAndAddEntry(index, _appendAt == AppendLocation.Bot ? 0 : content.transform.childCount, _appendAt == AppendLocation.Bot);
             }
             
             foreach (int index in newCachedEndEntries)
             {
-                CreateAndAddEntry(index, _isTopDown ? content.transform.childCount : 0, !_isTopDown);
+                CreateAndAddEntry(index, _appendAt == AppendLocation.Bot ? content.transform.childCount : 0, _appendAt == AppendLocation.Top);
             }
 
             // We just added/removed entries. Update the visibility of the new entries and see if we need to do it again
@@ -428,6 +432,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     {
         return;
         
+        /*
         if (_endcap == null)
         {
             return;
@@ -451,16 +456,20 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         _endcap.OnBind();
         
         AddToContent(_endcap.RectTransform, _isTopDown ? content.transform.childCount : 0, !_isTopDown);
+        */
     }
 
     private void RecycleEndcap()
     {
         return;
+        
+        /*
         if (_endcap.gameObject.activeSelf)
         {
             RemoveFromContent(_endcap.RectTransform, !_isTopDown).SetParent(_endcapParent);
             _endcap.OnSentToRecycling();
         }
+        */
     }
 
     private RecyclerScrollRectEntry<TEntryData> CreateAndAddEntry(int dataIndex, int siblingIndex, bool? growUpwards = null)
@@ -529,7 +538,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             // TODO: how does this handle horizontally?
             bool wentOffTop = entry.RectTransform.position.y > viewport.transform.position.y;
 
-            if (_isTopDown)
+            if (_appendAt == AppendLocation.Bot)
             {
                 if (wentOffTop && _indexWindow.VisibleStartIndex <= entryIndex)
                 {
@@ -764,8 +773,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             
         // Special case: (example) if we receive a new text message and we are at the very bottom of the conversation then we should
         // automatically scroll down and show the new message. We should not maintain our view in cases like these 
-        bool shouldMaintainTopmost = _isTopDown && growShrinkUpwards && (Mathf.Approximately(normalizedPosition.y, 1f) || normalizedPosition.y > 1f);
-        bool shouldMaintainBotmost = !_isTopDown && !growShrinkUpwards && (Mathf.Approximately(normalizedPosition.y, 0f) || normalizedPosition.y < 0f);
+        bool shouldMaintainTopmost = _appendAt == AppendLocation.Bot && growShrinkUpwards && (Mathf.Approximately(normalizedPosition.y, 1f) || normalizedPosition.y > 1f);
+        bool shouldMaintainBotmost = _appendAt == AppendLocation.Top && !growShrinkUpwards && (Mathf.Approximately(normalizedPosition.y, 0f) || normalizedPosition.y < 0f);
 
         // Temporarily set the pivot to only push itself and the elements above or below it, and rebuild (1)
         content.SetPivotWithoutMoving(content.pivot.WithY(growShrinkUpwards ? 0f : 1f));
@@ -793,7 +802,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // Since Unity handles ScrollRects differently if we have a full viewport or not, this bridges the gap between non-full and full viewports with consistent behaviour.
         if (!initIsScrollable)
         {
-            normalizedPosition = normalizedPosition.WithY(_isTopDown ? 1f : 0f);
+            normalizedPosition = normalizedPosition.WithY(_appendAt == AppendLocation.Bot ? 1f : 0f);
             return;
         }
         
