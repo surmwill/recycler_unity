@@ -48,7 +48,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     [SerializeField]
     private bool _onSizeRecalculationGrowShrinkUpwards = false;
 
-    // In the scene hierarchy, are our entries' indices increasing as we go down the sibling list.
+    // In the scene hierarchy, are our entries' indices increasing as we go down the sibling list?
     // Increasing entries mean our first entry with index 0 is at the top, and so is our start cache.
     // Decreasing entries mean our first entry with index 0 is at the bottom, and so is our start cache.
     private bool _areEntriesIncreasing => _appendAt == RecyclerTransformPosition.Bot;
@@ -148,17 +148,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             
             if (activeEntry != null && activeEntry.Index == index - 1)
             {
-                // Top-down: insertion comes one after the entry bound with the previous index
-                if (_areEntriesIncreasing)
-                {
-                    siblingIndex++;
-                }
-                // Bottom-up: insertion comes one before the entry bound with the previous index
-                else
-                {
-                    siblingIndex--;
-                    break;
-                }
+                siblingIndex += _areEntriesIncreasing ? 1 : -1;
             }
 
             siblingIndex++;
