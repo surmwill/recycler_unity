@@ -55,7 +55,7 @@ public class TestStringRecyclerData : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.L))
         {
-            _recycler.Insert(1, RandomString, FixEntries.Below);
+            _recycler.Insert(3, RandomString, FixEntries.Mid);
         }
         else if (Input.GetKeyDown(KeyCode.K))
         {

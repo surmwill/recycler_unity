@@ -778,7 +778,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         bool shouldMaintainBotmost = false; // _appendAt == RecyclerTransformPosition.Top && !growShrinkUpwards && normalizedPosition.y <= 0f;
 
         // Temporarily set the pivot to only push itself and the elements above or below it, and rebuild (1)
-        content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f : 1f));
+        // TODO: FixEntries.Mid should set the anchor to the middle of the viewport
+        content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f : fixEntries == FixEntries.Above ? 1f : 0.5f));
         LayoutRebuilder.ForceRebuildLayoutImmediate(content);
         
         // If it's not scrollable then it appears Unity uses the pivot in a special way to determine where the content should

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Identify where the insertion, deletion, or re-size position is.
-/// All entries either below it or above it will maintain their positions as the new entry is added, removed, or modified.
-/// The opposite sided entries will get pushed in proportion to the height increase or decrease.
+/// When we insert, remove, or modify an entry the size of our list changes.
+/// This defines how the entries should get pushed around on a size change (or rather, which entries should not)
 /// </summary>
 public enum FixEntries
 {
-    Below = 0,
-    Above = 1,
+    Below = 0,  // All entries below where the existing/new entry is modified will be unmoved 
+    Above = 1,  // All entries above where the existing/new entry is modified will be unmoved
+    Mid = 2,    // The center where the existing/new entry is 
 }
