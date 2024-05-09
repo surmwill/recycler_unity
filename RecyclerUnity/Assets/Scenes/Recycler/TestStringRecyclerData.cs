@@ -29,8 +29,8 @@ public class TestStringRecyclerData : MonoBehaviour
 
     private void Start()
     {
-        //_recycler.AppendEntries(InitEntries);
-        _recycler.AppendEntries(new [] { "5f578bcd-6e1f-403e-9861-bb118105c5628f0505d8-a157-4e84-9497-686ebed5d463" });
+        _recycler.AppendEntries(InitEntries);
+        // _recycler.AppendEntries(new [] { "5f578bcd-6e1f-403e-9861-bb118105c5628f0505d8-a157-4e84-9497-686ebed5d463" });
     }
 
     private void Update()
@@ -55,7 +55,7 @@ public class TestStringRecyclerData : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.L))
         {
-            _recycler.Insert(0, RandomString);
+            _recycler.Insert(1, RandomString, FixEntries.Below);
         }
         else if (Input.GetKeyDown(KeyCode.K))
         {

@@ -30,7 +30,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private int _numCachedAfterEnd = 2;
 
     [SerializeField]
-    private RecyclerTransformPosition _appendAt = RecyclerTransformPosition.Bot;
+    private RecyclerTransformPosition _appendTo = RecyclerTransformPosition.Bot;
 
     [SerializeField]
     private RectTransform _poolParent = null;
@@ -47,9 +47,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     // In the scene hierarchy, are our entries' indices increasing as we go down the sibling list?
     // Increasing entries mean our first entry with index 0 is at the top, and so is our start cache.
     // Decreasing entries mean our first entry with index 0 is at the bottom, and so is our start cache.
-    private bool _areEntriesIncreasing => _appendAt == RecyclerTransformPosition.Bot;
+    private bool _areEntriesIncreasing => _appendTo == RecyclerTransformPosition.Bot;
     
-    private RecyclerTransformPosition StartCacheTransformPosition => InverseRecyclerTransformPosition(_appendAt);
+    private RecyclerTransformPosition StartCacheTransformPosition => InverseRecyclerTransformPosition(_appendTo);
 
     private RecyclerTransformPosition EndCacheTransformPosition => InverseRecyclerTransformPosition(StartCacheTransformPosition);
 
@@ -113,15 +113,17 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// <summary>
     /// Inserts an element at the given index. Note that this implies indices can shift
     /// </summary>
-    public void Insert(int index, TEntryData entryData, FixEntries fixEntries = FixEntries.Bellow)
+    public void Insert(int index, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
     {
-        Debug.Log("INSERTED");
+        Debug.Log("INSERTED " + index);
         
         // Inserting at the end
+        /*
         if (index == _dataForEntries.Count || index == 0)
         {
             RecycleEndcap();
         }
+        */
         
         // Determine where the new insertion will be going
         bool willBeInStartCache = _indexWindow.IsInStartCache(index);
@@ -138,27 +140,33 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         }
 
         // Find the proper place in the hierarchy for the entry
-        int siblingIndex = 0;
+        int siblingIndex = _areEntriesIncreasing ? 0 : content.childCount;
+
         foreach (Transform entryTransform in content)
         {
             RecyclerScrollRectEntry<TEntryData> activeEntry = entryTransform.GetComponent<RecyclerScrollRectEntry<TEntryData>>();
-            
-            if (activeEntry != null && activeEntry.Index == index - 1)
+
+            if (activeEntry != null)
             {
-                siblingIndex += _areEntriesIncreasing ? 1 : -1;
+                Debug.Log(activeEntry.Index);
             }
 
-            siblingIndex++;
+            if (activeEntry != null && activeEntry.Index == index - 1)
+            {
+                siblingIndex = activeEntry.transform.GetSiblingIndex() + (_areEntriesIncreasing ? 1 : 0);
+            }
         }
+        
+        Debug.Log("SIBLING INDEX " + siblingIndex);
 
         // Create the entry
         if (willBeInStartCache)
         {
-            CreateAndAddEntry(index, siblingIndex, StartCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Bellow : FixEntries.Above);
+            CreateAndAddEntry(index, siblingIndex, StartCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above);
         }
         else if (willBeInEndCache)
         {
-            CreateAndAddEntry(index, siblingIndex, EndCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Bellow : FixEntries.Above);
+            CreateAndAddEntry(index, siblingIndex, EndCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above);
         }
         else
         {
@@ -172,7 +180,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// <summary>
     /// Removes an element at the given index. Note that this implies indices can shift
     /// </summary>
-    public void RemoveAt(int index, FixEntries fixEntries = FixEntries.Bellow)
+    public void RemoveAt(int index, FixEntries fixEntries = FixEntries.Below)
     {
         // Recycle the entry if it exists in the scene
         bool shouldRecycle = _activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData> activeEntry);
@@ -347,7 +355,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // If the window of shown entries changes we'll need to update the cache accordingly
         while (_indexWindow.IsDirty)
         {
-            Debug.Log(_indexWindow.PrintRange());
+            // Debug.Log(_indexWindow.PrintRange());
             
             _indexWindow.IsDirty = false;
             
@@ -375,7 +383,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             // Determine any entries that went off screen, don't belong in the cache, and need to get recycled
             foreach ((int index, RecyclerScrollRectEntry<TEntryData> _) in _activeEntries)
             {
-                Debug.Log("Removing all not in range " + _indexWindow.PrintRange());
+                // Debug.Log("Removing all not in range " + _indexWindow.PrintRange());
                 if (!_indexWindow.Contains(index))
                 {
                     toRecycleEntries.Add(index);   
@@ -392,14 +400,14 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             // Create any new cached entries
             foreach (int index in newCachedStartEntries)
             {
-                CreateAndAddEntry(index, _appendAt == RecyclerTransformPosition.Bot ? 0 : content.transform.childCount, 
-                    StartCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Bellow : FixEntries.Above);
+                CreateAndAddEntry(index, _appendTo == RecyclerTransformPosition.Bot ? 0 : content.transform.childCount, 
+                    StartCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
             
             foreach (int index in newCachedEndEntries)
             {
-                CreateAndAddEntry(index, _appendAt == RecyclerTransformPosition.Bot ? content.transform.childCount : 0, 
-                    EndCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Bellow : FixEntries.Above);
+                CreateAndAddEntry(index, _appendTo == RecyclerTransformPosition.Bot ? content.transform.childCount : 0, 
+                    EndCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
 
             // We just added/removed entries. Update the visibility of the new entries and see if we need to do it again
@@ -464,7 +472,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         */
     }
 
-    private RecyclerScrollRectEntry<TEntryData> CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Bellow)
+    private RecyclerScrollRectEntry<TEntryData> CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
     {
         if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TEntryData> entry))
         {
@@ -609,7 +617,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         InitPools();
     }
 
-    private void SendToRecycling(RecyclerScrollRectEntry<TEntryData> entry, FixEntries fixEntries = FixEntries.Bellow)
+    private void SendToRecycling(RecyclerScrollRectEntry<TEntryData> entry, FixEntries fixEntries = FixEntries.Below)
     {
         Debug.Log("RECYCLED: " + entry.Index);
         
@@ -682,7 +690,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// relative to the viewport width (ex: how does this paragraph of text fit on-screen). Since the parent layout cannot "control child size"
     /// we can't have the parent force expand the width for us; this is our equivalent. Without this we would lose such information.
     /// </summary>
-    private void AddToContent(RectTransform child, int siblingIndex, FixEntries fixEntries = FixEntries.Bellow)
+    private void AddToContent(RectTransform child, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
     {
         Behaviour[] layoutBehaviours = LayoutUtilities.GetLayoutBehaviours(child.gameObject, true);
 
@@ -703,12 +711,12 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         RecalculateContentSize(fixEntries);
     }
 
-    private RectTransform RemoveFromContent(RectTransform child, FixEntries fixEntries = FixEntries.Bellow)
+    private RectTransform RemoveFromContent(RectTransform child, FixEntries fixEntries = FixEntries.Below)
     {
         // If the child is not visible then shrink in the direction which keeps it off screen and preserves the currently visible entries
         if (!child.Overlaps(viewport))
         {
-            fixEntries = child.GetWorldRect().Center.y > viewport.GetWorldRect().Center.y ? FixEntries.Bellow : FixEntries.Above;
+            fixEntries = child.GetWorldRect().Center.y > viewport.GetWorldRect().Center.y ? FixEntries.Below : FixEntries.Above;
         }
         
         // Remove the child and recalculate the parent's size
@@ -721,14 +729,14 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// <summary>
     /// Called when a child needs its dimensions updated
     /// </summary>
-    public void RecalculateContentChildSize(RectTransform contentChild, FixEntries fixEntries = FixEntries.Bellow)
+    public void RecalculateContentChildSize(RectTransform contentChild, FixEntries fixEntries = FixEntries.Below)
     {
         Assert.IsTrue(contentChild.transform.parent == content);
 
         // If the child is not visible then grow in the direction which keeps it off screen and preserves the currently visible entries
         if (!contentChild.Overlaps(viewport))
         {
-            fixEntries = contentChild.GetWorldRect().Center.y > viewport.GetWorldRect().Center.y ? FixEntries.Bellow : FixEntries.Above;
+            fixEntries = contentChild.GetWorldRect().Center.y > viewport.GetWorldRect().Center.y ? FixEntries.Below : FixEntries.Above;
         }
 
         // Children control their own height (see AddToContent)
@@ -770,7 +778,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         bool shouldMaintainBotmost = false; // _appendAt == RecyclerTransformPosition.Top && !growShrinkUpwards && normalizedPosition.y <= 0f;
 
         // Temporarily set the pivot to only push itself and the elements above or below it, and rebuild (1)
-        content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Bellow ? 0f : 1f));
+        content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f : 1f));
         LayoutRebuilder.ForceRebuildLayoutImmediate(content);
         
         // If it's not scrollable then it appears Unity uses the pivot in a special way to determine where the content should
