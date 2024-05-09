@@ -126,10 +126,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         bool willBeInEndCache = _indexWindow.IsInEndCache(index);
         bool willBeVisible = _indexWindow.IsVisible(index);
         
-        // Shift all existing indices in preparation for the new insertion
-        _indexWindow.Insert(index);
-        _dataForEntries.Insert(index, entryData);
-        ShiftIndicesBoundEntries(index, true, 1);
+        // Update bookkeeping to reflect the new entry. Determine if we actually need to create it now
+        InsertDataForEntryAt(index, entryData);
 
         // We don't need to create the entry yet, it will get created when we scroll to it
         if (_indexWindow.IsInitialized && !willBeInStartCache && !willBeInEndCache && !willBeVisible)
@@ -174,14 +172,14 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     public void RemoveAt(int index, FixEntries fixEntries = FixEntries.Bellow)
     {
-        // Immediately recycle the entry if it exists in the scene
+        // Recycle the entry if it exists in the scene
         bool shouldRecycle = _activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData> activeEntry);
         if (shouldRecycle)
         {
             SendToRecycling(activeEntry, fixEntries);
         }
         
-        // Unbind any entries that were waiting for a re-bind in recycling
+        // Unbind any same bound entries that were waiting for a re-bind in recycling pool
         if (!_recycledEntries.TryGetValue(RecyclerScrollRectEntry<TEntryData>.UnboundIndex, out Queue<RecyclerScrollRectEntry<TEntryData>> unboundEntries))
         {
             unboundEntries = new Queue<RecyclerScrollRectEntry<TEntryData>>();
@@ -200,11 +198,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
         _recycledEntries[RecyclerScrollRectEntry<TEntryData>.UnboundIndex] = unboundEntries;
         
-        // Shift all existing indices. Note that no transforms are actually moved
-        _indexWindow.Remove(index);
-        _dataForEntries.RemoveAt(index);
-        ShiftIndicesBoundEntries(index, false, -1);
-        
+        // Update bookkeeping to reflect the deleted entry entry
+        RemoveDataForEntryAt(index);
+
         // Update the visibility if we removed something
         if (shouldRecycle)
         {
@@ -325,14 +321,11 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
         if (shouldAppend)
         {
-            _indexWindow.InsertRange(_dataForEntries.Count, entries.Count);
-            _dataForEntries.AddRange(entries);
+            InsertDataForEntriesAt(_dataForEntries.Count, entries);
         }
         else
         {
-            _indexWindow.InsertRange(0, newEntries.Count());
-            _dataForEntries.InsertRange(0, newEntries.Reverse());
-            ShiftIndicesBoundEntries(0, true, newEntries.Count());
+            InsertDataForEntriesAt(0, entries.Reverse().ToList());
         }
     }
 
@@ -840,6 +833,37 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             _endcap = _endcapParent.GetChild(0).GetComponent<RecyclerEndcap<TEntryData>>();
             _endcap.gameObject.SetActive(false);
         }
+    }
+
+    private void InsertDataForEntryAt(int index, TEntryData entryData)
+    {
+        InsertDataForEntriesAt(index, new [] { entryData });
+    }
+
+    /// <summary>
+    /// Inserts data for a new entry in the list, possibly also switching around the indices of currently bound entries.
+    /// Note that this only updates bookkeeping, if the entry should also be created, that must be done separately
+    /// </summary>
+    private void InsertDataForEntriesAt(int index, IReadOnlyCollection<TEntryData> entryData)
+    {
+        if (index < _dataForEntries.Count)
+        {
+            ShiftIndicesBoundEntries(index, true, entryData.Count);
+        }
+        
+        _indexWindow.InsertRange(index, entryData.Count);
+        _dataForEntries.InsertRange(index, entryData);
+    }
+
+    private void RemoveDataForEntryAt(int index)
+    {
+        if (index < _dataForEntries.Count)
+        {
+            ShiftIndicesBoundEntries(index, false, -1);
+        }
+        
+        _indexWindow.Remove(index);
+        _dataForEntries.RemoveAt(index);
     }
     
     private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)
