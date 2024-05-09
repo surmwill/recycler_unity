@@ -63,7 +63,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private readonly List<TEntryData> _pendingAppendEntryData = new();
     private readonly List<TEntryData> _pendingPrependEntryData = new();
 
-    private Vector2 _onStartPivot;
+    private Vector2 _nonFilledScrollRectPivot;
     private RecyclerEndcap<TEntryData> _endcap;
 
     protected override void Awake()
@@ -76,6 +76,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             return;
         }
 
+        _nonFilledScrollRectPivot = content.pivot;
         _indexWindow = new SlidingIndexWindow(_numCachedBeforeStart);
     }
 
@@ -89,6 +90,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             return;
         }
         
+        // TODO: only do this on re-enable
         AddPendingEntries();
     }
 
@@ -101,8 +103,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         {
             return;
         }
-
-        _onStartPivot = content.pivot;
+        
         InitPools();
         AddPendingEntries();
     }
@@ -606,7 +607,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         _indexWindow = new SlidingIndexWindow(_numCachedBeforeStart);
 
         // Reset our pivot to whatever its initial value was
-        content.pivot = _onStartPivot;
+        content.pivot = _nonFilledScrollRectPivot;
         normalizedPosition = normalizedPosition.WithY(0f);
         
         // Reset the pools
@@ -783,7 +784,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // We don't need to be changing the pivot here.
         if (!this.IsScrollable())
         {
-            content.pivot = _onStartPivot;
+            content.pivot = _nonFilledScrollRectPivot;
             normalizedPosition = normalizedPosition.WithY(0f);
             return;
         }
