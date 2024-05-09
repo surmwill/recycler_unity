@@ -60,6 +60,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private SlidingIndexWindow _indexWindow;
     
     private readonly List<TEntryData> _dataForEntries = new();
+    
+    // TODO: make this into a tuple
     private readonly List<TEntryData> _pendingAppendEntryData = new();
     private readonly List<TEntryData> _pendingPrependEntryData = new();
 
@@ -692,7 +694,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         (child.anchorMin, child.anchorMax) = (Vector2.one * 0.5f, Vector2.one * 0.5f);
         child.sizeDelta = child.sizeDelta.WithX(viewport.rect.width);
         
-        // Auto-calculate height given the width, then disable layout behaviours to prevent spam recalculations
+        // Auto-calculate the height given the width, then disable layout behaviours to prevent spam recalculations
         SetBehavioursEnabled(layoutBehaviours, true);
         LayoutRebuilder.ForceRebuildLayoutImmediate(child);
         SetBehavioursEnabled(layoutBehaviours, false);
