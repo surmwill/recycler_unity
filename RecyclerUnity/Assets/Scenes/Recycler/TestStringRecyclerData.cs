@@ -61,5 +61,9 @@ public class TestStringRecyclerData : MonoBehaviour
         {
             _recycler.RemoveAt(3, FixEntries.Below);
         }
+        else if (Input.GetKeyDown(KeyCode.M))
+        {
+            StartCoroutine(_recycler.ScrollToEntry(23));
+        }
     }
 }

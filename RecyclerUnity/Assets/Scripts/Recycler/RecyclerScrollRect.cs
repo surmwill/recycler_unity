@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -814,6 +815,49 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
            return;
         }
     }
+     
+     /// <summary>
+     /// TODO: On touch this needs to stop. On append, prepend, delete, insert this needs to stop
+     /// TODO: how to handle append and then immediate scroll to appended. They only get properly positioned in LateUpdate, not immediately.
+     /// Maybe make append/prepend immediate? Turn the code in LateUpdate into a function RefreshList()
+     /// TODO: once the above is done remove shouldMaintainBotmost/Topmost as these can then be handled by a scroll call
+     /// TODO: make a SmoothDamp version of this once we've scrolled to the point where the entry is active
+     /// </summary>
+     /// <param name="index"></param>
+     /// <param name="scrollSpeed"></param>
+     /// <returns></returns>
+     public IEnumerator ScrollToEntry(int index, float scrollSpeed = 0.05f)
+     {
+         while (!_indexWindow.Contains(index))
+         {
+             // Scroll toward lesser indices
+             if (index < _indexWindow.CachedStartIndex)
+             {
+                 // If the entries are increasing, then lesser entries are found at the top with a higher normalized scroll position
+                 normalizedPosition = normalizedPosition.WithY(Mathf.MoveTowards(normalizedPosition.y, _areEntriesIncreasing ? 1 : 0, scrollSpeed));
+             }
+             // Scroll toward greater indices
+             else if (index > _indexWindow.CachedEndIndex)
+             {
+                 // If the entries are increasing, then greater entries are found at the bottom with a lower normalized scroll position
+                 normalizedPosition = normalizedPosition.WithY(Mathf.MoveTowards(normalizedPosition.y, _areEntriesIncreasing ? 0 : 1, scrollSpeed));
+             }
+
+             yield return null;
+         }
+
+         for (;;)
+         {
+             float entryNormalizedScrollPos = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform).y;
+             if (Mathf.Approximately(normalizedPosition.y, entryNormalizedScrollPos))
+             {
+                 break;
+             }
+             
+             normalizedPosition = normalizedPosition.WithY(Mathf.MoveTowards(normalizedPosition.y, entryNormalizedScrollPos, scrollSpeed));
+             yield return null;
+         }
+     }
 
     /// <summary>
     /// Initializes and tracks pooled objects
