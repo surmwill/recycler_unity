@@ -208,7 +208,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
         _recycledEntries[RecyclerScrollRectEntry<TEntryData>.UnboundIndex] = unboundEntries;
         
-        // Update bookkeeping to reflect the deleted entry entry
+        // Update bookkeeping to reflect the deleted entry
         RemoveDataForEntryAt(index);
 
         // Update the visibility if we removed something
@@ -221,14 +221,14 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// <summary>
     /// Shifts the indices of entries forward or back by 1. Update bookkeeping to reflect this
     /// </summary>
-    private void ShiftIndicesBoundEntries(int startIndex, bool isDirectionForward, int shiftAmount)
+    private void ShiftIndicesBoundEntries(int startIndex, int shiftAmount)
     {
         // Shift the indices of the active entries
         Dictionary<int, RecyclerScrollRectEntry<TEntryData>> shiftedActiveEntries = new Dictionary<int, RecyclerScrollRectEntry<TEntryData>>();
         foreach ((int index, RecyclerScrollRectEntry<TEntryData> activeEntry) in _activeEntries
                      .Where(kvp => kvp.Key != RecyclerScrollRectEntry<TEntryData>.UnboundIndex))
         {
-            int shiftedIndex = GetShiftedIndex(index);
+            int shiftedIndex = index + (index >= startIndex ? shiftAmount : 0);
             if (shiftedIndex != index)
             {
                 activeEntry.SetIndex(shiftedIndex);   
@@ -243,7 +243,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         foreach ((int index, Queue<RecyclerScrollRectEntry<TEntryData>> recycledEntries) in _recycledEntries
                      .Where(kvp => kvp.Key != RecyclerScrollRectEntry<TEntryData>.UnboundIndex))
         {
-            int shiftedIndex = GetShiftedIndex(index);
+            int shiftedIndex = index + (index >= startIndex ? shiftAmount : 0);
             if (shiftedIndex != index)
             {
                 foreach (RecyclerScrollRectEntry<TEntryData> unshiftedRecycledEntry in recycledEntries)
@@ -254,16 +254,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             shiftedRecycledEntries[shiftedIndex] = recycledEntries;
         }
         _recycledEntries = shiftedRecycledEntries;
-
-        // When we insert/remove from a list not all indices need to be moved. Only move the ones required
-        int GetShiftedIndex(int index)
-        {
-            if (isDirectionForward && index >= startIndex || !isDirectionForward && index <= startIndex)
-            {
-                return index + shiftAmount;
-            }
-            return index;
-        }
     }
 
     private void AddPendingEntries()
@@ -474,6 +464,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     private RecyclerScrollRectEntry<TEntryData> CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
     {
+        Debug.Log("CREATING " + dataIndex);
+        
         if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TEntryData> entry))
         {
             entry = Instantiate(_recyclerEntryPrefab, content);
@@ -859,7 +851,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     {
         if (index < _dataForEntries.Count)
         {
-            ShiftIndicesBoundEntries(index, true, entryData.Count);
+            ShiftIndicesBoundEntries(index, entryData.Count);
         }
         
         _indexWindow.InsertRange(index, entryData.Count);
@@ -870,7 +862,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     {
         if (index < _dataForEntries.Count)
         {
-            ShiftIndicesBoundEntries(index, false, -1);
+            ShiftIndicesBoundEntries(index, -1);
         }
         
         _indexWindow.Remove(index);

@@ -765,15 +765,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7782693714645838968, guid: d01e1cccf6e19744791aa10eb3c6cef4, type: 3}
       propertyPath: m_Pivot.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7782693714645838968, guid: d01e1cccf6e19744791aa10eb3c6cef4, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7782693714645838968, guid: d01e1cccf6e19744791aa10eb3c6cef4, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7782693714645838968, guid: d01e1cccf6e19744791aa10eb3c6cef4, type: 3}
       propertyPath: m_SizeDelta.y
@@ -793,7 +793,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8768056622830079457, guid: d01e1cccf6e19744791aa10eb3c6cef4, type: 3}
       propertyPath: _appendTo
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8768056622830079457, guid: d01e1cccf6e19744791aa10eb3c6cef4, type: 3}
       propertyPath: _poolSize
