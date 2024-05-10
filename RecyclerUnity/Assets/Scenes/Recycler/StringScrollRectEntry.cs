@@ -27,15 +27,15 @@ public class StringScrollRectEntry : RecyclerScrollRectEntry<string>
 
     protected void Update()
     {
-        if (gameObject.name != "0")
+        if (gameObject.name != "3")
         {
             return;
         }
         
         if (Input.GetKeyDown(KeyCode.W))
         {
-            _text.text += _text.text;
-            RecalculateDimensions();
+            _text.text += "AAAAAAAAAAAAAAAAAABBBBBBBBBBBBBB";
+            RecalculateDimensions(FixEntries.Above);
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {

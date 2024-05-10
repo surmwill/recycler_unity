@@ -111,8 +111,8 @@ public abstract class RecyclerScrollRectEntry<TEntryData> : MonoBehaviour
     /// <summary>
     /// Recalculates the dimensions of the entry
     /// </summary>
-    protected void RecalculateDimensions()
+    protected void RecalculateDimensions(FixEntries fixEntries = FixEntries.Mid)
     {
-        Recycler.RecalculateContentChildSize(RectTransform);
+        Recycler.RecalculateContentChildSize(RectTransform, fixEntries);
     }
 }
