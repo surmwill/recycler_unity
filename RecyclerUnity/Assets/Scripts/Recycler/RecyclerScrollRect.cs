@@ -146,19 +146,11 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         foreach (Transform entryTransform in content)
         {
             RecyclerScrollRectEntry<TEntryData> activeEntry = entryTransform.GetComponent<RecyclerScrollRectEntry<TEntryData>>();
-
-            if (activeEntry != null)
-            {
-                Debug.Log(activeEntry.Index);
-            }
-
             if (activeEntry != null && activeEntry.Index == index - 1)
             {
                 siblingIndex = activeEntry.transform.GetSiblingIndex() + (_areEntriesIncreasing ? 1 : 0);
             }
         }
-        
-        Debug.Log("SIBLING INDEX " + siblingIndex);
 
         // Create the entry
         if (willBeInStartCache)
@@ -174,8 +166,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             CreateAndAddEntry(index, siblingIndex, fixEntries);
         }
         
-        // Update which entries are shown and subsequently which ones need to be cached
-        UpdateVisibility();
+        // A new entry can update the visible window and subsequently require an update of what is cached
+        UpdateCaches();
     }
 
     /// <summary>
@@ -212,10 +204,10 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // Update bookkeeping to reflect the deleted entry
         RemoveDataForEntryAt(index);
 
-        // Update the visibility if we removed something
+        // A deleted entry can update the visible window and subsequently require an update of what is cached
         if (shouldRecycle)
         {
-            UpdateVisibility();
+            UpdateCaches();
         }
     }
 
@@ -328,10 +320,14 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         {
             InsertDataForEntriesAt(0, entries.Reverse().ToList());
         }
+        
+        // A new entry can update the visible window and subsequently require an update of what is cached
+        UpdateCaches();
     }
 
     protected override void LateUpdate()
     {
+        // Scrolling is handled here which may shift the visible window
         base.LateUpdate();
         
         // The base ScrollRect has [ExecuteAlways] but the recycler does not work as such
@@ -340,21 +336,45 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             return;
         }
 
-        // Determine changes in the visible window
-        UpdateVisibility();
+        // Update what should be in our start or end cache
+        UpdateCaches();
+        
+        // Our window of visible entries are up to date. We can check if the end-cap fits now,
+        UpdateEndcap();
 
-        // If the window of shown entries changes we'll need to update the cache accordingly
+        // Sanity checks
+        if (Application.isEditor)
+        {
+            DebugCheckDuplicates();  
+            DebugCheckOrdering();
+        }
+    }
+
+    private void UpdateCaches()
+    {
+        // Get the current state of visible entries
+        UpdateVisibility();
+        
+        // If the window of active entries changes we'll need to update the cache accordingly
         while (_indexWindow.IsDirty)
         {
-            // Debug.Log(_indexWindow.PrintRange());
-            
             _indexWindow.IsDirty = false;
-            
+            // Debug.Log(_indexWindow.PrintRange());
+
+            List<int> toRecycleEntries = new();
             List<int> newCachedStartEntries = new();
             List<int> newCachedEndEntries = new();
-            List<int> toRecycleEntries = new();
+
+            // Determine what entries need to be removed (aren't in the cache and aren't visible)
+            foreach ((int index, RecyclerScrollRectEntry<TEntryData> _) in _activeEntries)
+            {
+                if (!_indexWindow.Contains(index))
+                {
+                    toRecycleEntries.Add(index);   
+                }
+            }
             
-            // Determine any new entries needing creation in the start and end caches
+            // Determine what entries need to be added to the start or end cache
             for (int i = _indexWindow.VisibleStartIndex.Value - 1; i >= _indexWindow.CachedStartIndex && i >= 0; i--)
             {
                 if (!_activeEntries.ContainsKey(i))
@@ -370,16 +390,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
                     newCachedEndEntries.Add(i);
                 }
             }
-            
-            // Determine any entries that went off screen, don't belong in the cache, and need to get recycled
-            foreach ((int index, RecyclerScrollRectEntry<TEntryData> _) in _activeEntries)
-            {
-                // Debug.Log("Removing all not in range " + _indexWindow.PrintRange());
-                if (!_indexWindow.Contains(index))
-                {
-                    toRecycleEntries.Add(index);   
-                }
-            }
 
             // Recycle unneeded entries
             foreach (int index in toRecycleEntries)
@@ -388,7 +398,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
                 _activeEntries.Remove(index);
             }
 
-            // Create any new cached entries
+            // Create new entries
             foreach (int index in newCachedStartEntries)
             {
                 CreateAndAddEntry(index, _appendTo == RecyclerTransformPosition.Bot ? 0 : content.transform.childCount, 
@@ -401,18 +411,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
                     EndCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
 
-            // We just added/removed entries. Update the visibility of the new entries and see if we need to do it again
+            // We just added/removed entries. This may have shifted the visible window
             UpdateVisibility();
-        }
-        
-        // Our window of visible entries are up to date. We can check if the end-cap fits now,
-        UpdateEndcap();
-
-        // Sanity checks
-        if (Application.isEditor)
-        {
-            DebugCheckDuplicates();  
-            DebugCheckOrdering();
         }
     }
 
@@ -822,6 +822,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
      /// Maybe make append/prepend immediate? Turn the code in LateUpdate into a function RefreshList()
      /// TODO: once the above is done remove shouldMaintainBotmost/Topmost as these can then be handled by a scroll call
      /// TODO: make a SmoothDamp version of this once we've scrolled to the point where the entry is active
+     /// TODO: scroll to top middle or bottom of entry
      /// </summary>
      /// <param name="index"></param>
      /// <param name="scrollSpeed"></param>
