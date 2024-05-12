@@ -65,13 +65,18 @@ public static class ScrollRectExtensions
     }
 
     /// <summary>
-    /// Returns true if the ScrollRect is at it's normalized 0 position (the beginning)
+    /// Returns true if the ScrollRect is at its topmost position (can't scroll any higher). A normalized y position of 1
     /// </summary>
-    public static bool IsAtBeginning(this ScrollRect scrollRect)
+    public static bool IsAtTop(this ScrollRect scrollRect)
     {
-        Vector2 scrollPos = scrollRect.normalizedPosition;
-        bool isAtBeginningHorizontal = !scrollRect.horizontal || (scrollRect.horizontal && Mathf.Approximately(scrollPos.x, 0f));
-        bool isAtBeginningVertical = !scrollRect.vertical || (scrollRect.vertical && Mathf.Approximately(scrollPos.y, 0));
-        return isAtBeginningHorizontal && isAtBeginningVertical;
+        return scrollRect.vertical && Mathf.Approximately(scrollRect.normalizedPosition.y, 1f);
+    }
+    
+    /// <summary>
+    /// Returns true if the ScrollRect is at its bottommost position (can't scroll any lower). A normalized y position of 0
+    /// </summary>
+    public static bool IsAtBottom(this ScrollRect scrollRect)
+    {
+        return scrollRect.vertical && Mathf.Abs(scrollRect.normalizedPosition.y - 0f) < 0.001f; //Mathf.Approximately(scrollRect.normalizedPosition.y, 0f);
     }
 }

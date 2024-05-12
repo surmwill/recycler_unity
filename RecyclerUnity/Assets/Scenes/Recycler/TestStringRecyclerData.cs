@@ -38,12 +38,28 @@ public class TestStringRecyclerData : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A))
         {
             Debug.Log(RandomString);
-            _recycler.PrependEntries(new [] { RandomString });
+            bool atTop = _recycler.IsAtTop();
+            _recycler.PrependEntries(new [] { RandomString, RandomString, RandomString });
+            if (atTop)
+            {
+                StartCoroutine(_recycler.ScrollToIndex(0, 1f));   
+            }
         }
         else if (Input.GetKeyDown(KeyCode.D))
         {
             Debug.Log(RandomString);
+            bool atBottom = _recycler.IsAtBottom();
+            if (!atBottom)
+            {
+                Debug.Log("NOT AT BOTTOM " + _recycler.normalizedPosition.y);
+            }
+            
             _recycler.AppendEntries(new [] { RandomString });
+            if (atBottom)
+            {
+                Debug.Log("IS AT BOTTOM");
+                StartCoroutine(_recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, 1f));
+            }
         }
         else if (Input.GetKeyDown(KeyCode.C))
         {
@@ -63,7 +79,7 @@ public class TestStringRecyclerData : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.M))
         {
-            StartCoroutine(_recycler.ScrollToEntry(23));
+            StartCoroutine(_recycler.ScrollToIndex(23));
         }
     }
 }

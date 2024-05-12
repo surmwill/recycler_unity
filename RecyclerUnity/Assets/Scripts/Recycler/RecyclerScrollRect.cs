@@ -45,6 +45,11 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     [SerializeField]
     private RecyclerEndcap<TEntryData> _endcapPrefab = null;
 
+    /// <summary>
+    /// The current list of data we are binding to entries
+    /// </summary>
+    public IReadOnlyList<TEntryData> DataForEntries => _dataForEntries;
+    
     // In the scene hierarchy, are our entries' indices increasing as we go down the sibling list?
     // Increasing entries mean our first entry with index 0 is at the top, and so is our start cache.
     // Decreasing entries mean our first entry with index 0 is at the bottom, and so is our start cache.
@@ -61,7 +66,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private SlidingIndexWindow _indexWindow;
     
     private readonly List<TEntryData> _dataForEntries = new();
-    
+
     // TODO: make this into a tuple
     private readonly List<TEntryData> _pendingAppendEntryData = new();
     private readonly List<TEntryData> _pendingPrependEntryData = new();
@@ -576,8 +581,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     public void Clear()
     {
         // Stop any active dragging
-        OnEndDrag(new PointerEventData(EventSystem.current));
-        StopMovement();
+        StopMovementAndDrag();
         
         // Recycle everything
         for (int i = content.transform.childCount - 1; i >= 0; i--)
@@ -608,6 +612,12 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         
         // Reset the pools
         InitPools();
+    }
+
+    private void StopMovementAndDrag()
+    {
+        OnEndDrag(new PointerEventData(EventSystem.current));
+        StopMovement();
     }
 
     private void SendToRecycling(RecyclerScrollRectEntry<TEntryData> entry, FixEntries fixEntries = FixEntries.Below)
@@ -817,18 +827,19 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     }
      
      /// <summary>
-     /// TODO: On touch this needs to stop. On append, prepend, delete, insert this needs to stop
-     /// TODO: how to handle append and then immediate scroll to appended. They only get properly positioned in LateUpdate, not immediately.
-     /// Maybe make append/prepend immediate? Turn the code in LateUpdate into a function RefreshList()
+     /// TODO: Cache the index. Shift it if we insert. Delete it and stop scrolling if wee delete it
      /// TODO: once the above is done remove shouldMaintainBotmost/Topmost as these can then be handled by a scroll call
      /// TODO: make a SmoothDamp version of this once we've scrolled to the point where the entry is active
      /// TODO: scroll to top middle or bottom of entry
+     /// TODO: make an immediate version of this function - no IEnumerator return. Could perhaps be costly but oh well
      /// </summary>
      /// <param name="index"></param>
      /// <param name="scrollSpeed"></param>
      /// <returns></returns>
-     public IEnumerator ScrollToEntry(int index, float scrollSpeed = 0.05f)
+     public IEnumerator ScrollToIndex(int index, float scrollSpeed = 0.05f)
      {
+         StopMovementAndDrag();
+         
          while (!_indexWindow.Contains(index))
          {
              // Scroll toward lesser indices
@@ -850,17 +861,23 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
          for (;;)
          {
              float entryNormalizedScrollPos = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform).y;
-             if (Mathf.Approximately(normalizedPosition.y, entryNormalizedScrollPos))
+             Debug.Log(entryNormalizedScrollPos + " " + normalizedPosition.y);
+             if (Mathf.Abs(normalizedPosition.y - entryNormalizedScrollPos) < 0.001f)
              {
                  break;
              }
+
+             float x = Mathf.MoveTowards(normalizedPosition.y, entryNormalizedScrollPos, scrollSpeed);
+             Debug.Log("a " + x);
+             normalizedPosition = new Vector2(normalizedPosition.x, x);
+             Debug.Log("b " + normalizedPosition.y);
+             //Debug.Log(Mathf.Abs(entryNormalizedScrollPos - normalizedPosition.y));
              
-             normalizedPosition = normalizedPosition.WithY(Mathf.MoveTowards(normalizedPosition.y, entryNormalizedScrollPos, scrollSpeed));
              yield return null;
          }
      }
 
-    /// <summary>
+     /// <summary>
     /// Initializes and tracks pooled objects
     /// </summary>
     private void InitPools()

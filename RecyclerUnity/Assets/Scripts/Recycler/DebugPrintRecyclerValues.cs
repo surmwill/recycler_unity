@@ -14,6 +14,6 @@ public class DebugPrintRecyclerValues : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(_recycler.normalizedPosition);
+        Debug.Log($"({_recycler.normalizedPosition.x}, {_recycler.normalizedPosition.y})");
     }
 }
