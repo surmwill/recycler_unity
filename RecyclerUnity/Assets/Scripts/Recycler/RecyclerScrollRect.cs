@@ -778,15 +778,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         bool initIsScrollable = this.IsScrollable();
         Vector2 initPivot = content.pivot;
         float initY = content.anchoredPosition.y;
-            
-        // Special case: (example) if we receive a new text message and we are at the very bottom of the conversation then we should
-        // automatically scroll down and show the new message. We should not maintain our view in cases like these 
-        // TODO: does this work?
-        bool shouldMaintainTopmost = false; // _appendAt == RecyclerTransformPosition.Bot && growShrinkUpwards && normalizedPosition.y >= 1f;
-        bool shouldMaintainBotmost = false; // _appendAt == RecyclerTransformPosition.Top && !growShrinkUpwards && normalizedPosition.y <= 0f;
-        
+
         // Temporarily set the pivot to only push itself and the elements above or below it, and rebuild (1)
-        // TODO: FixEntries.Mid should set the anchor to the middle of the viewport
         content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f : fixEntries == FixEntries.Above ? 1f : 0.5f));
         LayoutRebuilder.ForceRebuildLayoutImmediate(content);
         
@@ -805,53 +798,35 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         content.SetPivotWithoutMoving(initPivot);
         float diffY = content.anchoredPosition.y - initY;
         content.SetPivotWithoutMoving(content.pivot + Vector2.up * -diffY / content.rect.height);
-        
-        /* Special cases: */
-        
-        // If we went from non-fullscreen -> fullscreen then move the viewport to very beginning (i.e. show the first entries).
+
+        // Special case: if we went from non-fullscreen -> fullscreen then keep the viewport at the very start (the 0th entry).
         // Since Unity handles ScrollRects differently if we have a full viewport or not, this bridges the gap between non-full and full viewports with consistent behaviour.
+        // TODO: is this necessary. Could this be handled by a FixEntries definition?
         if (!initIsScrollable)
         {
             normalizedPosition = normalizedPosition.WithY(_areEntriesIncreasing ? 1f : 0f);
-            return;
-        }
-        
-        // Maintain a view of the very top
-        if (shouldMaintainTopmost)
-        {
-            normalizedPosition = normalizedPosition.WithY(1f);
-            return;
-        }
-        
-        // Maintain a view of the very bottom
-        if (shouldMaintainBotmost)
-        {
-            normalizedPosition = normalizedPosition.WithY(0f);
-           return;
         }
     }
 
-     public void ScrollToIndex(int index, Action onScrollComplete = null, float scrollSpeed = 0.05f)
+     public void ScrollToIndex(int index, Action onScrollComplete = null, float scrollSpeed = 0.05f, bool isImmediate = false)
      {
          if (_scrollToCoroutine != null)
          {
              StopCoroutine(_scrollToCoroutine);
          }
 
-         _scrollToCoroutine = StartCoroutine(ScrollToIndexInner(index, onScrollComplete, scrollSpeed));
+         _scrollToCoroutine = StartCoroutine(ScrollToIndexInner(index, onScrollComplete, scrollSpeed, isImmediate));
      }
      
      /// <summary>
      /// TODO: Cache the index. Shift it if we insert. Delete it and stop scrolling if wee delete it
-     /// TODO: once the above is done remove shouldMaintainBotmost/Topmost as these can then be handled by a scroll call
      /// TODO: make a SmoothDamp version of this once we've scrolled to the point where the entry is active
      /// TODO: scroll to top middle or bottom of entry
-     /// TODO: make an immediate version of this function - no IEnumerator return. Could perhaps be costly but oh well
      /// </summary>
      /// <param name="index"></param>
      /// <param name="scrollSpeed"></param>
      /// <returns></returns>
-     private IEnumerator ScrollToIndexInner(int index, Action onScrollComplete = null, float scrollSpeed = 0.05f)
+     private IEnumerator ScrollToIndexInner(int index, Action onScrollComplete = null, float scrollSpeed = 0.05f, bool isImmediate = false)
      {
          StopMovementAndDrag();
 
@@ -873,7 +848,14 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
                      normalizedPosition = normalizedPosition.WithY(Mathf.MoveTowards(normalizedPosition.y, _areEntriesIncreasing ? 0 : 1, scrollSpeed));
                  }
 
-                 yield return null;
+                 if (isImmediate)
+                 {
+                     UpdateCaches();
+                 }
+                 else
+                 {
+                     yield return null;   
+                 }
              }
 
              // Find and scroll to the exact position of the entry
@@ -887,8 +869,15 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
                      onScrollComplete?.Invoke();
                      yield break;
                  }
-             
-                 yield return null;
+
+                 if (isImmediate)
+                 {
+                     UpdateCaches();
+                 }
+                 else
+                 {
+                     yield return null;
+                 }
              }
          }
      }

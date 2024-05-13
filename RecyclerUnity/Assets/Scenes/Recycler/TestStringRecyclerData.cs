@@ -15,7 +15,9 @@ public class TestStringRecyclerData : MonoBehaviour
 
     private const int NumEntries = 20;
 
-    private int _numCreated = 0;
+    private bool _hasAppended = false;
+    private bool _hasPrepended = false;
+
     
     private IEnumerable<string> InitEntries => 
         (new []
@@ -33,38 +35,20 @@ public class TestStringRecyclerData : MonoBehaviour
         _recycler.AppendEntries(InitEntries);
         // _recycler.AppendEntries(new [] { "5f578bcd-6e1f-403e-9861-bb118105c5628f0505d8-a157-4e84-9497-686ebed5d463" });
     }
-
-    private IEnumerator WaitForScrollToLast()
-    {
-        bool isWaiting = true;
-
-        _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, () => isWaiting = false, 1f);
-
-        while (isWaiting)
-        {
-            yield return null;
-        }
-        
-        Debug.Log(_recycler.normalizedPosition.x + " " + _recycler.normalizedPosition.y + " " + Time.frameCount);
-        if (!Mathf.Approximately(_recycler.normalizedPosition.y, 0f))
-        {
-            Debug.Break();
-        }
-    }
-
-    private bool _hasAppended = false;
-
+    
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            Debug.Log(RandomString);
-            bool atTop = _recycler.IsAtTop();
-            _recycler.PrependEntries(new [] { RandomString, RandomString, RandomString });
-            if (atTop)
+            _recycler.PrependEntries(new [] { RandomString });
+            _recycler.ScrollToIndex(0, () =>
             {
-                //StartCoroutine(_recycler.ScrollToIndex(0, 1f));   
-            }
+                if (!_recycler.IsAtTop())
+                {
+                    throw new Exception("Should be at top");
+                }
+            }, 1f, true);
+            _hasPrepended = true;
         }
         else if (Input.GetKeyDown(KeyCode.D))
         {
@@ -73,9 +57,9 @@ public class TestStringRecyclerData : MonoBehaviour
             {
                 if (!_recycler.IsAtBottom())
                 {
-                    Debug.Break();
+                    throw new Exception("Should be at bottom");
                 }
-            }, 1f);
+            }, 1f, true);
             _hasAppended = true;
         }
         else if (Input.GetKeyDown(KeyCode.C))
@@ -96,13 +80,17 @@ public class TestStringRecyclerData : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.M))
         {
-            //StartCoroutine(_recycler.ScrollToIndex(23));
+            _recycler.ScrollToIndex(23, isImmediate:true);
         }
 
         if (_hasAppended && !_recycler.IsAtBottom())
         {
-            Debug.Log(_recycler.normalizedPosition.y);
-            Debug.Break();
+            throw new Exception("Should be at bottom");
+        }
+
+        if (_hasPrepended && !_recycler.IsAtTop())
+        {
+            throw new Exception("Should be at top");
         }
     }
 }
