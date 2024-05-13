@@ -15,5 +15,6 @@ public class DebugPrintRecyclerValues : MonoBehaviour
     private void Update()
     {
         Debug.Log($"({_recycler.normalizedPosition.x}, {_recycler.normalizedPosition.y})");
+        Debug.Log(_recycler.IsAtBottom());
     }
 }

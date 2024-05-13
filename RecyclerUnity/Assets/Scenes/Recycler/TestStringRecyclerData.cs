@@ -52,6 +52,8 @@ public class TestStringRecyclerData : MonoBehaviour
         }
     }
 
+    private bool _hasAppended = false;
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.A))
@@ -66,20 +68,15 @@ public class TestStringRecyclerData : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.D))
         {
-            Debug.Log(RandomString);
-            bool atBottom = _recycler.IsAtBottom();
-            if (!atBottom)
-            {
-                Debug.Log("NOT AT BOTTOM " + _recycler.normalizedPosition.y);
-            }
-            
             _recycler.AppendEntries(new [] { RandomString });
-            if (atBottom)
+            _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, () =>
             {
-                Debug.Log("IS AT BOTTOM");
-                //StartCoroutine(WaitForScrollToLast());
-                _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, null, 1f);
-            }
+                if (!_recycler.IsAtBottom())
+                {
+                    Debug.Break();
+                }
+            }, 1f);
+            _hasAppended = true;
         }
         else if (Input.GetKeyDown(KeyCode.C))
         {
@@ -100,6 +97,12 @@ public class TestStringRecyclerData : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.M))
         {
             //StartCoroutine(_recycler.ScrollToIndex(23));
+        }
+
+        if (_hasAppended && !_recycler.IsAtBottom())
+        {
+            Debug.Log(_recycler.normalizedPosition.y);
+            Debug.Break();
         }
     }
 }

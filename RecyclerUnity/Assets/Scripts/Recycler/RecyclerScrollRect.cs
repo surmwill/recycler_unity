@@ -854,49 +854,43 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
      private IEnumerator ScrollToIndexInner(int index, Action onScrollComplete = null, float scrollSpeed = 0.05f)
      {
          StopMovementAndDrag();
-         
-         while (!_indexWindow.Contains(index))
-         {
-             // Scroll toward lesser indices
-             if (index < _indexWindow.CachedStartIndex)
-             {
-                 // If the entries are increasing, then lesser entries are found at the top with a higher normalized scroll position
-                 normalizedPosition = normalizedPosition.WithY(Mathf.MoveTowards(normalizedPosition.y, _areEntriesIncreasing ? 1 : 0, scrollSpeed));
-             }
-             // Scroll toward greater indices
-             else if (index > _indexWindow.CachedEndIndex)
-             {
-                 // If the entries are increasing, then greater entries are found at the bottom with a lower normalized scroll position
-                 normalizedPosition = normalizedPosition.WithY(Mathf.MoveTowards(normalizedPosition.y, _areEntriesIncreasing ? 0 : 1, scrollSpeed));
-             }
-
-             yield return null;
-         }
 
          for (;;)
          {
-             float entryNormalizedScrollPos = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform).y;
-             float x = Mathf.MoveTowards(normalizedPosition.y, entryNormalizedScrollPos, scrollSpeed);
-             normalizedPosition = new Vector2(normalizedPosition.x, x);
-
-             if (Mathf.Approximately(normalizedPosition.y, entryNormalizedScrollPos))
+             // Scroll through entries until the entry we want is created, then we'll know the exact position to scroll to
+             while (!_indexWindow.Contains(index))
              {
-                 UpdateCaches();
-             
-                 entryNormalizedScrollPos = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform).y;
-                 Debug.Log(entryNormalizedScrollPos + " " + index);
+                 // Scroll toward lesser indices
+                 if (index < _indexWindow.CachedStartIndex)
+                 {
+                     // If the entries are increasing, then lesser entries are found at the top with a higher normalized scroll position
+                     normalizedPosition = normalizedPosition.WithY(Mathf.MoveTowards(normalizedPosition.y, _areEntriesIncreasing ? 1 : 0, scrollSpeed));
+                 }
+                 // Scroll toward greater indices
+                 else if (index > _indexWindow.CachedEndIndex)
+                 {
+                     // If the entries are increasing, then greater entries are found at the bottom with a lower normalized scroll position
+                     normalizedPosition = normalizedPosition.WithY(Mathf.MoveTowards(normalizedPosition.y, _areEntriesIncreasing ? 0 : 1, scrollSpeed));
+                 }
+
+                 yield return null;
+             }
+
+             // Find and scroll to the exact position of the entry
+             for (;;)
+             {
+                 float entryNormalizedScrollPos = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform).y;
+                 normalizedPosition = normalizedPosition.WithY(Mathf.MoveTowards(normalizedPosition.y, entryNormalizedScrollPos, scrollSpeed));
 
                  if (Mathf.Approximately(normalizedPosition.y, entryNormalizedScrollPos))
                  {
-                     break;   
+                     onScrollComplete?.Invoke();
+                     yield break;
                  }
+             
+                 yield return null;
              }
-
-             yield return null;
          }
-         
-         Debug.Log(Time.frameCount);
-         onScrollComplete?.Invoke();
      }
 
      /// <summary>
