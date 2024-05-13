@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -33,6 +34,24 @@ public class TestStringRecyclerData : MonoBehaviour
         // _recycler.AppendEntries(new [] { "5f578bcd-6e1f-403e-9861-bb118105c5628f0505d8-a157-4e84-9497-686ebed5d463" });
     }
 
+    private IEnumerator WaitForScrollToLast()
+    {
+        bool isWaiting = true;
+
+        _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, () => isWaiting = false, 1f);
+
+        while (isWaiting)
+        {
+            yield return null;
+        }
+        
+        Debug.Log(_recycler.normalizedPosition.x + " " + _recycler.normalizedPosition.y + " " + Time.frameCount);
+        if (!Mathf.Approximately(_recycler.normalizedPosition.y, 0f))
+        {
+            Debug.Break();
+        }
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.A))
@@ -42,7 +61,7 @@ public class TestStringRecyclerData : MonoBehaviour
             _recycler.PrependEntries(new [] { RandomString, RandomString, RandomString });
             if (atTop)
             {
-                StartCoroutine(_recycler.ScrollToIndex(0, 1f));   
+                //StartCoroutine(_recycler.ScrollToIndex(0, 1f));   
             }
         }
         else if (Input.GetKeyDown(KeyCode.D))
@@ -58,7 +77,8 @@ public class TestStringRecyclerData : MonoBehaviour
             if (atBottom)
             {
                 Debug.Log("IS AT BOTTOM");
-                StartCoroutine(_recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, 1f));
+                //StartCoroutine(WaitForScrollToLast());
+                _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, null, 1f);
             }
         }
         else if (Input.GetKeyDown(KeyCode.C))
@@ -79,7 +99,7 @@ public class TestStringRecyclerData : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.M))
         {
-            StartCoroutine(_recycler.ScrollToIndex(23));
+            //StartCoroutine(_recycler.ScrollToIndex(23));
         }
     }
 }

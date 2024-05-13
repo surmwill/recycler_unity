@@ -74,6 +74,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private Vector2 _nonFilledScrollRectPivot;
     private RecyclerEndcap<TEntryData> _endcap;
 
+    private Coroutine _scrollToCoroutine;
+
     protected override void Awake()
     {
         base.Awake();
@@ -277,6 +279,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         RecycleEndcap();
         if (gameObject.activeInHierarchy)
         {
+            Debug.Log("Appended " + Time.frameCount);
             AddEntries(entries, true);
             return;
         }
@@ -334,7 +337,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     {
         // Scrolling is handled here which may shift the visible window
         base.LateUpdate();
-        
+
         // The base ScrollRect has [ExecuteAlways] but the recycler does not work as such
         if (!Application.isPlaying)
         {
@@ -346,6 +349,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         
         // Our window of visible entries are up to date. We can check if the end-cap fits now,
         UpdateEndcap();
+        
+        //Debug.Log("AAAAA " + normalizedPosition.y +  " " + Time.frameCount);
 
         // Sanity checks
         if (Application.isEditor)
@@ -622,7 +627,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     private void SendToRecycling(RecyclerScrollRectEntry<TEntryData> entry, FixEntries fixEntries = FixEntries.Below)
     {
-        Debug.Log("RECYCLED: " + entry.Index);
+        Debug.Log("RECYCLED: " + entry.Index + " " + Time.frameCount);
         
         // Handle the GameObject
         RectTransform entryTransform = entry.RectTransform;
@@ -779,7 +784,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // TODO: does this work?
         bool shouldMaintainTopmost = false; // _appendAt == RecyclerTransformPosition.Bot && growShrinkUpwards && normalizedPosition.y >= 1f;
         bool shouldMaintainBotmost = false; // _appendAt == RecyclerTransformPosition.Top && !growShrinkUpwards && normalizedPosition.y <= 0f;
-
+        
         // Temporarily set the pivot to only push itself and the elements above or below it, and rebuild (1)
         // TODO: FixEntries.Mid should set the anchor to the middle of the viewport
         content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f : fixEntries == FixEntries.Above ? 1f : 0.5f));
@@ -825,6 +830,16 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
            return;
         }
     }
+
+     public void ScrollToIndex(int index, Action onScrollComplete = null, float scrollSpeed = 0.05f)
+     {
+         if (_scrollToCoroutine != null)
+         {
+             StopCoroutine(_scrollToCoroutine);
+         }
+
+         _scrollToCoroutine = StartCoroutine(ScrollToIndexInner(index, onScrollComplete, scrollSpeed));
+     }
      
      /// <summary>
      /// TODO: Cache the index. Shift it if we insert. Delete it and stop scrolling if wee delete it
@@ -836,7 +851,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
      /// <param name="index"></param>
      /// <param name="scrollSpeed"></param>
      /// <returns></returns>
-     public IEnumerator ScrollToIndex(int index, float scrollSpeed = 0.05f)
+     private IEnumerator ScrollToIndexInner(int index, Action onScrollComplete = null, float scrollSpeed = 0.05f)
      {
          StopMovementAndDrag();
          
@@ -861,20 +876,27 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
          for (;;)
          {
              float entryNormalizedScrollPos = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform).y;
-             Debug.Log(entryNormalizedScrollPos + " " + normalizedPosition.y);
-             if (Mathf.Abs(normalizedPosition.y - entryNormalizedScrollPos) < 0.001f)
+             float x = Mathf.MoveTowards(normalizedPosition.y, entryNormalizedScrollPos, scrollSpeed);
+             normalizedPosition = new Vector2(normalizedPosition.x, x);
+
+             if (Mathf.Approximately(normalizedPosition.y, entryNormalizedScrollPos))
              {
-                 break;
+                 UpdateCaches();
+             
+                 entryNormalizedScrollPos = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform).y;
+                 Debug.Log(entryNormalizedScrollPos + " " + index);
+
+                 if (Mathf.Approximately(normalizedPosition.y, entryNormalizedScrollPos))
+                 {
+                     break;   
+                 }
              }
 
-             float x = Mathf.MoveTowards(normalizedPosition.y, entryNormalizedScrollPos, scrollSpeed);
-             Debug.Log("a " + x);
-             normalizedPosition = new Vector2(normalizedPosition.x, x);
-             Debug.Log("b " + normalizedPosition.y);
-             //Debug.Log(Mathf.Abs(entryNormalizedScrollPos - normalizedPosition.y));
-             
              yield return null;
          }
+         
+         Debug.Log(Time.frameCount);
+         onScrollComplete?.Invoke();
      }
 
      /// <summary>
