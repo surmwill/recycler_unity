@@ -822,6 +822,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
      /// TODO: Cache the index. Shift it if we insert. Delete it and stop scrolling if wee delete it
      /// TODO: make a SmoothDamp version of this once we've scrolled to the point where the entry is active
      /// TODO: scroll to top middle or bottom of entry
+     /// TODO: scroll to -1 to go to endcap
+     /// TODO: test if ineumerator movenext returns false on completion of a coroutine
      /// </summary>
      /// <param name="index"></param>
      /// <param name="scrollSpeed"></param>
