@@ -66,8 +66,11 @@ public static class ScrollRectExtensions
         Vector3 childHorizontalPosOnViewportLine = leftmostViewportPosition + Vector3.Project(scrollToPositionInChild - leftmostViewportPosition, viewportHorizontalLine);
         Vector3 childVerticalPosOnViewportLine = bottommostViewportPosition + Vector3.Project(scrollToPositionInChild - bottommostViewportPosition, viewportVerticalLine);
         
-        float normalizedHorizontalDistance = Vector3Utils.InverseLerp(leftmostViewportPosition, rightMostViewportPosition, childHorizontalPosOnViewportLine);
-        float normalizedVerticalDistance = Vector3Utils.InverseLerp(bottommostViewportPosition, topmostViewportPosition, childVerticalPosOnViewportLine);
+        float normalizedHorizontalDistance = viewportHorizontalLine == Vector3.zero ? 0f : 
+            Vector3Utils.InverseLerp(leftmostViewportPosition, rightMostViewportPosition, childHorizontalPosOnViewportLine);
+        
+        float normalizedVerticalDistance = viewportVerticalLine == Vector3.zero ? 0f :
+            Vector3Utils.InverseLerp(bottommostViewportPosition, topmostViewportPosition, childVerticalPosOnViewportLine);
 
         return new Vector2(normalizedHorizontalDistance, normalizedVerticalDistance);
     }
@@ -84,62 +87,49 @@ public static class ScrollRectExtensions
     }
 
     /// <summary>
-    /// Returns true if the ScrollRect is at its topmost position (can't scroll any higher). A normalized y position of 1
+    /// Returns true if the ScrollRect is at its topmost position (can't scroll any higher)
     /// </summary>
     public static bool IsAtTop(this ScrollRect scrollRect)
     {
-        if (!scrollRect.vertical)
-        {
-            return false;
-        }
-
-        if (Mathf.Approximately(scrollRect.normalizedPosition.y, 1f))
-        {
-            return true;
-        }
-
-        // The normalized position is based on the position of the viewport relative to its container content. When we
-        // set the normalized position the viewport moves, and in some cases, if the change in position is so small, the 
-        // viewport doesn't move at all. This leaves us with the initial unchanged normalized position. Check if we are in this case
-        // (so close to 1)
-        float prevNormalizedY = scrollRect.normalizedPosition.y;
-        scrollRect.normalizedPosition = scrollRect.normalizedPosition.WithY(1f);
-        if (Mathf.Approximately(prevNormalizedY, scrollRect.normalizedPosition.y))
-        {
-            return true;
-        }
-
-        scrollRect.normalizedPosition = scrollRect.normalizedPosition.WithY(prevNormalizedY);
-        return false;
+        return IsAtNormalizedPosition(scrollRect, scrollRect.normalizedPosition.WithY(1f));
     }
     
     /// <summary>
-    /// Returns true if the ScrollRect is at its bottommost position (can't scroll any lower). A normalized y position of 0
+    /// Returns true if the ScrollRect is at its bottommost position (can't scroll any lower)
     /// </summary>
     public static bool IsAtBottom(this ScrollRect scrollRect)
     {
-        if (!scrollRect.vertical)
-        {
-            return false;
-        }
+        return IsAtNormalizedPosition(scrollRect, scrollRect.normalizedPosition.WithY(0f));
+    }
 
-        if (Mathf.Approximately(scrollRect.normalizedPosition.y, 0f))
+    /// <summary>
+    /// Returns true if we are at a given normalized position.
+    /// 
+    /// Note that the normalized position is based on a calculation of the position of the viewport within its encompassing content.
+    /// When we set the normalized position the viewport moves, however there is a tiny minimum threshold of movement required.
+    /// Because of these two reasons it's possible to have a normalized position very close to 0, set it to 0, and the value gets
+    /// ignored because the viewport doesn't move enough. Since the viewport didn't move we will still *get* the same value as before
+    /// (very close to 0, but not 0).
+    /// 
+    /// This can get confusing for example, if we are expecting a normalized y position of 0 when we're at the bottom, but we're
+    /// actually in that special case where we're very close to 0 (and setting it directly to 0 won't help). To cover this case we
+    /// also check if setting the normalized position to 0 results in the same normalized position as before (i.e. we are in that tiny threshold).
+    /// </summary>
+    public static bool IsAtNormalizedPosition(this ScrollRect scrollRect, Vector2 targetNormalizedPosition)
+    {
+        if (scrollRect.normalizedPosition == targetNormalizedPosition)
         {
             return true;
         }
 
-        // The normalized position is based on the position of the viewport relative to its container content. When we
-        // set the normalized position the viewport moves, and in some cases, if the change in position is so small, the 
-        // viewport doesn't move at all. This leaves us with the initial unchanged normalized position. Check if we are in this case
-        // (so close to 0)
-        float prevNormalizedY = scrollRect.normalizedPosition.y;
-        scrollRect.normalizedPosition = scrollRect.normalizedPosition.WithY(0f);
-        if (Mathf.Approximately(prevNormalizedY, scrollRect.normalizedPosition.y))
+        Vector2 prevNormalizedPosition = scrollRect.normalizedPosition;
+        scrollRect.normalizedPosition = targetNormalizedPosition;
+        if (scrollRect.normalizedPosition == prevNormalizedPosition)
         {
             return true;
         }
 
-        scrollRect.normalizedPosition = scrollRect.normalizedPosition.WithY(prevNormalizedY);
+        scrollRect.normalizedPosition = prevNormalizedPosition;
         return false;
     }
 }

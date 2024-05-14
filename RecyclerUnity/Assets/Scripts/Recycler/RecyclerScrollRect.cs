@@ -881,10 +881,10 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
              // Find and scroll to the exact position of the entry
              for (;;)
              {
-                 float entryNormalizedScrollPos = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild).y;
-                 normalizedPosition = normalizedPosition.WithY(Mathf.MoveTowards(normalizedPosition.y, entryNormalizedScrollPos, scrollSpeed));
+                 Vector2 entryNormalizedScrollPos = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild);
+                 normalizedPosition = Vector2.MoveTowards(normalizedPosition, entryNormalizedScrollPos, scrollSpeed);
 
-                 if (Mathf.Approximately(normalizedPosition.y, entryNormalizedScrollPos))
+                 if (this.IsAtNormalizedPosition(entryNormalizedScrollPos))
                  {
                      onScrollComplete?.Invoke();
                      yield break;

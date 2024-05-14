@@ -14,8 +14,9 @@ public static class Vector3Utils
     {
         (Vector3 ab, Vector3 aValue) = (b - a, value - a);
 
-        //Debug.Log(Vector3.Angle(a, b));
+        Assert.IsTrue(ab != Vector3.zero, "Cannot inverse lerp with a line of 0 length");
         Assert.IsTrue(Vector3.Cross(ab, aValue) == Vector3.zero, "The given point is required to lie on the same line as the two others");
+        
         return Mathf.Clamp01(Vector3.Dot(aValue, ab) / Vector3.Dot(ab, ab));
     }
 }

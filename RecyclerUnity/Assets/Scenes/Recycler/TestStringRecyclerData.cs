@@ -36,13 +36,15 @@ public class TestStringRecyclerData : MonoBehaviour
     {
         _recycler.AppendEntries(InitEntries);
         // _recycler.AppendEntries(new [] { "5f578bcd-6e1f-403e-9861-bb118105c5628f0505d8-a157-4e84-9497-686ebed5d463" });
+        
+        Debug.Log(Vector3.Project(Vector3.one, Vector3.zero));
     }
     
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            _recycler.PrependEntries(new [] { LongString });
+            _recycler.PrependEntries(new [] { RandomString });
             _recycler.ScrollToIndex(0, ScrollToAlignment.EntryTop, () =>
             {
                 if (!_recycler.IsAtTop())
@@ -55,7 +57,7 @@ public class TestStringRecyclerData : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.D))
         {
             _recycler.AppendEntries(new [] { RandomString });
-            _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, ScrollToAlignment.EntryMiddle, () =>
+            _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, ScrollToAlignment.EntryBottom, () =>
             {
                 if (!_recycler.IsAtBottom())
                 {
