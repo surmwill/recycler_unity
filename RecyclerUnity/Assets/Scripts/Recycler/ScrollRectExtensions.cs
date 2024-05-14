@@ -25,30 +25,35 @@ public static class ScrollRectExtensions
         (WorldRect contentWorldRect, WorldRect viewportWorldRect, WorldRect childContentWorldRect) = (content.GetWorldRect(), viewport.GetWorldRect(), childContent.GetWorldRect());
         (float viewportWidth, float viewportHeight) = (viewportWorldRect.Width, viewportWorldRect.Height);
 
-        Vector3 startHorizontalEndpoint = 
+        // The furthest left the viewport can scroll before bumping into the side
+        Vector3 leftmostViewportPosition = 
             (contentWorldRect.BotLeftCorner + 0.5f * (contentWorldRect.TopLeftCorner - contentWorldRect.BotLeftCorner)) + 
             (viewportWidth * 0.5f * content.right);
         
-        Vector3 endHorizontalEndpoint =
+        // The furthest right the viewport can scroll before bumping into the side
+        Vector3 rightMostViewportPosition =
             (contentWorldRect.BotRightCorner + 0.5f * (contentWorldRect.TopRightCorner - contentWorldRect.BotRightCorner)) -
             (viewportWidth * 0.5f * content.right);
 
-        Vector3 startVerticalEndpoint =
+        // The furthest down the viewport can scroll before bumping into the bottom
+        Vector3 bottommostViewportPosition =
             (contentWorldRect.BotLeftCorner + 0.5f * (contentWorldRect.BotRightCorner - contentWorldRect.BotLeftCorner)) +
             (viewportHeight * 0.5f * content.up);
         
-        Vector3 endVerticalEndpoint = 
+        // The furthest up the viewport can scroll before bumping into the top
+        Vector3 topmostViewportPosition = 
             (contentWorldRect.TopLeftCorner + 0.5f * (contentWorldRect.TopRightCorner - contentWorldRect.TopLeftCorner)) - 
             (viewportHeight * 0.5f * content.up);
 
-        Vector3 viewportHorizontalLine = endHorizontalEndpoint - startHorizontalEndpoint;
-        Vector3 viewportVerticalLine = endVerticalEndpoint - startVerticalEndpoint;
+        // These lines are the values that the viewport can take on
+        Vector3 viewportHorizontalLine = rightMostViewportPosition - leftmostViewportPosition;
+        Vector3 viewportVerticalLine = topmostViewportPosition - bottommostViewportPosition;
 
-        Vector3 childHorizontalPosOnViewportLine = startHorizontalEndpoint + Vector3.Project(childContentWorldRect.Center - startHorizontalEndpoint, viewportHorizontalLine);
-        Vector3 childVerticalPosOnViewportLine = startVerticalEndpoint + Vector3.Project(childContentWorldRect.Center - startVerticalEndpoint, viewportVerticalLine);
+        Vector3 childHorizontalPosOnViewportLine = leftmostViewportPosition + Vector3.Project(childContentWorldRect.Center - leftmostViewportPosition, viewportHorizontalLine);
+        Vector3 childVerticalPosOnViewportLine = bottommostViewportPosition + Vector3.Project(childContentWorldRect.Center - bottommostViewportPosition, viewportVerticalLine);
         
-        float normalizedHorizontalDistance = Vector3Utils.InverseLerp(startHorizontalEndpoint, endHorizontalEndpoint, childHorizontalPosOnViewportLine);
-        float normalizedVerticalDistance = Vector3Utils.InverseLerp(startVerticalEndpoint, endVerticalEndpoint, childVerticalPosOnViewportLine);
+        float normalizedHorizontalDistance = Vector3Utils.InverseLerp(leftmostViewportPosition, rightMostViewportPosition, childHorizontalPosOnViewportLine);
+        float normalizedVerticalDistance = Vector3Utils.InverseLerp(bottommostViewportPosition, topmostViewportPosition, childVerticalPosOnViewportLine);
 
         return new Vector2(normalizedHorizontalDistance, normalizedVerticalDistance);
     }
