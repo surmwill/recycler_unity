@@ -859,13 +859,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
                  if (index < _indexWindow.CachedStartIndex)
                  {
                      // If the entries are increasing, then lesser entries are found at the top with a higher normalized scroll position
-                     normalizedPosition = normalizedPosition.WithY(Mathf.MoveTowards(normalizedPosition.y, _areEntriesIncreasing ? 1 : 0, scrollSpeed));
+                     normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(_areEntriesIncreasing ? 1 : 0), scrollSpeed);
                  }
                  // Scroll toward greater indices
                  else if (index > _indexWindow.CachedEndIndex)
                  {
                      // If the entries are increasing, then greater entries are found at the bottom with a lower normalized scroll position
-                     normalizedPosition = normalizedPosition.WithY(Mathf.MoveTowards(normalizedPosition.y, _areEntriesIncreasing ? 0 : 1, scrollSpeed));
+                     normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(_areEntriesIncreasing ? 0 : 1), scrollSpeed);
                  }
 
                  if (isImmediate)
