@@ -808,14 +808,14 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         }
     }
 
-     public void ScrollToIndex(int index, Action onScrollComplete = null, float scrollSpeed = 0.05f, bool isImmediate = false)
+     public void ScrollToIndex(int index, ScrollAlignment scrollAlignment = ScrollAlignment.Middle, Action onScrollComplete = null, float scrollSpeed = 0.05f, bool isImmediate = false)
      {
          if (_scrollToCoroutine != null)
          {
              StopCoroutine(_scrollToCoroutine);
          }
 
-         _scrollToCoroutine = StartCoroutine(ScrollToIndexInner(index, onScrollComplete, scrollSpeed, isImmediate));
+         _scrollToCoroutine = StartCoroutine(ScrollToIndexInner(index, scrollAlignment, onScrollComplete, scrollSpeed, isImmediate));
      }
      
      /// <summary>
@@ -828,9 +828,27 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
      /// <param name="index"></param>
      /// <param name="scrollSpeed"></param>
      /// <returns></returns>
-     private IEnumerator ScrollToIndexInner(int index, Action onScrollComplete = null, float scrollSpeed = 0.05f, bool isImmediate = false)
+     private IEnumerator ScrollToIndexInner(int index, ScrollAlignment scrollAlignment, Action onScrollComplete, float scrollSpeed, bool isImmediate)
      {
+         // Scrolling should not fight existing movement
          StopMovementAndDrag();
+
+         // The position within the child we will scroll to
+         Vector2 normalizedPositionWithinChild = Vector2.zero;
+         switch (scrollAlignment)
+         {
+             case ScrollAlignment.Middle:
+                 normalizedPositionWithinChild = new Vector2(0.5f, 0.5f) ;
+                 break;
+             
+             case ScrollAlignment.Top:
+                 normalizedPositionWithinChild = new Vector2(0.5f, 1f);
+                 break;
+             
+             case ScrollAlignment.Bottom:
+                 normalizedPositionWithinChild = new Vector2(0.5f, 0f);
+                 break;
+         }
 
          for (;;)
          {
@@ -863,7 +881,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
              // Find and scroll to the exact position of the entry
              for (;;)
              {
-                 float entryNormalizedScrollPos = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform).y;
+                 float entryNormalizedScrollPos = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild).y;
                  normalizedPosition = normalizedPosition.WithY(Mathf.MoveTowards(normalizedPosition.y, entryNormalizedScrollPos, scrollSpeed));
 
                  if (Mathf.Approximately(normalizedPosition.y, entryNormalizedScrollPos))

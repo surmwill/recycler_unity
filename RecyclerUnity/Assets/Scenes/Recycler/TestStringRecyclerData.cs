@@ -41,7 +41,7 @@ public class TestStringRecyclerData : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A))
         {
             _recycler.PrependEntries(new [] { RandomString });
-            _recycler.ScrollToIndex(0, () =>
+            _recycler.ScrollToIndex(0, ScrollAlignment.Middle, () =>
             {
                 if (!_recycler.IsAtTop())
                 {
@@ -53,7 +53,7 @@ public class TestStringRecyclerData : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.D))
         {
             _recycler.AppendEntries(new [] { RandomString });
-            _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, () =>
+            _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, ScrollAlignment.Middle, () =>
             {
                 if (!_recycler.IsAtBottom())
                 {
@@ -80,7 +80,7 @@ public class TestStringRecyclerData : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.M))
         {
-            _recycler.ScrollToIndex(23, isImmediate:true);
+            _recycler.ScrollToIndex(12, ScrollAlignment.Middle);
         }
 
         if (_hasAppended && !_recycler.IsAtBottom())

@@ -15,11 +15,20 @@ public static class ScrollRectExtensions
         WorldRect viewportRect = scrollRect.viewport.GetWorldRect();
         return new Vector2(velocity.x / viewportRect.Width, velocity.y / viewportRect.Height);
     }
-    
+
     /// <summary>
     /// Returns the normalized scroll position of one of the children that make up the ScrollRect's content
     /// </summary>
     public static Vector2 GetNormalizedScrollPositionOfChild(this ScrollRect scrollRect, RectTransform childContent)
+    {
+        Vector2 normalizedCenter = new Vector2(0.5f, 0.5f);
+        return GetNormalizedScrollPositionOfChild(scrollRect, childContent, normalizedCenter);
+    }
+    
+    /// <summary>
+    /// Returns the normalized scroll position of one of the children that make up the ScrollRect's content
+    /// </summary>
+    public static Vector2 GetNormalizedScrollPositionOfChild(this ScrollRect scrollRect, RectTransform childContent, Vector2 normalizedPositionInChild)
     {
         (RectTransform content, RectTransform viewport) = (scrollRect.content, scrollRect.viewport);
         (WorldRect contentWorldRect, WorldRect viewportWorldRect, WorldRect childContentWorldRect) = (content.GetWorldRect(), viewport.GetWorldRect(), childContent.GetWorldRect());
@@ -49,8 +58,13 @@ public static class ScrollRectExtensions
         Vector3 viewportHorizontalLine = rightMostViewportPosition - leftmostViewportPosition;
         Vector3 viewportVerticalLine = topmostViewportPosition - bottommostViewportPosition;
 
-        Vector3 childHorizontalPosOnViewportLine = leftmostViewportPosition + Vector3.Project(childContentWorldRect.Center - leftmostViewportPosition, viewportHorizontalLine);
-        Vector3 childVerticalPosOnViewportLine = bottommostViewportPosition + Vector3.Project(childContentWorldRect.Center - bottommostViewportPosition, viewportVerticalLine);
+        // The point in the child we are scrolling to
+        Vector3 scrollToPositionInChild = childContentWorldRect.BotLeftCorner + 
+                                  childContentWorldRect.Right * (normalizedPositionInChild.x * childContentWorldRect.Width) +
+                                  childContentWorldRect.Up * (normalizedPositionInChild.y * childContentWorldRect.Height);
+
+        Vector3 childHorizontalPosOnViewportLine = leftmostViewportPosition + Vector3.Project(scrollToPositionInChild - leftmostViewportPosition, viewportHorizontalLine);
+        Vector3 childVerticalPosOnViewportLine = bottommostViewportPosition + Vector3.Project(scrollToPositionInChild - bottommostViewportPosition, viewportVerticalLine);
         
         float normalizedHorizontalDistance = Vector3Utils.InverseLerp(leftmostViewportPosition, rightMostViewportPosition, childHorizontalPosOnViewportLine);
         float normalizedVerticalDistance = Vector3Utils.InverseLerp(bottommostViewportPosition, topmostViewportPosition, childVerticalPosOnViewportLine);
