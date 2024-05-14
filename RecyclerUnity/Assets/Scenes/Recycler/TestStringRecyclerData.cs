@@ -29,6 +29,8 @@ public class TestStringRecyclerData : MonoBehaviour
         }).Concat(Enumerable.Range(0, NumEntries).Select(_ => RandomString));
     
     private string RandomString => Enumerable.Range(0, Random.Range(2, 6)).Aggregate(string.Empty, (s, _) => s + Guid.NewGuid());
+    
+    private string LongString => Enumerable.Range(0, 25).Aggregate(string.Empty, (s, _) => s + Guid.NewGuid());
 
     private void Start()
     {
@@ -40,8 +42,8 @@ public class TestStringRecyclerData : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            _recycler.PrependEntries(new [] { RandomString });
-            _recycler.ScrollToIndex(0, ScrollAlignment.Middle, () =>
+            _recycler.PrependEntries(new [] { LongString });
+            _recycler.ScrollToIndex(0, ScrollToAlignment.EntryTop, () =>
             {
                 if (!_recycler.IsAtTop())
                 {
@@ -53,7 +55,7 @@ public class TestStringRecyclerData : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.D))
         {
             _recycler.AppendEntries(new [] { RandomString });
-            _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, ScrollAlignment.Middle, () =>
+            _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, ScrollToAlignment.EntryMiddle, () =>
             {
                 if (!_recycler.IsAtBottom())
                 {
@@ -80,7 +82,7 @@ public class TestStringRecyclerData : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.M))
         {
-            _recycler.ScrollToIndex(12, ScrollAlignment.Middle);
+            _recycler.ScrollToIndex(12, ScrollToAlignment.EntryMiddle);
         }
 
         if (_hasAppended && !_recycler.IsAtBottom())

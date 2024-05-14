@@ -808,14 +808,14 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         }
     }
 
-     public void ScrollToIndex(int index, ScrollAlignment scrollAlignment = ScrollAlignment.Middle, Action onScrollComplete = null, float scrollSpeed = 0.05f, bool isImmediate = false)
+     public void ScrollToIndex(int index, ScrollToAlignment scrollToAlignment = ScrollToAlignment.EntryMiddle, Action onScrollComplete = null, float scrollSpeed = 0.05f, bool isImmediate = false)
      {
          if (_scrollToCoroutine != null)
          {
              StopCoroutine(_scrollToCoroutine);
          }
 
-         _scrollToCoroutine = StartCoroutine(ScrollToIndexInner(index, scrollAlignment, onScrollComplete, scrollSpeed, isImmediate));
+         _scrollToCoroutine = StartCoroutine(ScrollToIndexInner(index, scrollToAlignment, onScrollComplete, scrollSpeed, isImmediate));
      }
      
      /// <summary>
@@ -828,24 +828,24 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
      /// <param name="index"></param>
      /// <param name="scrollSpeed"></param>
      /// <returns></returns>
-     private IEnumerator ScrollToIndexInner(int index, ScrollAlignment scrollAlignment, Action onScrollComplete, float scrollSpeed, bool isImmediate)
+     private IEnumerator ScrollToIndexInner(int index, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeed, bool isImmediate)
      {
          // Scrolling should not fight existing movement
          StopMovementAndDrag();
 
          // The position within the child we will scroll to
          Vector2 normalizedPositionWithinChild = Vector2.zero;
-         switch (scrollAlignment)
+         switch (scrollToAlignment)
          {
-             case ScrollAlignment.Middle:
+             case ScrollToAlignment.EntryMiddle:
                  normalizedPositionWithinChild = new Vector2(0.5f, 0.5f) ;
                  break;
              
-             case ScrollAlignment.Top:
+             case ScrollToAlignment.EntryTop:
                  normalizedPositionWithinChild = new Vector2(0.5f, 1f);
                  break;
              
-             case ScrollAlignment.Bottom:
+             case ScrollToAlignment.EntryBottom:
                  normalizedPositionWithinChild = new Vector2(0.5f, 0f);
                  break;
          }
