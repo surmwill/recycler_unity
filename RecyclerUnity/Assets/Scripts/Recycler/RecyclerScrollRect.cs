@@ -853,7 +853,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
          for (;;)
          {
              // Scroll through entries until the entry we want is created, then we'll know the exact position to scroll to
-             while (!_indexWindow.Contains(index))
+             if (!_indexWindow.Contains(index))
              {
                  // Scroll toward lesser indices
                  if (index < _indexWindow.CachedStartIndex)
@@ -879,7 +879,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
              }
 
              // Find and scroll to the exact position of the entry
-             for (;;)
+             if (_indexWindow.Contains(index))
              {
                  Vector2 entryNormalizedScrollPos = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild);
                  normalizedPosition = Vector2.MoveTowards(normalizedPosition, entryNormalizedScrollPos, scrollSpeed);

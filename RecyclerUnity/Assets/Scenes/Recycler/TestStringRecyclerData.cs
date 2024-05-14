@@ -84,7 +84,7 @@ public class TestStringRecyclerData : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.M))
         {
-            _recycler.ScrollToIndex(12, ScrollToAlignment.EntryMiddle);
+            _recycler.ScrollToIndex(12, ScrollToAlignment.EntryMiddle, isImmediate:true);
         }
 
         if (_hasAppended && !_recycler.IsAtBottom())
