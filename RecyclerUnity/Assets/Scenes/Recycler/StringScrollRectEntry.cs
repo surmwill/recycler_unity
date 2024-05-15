@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// A recycler entry displaying a string (used for testing the recycler with simple data)
@@ -9,9 +12,24 @@ public class StringScrollRectEntry : RecyclerScrollRectEntry<string>
 {
     [SerializeField]
     private TMP_Text _text = null;
+
+    [SerializeField]
+    private LayoutElement _spaceTop = null;
     
+    [SerializeField]
+    private LayoutElement _spaceBottom = null;
+
+    private const int TargetEntryIndex = 3;
+    private const float SpaceIncrease = 300;
+
+    private Tween _growShrinkTween;
+
+    private static readonly Dictionary<int, float> SpacePerEntry = new();
+
     protected override void OnBindNewData(string entryData)
     {
+        SpacePerEntry.TryGetValue(Index, out float lastSpace);
+        (_spaceBottom.preferredHeight, _spaceTop.preferredHeight) = (lastSpace, lastSpace);
         _text.text = entryData;
     }
 
@@ -22,25 +40,42 @@ public class StringScrollRectEntry : RecyclerScrollRectEntry<string>
     
     protected override void OnSentToRecycling()
     {
-        // Do nothing
+        _growShrinkTween?.Kill(true);
     }
 
     protected void Update()
     {
-        if (gameObject.name != "3")
+        if (Index != TargetEntryIndex)
         {
             return;
         }
         
         if (Input.GetKeyDown(KeyCode.W))
         {
-            _text.text += "AAAAAAAAAAAAAAAAAABBBBBBBBBBBBBB";
-            RecalculateDimensions(FixEntries.Above);
+            GrowShrink(true);
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
-            _text.text = _text.text.Substring(0, _text.text.Length / 2);
-            RecalculateDimensions();
+            GrowShrink(false);
         }
+    }
+
+    private void GrowShrink(bool shouldGrow)
+    {
+        _growShrinkTween?.Kill(true);
+        RecalculateDimensions(FixEntries.Below);
+
+        float nextSpace = _spaceTop.preferredHeight + SpaceIncrease * (shouldGrow ? 1 : -1);
+        SpacePerEntry[Index] = nextSpace;
+
+        _growShrinkTween = DOTween.To(
+            () => _spaceTop.preferredHeight,
+            space =>
+            {
+                (_spaceTop.preferredHeight, _spaceBottom.preferredHeight) = (space, space);
+                RecalculateDimensions(FixEntries.Below);
+            },
+            nextSpace,
+            2f);
     }
 }
