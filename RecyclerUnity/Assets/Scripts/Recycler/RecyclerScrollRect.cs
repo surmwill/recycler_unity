@@ -40,10 +40,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private int _poolSize = 15;
 
     [SerializeField]
-    private RectTransform _endcapParent = null;
+    private RecyclerEndcap<TEntryData> _endcapPrefab = null;
 
     [SerializeField]
-    private RecyclerEndcap<TEntryData> _endcapPrefab = null;
+    private RectTransform _endcapParent = null;
+    
+    [SerializeField]
+    private RecyclerEndcap<TEntryData> _endcap = null;
 
     /// <summary>
     /// The current list of data we are binding to entries
@@ -68,7 +71,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private readonly List<TEntryData> _dataForEntries = new();
 
     private Vector2 _nonFilledScrollRectPivot;
-    private RecyclerEndcap<TEntryData> _endcap;
 
     private Coroutine _scrollToCoroutine;
 
@@ -252,7 +254,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     public void AppendEntries(IEnumerable<TEntryData> entries)
     {
-        RecycleEndcap();
         AddEntriesToEnd(entries, true);
     }
 
@@ -311,10 +312,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
         // Update what should be in our start or end cache
         UpdateCaches();
-        
-        // Our window of visible entries are up to date. We can check if the end-cap fits now,
-        UpdateEndcap();
-        
+
         //Debug.Log("AAAAA " + normalizedPosition.y +  " " + Time.frameCount);
 
         // Sanity checks
@@ -389,6 +387,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             // We just added/removed entries. This may have shifted the visible window
             UpdateVisibility();
         }
+        
+        UpdateEndcap();
     }
 
     /// <summary>
@@ -396,46 +396,37 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     private void UpdateEndcap()
     {
-        return;
-        
-        /*
         if (_endcap == null)
         {
             return;
         }
 
-        // End-cap used to exist but we scrolled away from the end, get rid of it
-        if (_endcap.gameObject.activeSelf && !_indexWindow.Contains(_dataForEntries.Count - 1))
+        bool endcapExists = _endcap.gameObject.activeSelf;
+        bool shouldEndcapExist = _dataForEntries.Any() && _indexWindow.Contains(_dataForEntries.Count - 1);
+
+        // Endcap exists, see if we need to remove it
+        if (endcapExists && !shouldEndcapExist)
         {
             RecycleEndcap();
-            return;
         }
-
-        // The last entry exists, ensure we have an end-cap
-        if (_endcap.gameObject.activeSelf)
+        // Endcap does not exist, see if we need to create it
+        else if (!endcapExists && shouldEndcapExist)
         {
-            return;
+            _endcap.transform.SetParent(content);
+            _endcap.gameObject.SetActive(true);
+            _endcap.OnFetchedFromRecycling();
+
+            AddToContent(
+                _endcap.RectTransform,
+                AreEntriesIncreasing ? content.childCount : 0,
+                EndCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above);
         }
-        
-        _endcap.transform.SetParent(content);
-        _endcap.gameObject.SetActive(true);
-        _endcap.OnBind();
-        
-        AddToContent(_endcap.RectTransform, _isTopDown ? content.transform.childCount : 0, !_isTopDown);
-        */
     }
 
     private void RecycleEndcap()
     {
-        return;
-        
-        /*
-        if (_endcap.gameObject.activeSelf)
-        {
-            RemoveFromContent(_endcap.RectTransform, !_isTopDown).SetParent(_endcapParent);
-            _endcap.OnSentToRecycling();
-        }
-        */
+        RemoveFromContent(_endcap.RectTransform, EndCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above).SetParent(_endcapParent);
+        _endcap.OnSentToRecycling();
     }
 
     private RecyclerScrollRectEntry<TEntryData> CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)

@@ -12,7 +12,7 @@ public class StringScrollRectEndcap : RecyclerEndcap<string>
     /// <summary>
     /// Called when the end-cap gets bound
     /// </summary>
-    public override void OnBind()
+    public override void OnFetchedFromRecycling()
     {
         // Do nothing
     }

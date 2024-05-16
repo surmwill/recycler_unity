@@ -27,9 +27,9 @@ public abstract class RecyclerEndcap<TRecyclerData> : MonoBehaviour
     }
     
     /// <summary>
-    /// Called when the end-cap becomes bound/active (not necessarily visible yet though)
+    /// Called when the end-cap becomes active (note: can still be offscreen in the cache)
     /// </summary>
-    public abstract void OnBind();
+    public abstract void OnFetchedFromRecycling();
 
     /// <summary>
     /// Called when the end-cap gets recycled

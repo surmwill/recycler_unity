@@ -337,7 +337,7 @@ GameObject:
   - component: {fileID: 269925069}
   - component: {fileID: 269925068}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Middle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -818,6 +818,10 @@ PrefabInstance:
     - target: {fileID: 7162659540477490968, guid: d01e1cccf6e19744791aa10eb3c6cef4, type: 3}
       propertyPath: m_RootOrder
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7529784094234885908, guid: d01e1cccf6e19744791aa10eb3c6cef4, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7582466408490652696, guid: d01e1cccf6e19744791aa10eb3c6cef4, type: 3}
       propertyPath: m_IsActive

@@ -89,7 +89,9 @@ public partial class RecyclerScrollRect<TEntryData>
                 {
                     EditorUtils.DestroyOnValidate(_endcapParent.GetChild(i).gameObject);
                 }
-                ((RecyclerEndcap<TEntryData>) PrefabUtility.InstantiatePrefab(_endcapPrefab, _endcapParent)).gameObject.SetActive(false);
+
+                _endcap = (RecyclerEndcap<TEntryData>) PrefabUtility.InstantiatePrefab(_endcapPrefab, _endcapParent);
+                _endcap.gameObject.SetActive(false);
             }   
         }
         else if (_endcapParent != null)
