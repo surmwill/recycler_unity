@@ -188,15 +188,26 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     }
 
     /// <summary>
+    /// Removes elements at the given index. Note that this implies indices can shift
+    /// </summary>
+    public void RemoveRange(int index, int count, FixEntries fixEntries = FixEntries.Below)
+    {
+        for (int i = index + count - 1; i >= index; i--)
+        {
+            RemoveAt(index, fixEntries);
+        }
+    }
+
+    /// <summary>
     /// Removes an element at the given index. Note that this implies indices can shift
     /// </summary>
     public void RemoveAt(int index, FixEntries fixEntries = FixEntries.Below)
     {
         // Recycle the entry if it exists in the scene
-        bool shouldRecycle = _activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData> activeEntry);
+        bool shouldRecycle = _indexWindow.Contains(index);
         if (shouldRecycle)
         {
-            SendToRecycling(activeEntry, fixEntries);
+            SendToRecycling(_activeEntries[index], fixEntries);
         }
         
         // Unbind any same bound entries that were waiting for a re-bind in recycling pool
