@@ -26,11 +26,18 @@ public class StringScrollRectEntry : RecyclerScrollRectEntry<string>
 
     private static readonly Dictionary<int, float> SpacePerEntry = new();
 
+    public static bool GrowOnBind = false;
+
     protected override void OnBindNewData(string entryData)
     {
         SpacePerEntry.TryGetValue(Index, out float lastSpace);
         (_spaceBottom.preferredHeight, _spaceTop.preferredHeight) = (lastSpace, lastSpace);
         _text.text = entryData;
+
+        if (GrowOnBind)
+        {
+            GrowShrink(true);
+        }
     }
 
     protected override void OnRebindExistingData()
@@ -63,7 +70,7 @@ public class StringScrollRectEntry : RecyclerScrollRectEntry<string>
     private void GrowShrink(bool shouldGrow)
     {
         _growShrinkTween?.Kill(true);
-        RecalculateDimensions(FixEntries.Below);
+        RecalculateDimensions(FixEntries.Above);
 
         float nextSpace = _spaceTop.preferredHeight + SpaceIncrease * (shouldGrow ? 1 : -1);
         SpacePerEntry[Index] = nextSpace;
@@ -73,7 +80,7 @@ public class StringScrollRectEntry : RecyclerScrollRectEntry<string>
             space =>
             {
                 (_spaceTop.preferredHeight, _spaceBottom.preferredHeight) = (space, space);
-                RecalculateDimensions(FixEntries.Below);
+                RecalculateDimensions(FixEntries.Above);
             },
             nextSpace,
             2f);

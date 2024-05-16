@@ -75,7 +75,8 @@ public class TestStringRecyclerData : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.L))
         {
             //_recycler.Insert(1, RandomString, FixEntries.Below);
-            _recycler.InsertRange(1, new []{ RandomString, RandomString }, FixEntries.Above);
+            StringScrollRectEntry.GrowOnBind = true;
+            _recycler.InsertRange(1, new [] { RandomString, RandomString }, FixEntries.Above);
         }
         else if (Input.GetKeyDown(KeyCode.K))
         {
