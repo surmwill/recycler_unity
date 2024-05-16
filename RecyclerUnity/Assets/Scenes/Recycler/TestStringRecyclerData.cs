@@ -36,8 +36,6 @@ public class TestStringRecyclerData : MonoBehaviour
     {
         _recycler.AppendEntries(InitEntries);
         // _recycler.AppendEntries(new [] { "5f578bcd-6e1f-403e-9861-bb118105c5628f0505d8-a157-4e84-9497-686ebed5d463" });
-        
-        Debug.Log(Vector3.Project(Vector3.one, Vector3.zero));
     }
     
     private void Update()

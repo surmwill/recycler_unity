@@ -181,11 +181,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     public void InsertRange(int index, IEnumerable<TEntryData> entryData, FixEntries fixEntries = FixEntries.Below)
     {
-        int i = 0;
-        foreach (TEntryData entry in entryData)
+        foreach ((TEntryData entry, int i) in entryData.ZipWithIndex())
         {
             Insert(index + i, entry, fixEntries);
-            i++;
         }
     }
 
