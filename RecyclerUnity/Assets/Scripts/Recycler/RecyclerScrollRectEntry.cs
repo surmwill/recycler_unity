@@ -37,6 +37,7 @@ public abstract class RecyclerScrollRectEntry<TEntryData> : MonoBehaviour
     {
         RectTransform = (RectTransform) transform;
         Recycler = GetComponentInParent<RecyclerScrollRect<TEntryData>>();
+        ResetIndex();
     }
 
     #region LIFECYCLE_METHODS

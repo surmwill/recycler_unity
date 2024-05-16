@@ -53,7 +53,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     // In the scene hierarchy, are our entries' indices increasing as we go down the sibling list?
     // Increasing entries mean our first entry with index 0 is at the top, and so is our start cache.
     // Decreasing entries mean our first entry with index 0 is at the bottom, and so is our start cache.
-    private bool _areEntriesIncreasing => _appendTo == RecyclerTransformPosition.Bot;
+    private bool AreEntriesIncreasing => _appendTo == RecyclerTransformPosition.Bot;
     
     private RecyclerTransformPosition StartCacheTransformPosition => InverseRecyclerTransformPosition(_appendTo);
 
@@ -61,15 +61,11 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     // All the entries: visible and cached
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _activeEntries = new();
-    private Dictionary<int, Queue<RecyclerScrollRectEntry<TEntryData>>> _recycledEntries = new();
+    private Dictionary<int, Queue<RecyclerScrollRectEntry<TEntryData>>> _recycledEntries;
     
     private SlidingIndexWindow _indexWindow;
     
     private readonly List<TEntryData> _dataForEntries = new();
-
-    // TODO: make this into a tuple
-    private readonly List<TEntryData> _pendingAppendEntryData = new();
-    private readonly List<TEntryData> _pendingPrependEntryData = new();
 
     private Vector2 _nonFilledScrollRectPivot;
     private RecyclerEndcap<TEntryData> _endcap;
@@ -87,35 +83,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         }
 
         _nonFilledScrollRectPivot = content.pivot;
+        
         _indexWindow = new SlidingIndexWindow(_numCachedBeforeStart);
-    }
-
-    protected override void OnEnable()
-    {
-        base.OnEnable();
-        
-        // The base ScrollRect has [ExecuteAlways] but the recycler does not work as such
-        if (!Application.isPlaying)
-        {
-            return;
-        }
-        
-        // TODO: only do this on re-enable
-        AddPendingEntries();
-    }
-
-    protected override void Start()
-    {
-        base.Start();
-        
-        // The base ScrollRect has [ExecuteAlways] but the recycler does not work as such
-        if (!Application.isPlaying)
-        {
-            return;
-        }
-        
-        InitPools();
-        AddPendingEntries();
+        InitTrackingRecyclingPool();
     }
 
     /// <summary>
@@ -148,13 +118,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         }
 
         // Find the proper place in the hierarchy for the entry
-        int siblingIndex = _areEntriesIncreasing ? 0 : content.childCount;
+        int siblingIndex = AreEntriesIncreasing ? 0 : content.childCount;
         foreach (Transform entryTransform in content)
         {
             RecyclerScrollRectEntry<TEntryData> activeEntry = entryTransform.GetComponent<RecyclerScrollRectEntry<TEntryData>>();
             if (activeEntry != null && activeEntry.Index == index - 1)
             {
-                siblingIndex = activeEntry.transform.GetSiblingIndex() + (_areEntriesIncreasing ? 1 : 0);
+                siblingIndex = activeEntry.transform.GetSiblingIndex() + (AreEntriesIncreasing ? 1 : 0);
             }
         }
 
@@ -277,34 +247,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         _recycledEntries = shiftedRecycledEntries;
     }
 
-    private void AddPendingEntries()
-    {
-        if (_pendingPrependEntryData.Any())
-        {
-            PrependEntries(_pendingPrependEntryData);
-            _pendingPrependEntryData.Clear();   
-        }
-
-        if (_pendingAppendEntryData.Any())
-        {
-            AppendEntries(_pendingAppendEntryData);
-            _pendingAppendEntryData.Clear();   
-        }
-    }
-
     /// <summary>
     /// Adds entries to the end of the list
     /// </summary>
     public void AppendEntries(IEnumerable<TEntryData> entries)
     {
         RecycleEndcap();
-        if (gameObject.activeInHierarchy)
-        {
-            Debug.Log("Appended " + Time.frameCount);
-            AddEntries(entries, true);
-            return;
-        }
-        _pendingAppendEntryData.AddRange(entries);
+        AddEntries(entries, true);
     }
 
     /// <summary>
@@ -312,12 +261,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     public void PrependEntries(IEnumerable<TEntryData> entries)
     {
-        if (gameObject.activeInHierarchy)
-        {
-            AddEntries(entries, false);
-            return;
-        }
-        _pendingPrependEntryData.AddRange(entries);
+        AddEntries(entries, false);
     }
 
     /// <summary>
@@ -562,7 +506,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             bool wentOffTop = entry.RectTransform.position.y > viewport.transform.position.y;
             
             // Entries are increasing (entry 0 is at the top along with our start cache)
-            if (_areEntriesIncreasing)
+            if (AreEntriesIncreasing)
             {
                 // Anything off the top means we are scrolling down, away from entry 0, away from lesser indices
                 if (wentOffTop && _indexWindow.VisibleStartIndex <= entryIndex)
@@ -617,28 +561,27 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             if (entry != null)
             {
                 SendToRecycling(entry);
+                entry.ResetIndex();
             }
         }
+        InitTrackingRecyclingPool();
         
         // Recycle the end-cap if it exists
         RecycleEndcap();
         
-        // Clear state
+        // Clear entries
         _activeEntries.Clear();
         _recycledEntries.Clear();
 
+        // Clear the data for the entries
         _dataForEntries.Clear();
-        _pendingAppendEntryData.Clear();
-        _pendingPrependEntryData.Clear();
-
-        _indexWindow = new SlidingIndexWindow(_numCachedBeforeStart);
 
         // Reset our pivot to whatever its initial value was
-        content.pivot = _nonFilledScrollRectPivot;
         normalizedPosition = normalizedPosition.WithY(0f);
-        
-        // Reset the pools
-        InitPools();
+        content.pivot = _nonFilledScrollRectPivot;
+
+        // Reset our window back to one with no entries
+        _indexWindow = new SlidingIndexWindow(_numCachedBeforeStart);
     }
 
     private void StopMovementAndDrag()
@@ -826,7 +769,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // TODO: is this necessary. Could this be handled by a FixEntries definition?
         if (!initIsScrollable)
         {
-            normalizedPosition = normalizedPosition.WithY(_areEntriesIncreasing ? 1f : 0f);
+            normalizedPosition = normalizedPosition.WithY(AreEntriesIncreasing ? 1f : 0f);
         }
     }
 
@@ -881,13 +824,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
                  if (index < _indexWindow.CachedStartIndex)
                  {
                      // If the entries are increasing, then lesser entries are found at the top with a higher normalized scroll position
-                     normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(_areEntriesIncreasing ? 1 : 0), scrollSpeed);
+                     normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(AreEntriesIncreasing ? 1 : 0), scrollSpeed);
                  }
                  // Scroll toward greater indices
                  else if (index > _indexWindow.CachedEndIndex)
                  {
                      // If the entries are increasing, then greater entries are found at the bottom with a lower normalized scroll position
-                     normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(_areEntriesIncreasing ? 0 : 1), scrollSpeed);
+                     normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(AreEntriesIncreasing ? 0 : 1), scrollSpeed);
                  }
 
                  if (isImmediate)
@@ -925,27 +868,21 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
      }
 
      /// <summary>
-    /// Initializes and tracks pooled objects
-    /// </summary>
-    private void InitPools()
-    {
-        // Entry pool: unbinds all entries and starts tracking them as recycled and ready to be bound again
-        _recycledEntries.Add(RecyclerScrollRectEntry<TEntryData>.UnboundIndex, new Queue<RecyclerScrollRectEntry<TEntryData>>());
-        foreach (Transform child in _poolParent)
-        {
-            RecyclerScrollRectEntry<TEntryData> entry = child.GetComponent<RecyclerScrollRectEntry<TEntryData>>();
-            entry.ResetIndex();
-            entry.gameObject.SetActive(false);
-            _recycledEntries[RecyclerScrollRectEntry<TEntryData>.UnboundIndex].Enqueue(entry);
-        }
-        
-        // End-cap pool: grab a reference to the end-cap
-        if (_endcapParent.childCount > 0)
-        {
-            _endcap = _endcapParent.GetChild(0).GetComponent<RecyclerEndcap<TEntryData>>();
-            _endcap.gameObject.SetActive(false);
-        }
-    }
+     /// Determines the number of pooled objects available and makes them available for binding
+     /// </summary>
+     private void InitTrackingRecyclingPool()
+     {
+         _recycledEntries = new Dictionary<int, Queue<RecyclerScrollRectEntry<TEntryData>>>
+         {
+             [RecyclerScrollRectEntry<TEntryData>.UnboundIndex] = new()
+         };
+
+         foreach (Transform child in _poolParent) 
+         { 
+             RecyclerScrollRectEntry<TEntryData> entry = child.GetComponent<RecyclerScrollRectEntry<TEntryData>>();
+             _recycledEntries[RecyclerScrollRectEntry<TEntryData>.UnboundIndex].Enqueue(entry); 
+         }
+     }
      
      private void InsertDataForEntryAt(int index, TEntryData entryData) 
      {
