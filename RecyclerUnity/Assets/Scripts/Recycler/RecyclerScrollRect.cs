@@ -123,7 +123,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     public void Insert(int index, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
     {
-        Debug.Log("INSERTED " + index);
+         Debug.Log("INSERTED " + index);
         
         // Inserting at the end
         /*
@@ -149,7 +149,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
         // Find the proper place in the hierarchy for the entry
         int siblingIndex = _areEntriesIncreasing ? 0 : content.childCount;
-
         foreach (Transform entryTransform in content)
         {
             RecyclerScrollRectEntry<TEntryData> activeEntry = entryTransform.GetComponent<RecyclerScrollRectEntry<TEntryData>>();
@@ -175,6 +174,19 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         
         // A new entry can update the visible window and subsequently require an update of what is cached
         UpdateCaches();
+    }
+
+    /// <summary>
+    /// Inserts elements at the given index. Note that this implies indices can shift
+    /// </summary>
+    public void InsertRange(int index, IEnumerable<TEntryData> entryData, FixEntries fixEntries = FixEntries.Below)
+    {
+        int i = 0;
+        foreach (TEntryData entry in entryData)
+        {
+            Insert(index + i, entry, fixEntries);
+            i++;
+        }
     }
 
     /// <summary>
@@ -301,6 +313,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     /// <summary>
     /// Adds additional entries to display
+    /// TODO: have an option not to copy over data if it's a big list. Make this take a list then
     /// </summary>
     private void AddEntries(IEnumerable<TEntryData> newEntries, bool shouldAppend)
     {
@@ -924,18 +937,18 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             _endcap.gameObject.SetActive(false);
         }
     }
-
-    private void InsertDataForEntryAt(int index, TEntryData entryData)
-    {
-        InsertDataForEntriesAt(index, new [] { entryData });
-    }
-
-    /// <summary>
-    /// Inserts data for a new entry in the list, possibly also switching around the indices of currently bound entries.
-    /// Note that this only updates bookkeeping, if the entry should also be created, that must be done separately
-    /// </summary>
-    private void InsertDataForEntriesAt(int index, IReadOnlyCollection<TEntryData> entryData)
-    {
+     
+     private void InsertDataForEntryAt(int index, TEntryData entryData) 
+     {
+         InsertDataForEntriesAt(index, new [] { entryData });
+     }
+     
+     /// <summary>
+     /// Inserts data for a new entry in the list, possibly also switching around the indices of currently bound entries.
+     /// Note that this only updates bookkeeping, if the entry should also be created, that must be done separately
+     /// </summary>
+     private void InsertDataForEntriesAt(int index, IReadOnlyCollection<TEntryData> entryData) 
+     {
         if (index < _dataForEntries.Count)
         {
             ShiftIndicesBoundEntries(index, entryData.Count);
