@@ -253,7 +253,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     public void AppendEntries(IEnumerable<TEntryData> entries)
     {
         RecycleEndcap();
-        AddEntries(entries, true);
+        AddEntriesToEnd(entries, true);
     }
 
     /// <summary>
@@ -261,41 +261,40 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     public void PrependEntries(IEnumerable<TEntryData> entries)
     {
-        AddEntries(entries, false);
+        AddEntriesToEnd(entries, false);
     }
 
     /// <summary>
     /// Adds additional entries to display
     /// TODO: have an option not to copy over data if it's a big list. Make this take a list then
     /// </summary>
-    private void AddEntries(IEnumerable<TEntryData> newEntries, bool shouldAppend)
+    private void AddEntriesToEnd(IEnumerable<TEntryData> newEntries, bool shouldAppend)
     {
-        if (newEntries == null)
+        if (newEntries == null || !newEntries.Any())
         {
             return;
         }
-
-        Queue<TEntryData> entries = new Queue<TEntryData>(newEntries);
-
-        // Entries request more entries to be created; however, we start out with no entries and therefore need to kick
-        // off the creation cycle by creating one ourselves. Insertion causes an immediate creation and so we use that.
+        
+        // First entries. Create them directly instead of being fetched from the not-yet-existent cache
         bool areInitialEntries = _dataForEntries.Count == 0;
         if (areInitialEntries)
         {
-            TEntryData first = entries.Dequeue();
-            Insert(0, first);
+            InsertRange(0, newEntries);
+            return;
         }
-
+        
+        // Entries (and cache) already exist. Since we're adding them to the end they'll get created normally via a cache request
         if (shouldAppend)
         {
-            InsertDataForEntriesAt(_dataForEntries.Count, entries);
+            InsertDataForEntriesAt(_dataForEntries.Count, new List<TEntryData>(newEntries));
         }
         else
         {
-            InsertDataForEntriesAt(0, entries.Reverse().ToList());
+            InsertDataForEntriesAt(0, new List<TEntryData>(newEntries.Reverse()));
         }
         
-        // A new entry can update the visible window and subsequently require an update of what is cached
+        // Sometimes something put in the cache is actually visible. In this case updating the cache will cause more entries
+        // to be created until they fit into the cache proper (i.e. are off-screen)
         UpdateCaches();
     }
 
