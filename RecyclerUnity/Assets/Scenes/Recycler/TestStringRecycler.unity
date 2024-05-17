@@ -337,7 +337,7 @@ GameObject:
   - component: {fileID: 269925069}
   - component: {fileID: 269925068}
   m_Layer: 0
-  m_Name: Middle
+  m_Name: Debug_MiddleIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

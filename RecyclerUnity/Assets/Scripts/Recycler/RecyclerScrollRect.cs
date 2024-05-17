@@ -254,7 +254,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     public void AppendEntries(IEnumerable<TEntryData> entries)
     {
-        AddEntriesToEnd(entries, true);
+        AddEntries(entries, true);
     }
 
     /// <summary>
@@ -262,14 +262,14 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     public void PrependEntries(IEnumerable<TEntryData> entries)
     {
-        AddEntriesToEnd(entries, false);
+        AddEntries(entries, false);
     }
 
     /// <summary>
     /// Adds additional entries to display
     /// TODO: have an option not to copy over data if it's a big list. Make this take a list then
     /// </summary>
-    private void AddEntriesToEnd(IEnumerable<TEntryData> newEntries, bool shouldAppend)
+    private void AddEntries(IEnumerable<TEntryData> newEntries, bool shouldAppend)
     {
         if (newEntries == null || !newEntries.Any())
         {
@@ -313,8 +313,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // Update what should be in our start or end cache
         UpdateCaches();
 
-        //Debug.Log("AAAAA " + normalizedPosition.y +  " " + Time.frameCount);
-
         // Sanity checks
         if (Application.isEditor)
         {
@@ -329,7 +327,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         UpdateVisibility();
         
         // If the window of active entries changes we'll need to update the cache accordingly
-        while (_indexWindow.IsDirty)
+        if (_indexWindow.IsDirty)
         {
             _indexWindow.IsDirty = false;
             // Debug.Log(_indexWindow.PrintRange());
@@ -370,18 +368,25 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
                 SendToRecycling(_activeEntries[index]);
                 _activeEntries.Remove(index);
             }
-
-            // Create new entries
+            
+            // Create new entries in the start cache
+            bool isStartCacheAtTop = StartCacheTransformPosition == RecyclerTransformPosition.Top;
+            int siblingIndexOffset = GetNumConsecutiveNonEntries(isStartCacheAtTop);
+            
             foreach (int index in newCachedStartEntries)
             {
-                CreateAndAddEntry(index, _appendTo == RecyclerTransformPosition.Bot ? 0 : content.transform.childCount, 
-                    StartCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above);
+                CreateAndAddEntry(index, isStartCacheAtTop ? siblingIndexOffset : content.childCount - siblingIndexOffset, 
+                    isStartCacheAtTop ? FixEntries.Below : FixEntries.Above);
             }
             
+            // Create new entries in the end cache
+            bool isEndCacheAtTop = EndCacheTransformPosition == RecyclerTransformPosition.Top;
+            siblingIndexOffset = GetNumConsecutiveNonEntries(isEndCacheAtTop);
+
             foreach (int index in newCachedEndEntries)
             {
-                CreateAndAddEntry(index, _appendTo == RecyclerTransformPosition.Bot ? content.transform.childCount : 0, 
-                    EndCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above);
+                CreateAndAddEntry(index, isEndCacheAtTop ? siblingIndexOffset : content.childCount - siblingIndexOffset, 
+                    isEndCacheAtTop ? FixEntries.Below : FixEntries.Above);
             }
 
             // We just added/removed entries. This may have shifted the visible window
@@ -389,6 +394,45 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         }
         
         UpdateEndcap();
+
+        // Returns the number of consecutive non-entries from the top or bottom of the scene hierarchy. Used to insert past endcaps
+        int GetNumConsecutiveNonEntries(bool fromTop)
+        {
+            int numConsecutiveNonEntries = 0;
+            
+            // Find index of the first entry from the top
+            if (fromTop)
+            {
+                for (int i = 0; i < content.childCount; i++)
+                {
+                    if (content.GetChild(i).GetComponent<RecyclerScrollRectEntry<TEntryData>>() == null)
+                    {
+                        numConsecutiveNonEntries++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+            // Find the index of the first entry from the bottom
+            else
+            {
+                for (int i = content.childCount - 1; i >= 0; i--)
+                {
+                    if (content.GetChild(i).GetComponent<RecyclerScrollRectEntry<TEntryData>>() == null)
+                    {
+                        numConsecutiveNonEntries++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return numConsecutiveNonEntries;
+        }
     }
 
     /// <summary>

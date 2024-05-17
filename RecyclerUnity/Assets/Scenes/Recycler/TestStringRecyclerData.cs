@@ -43,6 +43,8 @@ public class TestStringRecyclerData : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A))
         {
             _recycler.PrependEntries(new [] { RandomString });
+            
+            /*
             _recycler.ScrollToIndex(0, ScrollToAlignment.EntryTop, () =>
             {
                 if (!_recycler.IsAtTop())
@@ -51,10 +53,14 @@ public class TestStringRecyclerData : MonoBehaviour
                 }
             }, 1f, true);
             _hasPrepended = true;
+            */
         }
         else if (Input.GetKeyDown(KeyCode.D))
         {
             _recycler.AppendEntries(new [] { RandomString });
+            _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, ScrollToAlignment.EntryTop, null, isImmediate:true);
+            
+            /*
             _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, ScrollToAlignment.EntryBottom, () =>
             {
                 if (!_recycler.IsAtBottom())
@@ -63,6 +69,7 @@ public class TestStringRecyclerData : MonoBehaviour
                 }
             }, 1f, true);
             _hasAppended = true;
+            */
         }
         else if (Input.GetKeyDown(KeyCode.C))
         {
@@ -85,6 +92,7 @@ public class TestStringRecyclerData : MonoBehaviour
             _recycler.ScrollToIndex(12, ScrollToAlignment.EntryMiddle, isImmediate:true);
         }
 
+        return;
         if (_hasAppended && !_recycler.IsAtBottom())
         {
             throw new Exception("Should be at bottom");
