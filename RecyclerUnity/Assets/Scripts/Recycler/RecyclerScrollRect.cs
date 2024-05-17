@@ -774,7 +774,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private void RecalculateContentSize(FixEntries fixEntries)
     {
         // Initial state
-        bool initIsScrollable = this.IsScrollable();
         Vector2 initPivot = content.pivot;
         float initY = content.anchoredPosition.y;
 
@@ -789,7 +788,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         if (!this.IsScrollable())
         {
             content.pivot = _nonFilledScrollRectPivot;
-            normalizedPosition = normalizedPosition.WithY(0f);
             return;
         }
         
@@ -797,14 +795,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         content.SetPivotWithoutMoving(initPivot);
         float diffY = content.anchoredPosition.y - initY;
         content.SetPivotWithoutMoving(content.pivot + Vector2.up * -diffY / content.rect.height);
-
-        // Special case: if we went from non-fullscreen -> fullscreen then keep the viewport at the very start (the 0th entry).
-        // Since Unity handles ScrollRects differently if we have a full viewport or not, this bridges the gap between non-full and full viewports with consistent behaviour.
-        // TODO: is this necessary. Could this be handled by a FixEntries definition?
-        if (!initIsScrollable)
-        {
-            normalizedPosition = normalizedPosition.WithY(AreEntriesIncreasing ? 1f : 0f);
-        }
     }
 
      public void ScrollToIndex(int index, ScrollToAlignment scrollToAlignment = ScrollToAlignment.EntryMiddle, Action onScrollComplete = null, float scrollSpeed = 0.05f, bool isImmediate = false)

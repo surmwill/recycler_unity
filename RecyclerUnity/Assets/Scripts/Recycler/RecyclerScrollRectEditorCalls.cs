@@ -41,15 +41,17 @@ public partial class RecyclerScrollRect<TEntryData>
             ContentSizeFitter c = entriesParent.GetComponent<ContentSizeFitter>();
             c.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
+            // Entries will start at the top if we're appending downwards, or the bottom if we're appending upwards
+            (content.anchorMin, content.anchorMax) = (new Vector2(0f, AreEntriesIncreasing ? 1 : 0), new Vector2(1f, AreEntriesIncreasing ? 1 : 0));
+            (content.offsetMin, content.offsetMax) = (Vector2.zero, Vector2.zero);
+            content.anchoredPosition = Vector2.zero;
+            
+            // Appended entries will grow downwards (not pushing any higher entries) when we're appending downwards,
+            // or grow upwards (not pushing any lower entries) when we're appending upwards.
+            content.pivot = content.pivot.WithY(AreEntriesIncreasing ? 1 : 0);
+
             content = entriesParent;
         }
-        
-        // Set anchors and pivot according to configuration (top-down or bottom-up)
-        content.pivot = content.pivot.WithY(AreEntriesIncreasing ? 1 : 0);
-        content.anchorMin = new Vector2(0f, AreEntriesIncreasing ? 1 : 0);
-        content.anchorMax = new Vector2(1f, AreEntriesIncreasing ? 1 : 0);
-        content.anchoredPosition = Vector2.zero;
-        (content.offsetMin, content.offsetMax) = (Vector2.zero, Vector2.zero);
 
         // Ensure there is a pool
         if (_poolParent == null)
