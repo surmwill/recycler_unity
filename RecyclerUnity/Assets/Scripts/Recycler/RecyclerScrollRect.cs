@@ -96,15 +96,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     public void Insert(int index, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
     {
          Debug.Log("INSERTED " + index);
-        
-        // Inserting at the end
-        /*
-        if (index == _dataForEntries.Count || index == 0)
-        {
-            RecycleEndcap();
-        }
-        */
-        
+         
         // Determine where the new insertion will be going
         bool willBeInStartCache = _indexWindow.IsInStartCache(index);
         bool willBeInEndCache = _indexWindow.IsInEndCache(index);
