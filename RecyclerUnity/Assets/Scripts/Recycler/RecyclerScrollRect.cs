@@ -893,9 +893,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
              [RecyclerScrollRectEntry<TEntryData>.UnboundIndex] = new()
          };
 
-         foreach (Transform child in _poolParent) 
-         { 
-             RecyclerScrollRectEntry<TEntryData> entry = child.GetComponent<RecyclerScrollRectEntry<TEntryData>>();
+         RecyclerScrollRectEntry<TEntryData> entry = null;
+         foreach (Transform _ in _poolParent.Children().Where(t => t.TryGetComponent(out entry))) 
+         {
              _recycledEntries[RecyclerScrollRectEntry<TEntryData>.UnboundIndex].Enqueue(entry); 
          }
      }

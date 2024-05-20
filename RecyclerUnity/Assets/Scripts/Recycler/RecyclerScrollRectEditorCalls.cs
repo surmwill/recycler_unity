@@ -9,6 +9,10 @@ using UnityEngine.UI;
 /// </summary>
 public partial class RecyclerScrollRect<TEntryData>
 {
+    private const string ContentName = "Entries";
+    private const string PoolParentName = "Pool";
+    private const string EndcapParentName = "Endcap";
+
     protected override void OnValidate()
     {
         _numCachedBeforeStart = Mathf.Max(1, _numCachedBeforeStart);
@@ -24,15 +28,16 @@ public partial class RecyclerScrollRect<TEntryData>
             viewport = (RectTransform) transform;
         }
 
-        // Ensure there is content
+        // Ensure there is content (the active list of entries)
         if (content == null)
         {
-            RectTransform entriesParent = (RectTransform) new GameObject("Entries", 
+            RectTransform entriesParent = (RectTransform) new GameObject(ContentName, 
                 typeof(RectTransform),
                 typeof(VerticalLayoutGroup), typeof(ContentSizeFitter),
                 typeof(Canvas), typeof(GraphicRaycaster)).transform;
             
             entriesParent.SetParent(transform);
+            content = entriesParent;
 
             // Entries are in charge of their own width and height
             VerticalLayoutGroup v = entriesParent.GetComponent<VerticalLayoutGroup>();
@@ -50,56 +55,58 @@ public partial class RecyclerScrollRect<TEntryData>
             // Appended entries will grow downwards (not pushing any higher entries) when we're appending downwards,
             // or grow upwards (not pushing any lower entries) when we're appending upwards.
             content.pivot = content.pivot.WithY(AreEntriesIncreasing ? 1 : 0);
-
-            content = entriesParent;
         }
 
-        // Ensure there is a pool
+        // Ensure there is a pool of waiting to be bound entries
         if (_poolParent == null)
         {
-            _poolParent = RectTransformFactory.CreateFullRect("Pool", content.parent);
+            _poolParent = RectTransformFactory.CreateFullRect(PoolParentName, transform);
         }
 
         // Ensure the pool is the correct size
         if (_recyclerEntryPrefab != null)
         {
-            int numMissingInPool = _poolSize - _poolParent.childCount;
+            int numInPool = _poolParent.Children().Count(t => t.HasComponent<RecyclerScrollRectEntry<TEntryData>>());
+            int poolDifference = _poolSize - numInPool;
 
-            for (int i = 0; i < numMissingInPool; i++)
+            // Add any missing entries
+            for (int i = 0; i < poolDifference; i++)
             {
                 RecyclerScrollRectEntry<TEntryData> entry = (RecyclerScrollRectEntry<TEntryData>) PrefabUtility.InstantiatePrefab(_recyclerEntryPrefab, _poolParent);
                 entry.name = RecyclerScrollRectEntry<TEntryData>.UnboundIndex.ToString();
                 entry.gameObject.SetActive(false);
             }
-            
-            for (int i = 0; i < numMissingInPool * -1; i++)
+
+            // Delete any extra entries
+            if (poolDifference < 0)
             {
-                EditorUtils.DestroyOnValidate(_poolParent.GetChild(i).gameObject);
+                RecyclerScrollRectEntry<TEntryData>[] entries = _poolParent.GetComponentsInChildren<RecyclerScrollRectEntry<TEntryData>>(true);
+                for (int i = 0; i < Mathf.Min(entries.Length, Mathf.Abs(poolDifference)); i++)
+                {
+                    EditorUtils.DestroyOnValidate(entries[i].gameObject);
+                }
             }
         }
         
         // Ensure we have a single end-cap pooled if one is provided
         if (_endcapPrefab != null)
         {
+            // Ensure there is a pool for the endcap
             if (_endcapParent == null)
             {
-                _endcapParent = RectTransformFactory.CreateFullRect("Endcap", content.parent);
+                _endcapParent = RectTransformFactory.CreateFullRect(EndcapParentName, transform);
             }
 
-            if (_endcapParent.childCount != 1)
+            // Ensure the endcap exists in the pool
+            if (_endcap == null)
             {
-                for (int i = _endcapParent.childCount - 1; i >= 0; i--)
+                _endcap = _endcapParent.GetComponentInChildren<RecyclerEndcap<TEntryData>>(true);
+                if (_endcap == null)
                 {
-                    EditorUtils.DestroyOnValidate(_endcapParent.GetChild(i).gameObject);
+                    _endcap = (RecyclerEndcap<TEntryData>) PrefabUtility.InstantiatePrefab(_endcapPrefab, _endcapParent);
+                    _endcap.gameObject.SetActive(false);
                 }
-
-                _endcap = (RecyclerEndcap<TEntryData>) PrefabUtility.InstantiatePrefab(_endcapPrefab, _endcapParent);
-                _endcap.gameObject.SetActive(false);
-            }   
-        }
-        else if (_endcapParent != null)
-        {
-            EditorUtils.DestroyOnValidate(_endcapParent.gameObject);
+            }
         }
     }
 

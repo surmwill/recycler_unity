@@ -11,7 +11,7 @@ public abstract class RecyclerScrollRectEntry<TEntryData> : MonoBehaviour
     /// <summary>
     /// Index for an entry that is not bound to any data
     /// </summary>
-    public const int UnboundIndex = int.MinValue;
+    public const int UnboundIndex = -1;
 
     /// <summary>
     /// This entries' index

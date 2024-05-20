@@ -13,7 +13,10 @@ public static class EditorUtils
     /// </summary>
     public static void DestroyOnValidate(Object obj)
     {
-        EditorApplication.delayCall += () => Object.DestroyImmediate(obj);
+        EditorApplication.delayCall += () =>
+        {
+            Object.DestroyImmediate(obj);
+        };
     }
 }
 
