@@ -62,10 +62,15 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     private RecyclerTransformPosition EndCacheTransformPosition => InverseRecyclerTransformPosition(StartCacheTransformPosition);
 
-    // All the entries: visible and cached
+    // All the active entries in the scene, visible and cached
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _activeEntries = new();
-    private Dictionary<int, Queue<RecyclerScrollRectEntry<TEntryData>>> _recycledEntries;
     
+    // Previously bound entries waiting (recycled) in the pool
+    private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _recycledEntries = new();
+    
+    // Unbound entries waiting in the pool
+    private readonly Queue<RecyclerScrollRectEntry<TEntryData>> UnboundEntries = new();
+
     private SlidingIndexWindow _indexWindow;
     
     private readonly List<TEntryData> _dataForEntries = new();
@@ -84,10 +89,18 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             return;
         }
 
+        // While non-fullscreen, the pivot decides how the content gets aligned in the viewport
         _nonFilledScrollRectPivot = content.pivot;
         
+        // Keeps track of what indices are visible, and subsequently which indices are cached
         _indexWindow = new SlidingIndexWindow(_numCachedBeforeStart);
-        InitTrackingRecyclingPool();
+
+        // All the entries in the bool are initially unbound
+        RecyclerScrollRectEntry<TEntryData> entry = null;
+        foreach (Transform _ in _poolParent.Children().Where(t => t.TryGetComponent(out entry)))
+        {
+            UnboundEntries.Enqueue(entry);
+        }
     }
 
     /// <summary>
@@ -173,26 +186,15 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         {
             SendToRecycling(_activeEntries[index], fixEntries);
         }
-        
-        // Unbind any same bound entries that were waiting for a re-bind in recycling pool
-        if (!_recycledEntries.TryGetValue(RecyclerScrollRectEntry<TEntryData>.UnboundIndex, out Queue<RecyclerScrollRectEntry<TEntryData>> unboundEntries))
-        {
-            unboundEntries = new Queue<RecyclerScrollRectEntry<TEntryData>>();
-        }
-        
-        if (_recycledEntries.TryGetValue(index, out Queue<RecyclerScrollRectEntry<TEntryData>> entries))
-        {
-            foreach (RecyclerScrollRectEntry<TEntryData> entry in entries)
-            {
-                entry.ResetIndex();
-                unboundEntries.Enqueue(entry);
-            }
 
+        // Unbind the entry if it exists in recycling
+        if (_recycledEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData> entry))
+        {
+            entry.UnbindIndex();
             _recycledEntries.Remove(index);
         }
+        UnboundEntries.Enqueue(entry);
 
-        _recycledEntries[RecyclerScrollRectEntry<TEntryData>.UnboundIndex] = unboundEntries;
-        
         // Update bookkeeping to reflect the deleted entry
         RemoveDataForEntryAt(index);
 
@@ -208,37 +210,26 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     private void ShiftIndicesBoundEntries(int startIndex, int shiftAmount)
     {
-        // Shift the indices of the active entries
-        Dictionary<int, RecyclerScrollRectEntry<TEntryData>> shiftedActiveEntries = new Dictionary<int, RecyclerScrollRectEntry<TEntryData>>();
-        foreach ((int index, RecyclerScrollRectEntry<TEntryData> activeEntry) in _activeEntries
-                     .Where(kvp => kvp.Key != RecyclerScrollRectEntry<TEntryData>.UnboundIndex))
+        _activeEntries = ShiftIndices(_activeEntries);
+        _recycledEntries = ShiftIndices(_recycledEntries);
+
+        Dictionary<int, RecyclerScrollRectEntry<TEntryData>> ShiftIndices(Dictionary<int, RecyclerScrollRectEntry<TEntryData>> entries)
         {
-            int shiftedIndex = index + (index >= startIndex ? shiftAmount : 0);
-            if (shiftedIndex != index)
+            Dictionary<int, RecyclerScrollRectEntry<TEntryData>> shiftedActiveEntries = new Dictionary<int, RecyclerScrollRectEntry<TEntryData>>();
+            
+            foreach ((int index, RecyclerScrollRectEntry<TEntryData> activeEntry) in entries
+                         .Where(kvp => kvp.Key != RecyclerScrollRectEntry<TEntryData>.UnboundIndex))
             {
-                activeEntry.SetIndex(shiftedIndex);   
-            }
-            shiftedActiveEntries[shiftedIndex] = activeEntry;
-        }
-        _activeEntries = shiftedActiveEntries;
-        
-        
-        // Shift the indices of the entries in recycling
-        Dictionary<int, Queue<RecyclerScrollRectEntry<TEntryData>>> shiftedRecycledEntries = new Dictionary<int, Queue<RecyclerScrollRectEntry<TEntryData>>>();
-        foreach ((int index, Queue<RecyclerScrollRectEntry<TEntryData>> recycledEntries) in _recycledEntries
-                     .Where(kvp => kvp.Key != RecyclerScrollRectEntry<TEntryData>.UnboundIndex))
-        {
-            int shiftedIndex = index + (index >= startIndex ? shiftAmount : 0);
-            if (shiftedIndex != index)
-            {
-                foreach (RecyclerScrollRectEntry<TEntryData> unshiftedRecycledEntry in recycledEntries)
+                int shiftedIndex = index + (index >= startIndex ? shiftAmount : 0);
+                if (shiftedIndex != index)
                 {
-                    unshiftedRecycledEntry.SetIndex(shiftedIndex);
-                }   
+                    activeEntry.SetIndex(shiftedIndex);   
+                }
+                shiftedActiveEntries[shiftedIndex] = activeEntry;
             }
-            shiftedRecycledEntries[shiftedIndex] = recycledEntries;
+
+            return shiftedActiveEntries;
         }
-        _recycledEntries = shiftedRecycledEntries;
     }
 
     /// <summary>
@@ -580,30 +571,30 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // Stop any active dragging
         StopMovementAndDrag();
         
-        // Recycle everything
-        for (int i = content.transform.childCount - 1; i >= 0; i--)
+        // Recycle all the entries
+        foreach (RecyclerScrollRectEntry<TEntryData> entry in _activeEntries.Values.ToList())
         {
-            RecyclerScrollRectEntry<TEntryData> entry = content.GetChild(i).GetComponent<RecyclerScrollRectEntry<TEntryData>>();
-            if (entry != null)
-            {
-                SendToRecycling(entry);
-                entry.ResetIndex();
-            }
+            SendToRecycling(entry);
         }
-        InitTrackingRecyclingPool();
+
+        // Unbind everything
+        foreach (RecyclerScrollRectEntry<TEntryData> entry in _recycledEntries.Values.ToList())
+        {
+            _recycledEntries.Remove(entry.Index);
+            entry.UnbindIndex();
+            UnboundEntries.Enqueue(entry);
+        }
+
+        Assert.IsTrue(!_activeEntries.Any(), "Nothing should be bound, there is no data.");
+        Assert.IsTrue(!_recycledEntries.Any(), "Nothing should be bound, there is no data.");
         
         // Recycle the end-cap if it exists
         RecycleEndcap();
-        
-        // Clear entries
-        _activeEntries.Clear();
-        _recycledEntries.Clear();
 
         // Clear the data for the entries
         _dataForEntries.Clear();
 
         // Reset our pivot to whatever its initial value was
-        normalizedPosition = normalizedPosition.WithY(0f);
         content.pivot = _nonFilledScrollRectPivot;
 
         // Reset our window back to one with no entries
@@ -626,14 +617,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         entryTransform.SetParent(_poolParent);
 
         // Mark the entry for re-use
-        if (!_recycledEntries.TryGetValue(entry.Index, out Queue<RecyclerScrollRectEntry<TEntryData>> recycled))
+        if (_recycledEntries.ContainsKey(entry.Index))
         {
-            recycled = new Queue<RecyclerScrollRectEntry<TEntryData>>();
-            _recycledEntries.Add(entry.Index, recycled);
+            throw new InvalidOperationException("We should not have two copies of the same entry in recycling, we only need one.");
         }
-        
-        // Bookkeeping
-        recycled.Enqueue(entry);
+        _recycledEntries[entry.Index] = entry;
+
+            // Bookkeeping
         _activeEntries.Remove(entry.Index);
 
         // Callback
@@ -642,35 +632,30 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     private bool TryFetchFromRecycling(int entryIndex, out RecyclerScrollRectEntry<TEntryData> entry)
     {
-        if (!_recycledEntries.Any())
+        entry = null;
+        
+        // First try to use the equivalent already bound entry waiting in recycling
+        if (_recycledEntries.TryGetValue(entryIndex, out entry) )
         {
-            entry = null;
+            _recycledEntries.Remove(entryIndex);
+        }
+        // Then try to use an unbound entry
+        else if (UnboundEntries.TryDequeue(out entry))
+        {
+        }
+        // Then try and use just any already bound entry waiting in recycling
+        else if (_recycledEntries.Any())
+        {
+            (int firstIndex, RecyclerScrollRectEntry<TEntryData> firstEntry) = _recycledEntries.First();
+            entry = firstEntry;
+            _recycledEntries.Remove(firstIndex);
+        }
+        // Nothing to fetch from recycling, we'll have to create something new
+        else
+        {
             return false;
         }
 
-        int recycledEntryIndex = default;
-        Queue<RecyclerScrollRectEntry<TEntryData>> recycledEntries = null;
-
-        if (_recycledEntries.TryGetValue(entryIndex, out recycledEntries))
-        {
-            recycledEntryIndex = entryIndex;
-        }
-        else if (_recycledEntries.TryGetValue(RecyclerScrollRectEntry<TEntryData>.UnboundIndex, out recycledEntries))
-        {
-            recycledEntryIndex = RecyclerScrollRectEntry<TEntryData>.UnboundIndex;
-        }
-        else
-        {
-            KeyValuePair<int, Queue<RecyclerScrollRectEntry<TEntryData>>> first = _recycledEntries.First();
-            (recycledEntryIndex, recycledEntries) = (first.Key, first.Value);
-        }
-
-        entry = recycledEntries.Dequeue();
-        if (!recycledEntries.Any())
-        {
-            _recycledEntries.Remove(recycledEntryIndex);
-        }
-        
         entry.transform.SetParent(content);
         entry.gameObject.SetActive(true);
         return true;
@@ -883,23 +868,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
          }
      }
 
-     /// <summary>
-     /// Determines the number of pooled objects available and makes them available for binding
-     /// </summary>
-     private void InitTrackingRecyclingPool()
-     {
-         _recycledEntries = new Dictionary<int, Queue<RecyclerScrollRectEntry<TEntryData>>>
-         {
-             [RecyclerScrollRectEntry<TEntryData>.UnboundIndex] = new()
-         };
-
-         RecyclerScrollRectEntry<TEntryData> entry = null;
-         foreach (Transform _ in _poolParent.Children().Where(t => t.TryGetComponent(out entry))) 
-         {
-             _recycledEntries[RecyclerScrollRectEntry<TEntryData>.UnboundIndex].Enqueue(entry); 
-         }
-     }
-     
      private void InsertDataForEntryAt(int index, TEntryData entryData) 
      {
          InsertDataForEntriesAt(index, new [] { entryData });

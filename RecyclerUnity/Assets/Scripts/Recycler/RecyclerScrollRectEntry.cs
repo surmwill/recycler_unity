@@ -37,7 +37,7 @@ public abstract class RecyclerScrollRectEntry<TEntryData> : MonoBehaviour
     {
         RectTransform = (RectTransform) transform;
         Recycler = GetComponentInParent<RecyclerScrollRect<TEntryData>>();
-        ResetIndex();
+        UnbindIndex();
     }
 
     #region LIFECYCLE_METHODS
@@ -92,7 +92,7 @@ public abstract class RecyclerScrollRectEntry<TEntryData> : MonoBehaviour
     /// <summary>
     /// Resets the entry to its default unbound index
     /// </summary>
-    public void ResetIndex()
+    public void UnbindIndex()
     {
         SetIndex(UnboundIndex);
     }

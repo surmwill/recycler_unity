@@ -21,6 +21,10 @@ public partial class RecyclerScrollRect<TEntryData>
 
         // Vertical only supported (currently)
         (vertical, horizontal) = (true, false);
+
+        // Clamped only
+        // TODO: remember and explain why this is
+        movementType = MovementType.Clamped;
         
         // Ensure there is a viewport
         if (viewport == null)
