@@ -38,11 +38,6 @@ public class SlidingIndexWindow
     public int CachedStartIndex => Mathf.Max(VisibleStartIndex.GetValueOrDefault() - _numCached, 0);
     public int CachedEndIndex => Mathf.Max(VisibleEndIndex.GetValueOrDefault() + _numCached, 0);
 
-    public void Insert(int index)
-    {
-        InsertRange(index, 1);
-    }
-
     public void InsertRange(int index, int num)
     {
         IsDirty = true;
@@ -71,6 +66,12 @@ public class SlidingIndexWindow
         {
             VisibleEndIndex--;
         }
+    }
+    
+    public void Reset()
+    {
+        (VisibleStartIndex, VisibleEndIndex) = (null, null);
+        IsDirty = false;
     }
 
     public bool IsVisible(int index)

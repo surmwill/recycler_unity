@@ -69,7 +69,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _recycledEntries = new();
     
     // Unbound entries waiting in the pool
-    private readonly Queue<RecyclerScrollRectEntry<TEntryData>> UnboundEntries = new();
+    private readonly Queue<RecyclerScrollRectEntry<TEntryData>> _unboundEntries = new();
 
     private SlidingIndexWindow _indexWindow;
     
@@ -99,7 +99,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         RecyclerScrollRectEntry<TEntryData> entry = null;
         foreach (Transform _ in _poolParent.Children().Where(t => t.TryGetComponent(out entry)))
         {
-            UnboundEntries.Enqueue(entry);
+            _unboundEntries.Enqueue(entry);
         }
     }
 
@@ -108,8 +108,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     public void Insert(int index, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
     {
-         Debug.Log("INSERTED " + index);
-         
         // Determine where the new insertion will be going
         bool willBeInStartCache = _indexWindow.IsInStartCache(index);
         bool willBeInEndCache = _indexWindow.IsInEndCache(index);
@@ -117,7 +115,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         
         // Update bookkeeping to reflect the new entry. Determine if we actually need to create it now
         InsertDataForEntryAt(index, entryData);
-
+        
         // We don't need to create the entry yet, it will get created when we scroll to it
         if (_indexWindow.IsInitialized && !willBeInStartCache && !willBeInEndCache && !willBeVisible)
         {
@@ -148,7 +146,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         {
             CreateAndAddEntry(index, siblingIndex, fixEntries);
         }
-        
+
+        Debug.Log(_indexWindow.IsInitialized + " " + _indexWindow.IsDirty);
+
         // A new entry can update the visible window and subsequently require an update of what is cached
         UpdateCaches();
     }
@@ -193,7 +193,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             entry.UnbindIndex();
             _recycledEntries.Remove(index);
         }
-        UnboundEntries.Enqueue(entry);
+        _unboundEntries.Enqueue(entry);
 
         // Update bookkeeping to reflect the deleted entry
         RemoveDataForEntryAt(index);
@@ -258,7 +258,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         {
             return;
         }
-        
+
         // First entries. Create them directly instead of being fetched from the not-yet-existent cache
         bool areInitialEntries = _dataForEntries.Count == 0;
         if (areInitialEntries)
@@ -292,6 +292,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         {
             return;
         }
+        
+        // Debug.Log(_indexWindow.PrintRange());
 
         // Update what should be in our start or end cache
         UpdateCaches();
@@ -313,7 +315,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         if (_indexWindow.IsDirty)
         {
             _indexWindow.IsDirty = false;
-            // Debug.Log(_indexWindow.PrintRange());
 
             List<int> toRecycleEntries = new();
             List<int> newCachedStartEntries = new();
@@ -423,6 +424,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     private void UpdateEndcap()
     {
+        return;
         if (_endcap == null)
         {
             return;
@@ -485,9 +487,16 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     private void UpdateVisibility()
     {
+        if (!_activeEntries.Any())
+        {
+            _indexWindow.Reset();
+            return;
+        }
+        
         foreach (RecyclerScrollRectEntry<TEntryData> entry in _activeEntries.Values)
         {
             bool isVisible = entry.RectTransform.Overlaps(viewport);
+            // Debug.Log(entry.Index + " " + isVisible);
             if (isVisible)
             {
                 EntryIsVisible(entry);
@@ -501,6 +510,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // Visible
         void EntryIsVisible(RecyclerScrollRectEntry<TEntryData> entry)
         {
+            //Debug.Log("IS VISIBLE " + entry);
             int entryIndex = entry.Index;
 
             if (!_indexWindow.VisibleStartIndex.HasValue || entryIndex < _indexWindow.VisibleStartIndex)
@@ -560,6 +570,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     {
         List<TEntryData> entryData = _dataForEntries.ToList();
         Clear();
+        Debug.Log(_indexWindow.IsDirty);
         AppendEntries(entryData);
     }
     
@@ -582,7 +593,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         {
             _recycledEntries.Remove(entry.Index);
             entry.UnbindIndex();
-            UnboundEntries.Enqueue(entry);
+            _unboundEntries.Enqueue(entry);
         }
 
         Assert.IsTrue(!_activeEntries.Any(), "Nothing should be bound, there is no data.");
@@ -598,7 +609,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         content.pivot = _nonFilledScrollRectPivot;
 
         // Reset our window back to one with no entries
-        _indexWindow = new SlidingIndexWindow(_numCachedBeforeStart);
+        _indexWindow.Reset();
     }
 
     private void StopMovementAndDrag()
@@ -640,7 +651,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             _recycledEntries.Remove(entryIndex);
         }
         // Then try to use an unbound entry
-        else if (UnboundEntries.TryDequeue(out entry))
+        else if (_unboundEntries.TryDequeue(out entry))
         {
         }
         // Then try and use just any already bound entry waiting in recycling
@@ -750,6 +761,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     private void RecalculateContentSize(FixEntries fixEntries)
     {
+        Debug.Log(fixEntries);
+        
         // Initial state
         Vector2 initPivot = content.pivot;
         float initY = content.anchoredPosition.y;
@@ -764,10 +777,20 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // We don't need to be changing the pivot here.
         if (!this.IsScrollable())
         {
+            Debug.Log("NON SCROLLABLE " + content.rect.height);
             content.pivot = _nonFilledScrollRectPivot;
             return;
         }
         
+        // When we go 
+        
+        /*
+        if (!initIsScrollable)
+        {
+            normalizedPosition = normalizedPosition.WithY(1);
+        }
+        */
+
         // Maintain our anchored position by moving the pivot (2)
         content.SetPivotWithoutMoving(initPivot);
         float diffY = content.anchoredPosition.y - initY;

@@ -18,6 +18,8 @@ public class TestStringRecyclerData : MonoBehaviour
     private bool _hasAppended = false;
     private bool _hasPrepended = false;
 
+    public static bool stop = false;
+
     
     private IEnumerable<string> InitEntries => 
         (new []
@@ -36,14 +38,26 @@ public class TestStringRecyclerData : MonoBehaviour
     {
         _recycler.AppendEntries(InitEntries);
         // _recycler.AppendEntries(new [] { "5f578bcd-6e1f-403e-9861-bb118105c5628f0505d8-a157-4e84-9497-686ebed5d463" });
+        
+        /*
+        foreach (string entry in InitEntries)
+        {
+            if (stop)
+            {
+                return;
+            }
+            
+            _recycler.AppendEntries(new [] { entry });
+        }
+        */
     }
     
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            _recycler.PrependEntries(new [] { RandomString });
-            
+            _recycler.PrependEntries(new [] { RandomString + RandomString });
+
             /*
             _recycler.ScrollToIndex(0, ScrollToAlignment.EntryTop, () =>
             {
@@ -71,6 +85,10 @@ public class TestStringRecyclerData : MonoBehaviour
             _hasAppended = true;
             */
         }
+        else if (Input.GetKeyDown(KeyCode.F))
+        {
+            _recycler.content.SetPivotWithoutMoving(new Vector2(0f, 1f));
+        }
         else if (Input.GetKeyDown(KeyCode.C))
         {
             _recycler.Clear();
@@ -81,17 +99,17 @@ public class TestStringRecyclerData : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.L))
         {
-            _recycler.InsertRange(1, new [] { RandomString, RandomString }, FixEntries.Above);
+            _recycler.InsertRange(0, new [] { RandomString }, FixEntries.Above);
         }
         else if (Input.GetKeyDown(KeyCode.K))
         {
-            _recycler.RemoveRange(1, 2, FixEntries.Above);
+            _recycler.RemoveRange(0, 1, FixEntries.Above);
         }
         else if (Input.GetKeyDown(KeyCode.M))
         {
             _recycler.ScrollToIndex(12, ScrollToAlignment.EntryMiddle, isImmediate:true);
         }
-
+        
         return;
         if (_hasAppended && !_recycler.IsAtBottom())
         {
