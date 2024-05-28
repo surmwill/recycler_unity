@@ -41,20 +41,22 @@ public abstract class RecyclerScrollRectEntry<TEntryData> : MonoBehaviour
         get
         {
             ISlidingIndexWindow indexWindow = Recycler.IndexWindow;
-            
-            if (indexWindow.Exists)
-            {
-                if (indexWindow.IsVisible(Index))
-                {
-                    return RecyclerEntryState.Visible;
-                }
-                
-                if (indexWindow.IsInStartCache(Index) || indexWindow.IsInEndCache(Index))
-                {
-                    return RecyclerEntryState.Cached;
-                }
-            }
 
+            if (!indexWindow.Exists)
+            {
+                return RecyclerEntryState.PooledUnbound;
+            }
+            
+            if (indexWindow.IsVisible(Index))
+            {
+                return RecyclerEntryState.Visible;
+            }
+                
+            if (indexWindow.IsInStartCache(Index) || indexWindow.IsInEndCache(Index))
+            {
+                return RecyclerEntryState.Cached;
+            }
+                
             return Index == UnboundIndex ? RecyclerEntryState.PooledUnbound : RecyclerEntryState.PooledBound;
         }
     }
