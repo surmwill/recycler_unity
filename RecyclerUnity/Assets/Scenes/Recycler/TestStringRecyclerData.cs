@@ -56,7 +56,7 @@ public class TestStringRecyclerData : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            _recycler.PrependEntries(new [] { RandomString + RandomString });
+            _recycler.PrependEntries(new [] { RandomString });
 
             /*
             _recycler.ScrollToIndex(0, ScrollToAlignment.EntryTop, () =>
@@ -99,7 +99,7 @@ public class TestStringRecyclerData : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.L))
         {
-            _recycler.InsertRange(0, new [] { RandomString }, FixEntries.Above);
+            _recycler.InsertRange(0, new [] { RandomString }, FixEntries.Mid);
         }
         else if (Input.GetKeyDown(KeyCode.K))
         {

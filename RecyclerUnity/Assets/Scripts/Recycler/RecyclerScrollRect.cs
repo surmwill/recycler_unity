@@ -310,8 +310,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     {
         // Get the current state of visible entries
         UpdateVisibility();
-        
-        Debug.Log(_indexWindow.PrintRange());
 
         // If the window of active entries changes we'll need to update the cache accordingly
         if (_indexWindow.IsDirty)
@@ -510,11 +508,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         void EntryIsVisible(RecyclerScrollRectEntry<TEntryData> entry)
         {
             int entryIndex = entry.Index;
-
-            if (entryIndex == 0)
-            {
-                Debug.Log(entry.transform.localPosition);
-            }
 
             if (!_indexWindow.VisibleStartIndex.HasValue || entryIndex < _indexWindow.VisibleStartIndex)
             {
@@ -766,7 +759,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // Initial state
         Vector2 initPivot = content.pivot;
         float initY = content.anchoredPosition.y;
-        bool isInitScrollable = this.IsScrollable();
 
         // Temporarily set the pivot to only push itself and the elements above or below it, and rebuild (1)
         content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f : fixEntries == FixEntries.Above ? 1f : 0.5f));
@@ -777,19 +769,10 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         {
             content.pivot = _nonFilledScrollRectPivot;
             
-            // This seems superfluous, but with < fullscreen worth of content the pivot also controls where in the viewport the (less than fullscreen) content
-            // is centered. This alignment does not immediately occur upon pivot change, so we trigger it immediately here by a normalized position call. 
+            // This seems superfluous, but with < fullscreen worth of content the pivot also controls where in the viewport the (< fullscreen) content
+            // is centered. This alignment does not immediately occur upon pivot change, so we trigger it immediately here by a normalized position call.
             normalizedPosition = normalizedPosition.WithY(0f);
             
-            return;
-        }
-        
-        // If we went from non-fullscreen -> a fullscreen or more worth of content, then Unity needs to decide where to place the viewport over the content.
-        // Upon testing I could not get consistent results, therefore we define something consistent here: upon growing from non-fullscreen -> fullscreen we
-        // will always set the viewport to the very first entry (i.e. back to the beginning)
-        if (!isInitScrollable)
-        {
-            normalizedPosition = normalizedPosition.WithY(StartCacheTransformPosition == RecyclerTransformPosition.Top ? 1f : 0f);
             return;
         }
 
