@@ -51,6 +51,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private RecyclerEndcap<TEntryData> _endcap = null;
 
     /// <summary>
+    /// Called after the Recycler's scroll has been handled and we have the correct final set of entries on screen (for this frame).
+    /// Unless the user performs a manual operation (append/prepend/insert/delete), the entries will remain where they are on screen
+    /// and can operated on under this assumption
+    /// </summary>
+    public event Action OnRecyclerUpdated;
+
+    /// <summary>
     /// The current data being bound to the entries
     /// </summary>
     public IReadOnlyList<TEntryData> DataForEntries => _dataForEntries;
@@ -375,6 +382,10 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // Update what should be in our start or end cache
         UpdateCaches();
 
+        // We now have the final set of entries in their correct positions for this frame.
+        // Give the user the opportunity for to query/operate on them knowing they won't shift.
+        OnRecyclerUpdated?.Invoke();
+        
         // Sanity checks
         if (Application.isEditor)
         {
