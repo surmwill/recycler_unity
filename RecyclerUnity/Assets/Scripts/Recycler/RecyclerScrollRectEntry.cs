@@ -22,16 +22,39 @@ public abstract class RecyclerScrollRectEntry<TEntryData> : MonoBehaviour
     /// This entries' RectTransform
     /// </summary>
     public RectTransform RectTransform { get; private set; }
-    
+
     /// <summary>
     /// The data bound to this entry
     /// </summary>
-    protected TEntryData Data { get; private set; }
+    public TEntryData Data { get; private set; }
     
     /// <summary>
     /// The scroll rect this is a part of
     /// </summary>
-    protected RecyclerScrollRect<TEntryData> Recycler { get; private set; }
+    public RecyclerScrollRect<TEntryData> Recycler { get; private set; }
+
+    public RecyclerEntryState RecyclerEntryState
+    {
+        get
+        {
+            ISlidingIndexWindow indexWindow = Recycler.IndexWindow;
+            
+            if (indexWindow.Exists)
+            {
+                if (indexWindow.IsVisible(Index))
+                {
+                    return RecyclerEntryState.Visible;
+                }
+                
+                if (indexWindow.IsInStartCache(Index) || indexWindow.IsInEndCache(Index))
+                {
+                    return RecyclerEntryState.Cached;
+                }
+            }
+
+            return Index == UnboundIndex ? RecyclerEntryState.PooledUnbound : RecyclerEntryState.PooledBound;
+        }
+    }
 
     protected virtual void Awake()
     {

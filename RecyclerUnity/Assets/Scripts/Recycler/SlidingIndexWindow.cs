@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class SlidingIndexWindow
+public class SlidingIndexWindow : ISlidingIndexWindow
 {
     private readonly int _numCached;
     
@@ -33,7 +33,10 @@ public class SlidingIndexWindow
         }
     }
 
-    public bool IsInitialized => VisibleStartIndex.HasValue && VisibleEndIndex.HasValue;
+    /// <summary>
+    /// The window needs a start and an end index. Prior to any data (i.e. an empty recycler) these do not exist and so the window does not exist.
+    /// </summary>
+    public bool Exists => VisibleStartIndex.HasValue && VisibleEndIndex.HasValue;
 
     public int CachedStartIndex => Mathf.Max(VisibleStartIndex.GetValueOrDefault() - _numCached, 0);
     public int CachedEndIndex => Mathf.Max(VisibleEndIndex.GetValueOrDefault() + _numCached, 0);
@@ -76,17 +79,17 @@ public class SlidingIndexWindow
 
     public bool IsVisible(int index)
     {
-        return IsInitialized && index >= VisibleStartIndex && index <= VisibleEndIndex;
+        return Exists && index >= VisibleStartIndex && index <= VisibleEndIndex;
     }
 
     public bool IsInStartCache(int index)
     {
-        return IsInitialized && index >= CachedStartIndex && index < VisibleStartIndex;
+        return Exists && index >= CachedStartIndex && index < VisibleStartIndex;
     }
 
     public bool IsInEndCache(int index)
     {
-        return IsInitialized && index > VisibleEndIndex && index <= CachedEndIndex;
+        return Exists && index > VisibleEndIndex && index <= CachedEndIndex;
     }
 
     public bool Contains(int index)

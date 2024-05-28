@@ -62,7 +62,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     {
         get
         {
-            if (!_indexWindow.IsInitialized)
+            if (!_indexWindow.Exists)
             {
                 return new List<RecyclerScrollRectEntry<TEntryData>>();
             }
@@ -84,7 +84,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     {
         get
         {
-            if (!_indexWindow.IsInitialized)
+            if (!_indexWindow.Exists)
             {
                 return (new List<RecyclerScrollRectEntry<TEntryData>>(), new List<RecyclerScrollRectEntry<TEntryData>>());
             }
@@ -112,7 +112,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     {
         get
         {
-            if (_indexWindow.IsInitialized)
+            if (_indexWindow.Exists)
             {
                 return new List<RecyclerScrollRectEntry<TEntryData>>();
             }
@@ -126,6 +126,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             return activeEntries;
         }
     }
+
+    /// <summary>
+    /// Keeps track of the current window of bound indices
+    /// </summary>
+    public ISlidingIndexWindow IndexWindow => _indexWindow;
+    
+    private SlidingIndexWindow _indexWindow;
 
     // In the scene hierarchy, are our entries' indices increasing as we go down the sibling list?
     // Increasing entries mean our first entry with index 0 is at the top, and so is our start cache.
@@ -145,8 +152,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     // Unbound entries waiting in the pool
     private readonly Queue<RecyclerScrollRectEntry<TEntryData>> _unboundEntries = new();
 
-    private SlidingIndexWindow _indexWindow;
-    
     private readonly List<TEntryData> _dataForEntries = new();
 
     private Vector2 _nonFilledScrollRectPivot;
@@ -191,7 +196,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         InsertDataForEntryAt(index, entryData);
         
         // We don't need to create the entry yet, it will get created when we scroll to it
-        if (_indexWindow.IsInitialized && !willBeInStartCache && !willBeInEndCache && !willBeVisible)
+        if (_indexWindow.Exists && !willBeInStartCache && !willBeInEndCache && !willBeVisible)
         {
             return;
         }
