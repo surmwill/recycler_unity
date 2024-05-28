@@ -51,10 +51,82 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private RecyclerEndcap<TEntryData> _endcap = null;
 
     /// <summary>
-    /// The current list of data we are binding to entries
+    /// The current data being bound to the entries
     /// </summary>
     public IReadOnlyList<TEntryData> DataForEntries => _dataForEntries;
+
+    /// <summary>
+    /// The currently visible entries, in increasing order
+    /// </summary>
+    public IReadOnlyList<RecyclerScrollRectEntry<TEntryData>> VisibleEntries
+    {
+        get
+        {
+            if (!_indexWindow.IsInitialized)
+            {
+                return new List<RecyclerScrollRectEntry<TEntryData>>();
+            }
+            
+            List<RecyclerScrollRectEntry<TEntryData>> visibleEntries = new List<RecyclerScrollRectEntry<TEntryData>>();
+            for (int i = _indexWindow.VisibleStartIndex.Value; i <= _indexWindow.VisibleEndIndex.Value; i++)
+            {
+                visibleEntries.Add(_activeEntries[i]);
+            }
+
+            return visibleEntries;
+        }
+    }
+
+    /// <summary>
+    /// The current entries in the cache, in increasing order
+    /// </summary>
+    public (IReadOnlyList<RecyclerScrollRectEntry<TEntryData>> StartCache, IReadOnlyList<RecyclerScrollRectEntry<TEntryData>> EndCache) CachedEntries
+    {
+        get
+        {
+            if (!_indexWindow.IsInitialized)
+            {
+                return (new List<RecyclerScrollRectEntry<TEntryData>>(), new List<RecyclerScrollRectEntry<TEntryData>>());
+            }
+            
+            List<RecyclerScrollRectEntry<TEntryData>> cachedStartEntries = new List<RecyclerScrollRectEntry<TEntryData>>();
+            for (int i = _indexWindow.CachedStartIndex; i < _indexWindow.VisibleStartIndex.Value; i++)
+            {
+                cachedStartEntries.Add(_activeEntries[i]);
+            }
+
+            List<RecyclerScrollRectEntry<TEntryData>> cachedEndEntries = new List<RecyclerScrollRectEntry<TEntryData>>();
+            for (int i = _indexWindow.VisibleEndIndex.Value + 1; i <= _indexWindow.CachedEndIndex && i < _dataForEntries.Count; i++)
+            {
+                cachedEndEntries.Add(_activeEntries[i]);
+            }
+
+            return (cachedStartEntries, cachedEndEntries);
+        }
+    }
     
+    /// <summary>
+    /// The currently visible entries, in increasing order
+    /// </summary>
+    public IReadOnlyList<RecyclerScrollRectEntry<TEntryData>> ActiveEntries
+    {
+        get
+        {
+            if (_indexWindow.IsInitialized)
+            {
+                return new List<RecyclerScrollRectEntry<TEntryData>>();
+            }
+
+            List<RecyclerScrollRectEntry<TEntryData>> activeEntries = new List<RecyclerScrollRectEntry<TEntryData>>();
+            for (int i = _indexWindow.CachedStartIndex; i <= _indexWindow.CachedEndIndex && i < _dataForEntries.Count; i++)
+            {
+                activeEntries.Add(_activeEntries[i]);
+            }
+
+            return activeEntries;
+        }
+    }
+
     // In the scene hierarchy, are our entries' indices increasing as we go down the sibling list?
     // Increasing entries mean our first entry with index 0 is at the top, and so is our start cache.
     // Decreasing entries mean our first entry with index 0 is at the bottom, and so is our start cache.
