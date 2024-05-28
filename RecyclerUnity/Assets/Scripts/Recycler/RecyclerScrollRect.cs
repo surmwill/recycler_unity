@@ -284,11 +284,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     protected override void LateUpdate()
     {
-        if (_notScrollable)
-        {
-            return;
-        }
-        
         // Scrolling is handled here which may shift the visible window
         base.LateUpdate();
 
@@ -467,11 +462,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     private void CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
     {
-        if (_notScrollable)
-        {
-            return;
-        }
-        
         Debug.Log("CREATING " + dataIndex);
         
         if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TEntryData> entry))
@@ -540,17 +530,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // Not visible
         void EntryIsNotVisible(RecyclerScrollRectEntry<TEntryData> entry)
         {
-            if (_notScrollable)
-            {
-                return;
-            }
-
-            _notScrollable = true;
-            Debug.Log("NOT VISIBLE " + entry.Index);
-            Debug.Break();
-            
-            Debug.Log(entry.transform.localPosition);
-            return;
             int entryIndex = entry.Index;
 
             // TODO: how does this handle horizontally?
@@ -643,10 +622,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     private void SendToRecycling(RecyclerScrollRectEntry<TEntryData> entry, FixEntries fixEntries = FixEntries.Below)
     {
-        _notScrollable = true;
         Debug.Log("RECYCLED: " + entry.Index + " " + Time.frameCount);
-        Debug.Break();
-        return;
 
         // Handle the GameObject
         RectTransform entryTransform = entry.RectTransform;
@@ -785,42 +761,26 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// if the content size changes then the previous anchored position will be defined relative to a differently sized ScrollRect. We'll get an unnatural jump in values.
     /// Upon resizing we then ensure our anchored position remains the same by moving the anchor itself. 
     /// </summary>
-    private bool _notScrollable = false;
     private void RecalculateContentSize(FixEntries fixEntries)
     {
-        if (_notScrollable)
-        {
-            return;
-        }
-        
         // Initial state
         Vector2 initPivot = content.pivot;
         float initY = content.anchoredPosition.y;
         bool isInitScrollable = this.IsScrollable();
 
         // Temporarily set the pivot to only push itself and the elements above or below it, and rebuild (1)
-        if (this.IsScrollable())
-        {
-            content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f : fixEntries == FixEntries.Above ? 1f : 0.5f));   
-        }
-        
+        content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f : fixEntries == FixEntries.Above ? 1f : 0.5f));
         LayoutRebuilder.ForceRebuildLayoutImmediate(content);
-        Canvas.ForceUpdateCanvases();
-        
-
-
-        if (this.IsScrollable())
-        {
-            //_notScrollable = true;
-            //Debug.Log("SCROLLABLE");
-            //Debug.Break();
-            //return;
-        }
 
         // If we haven't filled up the viewport yet, there's no need to be moving the pivot around to maintain our current view (everything can already be seen)
         if (!this.IsScrollable())
         {
             content.pivot = _nonFilledScrollRectPivot;
+            
+            // This seems superfluous, but with < fullscreen worth of content the pivot also controls where in the viewport the (less than fullscreen) content
+            // is centered. This alignment does not immediately occur upon pivot change, so we trigger it immediately here by a normalized position call. 
+            normalizedPosition = normalizedPosition.WithY(0f);
+            
             return;
         }
         
@@ -829,19 +789,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         // will always set the viewport to the very first entry (i.e. back to the beginning)
         if (!isInitScrollable)
         {
-            Debug.Log("TO ZERO");
             normalizedPosition = normalizedPosition.WithY(StartCacheTransformPosition == RecyclerTransformPosition.Top ? 1f : 0f);
             return;
         }
-        
-        // When we go 
-        /*
-        if (!initIsScrollable)
-        {
-            Debug.Log("B " + normalizedPosition);
-            normalizedPosition = normalizedPosition.WithY(1);
-        }
-        */
 
         // Maintain our anchored position by moving the pivot (2)
         content.SetPivotWithoutMoving(initPivot);
