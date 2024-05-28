@@ -50,6 +50,10 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     [SerializeField]
     private RecyclerEndcap<TEntryData> _endcap = null;
 
+    [Tooltip("On mobile, the target frame rate is often lower than technically possible to preserve battery, but a higher frame rate will result in smoother scrolling.")]
+    [SerializeField]
+    private bool _trySetTargetFrameRateTo60 = true;
+
     /// <summary>
     /// Called after the Recycler's scroll has been handled and we have the correct final set of entries on screen (for this frame).
     /// Unless the user performs a manual operation (append/prepend/insert/delete), the entries will remain where they are on screen
@@ -174,7 +178,14 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         {
             return;
         }
-
+        
+        // On mobile, the target frame rate is often lower than technically possible to preserve battery, but a 
+        // higher frame rate will result in smoother scrolling.
+        if (_trySetTargetFrameRateTo60)
+        {
+            Application.targetFrameRate = 60;
+        }
+        
         // While non-fullscreen, the pivot decides how the content gets aligned in the viewport
         _nonFilledScrollRectPivot = content.pivot;
         
@@ -988,7 +999,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             _dataForEntries.RemoveAt(index);
         }
     }
-    
+
     private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)
     {
         Array.ForEach(behaviours, l => l.enabled = isEnabled);
