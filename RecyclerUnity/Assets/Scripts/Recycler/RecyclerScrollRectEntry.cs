@@ -33,6 +33,9 @@ public abstract class RecyclerScrollRectEntry<TEntryData> : MonoBehaviour
     /// </summary>
     public RecyclerScrollRect<TEntryData> Recycler { get; private set; }
 
+    /// <summary>
+    /// The current state of the entry in the recycler
+    /// </summary>
     public RecyclerEntryState RecyclerEntryState
     {
         get
