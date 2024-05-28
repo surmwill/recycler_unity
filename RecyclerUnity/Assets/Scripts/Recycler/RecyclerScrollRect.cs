@@ -187,13 +187,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             SendToRecycling(_activeEntries[index], fixEntries);
         }
 
-        // Unbind the entry if it exists in recycling
+        // Unbind the entry in recycling
         if (_recycledEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData> entry))
         {
             entry.UnbindIndex();
             _recycledEntries.Remove(index);
+            _unboundEntries.Enqueue(entry);
         }
-        _unboundEntries.Enqueue(entry);
 
         // Update bookkeeping to reflect the deleted entry
         RemoveDataForEntryAt(index);
@@ -460,7 +460,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     private void CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
     {
-        Debug.Log("CREATING " + dataIndex);
+        Debug.Log("CREATING " + dataIndex + " " + Time.frameCount);
         
         if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TEntryData> entry))
         {
@@ -887,24 +887,19 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
      /// </summary>
      private void InsertDataForEntriesAt(int index, IReadOnlyCollection<TEntryData> entryData) 
      {
-        if (index < _dataForEntries.Count)
-        {
-            ShiftIndicesBoundEntries(index, entryData.Count);
-        }
-        
-        _indexWindow.InsertRange(index, entryData.Count);
+         ShiftIndicesBoundEntries(index, entryData.Count); 
+         _indexWindow.InsertRange(index, entryData.Count);
         _dataForEntries.InsertRange(index, entryData);
     }
 
     private void RemoveDataForEntryAt(int index)
     {
-        if (index < _dataForEntries.Count)
+        if (index >= 0 && index < _dataForEntries.Count)
         {
             ShiftIndicesBoundEntries(index, -1);
+            _indexWindow.Remove(index);
+            _dataForEntries.RemoveAt(index);
         }
-        
-        _indexWindow.Remove(index);
-        _dataForEntries.RemoveAt(index);
     }
     
     private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)

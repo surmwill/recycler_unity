@@ -42,14 +42,14 @@ public class SlidingIndexWindow
     {
         IsDirty = true;
 
-        if (index == VisibleStartIndex)
-        {
-            VisibleStartIndex += num;
-        }
-        
         if (index >= VisibleStartIndex && index <= VisibleEndIndex)
         {
             VisibleEndIndex += num;
+        }
+        
+        if (index == VisibleStartIndex)
+        {
+            VisibleStartIndex += num;
         }
     }
 
@@ -57,14 +57,14 @@ public class SlidingIndexWindow
     {
         IsDirty = true;
 
-        if (index == VisibleStartIndex)
-        {
-            VisibleStartIndex++;
-        }
-
         if (index >= VisibleStartIndex && index <= VisibleEndIndex)
         {
             VisibleEndIndex--;
+        }
+        
+        if (index == VisibleStartIndex)
+        {
+            VisibleStartIndex++;
         }
     }
     
