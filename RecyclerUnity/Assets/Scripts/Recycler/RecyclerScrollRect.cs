@@ -424,7 +424,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     private void UpdateEndcap()
     {
-        return;
         if (_endcap == null)
         {
             return;
