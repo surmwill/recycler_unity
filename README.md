@@ -9,4 +9,5 @@ dynamically sized entries (auto-calculation supported), resizing (auto-calculati
 
 The heftiest part of the code can be found under: RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs
 
+### Basic Functionality
 ![](https://github.com/surmwill/recycler_unity/blob/master/README_Images/recycler_basic_functionality.gif)
