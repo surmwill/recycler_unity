@@ -13,7 +13,7 @@ public class TestStringRecyclerData : MonoBehaviour
     [SerializeField]
     private RecyclerScrollRect<string> _recycler = null;
 
-    private const int NumEntries = 20;
+    private const int NumEntries = 10;
 
     private bool _hasAppended = false;
     private bool _hasPrepended = false;
@@ -35,7 +35,7 @@ public class TestStringRecyclerData : MonoBehaviour
     private string LongString => Enumerable.Range(0, 25).Aggregate(string.Empty, (s, _) => s + Guid.NewGuid());
 
     private void Start()
-    {
+    { 
         _recycler.AppendEntries(InitEntries);
         // _recycler.AppendEntries(new [] { "5f578bcd-6e1f-403e-9861-bb118105c5628f0505d8-a157-4e84-9497-686ebed5d463" });
         
