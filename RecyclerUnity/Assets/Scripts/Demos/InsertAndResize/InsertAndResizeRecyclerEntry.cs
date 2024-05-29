@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,11 +13,14 @@ public class InsertAndResizeRecyclerEntry : RecyclerScrollRectEntry<InsertAndRes
 {
     [SerializeField]
     private CanvasGroup _displayNumber = null;
+
+    [SerializeField]
+    private TMP_Text _numberText = null;
     
     private const int NormalSize = 250;
     private const int GrowSize = 500;
     
-    private const float GrowTimeSeconds = 1.5f;
+    private const float GrowTimeSeconds = 2f;
     private const float FadeTimeSeconds = 0.4f;
     
     private Sequence _growSequence;
@@ -23,7 +28,7 @@ public class InsertAndResizeRecyclerEntry : RecyclerScrollRectEntry<InsertAndRes
     protected override void OnBindNewData(InsertAndResizeData entryData)
     {
         _displayNumber.alpha = 1f;
-        
+
         if (!entryData.ShouldGrow)
         {
             RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(NormalSize);
@@ -38,10 +43,14 @@ public class InsertAndResizeRecyclerEntry : RecyclerScrollRectEntry<InsertAndRes
             
             RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(0f);
             _displayNumber.alpha = 0f;
-            
-            _growSequence = DOTween
-                .Sequence(RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowTimeSeconds))
-                .Append(_displayNumber.DOFade(1f, FadeTimeSeconds));
+
+            _growSequence = DOTween.Sequence()
+                .Append(DOTween.To(
+                    () => RectTransform.sizeDelta.y,
+                    newHeight => RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(newHeight),
+                    GrowSize,
+                    GrowTimeSeconds).OnUpdate(() => RecalculateDimensions(FixEntries.Above)))
+                .OnComplete(() => _displayNumber.DOFade(1f, FadeTimeSeconds));
         }
     }
 
@@ -52,5 +61,10 @@ public class InsertAndResizeRecyclerEntry : RecyclerScrollRectEntry<InsertAndRes
     protected override void OnSentToRecycling()
     {
         _growSequence?.Kill(true);
+    }
+
+    private void Update()
+    {
+        _numberText.text = Index.ToString();
     }
 }
