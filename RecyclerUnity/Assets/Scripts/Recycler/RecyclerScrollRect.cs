@@ -22,7 +22,7 @@ using Transform = UnityEngine.Transform;
 /// </summary>
 public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 {
-    [Header("Recycler Fields")]
+    [Header("Recycler")]
     [SerializeField]
     private RecyclerScrollRectEntry<TEntryData> _recyclerEntryPrefab = null;
 
@@ -34,25 +34,27 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     [SerializeField]
     private RecyclerTransformPosition _appendTo = RecyclerTransformPosition.Bot;
+    
+    [Tooltip("On mobile, the target frame rate is often lower than technically possible to preserve battery, but a higher frame rate will result in smoother scrolling.")]
+    [SerializeField]
+    private bool _setTargetFrameRateTo60 = true;
 
+    [Header("Pool")]
     [SerializeField]
     private RectTransform _poolParent = null;
     
     [SerializeField]
     private int _poolSize = 15;
 
-    [SerializeField]
-    private RecyclerEndcap<TEntryData> _endcapPrefab = null;
-
+    [Header("Endcap (optional)")]
     [SerializeField]
     private RectTransform _endcapParent = null;
     
     [SerializeField]
-    private RecyclerEndcap<TEntryData> _endcap = null;
+    private RecyclerEndcap<TEntryData> _endcapPrefab = null;
 
-    [Tooltip("On mobile, the target frame rate is often lower than technically possible to preserve battery, but a higher frame rate will result in smoother scrolling.")]
     [SerializeField]
-    private bool _trySetTargetFrameRateTo60 = true;
+    private RecyclerEndcap<TEntryData> _endcap = null;
 
     /// <summary>
     /// Called after the Recycler's scroll has been handled and we have the correct final set of entries on screen (for this frame).
@@ -176,7 +178,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         
         // On mobile, the target frame rate is often lower than technically possible to preserve battery, but a 
         // higher frame rate will result in smoother scrolling.
-        if (_trySetTargetFrameRateTo60)
+        if (_setTargetFrameRateTo60)
         {
             Application.targetFrameRate = 60;
         }
