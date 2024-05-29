@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 1357053102022103487}
   - component: {fileID: 1357053102022103485}
   - component: {fileID: 1357053102022103486}
-  - component: {fileID: 1357053102022103484}
+  - component: {fileID: 4767176983589904683}
   m_Layer: 0
-  m_Name: Index
+  m_Name: IndexText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -136,7 +136,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!225 &1357053102022103484
+--- !u!225 &4767176983589904683
 CanvasGroup:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -275,7 +275,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 657e2b497cc2625449e3fa7f0be6a4ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _displayNumber: {fileID: 1357053102022103484}
+  _displayNumber: {fileID: 4767176983589904683}
+  _numberText: {fileID: 1357053102022103486}
 --- !u!1 &1357053102845123812
 GameObject:
   m_ObjectHideFlags: 0

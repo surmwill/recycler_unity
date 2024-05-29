@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -76,7 +77,10 @@ public partial class RecyclerScrollRect<TEntryData>
             // Add any missing entries
             for (int i = 0; i < poolDifference; i++)
             {
-                RecyclerScrollRectEntry<TEntryData> entry = (RecyclerScrollRectEntry<TEntryData>) PrefabUtility.InstantiatePrefab(_recyclerEntryPrefab, _poolParent);
+                RecyclerScrollRectEntry<TEntryData> entry =
+                    InstantiatePrefabPreserveRectTransform(_recyclerEntryPrefab.gameObject, _poolParent)
+                        .GetComponent<RecyclerScrollRectEntry<TEntryData>>();
+
                 entry.name = RecyclerScrollRectEntry<TEntryData>.UnboundIndex.ToString();
                 entry.gameObject.SetActive(false);
             }
@@ -107,7 +111,9 @@ public partial class RecyclerScrollRect<TEntryData>
                 _endcap = _endcapParent.GetComponentInChildren<RecyclerEndcap<TEntryData>>(true);
                 if (_endcap == null)
                 {
-                    _endcap = (RecyclerEndcap<TEntryData>) PrefabUtility.InstantiatePrefab(_endcapPrefab, _endcapParent);
+                    _endcap = InstantiatePrefabPreserveRectTransform(_endcapPrefab.gameObject, _endcapParent)
+                        .GetComponent<RecyclerEndcap<TEntryData>>();
+                    
                     _endcap.gameObject.SetActive(false);
                 }
             }
@@ -168,5 +174,27 @@ public partial class RecyclerScrollRect<TEntryData>
            
             lastIndex = currentIndex;
         }
+    }
+
+    private static GameObject InstantiatePrefabPreserveRectTransform(GameObject prefab, Transform parent)
+    {
+        RectTransform rectTransform = (RectTransform) prefab.transform;
+        if (rectTransform == null)
+        {
+            throw new ArgumentException("Expected a prefab with a RectTransform");
+        }
+        
+        GameObject instance = (GameObject) PrefabUtility.InstantiatePrefab(prefab, parent);
+        CopyTransformValues(rectTransform, (RectTransform) instance.transform);
+
+        return instance;
+    }
+    
+    private static void CopyTransformValues(RectTransform from, RectTransform to)
+    {
+        to.pivot = from.pivot;
+        (to.anchorMin, to.anchorMax) = (from.anchorMin, from.anchorMax);
+        to.anchoredPosition = from.anchoredPosition;
+        to.sizeDelta = from.sizeDelta;
     }
 }
