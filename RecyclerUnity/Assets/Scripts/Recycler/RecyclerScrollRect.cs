@@ -138,13 +138,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         }
     }
 
-    /// <summary>
-    /// Keeps track of the current window of bound indices
-    /// </summary>
-    public ISlidingIndexWindow IndexWindow => _indexWindow;
-    
-    private SlidingIndexWindow _indexWindow;
-
     // In the scene hierarchy, are our entries' indices increasing as we go down the sibling list?
     // Increasing entries mean our first entry with index 0 is at the top, and so is our start cache.
     // Decreasing entries mean our first entry with index 0 is at the bottom, and so is our start cache.
@@ -164,6 +157,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private readonly Queue<RecyclerScrollRectEntry<TEntryData>> _unboundEntries = new();
 
     private readonly List<TEntryData> _dataForEntries = new();
+    
+    private SlidingIndexWindow _indexWindow;
 
     private Vector2 _nonFilledScrollRectPivot;
 

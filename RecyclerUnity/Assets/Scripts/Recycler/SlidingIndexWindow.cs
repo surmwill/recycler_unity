@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class SlidingIndexWindow : ISlidingIndexWindow
+public class SlidingIndexWindow
 {
     private readonly int _numCached;
     
