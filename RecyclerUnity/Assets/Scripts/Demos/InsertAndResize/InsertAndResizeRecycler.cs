@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// A recycler to be fed bool data
 /// </summary>
-public class BoolRecycler : RecyclerScrollRect<object>
+public class InsertAndResizeRecycler : RecyclerScrollRect<InsertAndResizeData>
 {
     
 }
