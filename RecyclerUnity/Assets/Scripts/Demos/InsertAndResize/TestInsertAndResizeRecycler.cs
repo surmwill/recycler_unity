@@ -8,7 +8,7 @@ public class TestInsertAndResizeRecycler : MonoBehaviour
     [SerializeField]
     private InsertAndResizeRecycler _recycler = null;
     
-    private const int InitNumEntries = 35;
+    private const int InitNumEntries = 100;
     private const int NumInsertionEntries = 2;
     
     private void Start()
@@ -18,9 +18,14 @@ public class TestInsertAndResizeRecycler : MonoBehaviour
     
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.I))
         {
-            _recycler.InsertRange(3, CreateDataForEntries(NumInsertionEntries, true));
+            _recycler.InsertRange(61, CreateDataForEntries(NumInsertionEntries, true));
+        }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            _recycler.ScrollToIndex(65);
         }
     }
 
