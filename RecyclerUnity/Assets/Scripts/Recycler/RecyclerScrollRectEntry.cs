@@ -33,34 +33,6 @@ public abstract class RecyclerScrollRectEntry<TEntryData> : MonoBehaviour
     /// </summary>
     public RecyclerScrollRect<TEntryData> Recycler { get; private set; }
 
-    /// <summary>
-    /// The current state of the entry in the recycler
-    /// </summary>
-    public RecyclerEntryState RecyclerEntryState
-    {
-        get
-        {
-            ISlidingIndexWindow indexWindow = Recycler.IndexWindow;
-
-            if (!indexWindow.Exists)
-            {
-                return RecyclerEntryState.PooledUnbound;
-            }
-            
-            if (indexWindow.IsVisible(Index))
-            {
-                return RecyclerEntryState.Visible;
-            }
-                
-            if (indexWindow.IsInStartCache(Index) || indexWindow.IsInEndCache(Index))
-            {
-                return RecyclerEntryState.Cached;
-            }
-                
-            return Index == UnboundIndex ? RecyclerEntryState.PooledUnbound : RecyclerEntryState.PooledBound;
-        }
-    }
-
     protected virtual void Awake()
     {
         RectTransform = (RectTransform) transform;
