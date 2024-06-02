@@ -15,8 +15,12 @@ The heftiest part of the code can be found under: RecyclerUnity/Assets/Scripts/R
 ### Insertion/Resizing
 ![](https://github.com/surmwill/recycler_unity/blob/master/README_Images/recycler_insertion_resize.gif)
 
+### Deletion
+![](https://github.com/surmwill/recycler_unity/blob/master/README_Images/recycler_deletion.gif)
+
 ### Scrolling to index (65)
 - Includes indices that are not currently active in the recycler
 - Works with dynamically sized entries
   
  ![](https://github.com/surmwill/recycler_unity/blob/master/README_Images/recycler_scroll_to_index.gif)
+
