@@ -27,10 +27,9 @@ public class TestDeleteRecyclerScrollRect : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.A) && Array.TrueForAll(IndicesToRemove, index => activeEntries.ContainsKey(index)))
         {
-            Debug.Log("YES");
             foreach (int index in IndicesToRemove)
             {
-                ((DeleteEntry) activeEntries[index]).Delete();
+                ((DeleteRecyclerEntry) activeEntries[index]).Delete();
             }
         }
     }
