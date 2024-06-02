@@ -69,76 +69,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     public IReadOnlyList<TEntryData> DataForEntries => _dataForEntries;
 
     /// <summary>
-    /// The currently visible entries, in increasing order
+    /// The entries with active GameObjects, including both visible and cached
     /// </summary>
-    public IReadOnlyList<RecyclerScrollRectEntry<TEntryData>> VisibleEntries
-    {
-        get
-        {
-            if (!_indexWindow.Exists)
-            {
-                return new List<RecyclerScrollRectEntry<TEntryData>>();
-            }
-            
-            List<RecyclerScrollRectEntry<TEntryData>> visibleEntries = new List<RecyclerScrollRectEntry<TEntryData>>();
-            for (int i = _indexWindow.VisibleStartIndex.Value; i <= _indexWindow.VisibleEndIndex.Value; i++)
-            {
-                visibleEntries.Add(_activeEntries[i]);
-            }
-
-            return visibleEntries;
-        }
-    }
-
-    /// <summary>
-    /// The current entries in the cache, in increasing order
-    /// </summary>
-    public (IReadOnlyList<RecyclerScrollRectEntry<TEntryData>> StartCache, IReadOnlyList<RecyclerScrollRectEntry<TEntryData>> EndCache) CachedEntries
-    {
-        get
-        {
-            if (!_indexWindow.Exists)
-            {
-                return (new List<RecyclerScrollRectEntry<TEntryData>>(), new List<RecyclerScrollRectEntry<TEntryData>>());
-            }
-            
-            List<RecyclerScrollRectEntry<TEntryData>> cachedStartEntries = new List<RecyclerScrollRectEntry<TEntryData>>();
-            for (int i = _indexWindow.CachedStartIndex; i < _indexWindow.VisibleStartIndex.Value; i++)
-            {
-                cachedStartEntries.Add(_activeEntries[i]);
-            }
-
-            List<RecyclerScrollRectEntry<TEntryData>> cachedEndEntries = new List<RecyclerScrollRectEntry<TEntryData>>();
-            for (int i = _indexWindow.VisibleEndIndex.Value + 1; i <= _indexWindow.CachedEndIndex && i < _dataForEntries.Count; i++)
-            {
-                cachedEndEntries.Add(_activeEntries[i]);
-            }
-
-            return (cachedStartEntries, cachedEndEntries);
-        }
-    }
-    
-    /// <summary>
-    /// The currently visible entries, in increasing order
-    /// </summary>
-    public IReadOnlyList<RecyclerScrollRectEntry<TEntryData>> ActiveEntries
-    {
-        get
-        {
-            if (_indexWindow.Exists)
-            {
-                return new List<RecyclerScrollRectEntry<TEntryData>>();
-            }
-
-            List<RecyclerScrollRectEntry<TEntryData>> activeEntries = new List<RecyclerScrollRectEntry<TEntryData>>();
-            for (int i = _indexWindow.CachedStartIndex; i <= _indexWindow.CachedEndIndex && i < _dataForEntries.Count; i++)
-            {
-                activeEntries.Add(_activeEntries[i]);
-            }
-
-            return activeEntries;
-        }
-    }
+    public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData>> ActiveEntries => _activeEntries;
 
     // In the scene hierarchy, are our entries' indices increasing as we go down the sibling list?
     // Increasing entries mean our first entry with index 0 is at the top, and so is our start cache.
@@ -663,7 +596,37 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         Clear();
         AppendEntries(entryData);
     }
-    
+
+    /// <summary>
+    /// Returns the state of an entry
+    /// </summary>
+    public RecyclerScrollRectEntryState GetEntryState(RecyclerScrollRectEntry<TEntryData> entry)
+    {
+        int index = entry.Index;
+
+        if (!_indexWindow.Exists || index == RecyclerScrollRectEntry<TEntryData>.UnboundIndex)
+        {
+            return RecyclerScrollRectEntryState.InPoolUnbound;
+        }
+        
+        if (_indexWindow.IsVisible(index))
+        {
+            return RecyclerScrollRectEntryState.Visible;
+        }
+        
+        if (_indexWindow.IsInStartCache(index))
+        {
+            return RecyclerScrollRectEntryState.InStartCache;
+        }
+
+        if (_indexWindow.IsInEndCache(index))
+        {
+            return RecyclerScrollRectEntryState.InEndCache;
+        }
+
+        return RecyclerScrollRectEntryState.InPoolBound;
+    }
+
     /// <summary>
     /// Resets the scroll rect to its initial state with no entries
     /// </summary>
