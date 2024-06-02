@@ -5,7 +5,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
-public class DeleteEntry : RecyclerScrollRectEntry<object>
+public class DeleteRecyclerEntry : RecyclerScrollRectEntry<object>
 {
     [SerializeField]
     private TMP_Text _indexText = null;
@@ -37,7 +37,9 @@ public class DeleteEntry : RecyclerScrollRectEntry<object>
         float initHeight = RectTransform.sizeDelta.y;
         
         _deleteSequence = DOTween.Sequence()
-            .Append(RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(0f), DeleteTime).OnUpdate(() => RecalculateDimensions(FixEntries.Above)))
+            .Append(RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(0f), DeleteTime)
+                .SetEase(Ease.OutBounce)
+                .OnUpdate(() => RecalculateDimensions(FixEntries.Mid)))
             .OnComplete(() =>
             {
                 Recycler.RemoveAt(Index, FixEntries.Above);
