@@ -11,7 +11,7 @@ public class DeleteEntry : RecyclerScrollRectEntry<object>
     private TMP_Text _indexText = null;
 
     private const float DeleteTime = 1.5f;
-    
+
     private Sequence _deleteSequence;
 
     protected override void OnBindNewData(object _)
@@ -29,16 +29,21 @@ public class DeleteEntry : RecyclerScrollRectEntry<object>
 
     public void Delete()
     {
-        if (_deleteSequence == null)
+        if (_deleteSequence != null)
         {
-            _deleteSequence = DOTween.Sequence()
-                .Append(RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(0f), DeleteTime).OnUpdate(() => RecalculateDimensions(FixEntries.Above)))
-                .OnComplete(() =>
-                {
-                    Recycler.RemoveAt(Index, FixEntries.Above);
-                    _deleteSequence = null;
-                });   
+            return;
         }
+
+        float initHeight = RectTransform.sizeDelta.y;
+        
+        _deleteSequence = DOTween.Sequence()
+            .Append(RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(0f), DeleteTime).OnUpdate(() => RecalculateDimensions(FixEntries.Above)))
+            .OnComplete(() =>
+            {
+                Recycler.RemoveAt(Index, FixEntries.Above);
+                _deleteSequence = null;
+                RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(initHeight);
+            });
     }
 
     private void Update()
