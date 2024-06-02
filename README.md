@@ -7,7 +7,9 @@ Features include:
 appending, prepending, insertion, deletion, pooling, 
 dynamically sized entries (auto-calculation supported), resizing (auto-calculation supported), endcaps, and scrolling to any index (including those off screen).
 
-The heftiest part of the code can be found under: RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs
+The heftiest part of the code can be found under: 
+- [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs)
+- [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs) 
 
 ### Basic Functionality Video
 ![](https://github.com/surmwill/recycler_unity/blob/master/README_Images/recycler_basic_functionality_circles.gif)
