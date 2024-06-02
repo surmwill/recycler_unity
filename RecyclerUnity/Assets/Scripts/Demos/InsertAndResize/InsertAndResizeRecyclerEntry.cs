@@ -6,9 +6,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// A recycler entry to be fed null data
-/// </summary>
 public class InsertAndResizeRecyclerEntry : RecyclerScrollRectEntry<InsertAndResizeData>
 {
     [SerializeField]
