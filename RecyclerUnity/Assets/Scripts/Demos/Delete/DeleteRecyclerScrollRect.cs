@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InsertAndResizeRecycler : RecyclerScrollRect<InsertAndResizeData>
+public class DeleteRecyclerScrollRect : RecyclerScrollRect<object>
 {
     
 }
