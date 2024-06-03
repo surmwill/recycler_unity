@@ -8,7 +8,7 @@ using UnityEngine;
 ///
 /// Note that all ScrollRect entries are force expanded to the size of the viewport.
 /// </summary>
-public abstract class RecyclerEndcap<TRecyclerData> : MonoBehaviour
+public abstract class RecyclerScrollRectEndcap<TRecyclerData> : MonoBehaviour
 {
     /// <summary>
     /// The end-cap's RectTransform

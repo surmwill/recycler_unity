@@ -51,10 +51,10 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     private RectTransform _endcapParent = null;
     
     [SerializeField]
-    private RecyclerEndcap<TEntryData> _endcapPrefab = null;
+    private RecyclerScrollRectEndcap<TEntryData> _endcapPrefab = null;
 
     [SerializeField]
-    private RecyclerEndcap<TEntryData> _endcap = null;
+    private RecyclerScrollRectEndcap<TEntryData> _endcap = null;
 
     /// <summary>
     /// Called after the Recycler's scroll has been handled and we have the correct final set of entries on screen (for this frame).
