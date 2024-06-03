@@ -11,7 +11,7 @@ The heftiest part of the code (and the two complimentary parts of the Recycler) 
 - [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs)
 - [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs) 
 
-### Basic Functionality Video
+### Basic Functionality
 ![](README_Images/recycler_basic_functionality_circles.gif)
 
 ### Insertion/Resizing
