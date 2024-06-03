@@ -9,8 +9,9 @@ public class TestInsertAndResizeRecycler : MonoBehaviour
     private InsertAndResizeRecycler _recycler = null;
     
     private const int InitNumEntries = 100;
+    private const int InsertionIndex = 61;
     private const int NumInsertionEntries = 2;
-    
+
     private void Start()
     {
         _recycler.AppendEntries(CreateDataForEntries(InitNumEntries, false));
@@ -20,12 +21,7 @@ public class TestInsertAndResizeRecycler : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.I))
         {
-            _recycler.InsertRange(61, CreateDataForEntries(NumInsertionEntries, true));
-        }
-
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            _recycler.ScrollToIndex(65);
+            _recycler.InsertRange(InsertionIndex, CreateDataForEntries(NumInsertionEntries, true));
         }
     }
 
