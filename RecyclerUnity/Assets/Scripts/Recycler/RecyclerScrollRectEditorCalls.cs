@@ -108,11 +108,11 @@ public partial class RecyclerScrollRect<TEntryData>
             // Ensure the endcap exists in the pool
             if (_endcap == null)
             {
-                _endcap = _endcapParent.GetComponentInChildren<RecyclerEndcap<TEntryData>>(true);
+                _endcap = _endcapParent.GetComponentInChildren<RecyclerScrollRectEndcap<TEntryData>>(true);
                 if (_endcap == null)
                 {
                     _endcap = InstantiatePrefabPreserveRectTransform(_endcapPrefab.gameObject, _endcapParent)
-                        .GetComponent<RecyclerEndcap<TEntryData>>();
+                        .GetComponent<RecyclerScrollRectEndcap<TEntryData>>();
                     
                     _endcap.gameObject.SetActive(false);
                 }
