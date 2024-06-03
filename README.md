@@ -26,7 +26,7 @@ The heftiest part of the code (and the two complimentary parts of the Recycler) 
   
 ![](README_Images/recycler_appending_and_endcap.gif)
 
-### Scrolling to index (65)
+### Scrolling to index (45)
 - Includes indices that are not currently active in the recycler.
 - Works with dynamically sized entries.
   
