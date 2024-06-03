@@ -13,9 +13,9 @@ public class TestScrollToIndexRecycler : MonoBehaviour
     private ScrollToIndexRecyclerScrollRect _recycler = null;
     
     private const int InitNumEntries = 100;
-    private const int ScrollToIndex = 65;
+    private const int ScrollToIndex = 45;
 
-    private static readonly HashSet<int> EnlargeEntryIndices = new() { 61, 62 };
+    private static readonly HashSet<int> EnlargeEntryIndices = new() { 41, 42 };
 
     private void Start()
     {
