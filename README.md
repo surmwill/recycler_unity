@@ -20,7 +20,7 @@ The heftiest part of the code (and the two complimentary parts of the Recycler) 
 ### Deletion (15, 17, 18)
 ![](README_Images/recycler_deletion.gif)
 
-### Appending/Endcap
+### Appending/Prepending/Endcap
 - Equivalent behaviour is available for prepending.
 - Similar to insertion (insertion can accomplish the exact same thing), but more efficient as we know we are appending to the ends only and won't be pushing around any currently visible entries.
   
