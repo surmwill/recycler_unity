@@ -1,18 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// Demos appending entries to a Recycler. (The endcap will fetch and append more entries once we scroll to it)
+/// </summary>
 public class TestAppendRecycler : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+   [SerializeField]
+   private AppendRecyclerScrollRect _appendRecycler = null;
+   
+   private const int InitEntries = 30;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+   private void Start()
+   {
+      _appendRecycler.AppendEntries(Enumerable.Repeat<object>(null, InitEntries));
+   }
 }

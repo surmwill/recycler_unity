@@ -48,10 +48,10 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     [Header("Endcap (optional)")]
     [SerializeField]
-    private RectTransform _endcapParent = null;
+    private RecyclerScrollRectEndcap<TEntryData> _endcapPrefab = null;
     
     [SerializeField]
-    private RecyclerScrollRectEndcap<TEntryData> _endcapPrefab = null;
+    private RectTransform _endcapParent = null;
 
     [SerializeField]
     private RecyclerScrollRectEndcap<TEntryData> _endcap = null;

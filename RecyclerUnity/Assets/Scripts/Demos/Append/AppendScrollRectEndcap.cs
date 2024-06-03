@@ -12,13 +12,19 @@ using UnityEngine.UI;
 public class AppendScrollRectEndcap : RecyclerScrollRectEndcap<object>
 {
     [SerializeField]
-    private TMP_Text _loadingText = null;
+    private TMP_Text _titleText = null;
     
     [SerializeField]
-    private Image _loadingCircle = null;
+    private TMP_Text _timeLeftText = null;
+    
+    [SerializeField]
+    private Image _loadingOutline = null;
+
+    private const string TitleText = "Loading Next Page of Data";
+    private const string TimeFormat = "0";
 
     private const float TimeToLoadNextPageSeconds = 3f;
-    private const string TimeFormat = "0.00";
+    private const float TimeBetweenEllipseChangeSeconds = 0.25f;
     private const int NumEntriesToAppend = 15;
 
     private bool IsVisible => RectTransform.Overlaps(Recycler.viewport);
@@ -45,7 +51,10 @@ public class AppendScrollRectEndcap : RecyclerScrollRectEndcap<object>
     private IEnumerator FetchWhenOnScreen()
     {
         float timeLeft = TimeToLoadNextPageSeconds;
-
+        
+        float nextEllipseChange = timeLeft - TimeBetweenEllipseChangeSeconds;
+        string ellipse = string.Empty;
+        
         while (timeLeft > 0)
         {
             if (!IsVisible)
@@ -54,8 +63,15 @@ public class AppendScrollRectEndcap : RecyclerScrollRectEndcap<object>
                yield break;
             }
 
-            _loadingText.text = timeLeft.ToString(TimeFormat);
-            _loadingCircle.fillAmount = (TimeToLoadNextPageSeconds - timeLeft) / TimeToLoadNextPageSeconds;
+            _timeLeftText.text = timeLeft.ToString(TimeFormat);
+            _loadingOutline.fillAmount = (TimeToLoadNextPageSeconds - timeLeft) / TimeToLoadNextPageSeconds;
+
+            if (timeLeft < nextEllipseChange)
+            {
+                ellipse = ellipse.Length == 3 ? string.Empty : ellipse + ".";
+                _titleText.text = TitleText + ellipse;
+                nextEllipseChange -= TimeBetweenEllipseChangeSeconds;
+            }
             
             yield return null;
             timeLeft -= Time.deltaTime;
@@ -67,8 +83,10 @@ public class AppendScrollRectEndcap : RecyclerScrollRectEndcap<object>
 
     private void Reset()
     {
-        _loadingText.text = TimeToLoadNextPageSeconds.ToString(TimeFormat);
-        _loadingCircle.fillAmount = 0f;
+        _titleText.text = TitleText;
+        _timeLeftText.text = TimeToLoadNextPageSeconds.ToString(TimeFormat);
+
+        _loadingOutline.fillAmount = 0f;
 
         if (_fetchWhenOnScreen != null)
         {
