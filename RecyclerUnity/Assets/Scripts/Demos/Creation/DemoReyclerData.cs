@@ -2,17 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CreationRecyclerData : MonoBehaviour
+public class DemoRecyclerData
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public string Word { get; private set; }
+    
+    public Color Color { get; private set; }
 }
