@@ -6,5 +6,11 @@ public class DemoRecyclerData
 {
     public string Word { get; private set; }
     
-    public Color Color { get; private set; }
+    public Color BackgroundColor { get; private set; }
+
+    public DemoRecyclerData(string word, Color backgroundColor)
+    {
+        Word = word;
+        BackgroundColor = backgroundColor;
+    }
 }

@@ -133,7 +133,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -15}
-  m_SizeDelta: {x: -100, y: -30}
+  m_SizeDelta: {x: 0, y: -30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4212419385138284846
 CanvasRenderer:
@@ -191,14 +191,14 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 85
-  m_fontSizeBase: 100
+  m_fontSizeBase: 85
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 100
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 1024
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -291,7 +291,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.5882353}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -384,7 +384,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4896746134598844074}
-  - component: {fileID: 5935333332297932041}
+  - component: {fileID: 3871649767620459988}
   m_Layer: 0
   m_Name: DemoEntry
   m_TagString: Untagged
@@ -414,7 +414,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &5935333332297932041
+--- !u!114 &3871649767620459988
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -423,10 +423,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 4896746134598844075}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b8faa01730377c4eb145fcc3d139722, type: 3}
+  m_Script: {fileID: 11500000, guid: 701a7d7f2156ac145a0848d8462cf0b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _indexText: {fileID: 0}
+  _wordText: {fileID: 3761877776062683755}
+  _indexText: {fileID: 8869881608596584703}
+  _background: {fileID: 4896746134923111864}
 --- !u!1 &4896746134923111866
 GameObject:
   m_ObjectHideFlags: 0
