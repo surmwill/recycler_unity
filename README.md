@@ -118,3 +118,13 @@ public class DemoRecycler : RecyclerScrollRect<DemoRecyclerData>
     // Empty, unless the user wishes to add something
 }
 ```
+
+Then, create an empty RectTransform with the desired dimensions for the Recycler. Add our `DemoRecycler` component to the RectTransform. 
+
+Two child GameObjects will be created: `Entries` and `Pool`
+
+
+
+
+
+
