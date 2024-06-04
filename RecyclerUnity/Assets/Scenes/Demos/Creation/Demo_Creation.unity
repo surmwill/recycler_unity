@@ -2319,7 +2319,7 @@ GameObject:
   - component: {fileID: 2059316596}
   - component: {fileID: 2059316595}
   m_Layer: 0
-  m_Name: AppendRecycler
+  m_Name: DemoRecycler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

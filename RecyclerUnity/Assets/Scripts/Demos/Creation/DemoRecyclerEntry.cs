@@ -1,18 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class CreationRecyclerScrollRectEntry : MonoBehaviour
+public class CreationRecyclerScrollRectEntry : RecyclerScrollRectEntry<DemoRecyclerData>
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField]
+    private TMP_Text _word = null;
+
+    [SerializeField]
+    private TMP_Text _index = null;
+
+    [SerializeField]
+    private Image _background = null;
+    
+    protected override void OnBindNewData(DemoRecyclerData entryData)
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void OnRebindExistingData()
     {
-        
+
+    }
+
+    protected override void OnSentToRecycling()
+    {
+       
     }
 }
