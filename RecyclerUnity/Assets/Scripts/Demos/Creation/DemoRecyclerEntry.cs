@@ -18,10 +18,12 @@ public class DemoRecyclerEntry : RecyclerScrollRectEntry<DemoRecyclerData>
     // Called when this entry is bound to new data
     protected override void OnBindNewData(DemoRecyclerData entryData)
     {
+        // Set the word and background color to whatever is passed in the data
         _wordText.text = entryData.Word;
         _background.color = entryData.BackgroundColor;
         
-        _indexText.text = Index.ToString();
+        // Display the index (note that Index is a property found in the base class)
+        _indexText.text = Index.ToString(); 
     }
 
     // Called when this entry is bound with data it had before (and therefore still currently has)
