@@ -14,7 +14,7 @@ Features include:
 - Dynamically sized entries (auto-calculation supported)
 - Resizing (auto-calculation supported)
 - Endcaps
-- Scrolling to any index (including those off screen).
+- Scrolling to any index (including those off screen)
 
 The heftiest part of the code (and the two complimentary parts of the Recycler) can be found under: 
 - [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs)
