@@ -1,4 +1,5 @@
-﻿A Recycler View for Unity, as a native one is not provided. 
+# Intro
+A Recycler View for Unity, as a native one is not provided. 
 There are many complications transforming the given native ScrollRect into a Recycler
 but all of these are addressed (and will be explained in more detail in the future) here. 
 The code is currently in a state of being cleaned up and polished.
@@ -11,6 +12,7 @@ The heftiest part of the code (and the two complimentary parts of the Recycler) 
 - [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs)
 - [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs) 
 
+# Features
 ### Basic Functionality
 ![](README_Images/recycler_basic_functionality_circles.gif)
 
@@ -31,4 +33,8 @@ The heftiest part of the code (and the two complimentary parts of the Recycler) 
 - Works with dynamically sized entries.
   
  ![](README_Images/recycler_scroll_to_index.gif)
+
+ # Getting Started
+
+ 
 
