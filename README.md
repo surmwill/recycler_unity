@@ -36,5 +36,20 @@ The heftiest part of the code (and the two complimentary parts of the Recycler) 
 
  # Getting Started
 
- 
+ You will need 3 things:
+ 1. The data you will pass to the Recycler (a normal C# class).
+ 2. A recycler entry to bind the data to (a prefab).
+ 3. The Recycler itself (a component).
+
+### The Data
+
+Here is some sample data in which we store a word to display and a background color.
+```
+public class DemoRecyclerData
+{
+    public string Word { get; private set; }
+    
+    public Color BackgroundColor { get; private set; }
+}
+```
 
