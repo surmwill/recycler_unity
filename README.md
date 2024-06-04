@@ -53,3 +53,11 @@ public class DemoRecyclerData
 }
 ```
 
+### The Recycler Entry
+
+Recycler entries are prefabs that will get bound to your data. To begin, create the prefab. 
+
+To make it operable with the Recycler you must include a `RecyclerScrollRectEntry<TEntryData>` component. 
+Specifically, as generic classes cannot be components, you must create an of instance of the generic class with your data as the type: `class DemoRecyclerEntry : RecyclerScrollRectEntry<DemoRecyclerData>`
+
+
