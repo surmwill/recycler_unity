@@ -112,7 +112,7 @@ protected override void OnBindNewData(DemoRecyclerData entryData)
 
 ### The Recycler
 
-Similar to the creating the entry, we have a base `class RecyclerScrollRect<TEntryData>` but must create an instance of this generic class to work with our data, and to be used as a component.
+Similar to creating the entry, we have a base `class RecyclerScrollRect<TEntryData>` but must create an instance of this generic class to work with our data, and to be used as a component.
 
 ```
 public class DemoRecycler : RecyclerScrollRect<DemoRecyclerData>
