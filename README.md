@@ -119,10 +119,15 @@ public class DemoRecycler : RecyclerScrollRect<DemoRecyclerData>
 }
 ```
 
-Then, create an empty RectTransform with the desired dimensions for the Recycler. Add our `DemoRecycler` component to the RectTransform. 
+Then create an empty RectTransform with the desired dimensions for the Recycler. Add our `DemoRecycler` component to that RectTransform. 
 
 Two child GameObjects will be created: `Entries` and `Pool`
 
+![](README_Images/creating_recycler_blank.gif)
+
+Serialize our entry prefab in the Recycler component. The pool is now filled up.
+
+![](README_Images/creating_recycler_adding_entries.gif)
 
 
 
