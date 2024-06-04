@@ -6,15 +6,15 @@ but all of these are addressed (and will be explained in more detail in the futu
 The code is currently in a state of being cleaned up and polished.
 
 Features include: 
-- appending
-- prepending
-- insertion
-- deletion
-- pooling 
-- dynamically sized entries (auto-calculation supported)
-- resizing (auto-calculation supported)
-- endcaps
-- scrolling to any index (including those off screen).
+- Appending
+- Prepending
+- Insertion
+- Deletion
+- Pooling 
+- Dynamically sized entries (auto-calculation supported)
+- Resizing (auto-calculation supported)
+- Endcaps
+- Scrolling to any index (including those off screen).
 
 The heftiest part of the code (and the two complimentary parts of the Recycler) can be found under: 
 - [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs)
@@ -101,10 +101,12 @@ private Image _background = null;
 
 protected override void OnBindNewData(DemoRecyclerData entryData)
 {
-     _wordText.text = entryData.Word;
+    // Set the word and background color to whatever is passed in the data
+    _wordText.text = entryData.Word;
     _background.color = entryData.BackgroundColor;
 
-    _indexText.text = Index.ToString();    // Note that Index is a property found in the base class
+    // Display the index (note that Index is a property found in the base class)
+    _indexText.text = Index.ToString();
 }
 ```
 
@@ -125,11 +127,41 @@ Two child GameObjects will be created: `Entries` and `Pool`
 
 ![](README_Images/creating_recycler_blank.gif)
 
-Serialize our entry prefab in the Recycler component. The pool is now filled up.
+Serialize our entry prefab in the Recycler component. The pool is now filled up with entries.
 
 ![](README_Images/creating_recycler_adding_entries.gif)
 
+Finally, create the actual data and append it to the Recycler.
 
+```
+[SerializeField]
+private DemoRecycler _recycler = null;
 
+private static readonly string[] Words =
+{ 
+    "hold", "work", "wore", "days", "meat",
+    "hill", "club", "boom", "tone", "grey",
+    "bowl", "bell", "kick", "hope", "over",
+    "year", "camp", "tell", "main", "lose",
+    "earn", "name", "hang", "bear", "heat",
+    "trip", "calm", "pace", "home", "bank",
+    "cell", "lake", "fall", "fear", "mood",
+    "head", "male", "evil", "toll", "base"
+};
 
+private void Start()
+{
+     // Create data containing the words from the array, each with a random background color
+    DemoRecyclerData[] entryData = new DemoRecyclerData[Words.Length];
+    for (int i = 0; i < Words.Length; i++)
+    {
+        entryData[i] = new DemoRecyclerData(Words[i], Random.ColorHSV());
+    }
+    
+    _recycler.AppendEntries(entryData);
+}
+```
 
+### End Result
+
+![](README_Images/creating_recycler_end_result.gif)
