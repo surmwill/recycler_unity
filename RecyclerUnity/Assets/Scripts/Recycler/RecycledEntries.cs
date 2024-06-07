@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// Maintains a dictionary of recycled entries as well as a LinkedList (acting as a queue) to track which entries have sat in recycling the longest
+/// </summary>
 public class RecycledEntries<TEntryData>
 {
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _entries = new();
 
-    private LinkedList<int> _queueEntries = new();
-
     private Dictionary<int, LinkedListNode<int>> _entriesQueuePosition = new();
+    
+    private readonly LinkedList<int> _queueEntries = new();
 
     public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData>> Entries => _entries;
 

@@ -99,6 +99,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     private Coroutine _scrollToCoroutine;
 
+    private int? _scrollingToIndex;
+
     protected override void Awake()
     {
         base.Awake();
@@ -205,6 +207,11 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     public void RemoveAt(int index, FixEntries fixEntries = FixEntries.Below)
     {
+        if (index == _scrollingToIndex)
+        {
+            StopCoroutine(_scrollToCoroutine);
+        }
+        
         // Recycle the entry if it exists in the scene
         bool shouldRecycle = _indexWindow.Contains(index);
         if (shouldRecycle)
@@ -252,6 +259,12 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
        
        // Shift our recycled entries
        _recycledEntries.ShiftIndices(startIndex, shiftAmount);
+       
+       // Shift the entry we are currently scrolling to
+       if (_scrollingToIndex.HasValue && _scrollingToIndex.Value >= startIndex)
+       {
+           _scrollingToIndex += shiftAmount;
+       }
     }
 
     /// <summary>
@@ -859,6 +872,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
      /// <returns></returns>
      private IEnumerator ScrollToIndexInner(int index, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeed, bool isImmediate)
      {
+         _scrollingToIndex = index;
+         
          // Scrolling should not fight existing movement
          StopMovementAndDrag();
 
@@ -916,7 +931,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
                  if (this.IsAtNormalizedPosition(entryNormalizedScrollPos))
                  {
                      onScrollComplete?.Invoke();
-                     yield break;
+                     break;
                  }
 
                  if (isImmediate)
@@ -929,6 +944,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
                  }
              }
          }
+
+         _scrollingToIndex = null;
      }
 
      private void InsertDataForEntryAt(int index, TEntryData entryData) 
