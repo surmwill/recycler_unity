@@ -20,7 +20,7 @@ using Transform = UnityEngine.Transform;
 /// (ILayoutElement, ILayoutController) such as VerticalLayoutGroups get disabled; however, this also includes such things as Images.
 /// In this case the Image should be moved as a child. 
 /// </summary>
-public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
+public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPointerDownHandler
 {
     [Header("Recycler")]
     [SerializeField]
@@ -99,7 +99,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
 
     private Coroutine _scrollToCoroutine;
 
-    private int? _scrollingToIndex;
+    private int? _currScrollingToIndex;
 
     protected override void Awake()
     {
@@ -207,7 +207,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
     /// </summary>
     public void RemoveAt(int index, FixEntries fixEntries = FixEntries.Below)
     {
-        if (index == _scrollingToIndex)
+        if (index == _currScrollingToIndex)
         {
             StopCoroutine(_scrollToCoroutine);
         }
@@ -261,9 +261,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
        _recycledEntries.ShiftIndices(startIndex, shiftAmount);
        
        // Shift the entry we are currently scrolling to
-       if (_scrollingToIndex.HasValue && _scrollingToIndex.Value >= startIndex)
+       if (_currScrollingToIndex.HasValue && _currScrollingToIndex.Value >= startIndex)
        {
-           _scrollingToIndex += shiftAmount;
+           _currScrollingToIndex += shiftAmount;
        }
     }
 
@@ -855,11 +855,12 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
          if (_scrollToCoroutine != null)
          {
              StopCoroutine(_scrollToCoroutine);
+             _currScrollingToIndex = null;
          }
 
          _scrollToCoroutine = StartCoroutine(ScrollToIndexInner(index, scrollToAlignment, onScrollComplete, scrollSpeed, isImmediate));
      }
-     
+
      /// <summary>
      /// TODO: Cache the index. Shift it if we insert. Delete it and stop scrolling if wee delete it
      /// TODO: make a SmoothDamp version of this once we've scrolled to the point where the entry is active
@@ -872,7 +873,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
      /// <returns></returns>
      private IEnumerator ScrollToIndexInner(int index, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeed, bool isImmediate)
      {
-         _scrollingToIndex = index;
+         _currScrollingToIndex = index;
          
          // Scrolling should not fight existing movement
          StopMovementAndDrag();
@@ -945,7 +946,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
              }
          }
 
-         _scrollingToIndex = null;
+         _currScrollingToIndex = null;
      }
 
      private void InsertDataForEntryAt(int index, TEntryData entryData) 
@@ -973,6 +974,15 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
             _dataForEntries.RemoveAt(index);
         }
     }
+    
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (_scrollToCoroutine != null)
+        {
+            StopCoroutine(_scrollToCoroutine);
+            _currScrollingToIndex = null;
+        }
+    }
 
     private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)
     {
@@ -985,10 +995,10 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect
         {
             case RecyclerTransformPosition.Bot:
                 return RecyclerTransformPosition.Top;
-            
+
             case RecyclerTransformPosition.Top:
                 return RecyclerTransformPosition.Bot;
-            
+
             default:
                 throw new InvalidOperationException();
         }
