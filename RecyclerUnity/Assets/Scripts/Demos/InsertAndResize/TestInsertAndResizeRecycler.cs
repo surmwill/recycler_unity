@@ -19,7 +19,7 @@ public class TestInsertAndResizeRecycler : MonoBehaviour
     
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        if (Input.GetKeyDown(KeyCode.A))
         {
             _recycler.InsertRange(InsertionIndex, CreateDataForEntries(NumInsertionEntries, true));
         }
