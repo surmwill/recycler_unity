@@ -15,7 +15,7 @@ public class TestScrollToIndexRecycler : MonoBehaviour
     private const int InitNumEntries = 100;
     private const int ScrollToIndex = 45;
 
-    private static readonly HashSet<int> EnlargeEntryIndices = new() { 41, 42 };
+    private static readonly int[] EnlargeEntryIndices = { 41, 42 };
 
     private void Start()
     {
@@ -23,14 +23,33 @@ public class TestScrollToIndexRecycler : MonoBehaviour
             .Select((_, i) => new ScrollToIndexData(EnlargeEntryIndices.Contains(i)))
             .ToArray();
         
-        _recycler.AppendEntries(entryData);
+        _recycler.AppendEntries(CreateEntryData(InitNumEntries, EnlargeEntryIndices));
     }
 
     private void Update()
     {
+        // Test scrolling
         if (Input.GetKeyDown(KeyCode.A))
         {
-            _recycler.ScrollToIndex(ScrollToIndex);
+            _recycler.ScrollToIndex(ScrollToIndex, scrollSpeed:0.025f);
         }
+        // Test deletion while scrolling
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            _recycler.RemoveRange(ScrollToIndex, 1);
+        }
+        else if (Input.GetKeyDown(KeyCode.S))
+        {
+            _recycler.InsertRange(10, CreateEntryData(10), FixEntries.Above);
+        }
+    }
+
+    private ScrollToIndexData[] CreateEntryData(int numEntries, IEnumerable<int> enlargeIndices = null)
+    {
+        HashSet<int> enlarge = new HashSet<int>(enlargeIndices ?? Array.Empty<int>());
+        return Enumerable.Repeat((ScrollToIndexData) null, numEntries)
+            .Select((_, i) => new ScrollToIndexData(enlarge.Contains(i)))
+            .ToArray();
+
     }
 }
