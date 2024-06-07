@@ -7,9 +7,9 @@ public class RecycledEntries<TEntryData>
 {
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _entries = new();
 
-    private LinkedList<int> _queueEntryInsertions = new();
+    private LinkedList<int> _queueEntries = new();
 
-    private Dictionary<int, LinkedListNode<int>> _entriesInsertedAt = new();
+    private Dictionary<int, LinkedListNode<int>> _entriesQueuePosition = new();
 
     public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData>> Entries => _entries;
 
@@ -17,47 +17,46 @@ public class RecycledEntries<TEntryData>
     {
         _entries.Add(index, entry);
         
-        LinkedListNode<int> insertionQueuePosition = _queueEntryInsertions.AddLast(index);
-        _entriesInsertedAt.Add(index, insertionQueuePosition);
+        LinkedListNode<int> insertionQueuePosition = _queueEntries.AddLast(index);
+        _entriesQueuePosition.Add(index, insertionQueuePosition);
     }
 
     public void Remove(int index)
     {
         _entries.Remove(index);
 
-        LinkedListNode<int> insertionQueuePosition = _entriesInsertedAt[index];
-        _queueEntryInsertions.Remove(insertionQueuePosition);
-        _entriesInsertedAt.Remove(index);
+        LinkedListNode<int> queuePosition = _entriesQueuePosition[index];
+        _queueEntries.Remove(queuePosition);
+        _entriesQueuePosition.Remove(index);
     }
 
     public void ShiftIndices(int startIndex, int shiftAmount)
     {
         Dictionary<int, RecyclerScrollRectEntry<TEntryData>> shiftedEntries = new Dictionary<int, RecyclerScrollRectEntry<TEntryData>>();
-        Dictionary<int, LinkedListNode<int>> shiftedEntriesInsertedAt = new Dictionary<int, LinkedListNode<int>>();
+        Dictionary<int, LinkedListNode<int>> shiftedQueuePositions = new Dictionary<int, LinkedListNode<int>>();
 
-        foreach ((int index, RecyclerScrollRectEntry<TEntryData> activeEntry) in _entries)
+        foreach ((int index, RecyclerScrollRectEntry<TEntryData> recycledEntry) in _entries)
         {
             int shiftedIndex = index + (index >= startIndex ? shiftAmount : 0);
-            if (shiftedIndex == index)
+            LinkedListNode<int> shiftedQueuePosition = _entriesQueuePosition[index];
+
+            if (shiftedIndex != index)
             {
-                continue;
+                recycledEntry.SetIndex(shiftedIndex);   
+                shiftedQueuePosition.Value = shiftedIndex;
             }
             
-            activeEntry.SetIndex(shiftedIndex);   
-            shiftedEntries[shiftedIndex] = activeEntry;
-            
-            LinkedListNode<int> shiftedInsertionQueuePosition = _entriesInsertedAt[index];
-            shiftedInsertionQueuePosition.Value = shiftedIndex;
-            shiftedEntriesInsertedAt[shiftedIndex] = shiftedInsertionQueuePosition;
+            shiftedEntries[shiftedIndex] = recycledEntry;
+            shiftedQueuePositions[shiftedIndex] = shiftedQueuePosition;
         }
 
         _entries = shiftedEntries;
-        _entriesInsertedAt = shiftedEntriesInsertedAt;
+        _entriesQueuePosition = shiftedQueuePositions;
     }
 
     public KeyValuePair<int, RecyclerScrollRectEntry<TEntryData>> GetOldestEntry()
     {
-        int oldestIndex = _queueEntryInsertions.First.Value;
+        int oldestIndex = _queueEntries.First.Value;
         return new KeyValuePair<int, RecyclerScrollRectEntry<TEntryData>>(oldestIndex, _entries[oldestIndex]);
     }
 }
