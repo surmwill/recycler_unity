@@ -45,12 +45,12 @@ public class SlidingIndexWindow
     {
         IsDirty = true;
 
-        if (index >= VisibleStartIndex && index <= VisibleEndIndex)
+        if (index <= VisibleEndIndex)
         {
             VisibleEndIndex += num;
         }
         
-        if (index == VisibleStartIndex)
+        if (index <= VisibleStartIndex)
         {
             VisibleStartIndex += num;
         }
@@ -60,12 +60,16 @@ public class SlidingIndexWindow
     {
         IsDirty = true;
 
-        if (index >= VisibleStartIndex && index <= VisibleEndIndex)
+        if (index <= VisibleEndIndex)
         {
             VisibleEndIndex--;
         }
         
-        if (index == VisibleStartIndex)
+        if (index < VisibleStartIndex)
+        {
+            VisibleStartIndex--;
+        }
+        else if (index == VisibleStartIndex)
         {
             VisibleStartIndex++;
         }
