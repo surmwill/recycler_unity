@@ -15,12 +15,9 @@ public class ScrollToIndexRecyclerScrollRectEntry : RecyclerScrollRectEntry<Scro
     private const int NormalSize = 250;
     private const int GrowSize = 500;
 
-    private int _index;
-
     protected override void OnBindNewData(ScrollToIndexData entryData)
     {
         RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(entryData.ShouldResize ? GrowSize : NormalSize);
-        _index = Index;
     }
 
     protected override void OnRebindExistingData()
@@ -34,9 +31,5 @@ public class ScrollToIndexRecyclerScrollRectEntry : RecyclerScrollRectEntry<Scro
     private void Update()
     {
         _numberText.text = Index.ToString();
-        if (Index != _index)
-        {
-            Debug.Break();
-        }
     }
 }
