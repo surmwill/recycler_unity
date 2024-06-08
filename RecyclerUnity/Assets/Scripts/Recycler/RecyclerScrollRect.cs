@@ -850,7 +850,12 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         content.SetPivotWithoutMoving(content.pivot + Vector2.up * -diffY / content.rect.height);
     }
 
-     public void ScrollToIndex(int index, ScrollToAlignment scrollToAlignment = ScrollToAlignment.EntryMiddle, Action onScrollComplete = null, float scrollSpeed = 0.02f, bool isImmediate = false)
+     public void ScrollToIndex(
+         int index, 
+         ScrollToAlignment scrollToAlignment = ScrollToAlignment.EntryMiddle, 
+         Action onScrollComplete = null, 
+         float scrollSpeedViewportsPerSecond = 0.02f, 
+         bool isImmediate = false)
      {
          if (_scrollToCoroutine != null)
          {
@@ -858,7 +863,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
              _currScrollingToIndex = null;
          }
 
-         _scrollToCoroutine = StartCoroutine(ScrollToIndexInner(index, scrollToAlignment, onScrollComplete, scrollSpeed, isImmediate));
+         _scrollToCoroutine = StartCoroutine(ScrollToIndexInner(index, scrollToAlignment, onScrollComplete, scrollSpeedViewportsPerSecond, isImmediate));
      }
 
      /// <summary>
@@ -869,12 +874,17 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
      /// TODO: test if ineumerator movenext returns false on completion of a coroutine
      /// </summary>
      /// <param name="index"></param>
-     /// <param name="scrollSpeed"></param>
+     /// <param name="scrollSpeedViewportsPerSecond"></param>
      /// <returns></returns>
-     private IEnumerator ScrollToIndexInner(int index, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeed, bool isImmediate)
+     private IEnumerator ScrollToIndexInner(
+         int index, 
+         ScrollToAlignment scrollToAlignment, 
+         Action onScrollComplete, 
+         float scrollSpeedViewportsPerSecond, 
+         bool isImmediate)
      {
-         scrollSpeed = 2f;
-         
+         scrollSpeedViewportsPerSecond = 0.5f;
+
          _currScrollingToIndex = index;
          
          // Scrolling should not fight existing movement
@@ -896,37 +906,57 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
                  normalizedPositionWithinChild = new Vector2(0.5f, 0f);
                  break;
          }
+         
+         float? distanceToTravelThisFrame = null;
 
          for (;;)
          {
+             if (!distanceToTravelThisFrame.HasValue)
+             {
+                 distanceToTravelThisFrame = scrollSpeedViewportsPerSecond * viewport.rect.height * Time.deltaTime;
+             }
+             Debug.Log("A " + distanceToTravelThisFrame);
+
+             float normalizedPositionToTravelToThisFrame = DistanceToNormalizedPosition(distanceToTravelThisFrame.Value);
+
              // Scroll through entries until the entry we want is created, then we'll know the exact position to scroll to
              if (!_indexWindow.Contains(index))
              {
-                 Vector2 prevNormalizedPosition = normalizedPosition;
+                 float currNormalizedY = normalizedPosition.y;
+                 float nextNormalizedY = 0f;
                  
                  // Scroll toward lesser indices
                  if (index < _indexWindow.CachedStartIndex)
                  {
                      // If the entries are increasing, then lesser entries are found at the top with a higher normalized scroll position
-                     normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(AreEntriesIncreasing ? 1 : 0), scrollSpeed * Time.deltaTime);
+                     nextNormalizedY = Mathf.MoveTowards(currNormalizedY, AreEntriesIncreasing ? 1 : 0, normalizedPositionToTravelToThisFrame);
+                     
+                     // normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(AreEntriesIncreasing ? 1 : 0), distanceDelta);
                  }
                  // Scroll toward greater indices
                  else if (index > _indexWindow.CachedEndIndex)
                  {
                      // If the entries are increasing, then greater entries are found at the bottom with a lower normalized scroll position
-                     normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(AreEntriesIncreasing ? 0 : 1), scrollSpeed * Time.deltaTime);
+                     nextNormalizedY = Mathf.MoveTowards(currNormalizedY, AreEntriesIncreasing ? 0 : 1, normalizedPositionToTravelToThisFrame);
+                     
+                     // normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(AreEntriesIncreasing ? 0 : 1), distanceDelta);
                  }
+                 normalizedPosition = normalizedPosition.WithY(nextNormalizedY);
 
-                 Vector2 delta = normalizedPosition - prevNormalizedPosition;
-                 
-                 Debug.Log($"Prev: {prevNormalizedPosition}, Curr: {normalizedPosition}, Delta: {delta}");
-
-                 if (Mathf.Abs(delta.y) > 0.075f)
+                 float distanceTravelledInIteration = Mathf.Abs(nextNormalizedY - currNormalizedY) * (content.rect.height - viewport.rect.height);
+                 if (distanceTravelledInIteration <= 0f)
                  {
-                     Debug.LogError("BIG JUMP");
+                     distanceToTravelThisFrame = null;
+                 }
+                 else
+                 {
+                     distanceToTravelThisFrame -= distanceTravelledInIteration;   
                  }
 
-                 if (isImmediate)
+                 Debug.Log("B " + (distanceToTravelThisFrame ?? 0f));
+                 
+
+                 if (isImmediate || distanceToTravelThisFrame.HasValue)
                  {
                      UpdateCaches();
                  }
@@ -934,15 +964,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
                  {
                      yield return null;   
                  }
-                 
-                 
              }
 
              // Find and scroll to the exact position of the entry
              if (_indexWindow.Contains(index))
              {
                  Vector2 entryNormalizedScrollPos = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild);
-                 normalizedPosition = Vector2.MoveTowards(normalizedPosition, entryNormalizedScrollPos, scrollSpeed * Time.deltaTime);
+                 normalizedPosition = Vector2.MoveTowards(normalizedPosition, entryNormalizedScrollPos, normalizedPositionToTravelToThisFrame);
 
                  if (this.IsAtNormalizedPosition(entryNormalizedScrollPos))
                  {
@@ -963,8 +991,15 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
              }
          }
 
+         // Returns the normalized position equivalent to scrolling a certain distance
+         float DistanceToNormalizedPosition(float distance)
+         {
+             return Mathf.InverseLerp(0, content.rect.height - viewport.rect.height, distance);
+         }
+
          _currScrollingToIndex = null;
      }
+    
 
      private void InsertDataForEntryAt(int index, TEntryData entryData) 
      {
