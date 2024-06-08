@@ -883,11 +883,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
          float scrollSpeedViewportsPerSecond, 
          bool isImmediate)
      {
-         scrollSpeedViewportsPerSecond = 1f;
-         const float Epsilon = 0.001f;
-
          _currScrollingToIndex = index;
-         
+
          // Scrolling should not fight existing movement
          StopMovementAndDrag();
 
@@ -908,18 +905,12 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
                  break;
          }
          
-         float distanceToTravelThisFrame = 0f;
-         float newNormalizedY = 0f;
-         
-         for (;;)
+         float distanceToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
+         while (this.IsScrollable())
          {
-             if (Mathf.Approximately(distanceToTravelThisFrame, 0f))
-             {
-                 distanceToTravelThisFrame = scrollSpeedViewportsPerSecond * viewport.rect.height * Time.deltaTime;
-             }
-
              float normalizedDistanceToTravelThisFrame = DistanceToNormalizedScrollDistance(distanceToTravelThisFrame);
              float currNormalizedY = normalizedPosition.y;
+             float newNormalizedY = 0f;
 
              // Scroll through entries until the entry we want is created, then we'll know the exact position to scroll to
              if (!_indexWindow.Contains(index))
@@ -936,23 +927,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
                      // If the entries are increasing, then greater entries are found at the bottom with a lower normalized scroll position
                      newNormalizedY = Mathf.MoveTowards(currNormalizedY, AreEntriesIncreasing ? 0 : 1, normalizedDistanceToTravelThisFrame);
                  }
-                 normalizedPosition = normalizedPosition.WithY(newNormalizedY);
-
-                 float distanceTravelledInIteration = NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
-                 distanceToTravelThisFrame -= distanceTravelledInIteration;
-                 if (distanceToTravelThisFrame < Epsilon)
-                 {
-                     distanceToTravelThisFrame = 0f;
-                 }
                  
-                 if (isImmediate || distanceToTravelThisFrame > 0)
-                 {
-                     UpdateCaches();
-                 }
-                 else
-                 {
-                     yield return null;
-                 }
+                 normalizedPosition = normalizedPosition.WithY(newNormalizedY);
              }
 
              // Find and scroll to the exact position of the entry
@@ -968,27 +944,35 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
                  {
                      break;
                  }
+             }
+             
+             // If we didn't make any progress in our iteration we must have travelled the full frame distance - otherwise keep scrolling.
+             // Note: it would be clearer to check if the distance to travel this frame is 0, but in practice it only approaches it (and outside of Mathf.Approximately)
+             float distanceTravelledInIteration = NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
+             if (Mathf.Approximately(distanceTravelledInIteration, 0f))
+             {
+                 if (!isImmediate)
+                 {
+                     yield return null;   
+                 }
                  
-                 float distanceTravelledInIteration = NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
+                 distanceToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
+             }
+             else
+             {
                  distanceToTravelThisFrame -= distanceTravelledInIteration;
-                 if (distanceToTravelThisFrame < Epsilon)
-                 {
-                     distanceToTravelThisFrame = 0f;
-                 }
-
-                 if (isImmediate || distanceToTravelThisFrame > 0f)
-                 {
-                     UpdateCaches();
-                 }
-                 else
-                 {
-                     yield return null;
-                 }
+                 UpdateCaches();
              }
          }
          
          onScrollComplete?.Invoke();
          _currScrollingToIndex = null;
+
+         // Returns the distance we'd like to scroll in a single frame
+         float GetFullDistanceToTravelInThisFrame()
+         {
+             return scrollSpeedViewportsPerSecond * viewport.rect.height * Time.deltaTime;
+         }
 
          // Returns the normalized scroll distance corresponding to a certain non-normalized distance
          float DistanceToNormalizedScrollDistance(float distance)

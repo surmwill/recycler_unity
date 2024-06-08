@@ -27,7 +27,7 @@ public class TestScrollToIndexRecycler : MonoBehaviour
         // Test scrolling
         if (Input.GetKeyDown(KeyCode.A))
         {
-            _recycler.ScrollToIndex(ScrollToIndex);
+            _recycler.ScrollToIndex(ScrollToIndex, scrollSpeedViewportsPerSecond:1f);
         }
         // Test deletion while scrolling
         else if (Input.GetKeyDown(KeyCode.D))
@@ -37,6 +37,11 @@ public class TestScrollToIndexRecycler : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.S))
         {
             _recycler.InsertRange(10, CreateEntryData(10), FixEntries.Above);
+        }
+        // Test immediate scrolling
+        else if (Input.GetKeyDown(KeyCode.X))
+        {
+            _recycler.ScrollToIndex(ScrollToIndex, isImmediate:true);
         }
     }
 
