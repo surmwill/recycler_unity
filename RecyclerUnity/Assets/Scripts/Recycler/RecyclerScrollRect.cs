@@ -883,7 +883,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
          float scrollSpeedViewportsPerSecond, 
          bool isImmediate)
      {
-         scrollSpeedViewportsPerSecond = 0.5f;
+         scrollSpeedViewportsPerSecond = 1f;
+         const float Epsilon = 0.001f;
 
          _currScrollingToIndex = index;
          
@@ -907,78 +908,44 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
                  break;
          }
          
-         float? distanceToTravelThisFrame = null;
-
+         float distanceToTravelThisFrame = 0f;
+         float newNormalizedY = 0f;
+         
          for (;;)
          {
-             if (!distanceToTravelThisFrame.HasValue)
+             if (Mathf.Approximately(distanceToTravelThisFrame, 0f))
              {
                  distanceToTravelThisFrame = scrollSpeedViewportsPerSecond * viewport.rect.height * Time.deltaTime;
              }
-             Debug.Log("A " + distanceToTravelThisFrame);
 
-             float normalizedPositionToTravelToThisFrame = DistanceToNormalizedPosition(distanceToTravelThisFrame.Value);
+             float normalizedDistanceToTravelThisFrame = DistanceToNormalizedScrollDistance(distanceToTravelThisFrame);
+             float currNormalizedY = normalizedPosition.y;
 
              // Scroll through entries until the entry we want is created, then we'll know the exact position to scroll to
              if (!_indexWindow.Contains(index))
              {
-                 float currNormalizedY = normalizedPosition.y;
-                 float nextNormalizedY = 0f;
-                 
                  // Scroll toward lesser indices
                  if (index < _indexWindow.CachedStartIndex)
                  {
                      // If the entries are increasing, then lesser entries are found at the top with a higher normalized scroll position
-                     nextNormalizedY = Mathf.MoveTowards(currNormalizedY, AreEntriesIncreasing ? 1 : 0, normalizedPositionToTravelToThisFrame);
-                     
-                     // normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(AreEntriesIncreasing ? 1 : 0), distanceDelta);
+                     newNormalizedY = Mathf.MoveTowards(currNormalizedY, AreEntriesIncreasing ? 1 : 0, normalizedDistanceToTravelThisFrame);
                  }
                  // Scroll toward greater indices
                  else if (index > _indexWindow.CachedEndIndex)
                  {
                      // If the entries are increasing, then greater entries are found at the bottom with a lower normalized scroll position
-                     nextNormalizedY = Mathf.MoveTowards(currNormalizedY, AreEntriesIncreasing ? 0 : 1, normalizedPositionToTravelToThisFrame);
-                     
-                     // normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(AreEntriesIncreasing ? 0 : 1), distanceDelta);
+                     newNormalizedY = Mathf.MoveTowards(currNormalizedY, AreEntriesIncreasing ? 0 : 1, normalizedDistanceToTravelThisFrame);
                  }
-                 normalizedPosition = normalizedPosition.WithY(nextNormalizedY);
+                 normalizedPosition = normalizedPosition.WithY(newNormalizedY);
 
-                 float distanceTravelledInIteration = Mathf.Abs(nextNormalizedY - currNormalizedY) * (content.rect.height - viewport.rect.height);
-                 if (distanceTravelledInIteration <= 0f)
+                 float distanceTravelledInIteration = NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
+                 distanceToTravelThisFrame -= distanceTravelledInIteration;
+                 if (distanceToTravelThisFrame < Epsilon)
                  {
-                     distanceToTravelThisFrame = null;
+                     distanceToTravelThisFrame = 0f;
                  }
-                 else
-                 {
-                     distanceToTravelThisFrame -= distanceTravelledInIteration;   
-                 }
-
-                 Debug.Log("B " + (distanceToTravelThisFrame ?? 0f));
                  
-
-                 if (isImmediate || distanceToTravelThisFrame.HasValue)
-                 {
-                     UpdateCaches();
-                 }
-                 else
-                 {
-                     yield return null;   
-                 }
-             }
-
-             // Find and scroll to the exact position of the entry
-             if (_indexWindow.Contains(index))
-             {
-                 Vector2 entryNormalizedScrollPos = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild);
-                 normalizedPosition = Vector2.MoveTowards(normalizedPosition, entryNormalizedScrollPos, normalizedPositionToTravelToThisFrame);
-
-                 if (this.IsAtNormalizedPosition(entryNormalizedScrollPos))
-                 {
-                     onScrollComplete?.Invoke();
-                     break;
-                 }
-
-                 if (isImmediate)
+                 if (isImmediate || distanceToTravelThisFrame > 0)
                  {
                      UpdateCaches();
                  }
@@ -986,18 +953,54 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
                  {
                      yield return null;
                  }
+             }
+
+             // Find and scroll to the exact position of the entry
+             else if (_indexWindow.Contains(index))
+             {
+                 Vector2 entryNormalizedPosition = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild);
+                 float entryNormalizedY = entryNormalizedPosition.y;
                  
-                 Debug.Log(_indexWindow.PrintRange());
+                 newNormalizedY = Mathf.MoveTowards(currNormalizedY, entryNormalizedY, normalizedDistanceToTravelThisFrame);
+                 normalizedPosition = normalizedPosition.WithY(newNormalizedY);
+
+                 if (this.IsAtNormalizedPosition(entryNormalizedPosition))
+                 {
+                     break;
+                 }
+                 
+                 float distanceTravelledInIteration = NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
+                 distanceToTravelThisFrame -= distanceTravelledInIteration;
+                 if (distanceToTravelThisFrame < Epsilon)
+                 {
+                     distanceToTravelThisFrame = 0f;
+                 }
+
+                 if (isImmediate || distanceToTravelThisFrame > 0f)
+                 {
+                     UpdateCaches();
+                 }
+                 else
+                 {
+                     yield return null;
+                 }
              }
          }
+         
+         onScrollComplete?.Invoke();
+         _currScrollingToIndex = null;
 
-         // Returns the normalized position equivalent to scrolling a certain distance
-         float DistanceToNormalizedPosition(float distance)
+         // Returns the normalized scroll distance corresponding to a certain non-normalized distance
+         float DistanceToNormalizedScrollDistance(float distance)
          {
              return Mathf.InverseLerp(0, content.rect.height - viewport.rect.height, distance);
          }
 
-         _currScrollingToIndex = null;
+         // Returns the distance corresponding to scrolling a certain normalized distance
+         float NormalizedScrollDistanceToDistance(float normalizedScrollDistance)
+         {
+             return normalizedScrollDistance * (content.rect.height - viewport.rect.height);
+         }
      }
     
 
