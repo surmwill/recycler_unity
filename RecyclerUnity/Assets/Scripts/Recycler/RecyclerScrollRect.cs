@@ -850,7 +850,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         content.SetPivotWithoutMoving(content.pivot + Vector2.up * -diffY / content.rect.height);
     }
 
-     public void ScrollToIndex(int index, ScrollToAlignment scrollToAlignment = ScrollToAlignment.EntryMiddle, Action onScrollComplete = null, float scrollSpeed = 0.05f, bool isImmediate = false)
+     public void ScrollToIndex(int index, ScrollToAlignment scrollToAlignment = ScrollToAlignment.EntryMiddle, Action onScrollComplete = null, float scrollSpeed = 0.02f, bool isImmediate = false)
      {
          if (_scrollToCoroutine != null)
          {
@@ -873,6 +873,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
      /// <returns></returns>
      private IEnumerator ScrollToIndexInner(int index, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeed, bool isImmediate)
      {
+         scrollSpeed = 2f;
+         
          _currScrollingToIndex = index;
          
          // Scrolling should not fight existing movement
@@ -900,17 +902,28 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
              // Scroll through entries until the entry we want is created, then we'll know the exact position to scroll to
              if (!_indexWindow.Contains(index))
              {
+                 Vector2 prevNormalizedPosition = normalizedPosition;
+                 
                  // Scroll toward lesser indices
                  if (index < _indexWindow.CachedStartIndex)
                  {
                      // If the entries are increasing, then lesser entries are found at the top with a higher normalized scroll position
-                     normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(AreEntriesIncreasing ? 1 : 0), scrollSpeed);
+                     normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(AreEntriesIncreasing ? 1 : 0), scrollSpeed * Time.deltaTime);
                  }
                  // Scroll toward greater indices
                  else if (index > _indexWindow.CachedEndIndex)
                  {
                      // If the entries are increasing, then greater entries are found at the bottom with a lower normalized scroll position
-                     normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(AreEntriesIncreasing ? 0 : 1), scrollSpeed);
+                     normalizedPosition = Vector2.MoveTowards(normalizedPosition, normalizedPosition.WithY(AreEntriesIncreasing ? 0 : 1), scrollSpeed * Time.deltaTime);
+                 }
+
+                 Vector2 delta = normalizedPosition - prevNormalizedPosition;
+                 
+                 Debug.Log($"Prev: {prevNormalizedPosition}, Curr: {normalizedPosition}, Delta: {delta}");
+
+                 if (Mathf.Abs(delta.y) > 0.075f)
+                 {
+                     Debug.LogError("BIG JUMP");
                  }
 
                  if (isImmediate)
@@ -921,13 +934,15 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
                  {
                      yield return null;   
                  }
+                 
+                 
              }
 
              // Find and scroll to the exact position of the entry
              if (_indexWindow.Contains(index))
              {
                  Vector2 entryNormalizedScrollPos = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild);
-                 normalizedPosition = Vector2.MoveTowards(normalizedPosition, entryNormalizedScrollPos, scrollSpeed);
+                 normalizedPosition = Vector2.MoveTowards(normalizedPosition, entryNormalizedScrollPos, scrollSpeed * Time.deltaTime);
 
                  if (this.IsAtNormalizedPosition(entryNormalizedScrollPos))
                  {
@@ -943,6 +958,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
                  {
                      yield return null;
                  }
+                 
+                 Debug.Log(_indexWindow.PrintRange());
              }
          }
 
