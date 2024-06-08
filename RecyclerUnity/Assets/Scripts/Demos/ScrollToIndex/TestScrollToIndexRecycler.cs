@@ -19,10 +19,6 @@ public class TestScrollToIndexRecycler : MonoBehaviour
 
     private void Start()
     {
-        ScrollToIndexData[] entryData = Enumerable.Repeat((ScrollToIndexData) null, InitNumEntries)
-            .Select((_, i) => new ScrollToIndexData(EnlargeEntryIndices.Contains(i)))
-            .ToArray();
-        
         _recycler.AppendEntries(CreateEntryData(InitNumEntries, EnlargeEntryIndices));
     }
 
