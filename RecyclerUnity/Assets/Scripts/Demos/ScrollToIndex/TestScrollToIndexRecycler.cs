@@ -32,7 +32,7 @@ public class TestScrollToIndexRecycler : MonoBehaviour
         // Test deletion while scrolling
         else if (Input.GetKeyDown(KeyCode.D))
         {
-            _recycler.RemoveRange(ScrollToIndex, 1);
+            _recycler.RemoveRange(0, 1);
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
