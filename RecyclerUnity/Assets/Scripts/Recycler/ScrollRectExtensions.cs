@@ -9,7 +9,7 @@ public static class ScrollRectExtensions
     /// <summary>
     /// Returns the normalized scroll position of one of the children that make up the ScrollRect's content
     /// </summary>
-    public static Vector2 GetNormalizedScrollPositionOfChild(this ScrollRect scrollRect, RectTransform childContent, Vector2 normalizedPositionInChild)
+    public static float GetNormalizedVerticalPositionOfChild(this ScrollRect scrollRect, RectTransform childContent, float normalizedPositionInChild)
     {
         (RectTransform content, RectTransform viewport) = (scrollRect.content, scrollRect.viewport);
         (WorldRect contentWorldRect, WorldRect viewportWorldRect, WorldRect childContentWorldRect) = (content.GetWorldRect(), viewport.GetWorldRect(), childContent.GetWorldRect());
@@ -21,23 +21,25 @@ public static class ScrollRectExtensions
         Vector3 viewportTop = contentTop - (contentBotToTop.normalized * viewportWorldRect.Height / 2f);
         Vector3 viewportBot = contentBot + (contentBotToTop.normalized * viewportWorldRect.Height / 2f);
         Vector3 viewportBotToTop = viewportTop - viewportBot;
-
-        Vector3 childPosition = viewportBot + Vector3.Project(childContentWorldRect.Center - viewportBot, viewportBotToTop);
+        
+        Vector3 childPosition = viewportBot + Vector3.Project(
+            childContentWorldRect.Center + childContent.up * ((normalizedPositionInChild - 0.5f) * childContentWorldRect.Height) - viewportBot, viewportBotToTop);
+        
         Vector3 viewportBotToChildPosition = childPosition - viewportBot;
         Vector3 viewportTopToChildPosition = childPosition - viewportTop;
         
         if (Vector3.Dot(viewportBotToChildPosition, viewportBotToTop) < 0)
         {
-            return new Vector2(0f, 0f);
+            return 0f;
         }
 
         if (Vector3.Dot(viewportTopToChildPosition, -viewportBotToTop) < 0)
         {
-            return new Vector2(0f, 1f);
+            return 1f;
         }
 
         float normalizedPositionInViewportBotToTop = viewportBotToChildPosition.magnitude / viewportBotToTop.magnitude;
-        return new Vector2(0f, normalizedPositionInViewportBotToTop);
+        return normalizedPositionInViewportBotToTop;
     }
 
     /// <summary>
