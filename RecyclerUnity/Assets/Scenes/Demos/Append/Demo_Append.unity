@@ -2318,6 +2318,7 @@ GameObject:
   - component: {fileID: 2059316594}
   - component: {fileID: 2059316596}
   - component: {fileID: 2059316595}
+  - component: {fileID: 2059316597}
   m_Layer: 0
   m_Name: AppendRecycler
   m_TagString: Untagged
@@ -2396,11 +2397,25 @@ MonoBehaviour:
   _numCachedAfterEnd: 2
   _appendTo: 1
   _setTargetFrameRateTo60: 1
+  _viewportCollider: {fileID: 2059316597}
   _poolParent: {fileID: 94955834}
   _poolSize: 15
   _endcapPrefab: {fileID: 6976447056764869076, guid: 9756f4de00c3c2f42bd84c27c6517a8e, type: 3}
   _endcapParent: {fileID: 497006705}
   _endcap: {fileID: 1158663785}
+--- !u!65 &2059316597
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059316593}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1284, y: 2778, z: 1000}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2110532038
 GameObject:
   m_ObjectHideFlags: 0

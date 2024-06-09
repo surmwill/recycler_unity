@@ -20,6 +20,7 @@ using Transform = UnityEngine.Transform;
 /// (ILayoutElement, ILayoutController) such as VerticalLayoutGroups get disabled; however, this also includes such things as Images.
 /// In this case the Image should be moved as a child. 
 /// </summary>
+[RequireComponent(typeof(BoxCollider))]
 public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPointerDownHandler
 {
     [Header("Recycler")]
@@ -39,9 +40,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     [SerializeField]
     private bool _setTargetFrameRateTo60 = true;
 
-    [SerializeField]
-    private BoxCollider _viewportCollider = null;
-    
     [Header("Pool")]
     [SerializeField]
     private RectTransform _poolParent = null;
@@ -85,11 +83,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
 
     private RecyclerTransformPosition EndCacheTransformPosition => InverseRecyclerTransformPosition(StartCacheTransformPosition);
 
+    private BoxCollider _viewportCollider = null;
+    
     // All the active entries in the scene, visible and cached
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _activeEntries = new();
     
     // Previously bound entries waiting (recycled) in the pool
-    private RecycledEntries<TEntryData> _recycledEntries = new();
+    private readonly RecycledEntries<TEntryData> _recycledEntries = new();
     
     // Unbound entries waiting in the pool
     private readonly Queue<RecyclerScrollRectEntry<TEntryData>> _unboundEntries = new();
@@ -134,7 +134,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
             _unboundEntries.Enqueue(entry);
         }
 
-        _viewportCollider.size = new Vector3(viewport.rect.width, viewport.rect.height, 1000f);
+        // Used to detect what entries are on screen
+        InitViewportCollider();
     }
 
     /// <summary>
@@ -611,7 +612,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     /// <summary>
     /// Returns the state of an entry
     /// </summary>
-    public RecyclerScrollRectEntryState GetEntryState(RecyclerScrollRectEntry<TEntryData> entry)
+    public RecyclerScrollRectEntryState GetStateOfEntry(RecyclerScrollRectEntry<TEntryData> entry)
     {
         int index = entry.Index;
 
@@ -636,6 +637,24 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         }
 
         return RecyclerScrollRectEntryState.InPoolBound;
+    }
+
+    /// <summary>
+    /// Returns the state of the endcap
+    /// </summary>
+    public RecyclerScrollRectEndcapState GetStateOfEndcap()
+    {
+        if (!_endcap.gameObject.activeSelf)
+        {
+            return RecyclerScrollRectEndcapState.InPool;
+        }
+        
+        if (IsInViewport(_endcap.RectTransform))
+        {
+            return RecyclerScrollRectEndcapState.Visible;
+        }
+
+        return RecyclerScrollRectEndcapState.InCache;
     }
 
     /// <summary>
@@ -1025,6 +1044,16 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     {
         _currScrollingToIndex = null;
         StopCoroutine(_scrollToCoroutine);
+    }
+
+    /// <summary>
+    /// Used to detect what is visible on screen
+    /// </summary>
+    private void InitViewportCollider()
+    {
+        // The value of z is not anything special since everything is in 2D - just a healthy buffer
+        _viewportCollider = GetComponent<BoxCollider>();
+        _viewportCollider.size = new Vector3(viewport.rect.width, viewport.rect.height, 1000f);
     }
     
     private bool IsInViewport(RectTransform rectTransform)
