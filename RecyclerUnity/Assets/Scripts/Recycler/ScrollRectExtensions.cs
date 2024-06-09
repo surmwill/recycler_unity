@@ -32,47 +32,31 @@ public static class ScrollRectExtensions
     {
         (RectTransform content, RectTransform viewport) = (scrollRect.content, scrollRect.viewport);
         (WorldRect contentWorldRect, WorldRect viewportWorldRect, WorldRect childContentWorldRect) = (content.GetWorldRect(), viewport.GetWorldRect(), childContent.GetWorldRect());
-        (float viewportWidth, float viewportHeight) = (viewportWorldRect.Width, viewportWorldRect.Height);
 
-        // The furthest left the viewport can scroll before bumping into the side
-        Vector3 leftmostViewportPosition = 
-            (contentWorldRect.BotLeftCorner + 0.5f * (contentWorldRect.TopLeftCorner - contentWorldRect.BotLeftCorner)) + 
-            (viewportWidth * 0.5f * content.right);
+        Vector3 contentTop = contentWorldRect.TopLeftCorner;
+        Vector3 contentBot = contentWorldRect.BotLeftCorner;
+        Vector3 contentBotToTop = contentTop - contentBot;
+
+        Vector3 viewportTop = contentTop - (contentBotToTop.normalized * viewportWorldRect.Height / 2f);
+        Vector3 viewportBot = contentBot + (contentBotToTop.normalized * viewportWorldRect.Height / 2f);
+        Vector3 viewportBotToTop = viewportTop - viewportBot;
+
+        Vector3 childPosition = viewportBot + Vector3.Project(childContentWorldRect.Center - viewportBot, viewportBotToTop);
+        Vector3 viewportBotToChildPosition = childPosition - viewportBot;
+        Vector3 viewportTopToChildPosition = childPosition - viewportTop;
         
-        // The furthest right the viewport can scroll before bumping into the side
-        Vector3 rightMostViewportPosition =
-            (contentWorldRect.BotRightCorner + 0.5f * (contentWorldRect.TopRightCorner - contentWorldRect.BotRightCorner)) -
-            (viewportWidth * 0.5f * content.right);
+        if (Vector3.Dot(viewportBotToChildPosition, viewportBotToTop) < 0)
+        {
+            return new Vector2(0f, 0f);
+        }
 
-        // The furthest down the viewport can scroll before bumping into the bottom
-        Vector3 bottommostViewportPosition =
-            (contentWorldRect.BotLeftCorner + 0.5f * (contentWorldRect.BotRightCorner - contentWorldRect.BotLeftCorner)) +
-            (viewportHeight * 0.5f * content.up);
-        
-        // The furthest up the viewport can scroll before bumping into the top
-        Vector3 topmostViewportPosition = 
-            (contentWorldRect.TopLeftCorner + 0.5f * (contentWorldRect.TopRightCorner - contentWorldRect.TopLeftCorner)) - 
-            (viewportHeight * 0.5f * content.up);
+        if (Vector3.Dot(viewportTopToChildPosition, -viewportBotToTop) < 0)
+        {
+            return new Vector2(0f, 1f);
+        }
 
-        // These lines are the values that the viewport can take on
-        Vector3 viewportHorizontalLine = rightMostViewportPosition - leftmostViewportPosition;
-        Vector3 viewportVerticalLine = topmostViewportPosition - bottommostViewportPosition;
-
-        // The point in the child we are scrolling to
-        Vector3 scrollToPositionInChild = childContentWorldRect.BotLeftCorner + 
-                                  childContentWorldRect.Right * (normalizedPositionInChild.x * childContentWorldRect.Width) +
-                                  childContentWorldRect.Up * (normalizedPositionInChild.y * childContentWorldRect.Height);
-
-        Vector3 childHorizontalPosOnViewportLine = leftmostViewportPosition + Vector3.Project(scrollToPositionInChild - leftmostViewportPosition, viewportHorizontalLine);
-        Vector3 childVerticalPosOnViewportLine = bottommostViewportPosition + Vector3.Project(scrollToPositionInChild - bottommostViewportPosition, viewportVerticalLine);
-        
-        float normalizedHorizontalDistance = viewportHorizontalLine == Vector3.zero ? 0f : 
-            Vector3Utils.InverseLerp(leftmostViewportPosition, rightMostViewportPosition, childHorizontalPosOnViewportLine);
-        
-        float normalizedVerticalDistance = viewportVerticalLine == Vector3.zero ? 0f :
-            Vector3Utils.InverseLerp(bottommostViewportPosition, topmostViewportPosition, childVerticalPosOnViewportLine);
-
-        return new Vector2(normalizedHorizontalDistance, normalizedVerticalDistance);
+        float normalizedPositionInViewportBotToTop = viewportBotToChildPosition.magnitude / viewportBotToTop.magnitude;
+        return new Vector2(0f, normalizedPositionInViewportBotToTop);
     }
 
     /// <summary>

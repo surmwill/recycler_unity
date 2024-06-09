@@ -39,10 +39,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     [SerializeField]
     private bool _setTargetFrameRateTo60 = true;
 
+    [SerializeField]
+    private BoxCollider _viewportCollider = null;
+    
     [Header("Pool")]
     [SerializeField]
     private RectTransform _poolParent = null;
-    
+
     [SerializeField]
     private int _poolSize = 15;
 
@@ -130,6 +133,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         {
             _unboundEntries.Enqueue(entry);
         }
+
+        _viewportCollider.size = new Vector3(viewport.rect.width, viewport.rect.height, 1000f);
     }
 
     /// <summary>
@@ -529,7 +534,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         
         foreach (RecyclerScrollRectEntry<TEntryData> entry in _activeEntries.Values)
         {
-            bool isVisible = entry.RectTransform.Overlaps(viewport);
+            bool isVisible = IsInViewport(entry.RectTransform);
             if (isVisible)
             {
                 EntryIsVisible(entry);
@@ -768,9 +773,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     private RectTransform RemoveFromContent(RectTransform child, FixEntries fixEntries = FixEntries.Below)
     {
         // If the child is not visible then shrink in the direction which keeps it off screen and preserves the currently visible entries
-        if (!child.Overlaps(viewport))
+        if (!IsInViewport(child))
         {
-            fixEntries = child.GetWorldRect().Center.y > viewport.GetWorldRect().Center.y ? FixEntries.Below : FixEntries.Above;
+            fixEntries = IsAboveViewport(child) ? FixEntries.Below : FixEntries.Above;
         }
         
         // Remove the child and recalculate the parent's size
@@ -788,9 +793,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         Assert.IsTrue(contentChild.transform.parent == content);
 
         // If the child is not visible then grow in the direction which keeps it off screen and preserves the currently visible entries
-        if (!contentChild.Overlaps(viewport))
+        if (!IsInViewport(contentChild))
         {
-            fixEntries = contentChild.GetWorldRect().Center.y > viewport.GetWorldRect().Center.y ? FixEntries.Below : FixEntries.Above;
+            fixEntries = IsAboveViewport(contentChild) ? FixEntries.Below : FixEntries.Above;
         }
 
         // Children control their own height (see AddToContent)
@@ -959,7 +964,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
                  UpdateCaches();
              }
          }
-
+         
          _currScrollingToIndex = null;
          onScrollComplete?.Invoke();
 
@@ -1020,6 +1025,18 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     {
         _currScrollingToIndex = null;
         StopCoroutine(_scrollToCoroutine);
+    }
+    
+    private bool IsInViewport(RectTransform rectTransform)
+    {
+        Vector3[] worldCorners = new Vector3[4];
+        rectTransform.GetWorldCorners(worldCorners);
+        return worldCorners.Any(_viewportCollider.ContainsPoint);
+    }
+
+    private bool IsAboveViewport(RectTransform rectTransform)
+    {
+        return Vector3.Dot(Vector3.ProjectOnPlane(rectTransform.position - viewport.position, viewport.forward), viewport.up) > 0;
     }
 
     private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)
