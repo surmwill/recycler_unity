@@ -7,25 +7,6 @@ using UnityEngine.UI;
 public static class ScrollRectExtensions
 {
     /// <summary>
-    /// Returns the number of viewports scrolled per second
-    /// </summary>
-    public static Vector2 GetViewportVelocity(this ScrollRect scrollRect)
-    {
-        Vector2 velocity = scrollRect.content.TransformVector(scrollRect.velocity);
-        WorldRect viewportRect = scrollRect.viewport.GetWorldRect();
-        return new Vector2(velocity.x / viewportRect.Width, velocity.y / viewportRect.Height);
-    }
-
-    /// <summary>
-    /// Returns the normalized scroll position of one of the children that make up the ScrollRect's content
-    /// </summary>
-    public static Vector2 GetNormalizedScrollPositionOfChild(this ScrollRect scrollRect, RectTransform childContent)
-    {
-        Vector2 normalizedCenter = new Vector2(0.5f, 0.5f);
-        return GetNormalizedScrollPositionOfChild(scrollRect, childContent, normalizedCenter);
-    }
-    
-    /// <summary>
     /// Returns the normalized scroll position of one of the children that make up the ScrollRect's content
     /// </summary>
     public static Vector2 GetNormalizedScrollPositionOfChild(this ScrollRect scrollRect, RectTransform childContent, Vector2 normalizedPositionInChild)
