@@ -12,7 +12,7 @@ public class TestScrollToIndexRecycler : MonoBehaviour
     [SerializeField]
     private ScrollToIndexRecyclerScrollRect _recycler = null;
     
-    private const int InitNumEntries = 100;
+    private const int InitNumEntries = 200;
     private const int ScrollToIndex = 45;
 
     private static readonly int[] EnlargeEntryIndices = { 41, 42 };
@@ -27,13 +27,14 @@ public class TestScrollToIndexRecycler : MonoBehaviour
         // Test scrolling
         if (Input.GetKeyDown(KeyCode.A))
         {
-            _recycler.ScrollToIndex(ScrollToIndex, scrollSpeedViewportsPerSecond:1f);
+            _recycler.ScrollToIndex(ScrollToIndex, scrollSpeedViewportsPerSecond:0.1f);
         }
         // Test deletion while scrolling
         else if (Input.GetKeyDown(KeyCode.D))
         {
-            _recycler.RemoveRange(0, 1);
+            _recycler.RemoveRange(10, 10, FixEntries.Above);
         }
+        // Test insertion while scrolling
         else if (Input.GetKeyDown(KeyCode.S))
         {
             _recycler.InsertRange(10, CreateEntryData(10), FixEntries.Above);

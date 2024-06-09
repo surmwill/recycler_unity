@@ -209,7 +209,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     {
         if (index == _currScrollingToIndex)
         {
-            StopCoroutine(_scrollToCoroutine);
+            StopScrollToCoroutine();
         }
         
         // Recycle the entry if it exists in the scene
@@ -327,8 +327,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         {
             return;
         }
-        
-        // Debug.Log(_indexWindow.PrintRange());
 
         // Update what should be in our start or end cache
         UpdateCaches();
@@ -859,11 +857,11 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
      {
          if (_scrollToCoroutine != null)
          {
-             StopCoroutine(_scrollToCoroutine);
-             _currScrollingToIndex = null;
+             StopScrollToCoroutine();
          }
 
-         _scrollToCoroutine = StartCoroutine(ScrollToIndexInner(index, scrollToAlignment, onScrollComplete, scrollSpeedViewportsPerSecond, isImmediate));
+         _currScrollingToIndex = index;
+         _scrollToCoroutine = StartCoroutine(ScrollToIndexInner(scrollToAlignment, onScrollComplete, scrollSpeedViewportsPerSecond, isImmediate));
      }
 
      /// <summary>
@@ -877,14 +875,11 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
      /// <param name="scrollSpeedViewportsPerSecond"></param>
      /// <returns></returns>
      private IEnumerator ScrollToIndexInner(
-         int index, 
          ScrollToAlignment scrollToAlignment, 
          Action onScrollComplete, 
          float scrollSpeedViewportsPerSecond, 
          bool isImmediate)
      {
-         _currScrollingToIndex = index;
-
          // Scrolling should not fight existing movement
          StopMovementAndDrag();
 
@@ -908,6 +903,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
          float distanceToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
          while (this.IsScrollable())
          {
+             int index = _currScrollingToIndex.Value;
+             
              float normalizedDistanceToTravelThisFrame = DistanceToNormalizedScrollDistance(distanceToTravelThisFrame);
              float currNormalizedY = normalizedPosition.y;
              float newNormalizedY = 0f;
@@ -931,8 +928,8 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
                  normalizedPosition = normalizedPosition.WithY(newNormalizedY);
              }
 
-             // Find and scroll to the exact position of the entry
-             else if (_indexWindow.Contains(index))
+             // Find and scroll to the exact position of the now active entry
+             else
              {
                  Vector2 entryNormalizedPosition = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild);
                  float entryNormalizedY = entryNormalizedPosition.y;
@@ -964,9 +961,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
                  UpdateCaches();
              }
          }
-         
-         onScrollComplete?.Invoke();
+
          _currScrollingToIndex = null;
+         onScrollComplete?.Invoke();
 
          // Returns the distance we'd like to scroll in a single frame
          float GetFullDistanceToTravelInThisFrame()
@@ -986,7 +983,6 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
              return normalizedScrollDistance * (content.rect.height - viewport.rect.height);
          }
      }
-    
 
      private void InsertDataForEntryAt(int index, TEntryData entryData) 
      {
@@ -1018,9 +1014,14 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     {
         if (_scrollToCoroutine != null)
         {
-            StopCoroutine(_scrollToCoroutine);
-            _currScrollingToIndex = null;
+            StopScrollToCoroutine();
         }
+    }
+
+    private void StopScrollToCoroutine()
+    {
+        _currScrollingToIndex = null;
+        StopCoroutine(_scrollToCoroutine);
     }
 
     private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)
