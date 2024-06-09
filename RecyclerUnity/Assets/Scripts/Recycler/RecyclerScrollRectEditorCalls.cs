@@ -32,6 +32,9 @@ public partial class RecyclerScrollRect<TEntryData>
         {
             viewport = (RectTransform) transform;
         }
+        
+        // Ensure the viewport has a collider to test what is visible
+        InitViewportCollider();
 
         // Ensure there is content (the active list of entries)
         if (content == null)

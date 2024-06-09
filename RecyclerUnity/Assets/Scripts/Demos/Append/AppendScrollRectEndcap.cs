@@ -27,8 +27,6 @@ public class AppendScrollRectEndcap : RecyclerScrollRectEndcap<object>
     private const float TimeBetweenEllipseChangeSeconds = 0.25f;
     private const int NumEntriesToAppend = 15;
 
-    private bool IsVisible => RectTransform.Overlaps(Recycler.viewport);
-
     private Coroutine _fetchWhenOnScreen;
     
     public override void OnFetchedFromRecycling()
@@ -42,7 +40,7 @@ public class AppendScrollRectEndcap : RecyclerScrollRectEndcap<object>
 
     private void Update()
     {
-        if (_fetchWhenOnScreen == null && IsVisible)
+        if (_fetchWhenOnScreen == null && Recycler.GetStateOfEndcap() == RecyclerScrollRectEndcapState.Visible)
         {
             _fetchWhenOnScreen = StartCoroutine(FetchWhenOnScreen());
         }
@@ -57,7 +55,7 @@ public class AppendScrollRectEndcap : RecyclerScrollRectEndcap<object>
         
         while (timeLeft > 0)
         {
-            if (!IsVisible)
+            if (Recycler.GetStateOfEndcap() != RecyclerScrollRectEndcapState.Visible)
             {
                Reset();
                yield break;
