@@ -560,9 +560,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         void EntryIsNotVisible(RecyclerScrollRectEntry<TEntryData> entry)
         {
             int entryIndex = entry.Index;
-
-            // TODO: how does this handle horizontally?
-            bool wentOffTop = entry.RectTransform.position.y > viewport.transform.position.y;
+            bool wentOffTop = Vector3.Dot(entry.RectTransform.position - viewport.transform.position, viewport.transform.up) > 0;
             
             // Entries are increasing (entry 0 is at the top along with our start cache)
             if (AreEntriesIncreasing)
