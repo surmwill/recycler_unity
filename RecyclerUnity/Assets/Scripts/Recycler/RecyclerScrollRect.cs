@@ -906,19 +906,19 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
          StopMovementAndDrag();
 
          // The position within the child we will scroll to
-         Vector2 normalizedPositionWithinChild = Vector2.zero;
+         float normalizedPositionWithinChild = 0f;
          switch (scrollToAlignment)
          {
              case ScrollToAlignment.EntryMiddle:
-                 normalizedPositionWithinChild = new Vector2(0.5f, 0.5f) ;
+                 normalizedPositionWithinChild = 0.5f;
                  break;
              
              case ScrollToAlignment.EntryTop:
-                 normalizedPositionWithinChild = new Vector2(0.5f, 1f);
+                 normalizedPositionWithinChild = 1f;
                  break;
              
              case ScrollToAlignment.EntryBottom:
-                 normalizedPositionWithinChild = new Vector2(0.5f, 0f);
+                 normalizedPositionWithinChild = 0f;
                  break;
          }
          
@@ -953,13 +953,12 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
              // Find and scroll to the exact position of the now active entry
              else
              {
-                 Vector2 entryNormalizedPosition = this.GetNormalizedScrollPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild);
-                 float entryNormalizedY = entryNormalizedPosition.y;
-                 
+                 float entryNormalizedY = this.GetNormalizedVerticalPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild);
+
                  newNormalizedY = Mathf.MoveTowards(currNormalizedY, entryNormalizedY, normalizedDistanceToTravelThisFrame);
                  normalizedPosition = normalizedPosition.WithY(newNormalizedY);
 
-                 if (this.IsAtNormalizedPosition(entryNormalizedPosition))
+                 if (this.IsAtNormalizedPosition(normalizedPosition.WithY(entryNormalizedY)))
                  {
                      break;
                  }
