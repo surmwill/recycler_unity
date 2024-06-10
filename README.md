@@ -219,6 +219,18 @@ void PrependEntries(IEnumerable<TEntryData> entries)
 Prepends a range of entries to the beginning of the existing list of data. Functionally equivalent to insertion - but more efficent - as we know we are tacking things on to the beginning, not inserting into the middle and pushing things on/off screen unpredictably. Appending is even more preferrable, as we still need to shift the underlying list containing the data (and prepending will cause the most shifts).
 - `entries:` the data forr the entries
 
+### Clear
+```
+void Clear()
+```
+Clears the Recycler of all entries and their underlying data. A fresh start.
+
+###
+```
+void ResetToBeginning()
+```
+Resets the Recycler to its very beginning elements. Note that this is more efficent than a `ScrollToIndex` call with an index of 0 and `isImmediate = true` (an immediate scroll). The immediate scroll still actually scrolls through all the elements - just in one frame. Here we take advantage of knowing we want to return the very beginning by clearing the Recycler and then recreating it with the same data: this gives us our initial window of entries without all the scrolling.    
+
 ## RecyclerScrollRectEntry
 
 
