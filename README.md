@@ -282,8 +282,8 @@ void RecalculateContentChildSize(RectTransform contentChild, FixEntries fixEntri
 This function shouldn't be used unless you know what you're doing. It is public to be used by the entries and endcap to alert the Recycler to size changes. 
 Technically any old RectTransform can be inserted into the content and this function called to properly display it, but this is undefined behaviour and risks messing up the bookkeeping of what entries are on and off-screen.
 
--`contentChild:` a RectTransform in the ScrollRect's content that needs to have its size updated and properly displayed.
--`fixEntries:` as the RectTransform grows or shrinks other entries will get pushed away or pulled in to the empty space. This defines how and what entries will move.
+- `contentChild:` a RectTransform in the ScrollRect's content that needs to have its size updated and properly displayed.
+- `fixEntries:` as the RectTransform grows or shrinks other entries will get pushed away or pulled in to the empty space. This defines how and what entries will move.
 
 ### OnRecyclerUpdated
 ```
