@@ -272,7 +272,7 @@ RecyclerScrollRectEndcapState GetStateOfEndcap()
 Returns the state of the endcap, whether it is:
 1. Visible (active, on-screen)
 2. Cached (active, waiting just off-screen)
-3. In pool (inactive, waiting to be needed)
+3. In the recycling pool (inactive, waiting to be needed)
 
 ### RecalculateContentChildSize
 ```
