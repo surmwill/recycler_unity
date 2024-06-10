@@ -174,11 +174,38 @@ private void Start()
 ```
 Insert(int index, TEntryData entryData, FixEntries fixEntries)
 ```
-Inserts an element at the given index. Existing indices will be shifted, equivalent behaviour to inserting into a list.
+Inserts an entry at the given index. Existing entries will be shifted - equivalent behaviour to inserting into a list.
 - `index:` the index to insert the entry at
 - `entryData:` the data representing the entry
-- `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved. 
+- `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved.
+
+### InsertRange
+```
+InsertRange(int index, IEnumerable<TEntryData> entryData, FixEntries fixEntries)
+```
+Inserts a range of entries at the given index. Existing entries will be shifted - equivalent behaviour to inserting into a list.
+- `index:` the index to insert the entries at
+- `entryData:` the data for the entries
+- `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved.
+
+### RemoveAt
+```
+RemoveAt(int index, FixEntries fixEntries)
+```
+Removes an entry at the given index. Existing entries will be shifted - equivalent behaviour to removing from a list.
+- `index:` the index of the entry to remove
+- `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
+
+### RemoveRange
+```
+RemoveRange(int index, int count, FixEntries fixEntries)
+```
+Removes a range of entries starting from the given index. Existing entries will be shifted - equivalent behavior to removing from a list.
+- `index:` the index to start removal at
+- `count:` the number of entries to remove
+- `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
 
 ## RecyclerScrollRectEntry
+
 
 ## RecyclerScrollRectEndcap
