@@ -223,7 +223,7 @@ Prepends a range of entries to the beginning of the existing list of data.
 
 Functionally equivalent to insertion - but more efficent - as we know we are tacking things on to the beginning, not inserting into the middle and pushing things on/off screen unpredictably. Appending is even more preferrable, as we still need to shift the underlying list containing the data (and prepending will cause the most shifts).
 
-- `entries:` the data forr the entries
+- `entries:` the data for the entries
 
 ### Clear
 ```
