@@ -209,14 +209,20 @@ Removes a range of entries starting from the given index. Existing entries will 
 ```
 void AppendEntries(IEnumerable<TEntryData> entries)
 ```
-Appends a range of entries to the end of the existing list of data. Functionally equivalent to insertion - but more efficent - as we know we are tacking things on to the end, not inserting into the middle and pushing things on/off screen unpredictably. 
+Appends a range of entries to the end of the existing list of data. 
+
+Functionally equivalent to insertion - but more efficent - as we know we are tacking things on to the end, not inserting into the middle and pushing things on/off screen unpredictably. 
+
 - `entries:` the data for the entries
 
 ### PrependEntries
 ```
 void PrependEntries(IEnumerable<TEntryData> entries)
 ```
-Prepends a range of entries to the beginning of the existing list of data. Functionally equivalent to insertion - but more efficent - as we know we are tacking things on to the beginning, not inserting into the middle and pushing things on/off screen unpredictably. Appending is even more preferrable, as we still need to shift the underlying list containing the data (and prepending will cause the most shifts).
+Prepends a range of entries to the beginning of the existing list of data. 
+
+Functionally equivalent to insertion - but more efficent - as we know we are tacking things on to the beginning, not inserting into the middle and pushing things on/off screen unpredictably. Appending is even more preferrable, as we still need to shift the underlying list containing the data (and prepending will cause the most shifts).
+
 - `entries:` the data forr the entries
 
 ### Clear
@@ -225,11 +231,59 @@ void Clear()
 ```
 Clears the Recycler of all entries and their underlying data. A fresh start.
 
-###
+### ResetToBeginning
 ```
 void ResetToBeginning()
 ```
-Resets the Recycler to its very beginning elements. Note that this is more efficent than a `ScrollToIndex` call with an index of 0 and `isImmediate = true` (an immediate scroll). The immediate scroll still actually scrolls through all the elements - just in one frame. Here we take advantage of knowing we want to return the very beginning by clearing the Recycler and then recreating it with the same data: this gives us our initial window of entries without all the scrolling.    
+Resets the Recycler to its very beginning elements. 
+
+Note that this is more efficent than a `ScrollToIndex` call with an index of 0 and `isImmediate = true` (i.e. an immediate scroll to index 0 - our first element). The immediate scroll still actually scrolls through all the elements - just in one frame. Here we take advantage of knowing we want to return the very beginning of the Recycler by clearing it and then recreating it with the same data: this gives us our initial window of entries without all the intermediate scrolling. 
+
+### ScrollToIndex
+```
+void ScrollToIndex(int index, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeedViewportsPerSecond, bool isImmediate)
+```
+Scrolls to an entry at a given index. The entry doesn't need to be on screen at the time of the call.
+
+- `index:` the index of the entry to scroll to
+- `scrollToAlignment:` the position within the entry we want to center on (ex: the middle, the top edge, the bottom edge)
+- `onScrollComplete:` callback invoked once we've successfully scrolled to the entry
+- `scrollSpeedViewportsPerSecond:` the speed of the scroll, defined in viewports per second (ex: a value of 1 means we'll scroll past 1 full screen of entries every second)
+- `isImmediate:` whether the scroll should complete immediately. Warning: the scroll still occurs - just in one frame - meaning large jumps are costly.
+
+### GetStateOfEntry
+```
+RecyclerScrollRectEntryState GetStateOfEntry(RecyclerScrollRectEntry<TEntryData> entry)
+```
+
+Returns the state of an entry, whether it is: 
+1. Visible (active, on-screen),
+2. In the start cache (active, waiting just off-screen),
+4. In the end cache (active, waiting just off-screen),
+5. In the recycling pool and bound (inactive, but was previously active and bound to some data we hope we can reuse)
+6. In the recycling pool and unbound (inactive, was never previously active and therefore holds no binding data)
+
+- `entry:` the entry to check the state of
+
+### GetStateOfEndcap
+```
+RecyclerScrollRectEndcapState GetStateOfEndcap()
+```
+Returns the state of the endcap, whether it is:
+1. Visible (active, on-screen)
+2. Cached (active, waiting just off-screen)
+3. In pool (inactive, waiting to be needed)
+
+### RecalculateContentChildSize
+```
+void RecalculateContentChildSize(RectTransform contentChild, FixEntries fixEntries)
+```
+
+This function shouldn't be used unless you know what you're doing. It is public to be used by the entries and endcap to alert the Recycler to size changes. 
+Technically any old RectTransform can be inserted into the content and this function called to properly display it, but this is undefined behaviour and risks messing up the bookkeeping of what entries are on and off-screen.
+
+-`contentChild:` a RectTransform in the ScrollRect's content that needs to have its size updated and properly displayed.
+-`fixEntries:` as the RectTransform grows or shrinks other entries will get pushed away or pulled in to the empty space. This defines how and what entries will move.
 
 ## RecyclerScrollRectEntry
 
