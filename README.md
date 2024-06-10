@@ -237,7 +237,7 @@ void ResetToBeginning()
 ```
 Resets the Recycler to its very beginning elements. 
 
-Note that this is more efficent than a `ScrollToIndex` call with an index of 0 and `isImmediate = true` (i.e. an immediate scroll to index 0 - our first element). The immediate scroll still actually scrolls through all the elements - just in one frame. Here we take advantage of knowing we want to return the very beginning of the Recycler by clearing it and then recreating it with the same data: this gives us our initial window of entries without all the intermediate scrolling. 
+Note that this is more efficent than a `ScrollToIndex` call with an index of 0 and `isImmediate = true` (i.e. an immediate scroll to index 0, our first element). The immediate scroll still actually scrolls through all the elements - just in one frame. Here we take advantage of knowing we want to return the very beginning of the Recycler by clearing it and then recreating it with the same data: this gives us our initial window of entries without all the intermediate scrolling. 
 
 ### ScrollToIndex
 ```
