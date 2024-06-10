@@ -165,3 +165,20 @@ private void Start()
 ### End Result
 
 ![](README_Images/creating_recycler_end_result.gif)
+
+# Documentation
+
+## RecyclerScrollRect
+
+### Insert
+```
+Insert(int index, TEntryData entryData, FixEntries fixEntries)
+```
+Inserts an element at the given index. Existing indices will be shifted, equivalent behaviour to inserting into a list.
+- `index:` the index to insert the entry at
+- `entryData:` the data representing the entry
+- `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved. 
+
+## RecyclerScrollRectEntry
+
+## RecyclerScrollRectEndcap
