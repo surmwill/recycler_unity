@@ -172,7 +172,7 @@ private void Start()
 
 ### Insert
 ```
-Insert(int index, TEntryData entryData, FixEntries fixEntries)
+void Insert(int index, TEntryData entryData, FixEntries fixEntries)
 ```
 Inserts an entry at the given index. Existing entries will be shifted - equivalent behaviour to inserting into a list.
 - `index:` the index to insert the entry at
@@ -181,7 +181,7 @@ Inserts an entry at the given index. Existing entries will be shifted - equivale
 
 ### InsertRange
 ```
-InsertRange(int index, IEnumerable<TEntryData> entryData, FixEntries fixEntries)
+void InsertRange(int index, IEnumerable<TEntryData> entryData, FixEntries fixEntries)
 ```
 Inserts a range of entries at the given index. Existing entries will be shifted - equivalent behaviour to inserting into a list.
 - `index:` the index to insert the entries at
@@ -190,7 +190,7 @@ Inserts a range of entries at the given index. Existing entries will be shifted 
 
 ### RemoveAt
 ```
-RemoveAt(int index, FixEntries fixEntries)
+void RemoveAt(int index, FixEntries fixEntries)
 ```
 Removes an entry at the given index. Existing entries will be shifted - equivalent behaviour to removing from a list.
 - `index:` the index of the entry to remove
@@ -198,12 +198,26 @@ Removes an entry at the given index. Existing entries will be shifted - equivale
 
 ### RemoveRange
 ```
-RemoveRange(int index, int count, FixEntries fixEntries)
+void RemoveRange(int index, int count, FixEntries fixEntries)
 ```
 Removes a range of entries starting from the given index. Existing entries will be shifted - equivalent behavior to removing from a list.
 - `index:` the index to start removal at
 - `count:` the number of entries to remove
 - `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
+
+### AppendEntries
+```
+void AppendEntries(IEnumerable<TEntryData> entries)
+```
+Appends a range of entries to the end of the existing list of data. Functionally equivalent to insertion - but more efficent - as we know we are tacking things on to the end, not inserting into the middle and pushing things on/off screen unpredictably. 
+- `entries:` the data for the entries
+
+### PrependEntries
+```
+void PrependEntries(IEnumerable<TEntryData> entries)
+```
+Prepends a range of entries to the beginning of the existing list of data. Functionally equivalent to insertion - but more efficent - as we know we are tacking things on to the beginning, not inserting into the middle and pushing things on/off screen unpredictably. Appending is even more preferrable, as we still need to shift the underlying list containing the data (and prepending will cause the most shifts).
+- `entries:` the data forr the entries
 
 ## RecyclerScrollRectEntry
 
