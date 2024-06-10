@@ -285,6 +285,27 @@ Technically any old RectTransform can be inserted into the content and this func
 -`contentChild:` a RectTransform in the ScrollRect's content that needs to have its size updated and properly displayed.
 -`fixEntries:` as the RectTransform grows or shrinks other entries will get pushed away or pulled in to the empty space. This defines how and what entries will move.
 
+### OnRecyclerUpdated
+```
+event Action OnRecyclerUpdated
+```
+
+Invoked at the end of LateUpdate once scrolling has been handled, and the current viewport of entries is not expected to change (this frame) except through manual user calls (Insert, Delete, etc...). The state of the entries can be queried here without worry of them changing.
+
+### DataForEntries
+```
+IReadOnlyList<TEntryData> DataForEntries { get; }
+```
+
+Returns the list of data being bound to the entries.
+
+### ActiveEntries
+```
+IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData>> ActiveEntries { get; }
+```
+
+Returns the currently active entries (both visible on-screen and cached just off-screen), which can be looked up by their index. Note that `GetStateOfEntry` can be called on any entry here for a more fine-grained state, and, for example, to decipher which entries are in the cache and which are visible. 
+
 ## RecyclerScrollRectEntry
 
 
