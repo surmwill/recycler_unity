@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// A sample end-cap for testing
 /// </summary>
-public class StringScrollRectEndcap : RecyclerScrollRectEndcap<string>
+public class StringScrollRectEndcap : RecyclerScrollRectEndcap<StringRecyclerData, string>
 {
     [SerializeField]
     private TMP_Text _text = null;

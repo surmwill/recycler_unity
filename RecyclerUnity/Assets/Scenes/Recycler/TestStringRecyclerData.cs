@@ -21,8 +21,7 @@ public class TestStringRecyclerData : MonoBehaviour
     private StringRecyclerData LongRandomString => 
         new (Enumerable.Range(0, 25).Aggregate(string.Empty, (s, _) => s + Guid.NewGuid()));
 
-    private IEnumerable<StringRecyclerData> InitEntries => Enumerable.Range(0, NumEntries).Select(_ => NormalRandomString)
-        .Select(s => new StringRecyclerData(s));
+    private IEnumerable<StringRecyclerData> InitEntries => Enumerable.Range(0, NumEntries).Select(_ => NormalRandomString);
 
     private void Start()
     { 
