@@ -100,7 +100,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
 
     private Vector2 _nonFilledScrollRectPivot;
 
-    private Coroutine _scrollToCoroutine;
+    private Coroutine _scrollToIndexCoroutine;
 
     private int? _currScrollingToIndex;
 
@@ -215,7 +215,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     {
         if (index == _currScrollingToIndex)
         {
-            StopScrollToCoroutine();
+            StopScrollToIndexCoroutine();
         }
         
         // Recycle the entry if it exists in the scene
@@ -877,13 +877,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
          float scrollSpeedViewportsPerSecond = 0.02f, 
          bool isImmediate = false)
      {
-         if (_scrollToCoroutine != null)
+         if (_scrollToIndexCoroutine != null)
          {
-             StopScrollToCoroutine();
+             StopScrollToIndexCoroutine();
          }
 
          _currScrollingToIndex = index;
-         _scrollToCoroutine = StartCoroutine(ScrollToIndexInner(scrollToAlignment, onScrollComplete, scrollSpeedViewportsPerSecond, isImmediate));
+         _scrollToIndexCoroutine = StartCoroutine(ScrollToIndexInner(scrollToAlignment, onScrollComplete, scrollSpeedViewportsPerSecond, isImmediate));
      }
 
      /// <summary>
@@ -984,7 +984,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
          }
          
          _currScrollingToIndex = null;
-         _scrollToCoroutine = null;
+         _scrollToIndexCoroutine = null;
          onScrollComplete?.Invoke();
 
          // Returns the distance we'd like to scroll in a single frame
@@ -1034,28 +1034,28 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (_scrollToCoroutine != null)
+        if (_scrollToIndexCoroutine != null)
         {
-            StopScrollToCoroutine();
+            StopScrollToIndexCoroutine();
         }
     }
 
     /// <summary>
     /// Stops scrolling to an index
     /// </summary>
-    public void StopScrolling()
+    public void CancelScrollToIndex()
     {
-        if (_scrollToCoroutine != null)
+        if (_scrollToIndexCoroutine != null)
         {
-            StopScrollToCoroutine();
+            StopScrollToIndexCoroutine();
         }
     }
 
-    private void StopScrollToCoroutine()
+    private void StopScrollToIndexCoroutine()
     {
         _currScrollingToIndex = null;
-        StopCoroutine(_scrollToCoroutine);
-        _scrollToCoroutine = null;
+        StopCoroutine(_scrollToIndexCoroutine);
+        _scrollToIndexCoroutine = null;
     }
 
     /// <summary>

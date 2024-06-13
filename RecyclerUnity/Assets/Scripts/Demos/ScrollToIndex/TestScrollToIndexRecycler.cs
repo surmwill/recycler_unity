@@ -47,7 +47,7 @@ public class TestScrollToIndexRecycler : MonoBehaviour
         // Test cancelling scrolling
         else if (Input.GetKeyDown(KeyCode.Z))
         {
-            _recycler.StopScrolling();
+            _recycler.CancelScrollToIndex();
         }
     }
 
