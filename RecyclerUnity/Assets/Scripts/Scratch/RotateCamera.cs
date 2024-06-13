@@ -15,4 +15,12 @@ public class RotateCamera : MonoBehaviour
     {
         _camera.transform.eulerAngles += RotationsPerSecond * 360 * Time.deltaTime;
     }
+
+    private void OnValidate()
+    {
+        if (_camera == null)
+        {
+            _camera = GetComponent<Camera>();
+        }
+    }
 }

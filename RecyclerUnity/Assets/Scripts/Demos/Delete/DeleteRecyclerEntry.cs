@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DeleteRecyclerEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
 {
     [SerializeField]
-    private TMP_Text _indexText = null;
+    private Text _indexText = null;
 
     private const float DeleteTime = 1.5f;
 
