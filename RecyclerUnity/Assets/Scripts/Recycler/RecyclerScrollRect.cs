@@ -810,7 +810,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     /// <summary>
     /// Called when a child needs its dimensions updated
     /// </summary>
-    public void RecalculateContentChildSize(RectTransform contentChild, FixEntries fixEntries = FixEntries.Below)
+    private void RecalculateContentChildSize(RectTransform contentChild, FixEntries fixEntries = FixEntries.Below)
     {
         Assert.IsTrue(contentChild.transform.parent == content);
 
@@ -828,6 +828,22 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         
         // Now calculate the change in parent size given the child's size
         RecalculateContentSize(fixEntries);
+    }
+
+    /// <summary>
+    /// Called when an entry has updated its dimensions, and now the Recycler needs to update its own dimensions in turn
+    /// </summary>
+    public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData> entry, FixEntries fixEntries = FixEntries.Below)
+    {
+        RecalculateContentChildSize(entry.RectTransform, fixEntries);
+    }
+
+    /// <summary>
+    /// Called when the endcap has updated dimensions, and now the Recycler needs to update its own dimensions in turn
+    /// </summary>
+    public void RecalculateEndcapSize()
+    {
+        RecalculateContentChildSize(_endcap.RectTransform, EndCacheTransformPosition == RecyclerTransformPosition.Bot ? FixEntries.Above : FixEntries.Below);
     }
 
     /// <summary>
