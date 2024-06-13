@@ -41,6 +41,6 @@ public abstract class RecyclerScrollRectEndcap<TRecyclerData> : MonoBehaviour
     /// </summary>
     protected void RecalculateDimensions()
     {
-        Recycler.RecalculateContentChildSize(RectTransform);
+        Recycler.RecalculateEndcapSize();
     }
 }
