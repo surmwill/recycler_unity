@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DemoRecyclerEntry : RecyclerScrollRectEntry<DemoRecyclerData>
+public class DemoRecyclerEntry : RecyclerScrollRectEntry<DemoRecyclerData, string>
 {
     [SerializeField]
     private TMP_Text _wordText = null;

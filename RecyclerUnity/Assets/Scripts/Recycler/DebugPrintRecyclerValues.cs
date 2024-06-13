@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class DebugPrintRecyclerValues : MonoBehaviour
 {
-    private RecyclerScrollRect<string> _recycler;
+    private RecyclerScrollRect<StringRecyclerData, string> _recycler;
 
     private void Awake()
     {
-        _recycler = GetComponent<RecyclerScrollRect<string>>();
+        _recycler = GetComponent<RecyclerScrollRect<StringRecyclerData, string>>();
     }
 
     private void Update()

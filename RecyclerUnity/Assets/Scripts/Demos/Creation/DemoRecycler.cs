@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DemoRecycler : RecyclerScrollRect<DemoRecyclerData>
+public class DemoRecycler : RecyclerScrollRect<DemoRecyclerData, string>
 {
   
 }
