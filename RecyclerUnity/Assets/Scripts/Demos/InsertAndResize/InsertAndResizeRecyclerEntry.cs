@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InsertAndResizeRecyclerEntry : RecyclerScrollRectEntry<InsertAndResizeData>
+public class InsertAndResizeRecyclerEntry : RecyclerScrollRectEntry<InsertAndResizeData, string>
 {
     [SerializeField]
     private CanvasGroup _displayNumber = null;

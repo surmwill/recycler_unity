@@ -7,7 +7,7 @@ using UnityEngine;
 /// <summary>
 /// Recycler entry used to demo scrolling to an index
 /// </summary>
-public class ScrollToIndexRecyclerScrollRectEntry : RecyclerScrollRectEntry<ScrollToIndexData>
+public class ScrollToIndexRecyclerScrollRectEntry : RecyclerScrollRectEntry<ScrollToIndexData, string>
 {
     [SerializeField]
     private TMP_Text _numberText = null;
