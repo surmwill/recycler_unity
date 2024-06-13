@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Recycler entry used to demo scrolling to an index
@@ -10,7 +11,7 @@ using UnityEngine;
 public class ScrollToIndexRecyclerScrollRectEntry : RecyclerScrollRectEntry<ScrollToIndexData, string>
 {
     [SerializeField]
-    private TMP_Text _numberText = null;
+    private Text _numberText = null;
     
     private const int NormalSize = 250;
     private const int GrowSize = 500;
