@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Recycler to demo appending entries
 /// </summary>
-public class AppendRecyclerScrollRect : RecyclerScrollRect<object>
+public class AppendRecyclerScrollRect : RecyclerScrollRect<EmptyRecyclerData, string>
 {
 
 }

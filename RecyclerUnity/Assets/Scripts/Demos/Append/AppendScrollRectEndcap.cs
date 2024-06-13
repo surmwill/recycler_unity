@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Endcap to demo appending to a recycler
 /// </summary>
-public class AppendScrollRectEndcap : RecyclerScrollRectEndcap<object>
+public class AppendScrollRectEndcap : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
 {
     [SerializeField]
     private TMP_Text _titleText = null;
@@ -75,7 +75,7 @@ public class AppendScrollRectEndcap : RecyclerScrollRectEndcap<object>
             timeLeft -= Time.deltaTime;
         }
 
-        Recycler.AppendEntries(Enumerable.Repeat<object>(null, NumEntriesToAppend));
+        Recycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(NumEntriesToAppend));
         Reset();
     }
 

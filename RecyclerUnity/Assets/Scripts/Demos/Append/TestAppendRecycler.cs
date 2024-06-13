@@ -16,6 +16,6 @@ public class TestAppendRecycler : MonoBehaviour
 
    private void Start()
    {
-      _appendRecycler.AppendEntries(Enumerable.Repeat<object>(null, InitEntries));
+      _appendRecycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(InitEntries));
    }
 }

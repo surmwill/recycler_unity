@@ -18,12 +18,12 @@ public class TestDeleteRecyclerScrollRect : MonoBehaviour
 
     private void Start()
     {
-        _deleteRecyclerScrollRect.AppendEntries(new object[NumEntries]);
+        _deleteRecyclerScrollRect.AppendEntries(EmptyRecyclerData.GenerateEmptyData(NumEntries));
     }
 
     private void Update()
     {
-        IReadOnlyDictionary<int, RecyclerScrollRectEntry<object>> activeEntries = _deleteRecyclerScrollRect.ActiveEntries;
+        IReadOnlyDictionary<int, RecyclerScrollRectEntry<EmptyRecyclerData, string>> activeEntries = _deleteRecyclerScrollRect.ActiveEntries;
         
         if (Input.GetKeyDown(KeyCode.A) && Array.TrueForAll(IndicesToRemove, index => activeEntries.ContainsKey(index)))
         {
