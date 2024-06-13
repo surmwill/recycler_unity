@@ -7,10 +7,10 @@ using UnityEngine.UI;
 public class DemoRecyclerEntry : RecyclerScrollRectEntry<DemoRecyclerData, string>
 {
     [SerializeField]
-    private TMP_Text _wordText = null;
+    private Text _wordText = null;
 
     [SerializeField]
-    private TMP_Text _indexText = null;
+    private Text _indexText = null;
 
     [SerializeField]
     private Image _background = null;
