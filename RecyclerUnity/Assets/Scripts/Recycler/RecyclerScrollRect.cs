@@ -683,7 +683,10 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         Assert.IsTrue(!_recycledEntries.Entries.Any(), "Nothing should be bound, there is no data.");
         
         // Recycle the end-cap if it exists
-        RecycleEndcap();
+        if (_endcap != null)
+        {
+            RecycleEndcap();
+        }
 
         // Clear the data for the entries
         _dataForEntries.Clear();
