@@ -44,6 +44,11 @@ public class TestScrollToIndexRecycler : MonoBehaviour
         {
             _recycler.ScrollToIndex(ScrollToIndex, isImmediate:true);
         }
+        // Test cancelling scrolling
+        else if (Input.GetKeyDown(KeyCode.Z))
+        {
+            _recycler.StopScrolling();
+        }
     }
 
     private ScrollToIndexData[] CreateEntryData(int numEntries, IEnumerable<int> enlargeIndices = null)
