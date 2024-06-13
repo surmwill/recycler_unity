@@ -21,11 +21,11 @@ using Transform = UnityEngine.Transform;
 /// In this case the Image should be moved as a child. 
 /// </summary>
 [RequireComponent(typeof(BoxCollider))]
-public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPointerDownHandler
+public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : ScrollRect, IPointerDownHandler where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
 {
     [Header("Recycler")]
     [SerializeField]
-    private RecyclerScrollRectEntry<TEntryData> _recyclerEntryPrefab = null;
+    private RecyclerScrollRectEntry<TEntryData, TKeyEntryData> _recyclerEntryPrefab = null;
 
     [SerializeField]
     private int _numCachedBeforeStart = 2;
@@ -49,13 +49,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
 
     [Header("Endcap (optional)")]
     [SerializeField]
-    private RecyclerScrollRectEndcap<TEntryData> _endcapPrefab = null;
+    private RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> _endcapPrefab = null;
     
     [SerializeField]
     private RectTransform _endcapParent = null;
 
     [SerializeField]
-    private RecyclerScrollRectEndcap<TEntryData> _endcap = null;
+    private RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> _endcap = null;
 
     /// <summary>
     /// Called after the Recycler's scroll has been handled and we have the correct final set of entries on screen (for this frame).
@@ -72,7 +72,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     /// <summary>
     /// The entries with active GameObjects, including both visible and cached
     /// </summary>
-    public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData>> ActiveEntries => _activeEntries;
+    public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> ActiveEntries => _activeEntries;
 
     // In the scene hierarchy, are our entries' indices increasing as we go down the sibling list?
     // Increasing entries mean our first entry with index 0 is at the top, and so is our start cache.
@@ -86,13 +86,15 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     private BoxCollider _viewportCollider = null;
     
     // All the active entries in the scene, visible and cached
-    private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _activeEntries = new();
+    private Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _activeEntries = new();
     
     // Previously bound entries waiting (recycled) in the pool
     private readonly RecycledEntries<TEntryData> _recycledEntries = new();
     
     // Unbound entries waiting in the pool
-    private readonly Queue<RecyclerScrollRectEntry<TEntryData>> _unboundEntries = new();
+    private readonly Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _unboundEntries = new();
+
+    private readonly Dictionary<TKeyEntryData, int> _entryKeyToCurrentIndex = new();
 
     private readonly List<TEntryData> _dataForEntries = new();
     
@@ -128,7 +130,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         _indexWindow = new SlidingIndexWindow(_numCachedBeforeStart);
 
         // All the entries in the bool are initially unbound
-        RecyclerScrollRectEntry<TEntryData> entry = null;
+        RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = null;
         foreach (Transform _ in _poolParent.Children().Where(t => t.TryGetComponent(out entry)))
         {
             _unboundEntries.Enqueue(entry);
@@ -161,7 +163,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         int siblingIndex = AreEntriesIncreasing ? 0 : content.childCount;
         foreach (Transform entryTransform in content)
         {
-            RecyclerScrollRectEntry<TEntryData> activeEntry = entryTransform.GetComponent<RecyclerScrollRectEntry<TEntryData>>();
+            RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry = entryTransform.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
             if (activeEntry != null && activeEntry.Index == index - 1)
             {
                 siblingIndex = activeEntry.transform.GetSiblingIndex() + (AreEntriesIncreasing ? 1 : 0);
@@ -226,7 +228,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         }
 
         // Unbind the entry in recycling
-        if (_recycledEntries.Entries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData> entry))
+        if (_recycledEntries.Entries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
         {
             entry.UnbindIndex();
             _recycledEntries.Remove(index);
@@ -249,9 +251,9 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     private void ShiftIndicesBoundEntries(int startIndex, int shiftAmount)
     {
         // Shift our active entries
-       Dictionary<int, RecyclerScrollRectEntry<TEntryData>> shiftedActiveEntries = new Dictionary<int, RecyclerScrollRectEntry<TEntryData>>();
+       Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> shiftedActiveEntries = new Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
             
-       foreach ((int index, RecyclerScrollRectEntry<TEntryData> activeEntry) in _activeEntries)
+       foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry) in _activeEntries)
        {
            int shiftedIndex = index + (index >= startIndex ? shiftAmount : 0);
            if (shiftedIndex != index)
@@ -271,6 +273,14 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
        {
            _currScrollingToIndex += shiftAmount;
        }
+    }
+    
+    private void ShiftIndicesKeyMapping(int index, int shiftAmount)
+    {
+        for (int i = index; i < _dataForEntries.Count; i++)
+        {
+            _entryKeyToCurrentIndex[_dataForEntries[index].Key] += shiftAmount;
+        }
     }
 
     /// <summary>
@@ -364,7 +374,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
             List<int> newCachedEndEntries = new();
 
             // Determine what entries need to be removed (aren't in the cache and aren't visible)
-            foreach ((int index, RecyclerScrollRectEntry<TEntryData> _) in _activeEntries)
+            foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> _) in _activeEntries)
             {
                 if (!_indexWindow.Contains(index))
                 {
@@ -432,7 +442,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
             {
                 for (int i = 0; i < content.childCount; i++)
                 {
-                    if (content.GetChild(i).GetComponent<RecyclerScrollRectEntry<TEntryData>>() == null)
+                    if (content.GetChild(i).GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>() == null)
                     {
                         numConsecutiveNonEntries++;
                     }
@@ -447,7 +457,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
             {
                 for (int i = content.childCount - 1; i >= 0; i--)
                 {
-                    if (content.GetChild(i).GetComponent<RecyclerScrollRectEntry<TEntryData>>() == null)
+                    if (content.GetChild(i).GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>() == null)
                     {
                         numConsecutiveNonEntries++;
                     }
@@ -504,7 +514,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     {
         Debug.Log("CREATING " + dataIndex + " " + Time.frameCount);
         
-        if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TEntryData> entry))
+        if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
         {
             entry = Instantiate(_recyclerEntryPrefab, content);
         }
@@ -533,7 +543,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
             return;
         }
         
-        foreach (RecyclerScrollRectEntry<TEntryData> entry in _activeEntries.Values)
+        foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _activeEntries.Values)
         {
             bool isVisible = IsInViewport(entry.RectTransform);
             if (isVisible)
@@ -547,7 +557,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         }
 
         // Visible
-        void EntryIsVisible(RecyclerScrollRectEntry<TEntryData> entry)
+        void EntryIsVisible(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
         {
             int entryIndex = entry.Index;
 
@@ -612,11 +622,11 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     /// <summary>
     /// Returns the state of an entry
     /// </summary>
-    public RecyclerScrollRectEntryState GetStateOfEntry(RecyclerScrollRectEntry<TEntryData> entry)
+    public RecyclerScrollRectEntryState GetStateOfEntry(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
     {
         int index = entry.Index;
 
-        if (!_indexWindow.Exists || index == RecyclerScrollRectEntry<TEntryData>.UnboundIndex)
+        if (!_indexWindow.Exists || index == RecyclerScrollRectEntry<TEntryData, TKeyEntryData>.UnboundIndex)
         {
             return RecyclerScrollRectEntryState.InPoolUnbound;
         }
@@ -666,13 +676,13 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         StopMovementAndDrag();
         
         // Recycle all the entries
-        foreach (RecyclerScrollRectEntry<TEntryData> entry in _activeEntries.Values.ToList())
+        foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _activeEntries.Values.ToList())
         {
             SendToRecycling(entry);
         }
 
         // Unbind everything
-        foreach (RecyclerScrollRectEntry<TEntryData> entry in _recycledEntries.Entries.Values.ToList())
+        foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _recycledEntries.Entries.Values.ToList())
         {
             _recycledEntries.Remove(entry.Index);
             entry.UnbindIndex();
@@ -704,7 +714,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         StopMovement();
     }
 
-    private void SendToRecycling(RecyclerScrollRectEntry<TEntryData> entry, FixEntries fixEntries = FixEntries.Below)
+    private void SendToRecycling(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
     {
         Debug.Log("RECYCLED: " + entry.Index + " " + Time.frameCount);
 
@@ -727,7 +737,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         entry.OnRecycled();
     }
 
-    private bool TryFetchFromRecycling(int entryIndex, out RecyclerScrollRectEntry<TEntryData> entry)
+    private bool TryFetchFromRecycling(int entryIndex, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
     {
         entry = null;
         
@@ -743,7 +753,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         // Then try and use just any already bound entry waiting in recycling
         else if (_recycledEntries.Entries.Any())
         {
-            (int firstIndex, RecyclerScrollRectEntry<TEntryData> firstEntry) = _recycledEntries.GetOldestEntry();
+            (int firstIndex, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> firstEntry) = _recycledEntries.GetOldestEntry();
             entry = firstEntry;
             _recycledEntries.Remove(firstIndex);
         }
@@ -833,7 +843,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
     /// <summary>
     /// Called when an entry has updated its dimensions, and now the Recycler needs to update its own dimensions in turn
     /// </summary>
-    public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData> entry, FixEntries fixEntries = FixEntries.Below)
+    public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
     {
         RecalculateContentChildSize(entry.RectTransform, fixEntries);
     }
@@ -1036,21 +1046,39 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
      /// </summary>
      private void InsertDataForEntriesAt(int index, IReadOnlyCollection<TEntryData> entryData) 
      {
+         if (index < 0 || index > _dataForEntries.Count)
+         {
+             throw new IndexOutOfRangeException($"Invalid index: {index}. Current data length: {_dataForEntries.Count}");
+         }
+         
          ShiftIndicesBoundEntries(index, entryData.Count); 
+         ShiftIndicesKeyMapping(index, entryData.Count);
+         
+         foreach ((TEntryData data, int i) in entryData.ZipWithIndex())
+         {
+             _entryKeyToCurrentIndex[data.Key] = index + i;
+         }
+         
          _indexWindow.InsertRange(index, entryData.Count);
         _dataForEntries.InsertRange(index, entryData);
     }
 
     private void RemoveDataForEntryAt(int index)
     {
-        if (index >= 0 && index < _dataForEntries.Count)
+        if (index < 0 || index >= _dataForEntries.Count)
         {
-            ShiftIndicesBoundEntries(index, -1);
-            _indexWindow.Remove(index);
-            _dataForEntries.RemoveAt(index);
+            throw new IndexOutOfRangeException($"Invalid index: {index}. Current data length: {_dataForEntries.Count}");
         }
+        
+        ShiftIndicesBoundEntries(index, -1);
+        ShiftIndicesKeyMapping(index, -1);
+
+        _entryKeyToCurrentIndex.Remove(_dataForEntries[index].Key);
+        
+        _indexWindow.Remove(index);
+        _dataForEntries.RemoveAt(index);
     }
-    
+
     public void OnPointerDown(PointerEventData eventData)
     {
         if (_scrollToIndexCoroutine != null)

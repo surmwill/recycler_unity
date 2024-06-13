@@ -8,7 +8,7 @@ using UnityEngine;
 ///
 /// Note that all ScrollRect entries are force expanded to the size of the viewport.
 /// </summary>
-public abstract class RecyclerScrollRectEndcap<TRecyclerData> : MonoBehaviour
+public abstract class RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> : MonoBehaviour where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
 {
     /// <summary>
     /// The end-cap's RectTransform
@@ -18,12 +18,12 @@ public abstract class RecyclerScrollRectEndcap<TRecyclerData> : MonoBehaviour
     /// <summary>
     /// The Recycler the end-cap falls under
     /// </summary>
-    protected RecyclerScrollRect<TRecyclerData> Recycler { get; private set; }
+    protected RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; private set; }
     
     private void Awake()
     {
         RectTransform = (RectTransform) transform;
-        Recycler = GetComponentInParent<RecyclerScrollRect<TRecyclerData>>();
+        Recycler = GetComponentInParent<RecyclerScrollRect<TEntryData, TKeyEntryData>>();
     }
     
     /// <summary>
