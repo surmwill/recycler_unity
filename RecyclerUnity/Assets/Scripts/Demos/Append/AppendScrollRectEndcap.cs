@@ -12,10 +12,10 @@ using UnityEngine.UI;
 public class AppendScrollRectEndcap : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
 {
     [SerializeField]
-    private TMP_Text _titleText = null;
+    private Text _titleText = null;
     
     [SerializeField]
-    private TMP_Text _timeLeftText = null;
+    private Text _timeLeftText = null;
     
     [SerializeField]
     private Image _loadingOutline = null;

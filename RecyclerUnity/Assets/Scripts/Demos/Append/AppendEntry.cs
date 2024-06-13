@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Recycler entry for demoing appending
@@ -9,8 +10,8 @@ using UnityEngine;
 public class AppendEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
 {
     [SerializeField]
-    private TMP_Text _indexText = null;
-    
+    private Text _indexText = null;
+
     protected override void OnBindNewData(EmptyRecyclerData _)
     {
     }
