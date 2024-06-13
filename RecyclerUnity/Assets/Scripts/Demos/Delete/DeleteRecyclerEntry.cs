@@ -5,7 +5,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
-public class DeleteRecyclerEntry : RecyclerScrollRectEntry<object>
+public class DeleteRecyclerEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
 {
     [SerializeField]
     private TMP_Text _indexText = null;
@@ -14,7 +14,7 @@ public class DeleteRecyclerEntry : RecyclerScrollRectEntry<object>
 
     private Sequence _deleteSequence;
 
-    protected override void OnBindNewData(object _)
+    protected override void OnBindNewData(EmptyRecyclerData _)
     {
     }
 

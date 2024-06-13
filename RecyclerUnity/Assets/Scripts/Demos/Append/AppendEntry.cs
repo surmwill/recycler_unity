@@ -6,12 +6,12 @@ using UnityEngine;
 /// <summary>
 /// Recycler entry for demoing appending
 /// </summary>
-public class AppendEntry : RecyclerScrollRectEntry<object>
+public class AppendEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
 {
     [SerializeField]
     private TMP_Text _indexText = null;
     
-    protected override void OnBindNewData(object _)
+    protected override void OnBindNewData(EmptyRecyclerData _)
     {
     }
 
