@@ -12,7 +12,7 @@ public class InsertAndResizeRecyclerEntry : RecyclerScrollRectEntry<InsertAndRes
     private CanvasGroup _displayNumber = null;
 
     [SerializeField]
-    private TMP_Text _numberText = null;
+    private Text _numberText = null;
     
     private const int NormalSize = 250;
     private const int GrowSize = 500;
