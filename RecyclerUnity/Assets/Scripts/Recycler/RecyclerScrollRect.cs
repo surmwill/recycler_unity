@@ -984,6 +984,7 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
          }
          
          _currScrollingToIndex = null;
+         _scrollToCoroutine = null;
          onScrollComplete?.Invoke();
 
          // Returns the distance we'd like to scroll in a single frame
@@ -1039,10 +1040,22 @@ public abstract partial class RecyclerScrollRect<TEntryData> : ScrollRect, IPoin
         }
     }
 
+    /// <summary>
+    /// Stops scrolling to an index
+    /// </summary>
+    public void StopScrolling()
+    {
+        if (_scrollToCoroutine != null)
+        {
+            StopScrollToCoroutine();
+        }
+    }
+
     private void StopScrollToCoroutine()
     {
         _currScrollingToIndex = null;
         StopCoroutine(_scrollToCoroutine);
+        _scrollToCoroutine = null;
     }
 
     /// <summary>
