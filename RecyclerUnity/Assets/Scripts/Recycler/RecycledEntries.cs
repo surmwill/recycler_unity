@@ -6,17 +6,17 @@ using UnityEngine;
 /// <summary>
 /// Maintains a dictionary of recycled entries as well as a LinkedList (acting as a queue) to track which entries have sat in recycling the longest
 /// </summary>
-public class RecycledEntries<TEntryData>
+public class RecycledEntries<TEntryData, TKeyEntryData> where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
 {
-    private Dictionary<int, RecyclerScrollRectEntry<TEntryData>> _entries = new();
+    private Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _entries = new();
 
     private Dictionary<int, LinkedListNode<int>> _entriesQueuePosition = new();
     
     private readonly LinkedList<int> _queueEntries = new();
 
-    public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData>> Entries => _entries;
+    public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> Entries => _entries;
 
-    public void Add(int index, RecyclerScrollRectEntry<TEntryData> entry)
+    public void Add(int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
     {
         _entries.Add(index, entry);
         
@@ -35,10 +35,10 @@ public class RecycledEntries<TEntryData>
 
     public void ShiftIndices(int startIndex, int shiftAmount)
     {
-        Dictionary<int, RecyclerScrollRectEntry<TEntryData>> shiftedEntries = new Dictionary<int, RecyclerScrollRectEntry<TEntryData>>();
+        Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> shiftedEntries = new Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
         Dictionary<int, LinkedListNode<int>> shiftedQueuePositions = new Dictionary<int, LinkedListNode<int>>();
 
-        foreach ((int index, RecyclerScrollRectEntry<TEntryData> recycledEntry) in _entries)
+        foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> recycledEntry) in _entries)
         {
             int shiftedIndex = index + (index >= startIndex ? shiftAmount : 0);
             LinkedListNode<int> shiftedQueuePosition = _entriesQueuePosition[index];
@@ -57,9 +57,9 @@ public class RecycledEntries<TEntryData>
         _entriesQueuePosition = shiftedQueuePositions;
     }
 
-    public KeyValuePair<int, RecyclerScrollRectEntry<TEntryData>> GetOldestEntry()
+    public KeyValuePair<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> GetOldestEntry()
     {
         int oldestIndex = _queueEntries.First.Value;
-        return new KeyValuePair<int, RecyclerScrollRectEntry<TEntryData>>(oldestIndex, _entries[oldestIndex]);
+        return new KeyValuePair<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>(oldestIndex, _entries[oldestIndex]);
     }
 }

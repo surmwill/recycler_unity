@@ -89,7 +89,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _activeEntries = new();
     
     // Previously bound entries waiting (recycled) in the pool
-    private readonly RecycledEntries<TEntryData> _recycledEntries = new();
+    private readonly RecycledEntries<TEntryData, TKeyEntryData> _recycledEntries = new();
     
     // Unbound entries waiting in the pool
     private readonly Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _unboundEntries = new();
@@ -573,7 +573,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         }
 
         // Not visible
-        void EntryIsNotVisible(RecyclerScrollRectEntry<TEntryData> entry)
+        void EntryIsNotVisible(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
         {
             int entryIndex = entry.Index;
             bool wentOffTop = Vector3.Dot(entry.RectTransform.position - viewport.transform.position, viewport.transform.up) > 0;
