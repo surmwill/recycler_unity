@@ -682,8 +682,8 @@ Canvas:
   m_GameObject: {fileID: 473783195}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 519420031}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -2203,7 +2203,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1004, y: 535, z: 1000}
+  m_Size: {x: 1284, y: 2778, z: 1000}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &2121434826
 PrefabInstance:
