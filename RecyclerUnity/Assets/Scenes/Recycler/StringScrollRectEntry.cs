@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// <summary>
 /// A recycler entry displaying a string (used for testing the recycler with simple data)
 /// </summary>
-public class StringScrollRectEntry : RecyclerScrollRectEntry<string>
+public class StringScrollRectEntry : RecyclerScrollRectEntry<StringRecyclerData, string>
 {
     [SerializeField]
     private TMP_Text _text = null;
@@ -28,11 +28,11 @@ public class StringScrollRectEntry : RecyclerScrollRectEntry<string>
 
     public static bool GrowOnBind = false;
 
-    protected override void OnBindNewData(string entryData)
+    protected override void OnBindNewData(StringRecyclerData entryData)
     {
         SpacePerEntry.TryGetValue(Index, out float lastSpace);
         (_spaceBottom.preferredHeight, _spaceTop.preferredHeight) = (lastSpace, lastSpace);
-        _text.text = entryData;
+        _text.text = entryData.Data;
 
         if (GrowOnBind)
         {
