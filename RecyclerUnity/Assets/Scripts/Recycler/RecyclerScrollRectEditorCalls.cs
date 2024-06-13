@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Contains editor and debugging calls for our recycler scroll rect
 /// </summary>
-public partial class RecyclerScrollRect<TEntryData>
+public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
 {
     private const string ContentName = "Entries";
     private const string PoolParentName = "Pool";
@@ -74,24 +74,24 @@ public partial class RecyclerScrollRect<TEntryData>
         // Ensure the pool is the correct size
         if (_recyclerEntryPrefab != null)
         {
-            int numInPool = _poolParent.Children().Count(t => t.HasComponent<RecyclerScrollRectEntry<TEntryData>>());
+            int numInPool = _poolParent.Children().Count(t => t.HasComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>());
             int poolDifference = _poolSize - numInPool;
 
             // Add any missing entries
             for (int i = 0; i < poolDifference; i++)
             {
-                RecyclerScrollRectEntry<TEntryData> entry =
+                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry =
                     InstantiatePrefabPreserveRectTransform(_recyclerEntryPrefab.gameObject, _poolParent)
-                        .GetComponent<RecyclerScrollRectEntry<TEntryData>>();
+                        .GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
 
-                entry.name = RecyclerScrollRectEntry<TEntryData>.UnboundIndex.ToString();
+                entry.name = RecyclerScrollRectEntry<TEntryData, TKeyEntryData>.UnboundIndex.ToString();
                 entry.gameObject.SetActive(false);
             }
 
             // Delete any extra entries
             if (poolDifference < 0)
             {
-                RecyclerScrollRectEntry<TEntryData>[] entries = _poolParent.GetComponentsInChildren<RecyclerScrollRectEntry<TEntryData>>(true);
+                RecyclerScrollRectEntry<TEntryData, TKeyEntryData>[] entries = _poolParent.GetComponentsInChildren<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>(true);
                 for (int i = 0; i < Mathf.Min(entries.Length, Mathf.Abs(poolDifference)); i++)
                 {
                     EditorUtils.DestroyOnValidate(entries[i].gameObject);
@@ -111,11 +111,11 @@ public partial class RecyclerScrollRect<TEntryData>
             // Ensure the endcap exists in the pool
             if (_endcap == null)
             {
-                _endcap = _endcapParent.GetComponentInChildren<RecyclerScrollRectEndcap<TEntryData>>(true);
+                _endcap = _endcapParent.GetComponentInChildren<RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>>(true);
                 if (_endcap == null)
                 {
                     _endcap = InstantiatePrefabPreserveRectTransform(_endcapPrefab.gameObject, _endcapParent)
-                        .GetComponent<RecyclerScrollRectEndcap<TEntryData>>();
+                        .GetComponent<RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>>();
                     
                     _endcap.gameObject.SetActive(false);
                 }
@@ -133,7 +133,7 @@ public partial class RecyclerScrollRect<TEntryData>
                 continue;
             }
             
-            RecyclerScrollRectEntry<TEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData>>();
+            RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
             if (entry == null)
             {
                 return;
@@ -161,7 +161,7 @@ public partial class RecyclerScrollRect<TEntryData>
                 continue;
             }
 
-            RecyclerScrollRectEntry<TEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData>>();
+            RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
             if (entry == null)
             {
                 return;

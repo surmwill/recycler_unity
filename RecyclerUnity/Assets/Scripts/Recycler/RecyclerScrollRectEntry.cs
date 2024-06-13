@@ -6,7 +6,7 @@ using UnityEngine;
 /// Note that all ScrollRect entries are force expanded to the size of the viewport.
 /// </summary>
 [RequireComponent(typeof(RectTransform))]
-public abstract class RecyclerScrollRectEntry<TEntryData> : MonoBehaviour
+public abstract class RecyclerScrollRectEntry<TEntryData, TKeyEntryData> : MonoBehaviour where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
 {
     /// <summary>
     /// Index for an entry that is not bound to any data
@@ -31,12 +31,12 @@ public abstract class RecyclerScrollRectEntry<TEntryData> : MonoBehaviour
     /// <summary>
     /// The scroll rect this is a part of
     /// </summary>
-    public RecyclerScrollRect<TEntryData> Recycler { get; private set; }
+    public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; private set; }
 
     protected virtual void Awake()
     {
         RectTransform = (RectTransform) transform;
-        Recycler = GetComponentInParent<RecyclerScrollRect<TEntryData>>();
+        Recycler = GetComponentInParent<RecyclerScrollRect<TEntryData, TKeyEntryData>>();
         UnbindIndex();
     }
 
