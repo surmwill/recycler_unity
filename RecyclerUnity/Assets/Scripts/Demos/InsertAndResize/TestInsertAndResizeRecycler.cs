@@ -9,7 +9,7 @@ public class TestInsertAndResizeRecycler : MonoBehaviour
     private InsertAndResizeRecycler _recycler = null;
     
     private const int InitNumEntries = 100;
-    private const int InsertionIndex = 61;
+    private const int InsertionIndex = 15;
     private const int NumInsertionEntries = 2;
 
     private void Start()
