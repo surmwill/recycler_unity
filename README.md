@@ -8,19 +8,20 @@ Recyclers address this. Instead of creating the entire list of things, we only c
 If we can only see 20 text messages on screen at a time, and we keep 2 extra messages cached below and above the screen to smoothly scroll into, we'll be managing the lifecycle of 24 things to display instead of the full 1000.
 This increases performance and reduces headaches. Once an entry has gone far enough offscreen, it is not thrown away but re-used for the next visible entry we are scrolling in to.
 
-In the videos below, on the left hand side (the hierarchy), you will see the current list of entries. The numbers on these entries will change as we scroll through the list.
+In the feature videos below, on the left hand side (the hierarchy), you will see the current list of entries. The numbers on these entries will change as we scroll through the list.
 Each number represents the current piece of data (its index) that an entry is displaying. 
 Importantly, the number of entries stays small; even when we're scrolling through a list of hundreds of pieces of data we always have < 20 active at any given moment. 
 The changing numbers is exactly the process of recycling: re-using an old entry with new data.
 
+### Why choose this Recycler?
 Transforming Unity's ScrollRect into a Recycler is already difficult, and other packages can be found implementing a Recycler, but none offer the functionality given here.
 Other Recylers assume:
 - entries with static dimensions (a text message would be unable to resize and show an asynchronously loaded preview image)
 - entries all with the same dimensions (each text message would be required to take up the same amount of room in the conversation, leaving lots of empty space)
-- the list stays static: no inserting or removing entries without recreating the entire list (no deleting messages)
+- the list stays static: no inserting or removing entries without recreating the entire list (inserting or deleting messages)
 - no endcaps: sometimes you want one slightly different entry from the rest at the bottom of the list as it serves a different purpose (for example, fetching the next page of "normal" data to append to the list)
 - no scrolling to an entry: unless you calculate it's (x,y) or normalized scroll position yourself (which is usually unintuitive)
-- no auto-calculated layout entries: making entries that need to deal with dynamically sizeed content difficult (a word changing length based on the localized language, for example) 
+- no auto-calculated layout entries: making entries that need to deal with dynamically sizeed content difficult (for example, an entry with text that changes length based on the localized language) 
 
 Here, all those cases are covered along with the following features: 
 - Appending
