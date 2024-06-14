@@ -17,7 +17,7 @@ Transforming Unity's ScrollRect into a Recycler is already difficult, and other 
 Other Recylers assume:
 - entries with static dimensions (a text message would be unable to resize and show an asynchronously loaded preview image)
 - entries all with the same dimensions (each text message would be required to take up the same amount of room in the conversation, leaving lots of empty space)
-- the list stays static: no inserting or removing entries without recreating the entire list
+- the list stays static: no inserting or removing entries without recreating the entire list (no deleting messages)
 - no endcaps: sometimes you want one slightly different entry from the rest at the bottom of the list as it serves a different purpose (for example, fetching the next page of "normal" data to append to the list)
 - no scrolling to an entry: unless you calculate it's (x,y) or normalized scroll position yourself (which is usually unintuitive)
 - no auto-calculated layout entries: making entries that need to deal with dynamically sizeed content difficult (a word changing length based on the localized language, for example) 
