@@ -1,6 +1,7 @@
 # Intro
 A Recycler View for Unity, as a native one is not provided.
 
+### Why do I need a Recycler?
 Lists of things to display often take up more space than what is available on screen (think of endlessly scrolling through emails or text messages).
 It makes no sense to waste resources on displaying what can't be seen: if we can only see 20 text messages, why spend time creating the entire 1000 message conversation?
 
@@ -18,12 +19,12 @@ Transforming Unity's ScrollRect into a Recycler is already difficult, and other 
 Other Recylers assume:
 - entries with static dimensions (a text message would be unable to resize and show an asynchronously loaded preview image)
 - entries all with the same dimensions (each text message would be required to take up the same amount of room in the conversation, leaving lots of empty space)
-- the list stays static: no inserting or removing entries without recreating the entire list (inserting or deleting messages)
-- no endcaps: sometimes you want one slightly different entry from the rest at the bottom of the list as it serves a different purpose (for example, fetching the next page of "normal" data to append to the list)
+- the list stays static: no inserting or removing entries without recreating the entire list (no inserting or deleting text messages)
+- no endcaps: sometimes you want one slightly different entry from the rest at the bottom of the list as it serves a different purpose (for example, a loading indicator that fetches and appends the next page of text messages from a database)
 - no scrolling to an entry: unless you calculate it's (x,y) or normalized scroll position yourself (which is usually unintuitive)
-- no auto-calculated layout entries: making entries that need to deal with dynamically sizeed content difficult (for example, an entry with text that changes length based on the localized language) 
+- no auto-calculated layout entries: making entries that need to deal with dynamically sized content difficult (for example, an entry with text that changes length based on the localized language) 
 
-Here, all those cases are covered along with the following features: 
+Here, all those cases are covered with the following features: 
 - Appending
 - Prepending
 - Insertion
@@ -34,7 +35,11 @@ Here, all those cases are covered along with the following features:
 - Endcaps
 - Scrolling to any index (including those off screen)
 
-The code is currently in a state of being finalized and documented. The heftiest part of the code (and the two complimentary parts of the Recycler) can be found under: 
+### Code
+The code is currently in a state of being finalized and documented. It can be found under:
+- [RecyclerUnity/Assets/Scripts/Recycler/](RecyclerUnity/Assets/Scripts/Recycler/)
+
+The two core classes - the Recycler and its entries - can be found under: 
 - [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs)
 - [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs) 
 
