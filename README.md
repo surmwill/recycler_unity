@@ -6,7 +6,7 @@ Lists of things to display often take up more space than what is available on sc
 It makes no sense to waste resources on displaying what can't be seen. If we can only see 20 text messages, why spend time creating the entire 1000 message conversation?
 
 Recyclers address this. Instead of creating the entire list of things, we only create what can be seen, and a few entries just off-screen to smoothly scroll into.
-If we can only see 20 text messages on screen at a time, and we keep 2 extra messages cached below and above the screen to smoothly scroll into, we'll be managing the lifecycle of 24 things to display instead of the full 1000.
+If we can only see 20 text messages on screen at a time, and we keep 2 extra messages cached (on each end), waiting just above and below the screen to smoothly scroll into, we'll be managing the lifecycle of 24 things to display instead of the full 1000.
 This increases performance and reduces headaches. Once an entry has gone far enough offscreen, it is not thrown away but re-used for the next visible entry we are scrolling in to.
 
 In the feature videos below, on the left hand side (the hierarchy), you will see the current list of entries. The numbers on these entries will change as we scroll through the list.
