@@ -9,7 +9,9 @@ If we can only see 20 text messages on screen at a time, and we keep 2 extra mes
 This increases performance and reduces headaches. Once an entry has gone far enough offscreen, it is not thrown away but re-used for the next visible entry we are scrolling in to.
 
 In the videos below, on the left hand side (the hierarchy), you will see the current list of entries. The numbers on these entries will change as we scroll through the list.
-Importantly, the number of entries stays small, even when were.
+Each number represents the current piece of data (its index) that an entry is displaying. 
+Importantly, the number of entries stays small; even when we're scrolling through a list of hundreds of pieces of data we always have < 20 active at any given moment. 
+The changing numbers is exactly the process of recycling: re-using an old entry with new data.
 
 There are many complications transforming the given native ScrollRect into a Recycler
 but all of these are addressed (and will be explained in more detail in the future).
