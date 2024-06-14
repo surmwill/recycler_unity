@@ -352,11 +352,10 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         OnRecyclerUpdated?.Invoke();
         
         // Sanity checks
-        if (Application.isEditor)
-        {
-            DebugCheckDuplicates();  
-            DebugCheckOrdering();
-        }
+        #if UNITY_EDITOR
+        DebugCheckDuplicates();  
+        DebugCheckOrdering();
+        #endif
     }
 
     private void UpdateCaches()
