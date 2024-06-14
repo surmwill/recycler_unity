@@ -10,7 +10,7 @@ This increases performance and reduces headaches. Once an entry has gone far eno
 
 In the feature videos below, on the left hand side (the hierarchy), you will see the current list of entries. The numbers on these entries will change as we scroll through the list.
 Each number represents the current piece of data (its index) that an entry is displaying. 
-Importantly, the number of entries stays small; even when we're scrolling through a list of hundreds of pieces of data we always have < 20 active at any given moment. 
+Importantly, the number of entries stays small; even when we're scrolling through a list of 100s of pieces of data we always have < 20 active at any given moment. 
 The changing numbers is exactly the process of recycling: re-using an old entry with new data.
 
 ### Why choose this Recycler?
