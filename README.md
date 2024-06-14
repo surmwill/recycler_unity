@@ -5,7 +5,7 @@ Lists of things to display often take up more space than what is available on sc
 It makes no sense to waste resources on displaying what can't be seen: if we can only see 20 text messages, why spend time creating the entire 1000 message conversation?
 
 Recyclers address this. Instead of creating the entire list of things, we only create what can be seen - and a few entries just off-screen to smoothly scroll into.
-If we can only see 20 text messages on screen at a time, and we keep 2 extra messages cached below and above the screen to smoothly scroll into, we'll be managing the lifecycle of 24 things to display instead of 1000.
+If we can only see 20 text messages on screen at a time, and we keep 2 extra messages cached below and above the screen to smoothly scroll into, we'll be managing the lifecycle of 24 things to display instead of the full 1000.
 This increases performance and reduces headaches. Once an entry has gone far enough offscreen, it is not thrown away but re-used for the next visible entry we are scrolling in to.
 
 In the videos below, on the left hand side (the hierarchy), you will see the current list of entries. The numbers on these entries will change as we scroll through the list.
@@ -13,12 +13,16 @@ Each number represents the current piece of data (its index) that an entry is di
 Importantly, the number of entries stays small; even when we're scrolling through a list of hundreds of pieces of data we always have < 20 active at any given moment. 
 The changing numbers is exactly the process of recycling: re-using an old entry with new data.
 
-There are many complications transforming the given native ScrollRect into a Recycler
-but all of these are addressed (and will be explained in more detail in the future).
+Transforming Unity's ScrollRect into a Recycler is already difficult, and other packages can be found implementing a Recycler, but none offer the functionality given here.
+Other Recylers assume:
+- entries with static dimensions (a text message would be unable to resize and show an asynchronously loaded preview image)
+- entries all with the same dimensions (each text message would be required to take up the same amount of room in the conversation, leaving lots of empty space)
+- the list stays static: no inserting or removing entries without recreating the entire list
+- no endcaps: sometimes you want one slightly different entry from the rest at the bottom of the list as it serves a different purpose (for example, fetching the next page of "normal" data to append to the list)
+- no scrolling to an entry: unless you calculate it's (x,y) or normalized scroll position yourself (which is usually unintuitive)
+- no auto-calculated layout entries: making entries that need to deal with dynamically sizeed content difficult (a word changing length based on the localized language, for example) 
 
-The code is currently in a state of being cleaned up and polished.
-
-Features include: 
+Here, all those cases are covered along with the following features: 
 - Appending
 - Prepending
 - Insertion
@@ -29,7 +33,7 @@ Features include:
 - Endcaps
 - Scrolling to any index (including those off screen)
 
-The heftiest part of the code (and the two complimentary parts of the Recycler) can be found under: 
+The code is currently in a state of being finalized and documented. The heftiest part of the code (and the two complimentary parts of the Recycler) can be found under: 
 - [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs)
 - [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs) 
 
