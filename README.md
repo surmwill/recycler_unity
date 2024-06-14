@@ -3,7 +3,7 @@ A Recycler View for Unity, as a native one is not provided.
 
 ### Why do I need a Recycler?
 Lists of things to display often take up more space than what is available on screen (think of endlessly scrolling through emails or text messages).
-It makes no sense to waste resources on displaying what can't be seen: if we can only see 20 text messages, why spend time creating the entire 1000 message conversation?
+It makes no sense to waste resources on displaying what can't be seen. If we can only see 20 text messages, why spend time creating the entire 1000 message conversation?
 
 Recyclers address this. Instead of creating the entire list of things, we only create what can be seen, and a few entries just off-screen to smoothly scroll into.
 If we can only see 20 text messages on screen at a time, and we keep 2 extra messages cached below and above the screen to smoothly scroll into, we'll be managing the lifecycle of 24 things to display instead of the full 1000.
