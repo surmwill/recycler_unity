@@ -1,5 +1,16 @@
 # Intro
-A Recycler View for Unity, as a native one is not provided. 
+A Recycler View for Unity, as a native one is not provided.
+
+Lists of things to display often take up more space than what is available on screen (think of endlessly scrolling through emails or text messages).
+It makes no sense to waste resources on displaying what can't be seen: if we can only see 20 text messages, why spend time creating the entire 1000 message conversation?
+
+Recyclers address this. Instead of creating the entire list of things, we only create what can be seen - and a few entries just off-screen to smoothly scroll into.
+If we can only see 20 text messages on screen at a time, and we keep 2 extra messages cached below and above the screen to smoothly scroll into, we'll be managing the lifecycle of 24 things to display instead of 1000.
+This increases performance and reduces headaches. Once an entry has gone far enough offscreen, it is not thrown away but re-used for the next visible entry we are scrolling in to.
+
+In the videos below, on the left hand side (the hierarchy), you will see the current list of entries. The numbers on these entries will change as we scroll through the list.
+Importantly, the number of entries stays small, even when were.
+
 There are many complications transforming the given native ScrollRect into a Recycler
 but all of these are addressed (and will be explained in more detail in the future).
 
