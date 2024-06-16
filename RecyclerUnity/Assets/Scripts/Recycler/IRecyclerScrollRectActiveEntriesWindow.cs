@@ -48,4 +48,9 @@ public interface IRecyclerScrollRectActiveEntriesWindow
     /// The range of entry indices contained in the end cache 
     /// </summary>
     public (int Start, int End) EndCacheIndexRange { get; }
+
+    /// <summary>
+    /// The range of active entries: both visible and cached
+    /// </summary>
+    public (int Start, int End) ActiveEntriesRange { get; }
 }
