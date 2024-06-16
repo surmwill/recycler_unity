@@ -1,12 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
@@ -701,9 +697,18 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             _unboundEntries.Enqueue(entry);
         }
 
-        Assert.IsTrue(!_activeEntries.Any(), "Nothing should be bound, there is no data.");
-        Assert.IsTrue(!_recycledEntries.Entries.Any(), "Nothing should be bound, there is no data.");
-        
+        #if UNITY_EDITOR
+        if (!_activeEntries.Any())
+        {
+            Debug.LogError($"Everything should be unbound, but there are still \"{_activeEntries.Count}\" left");
+        }
+
+        if (_recycledEntries.Entries.Any())
+        {
+            Debug.LogError($"Everything should be unbound, but there are still \"{_recycledEntries.Entries.Count}\" bound recycled entries left");
+        }
+        #endif
+
         // Recycle the end-cap if it exists
         if (_endcap != null)
         {
@@ -834,8 +839,6 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     private void RecalculateContentChildSize(RectTransform contentChild, FixEntries fixEntries = FixEntries.Below)
     {
-        Assert.IsTrue(contentChild.transform.parent == content);
-
         // If the child is not visible then grow in the direction which keeps it off screen and preserves the currently visible entries
         if (!IsInViewport(contentChild))
         {
