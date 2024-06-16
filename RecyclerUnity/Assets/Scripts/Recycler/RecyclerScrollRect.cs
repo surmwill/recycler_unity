@@ -370,9 +370,9 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             }
             
             // Determine what entries need to be added to the start or end cache
-            if (_activeEntriesWindow.StartCacheStartIndex >= 0)
+            if (_activeEntriesWindow.StartCacheIndexRange.HasValue)
             {
-                for (int i = _activeEntriesWindow.VisibleStartIndex - 1; i >= _activeEntriesWindow.StartCacheStartIndex; i--)
+                for (int i = _activeEntriesWindow.StartCacheIndexRange.Value.End; i >= _activeEntriesWindow.StartCacheIndexRange.Value.Start; i--)
                 {
                     if (!_activeEntries.ContainsKey(i))
                     {
@@ -381,9 +381,9 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
                 }   
             }
 
-            if (_activeEntriesWindow.EndCacheEndIndex >= 0)
+            if (_activeEntriesWindow.EndCacheIndexRange.HasValue)
             {
-                for (int i = Mathf.Max(_activeEntriesWindow.VisibleEndIndex, 0); i <= _activeEntriesWindow.EndCacheEndIndex; i++)
+                for (int i = _activeEntriesWindow.EndCacheIndexRange.Value.Start; i <= _activeEntriesWindow.EndCacheIndexRange.Value.End; i++)
                 {
                     if (!_activeEntries.ContainsKey(i))
                     {
@@ -548,36 +548,36 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         {
             int entryIndex = entry.Index;
 
-            if (!_activeEntriesWindow.VisibleIndices.HasValue)
+            if (!_activeEntriesWindow.VisibleIndexRange.HasValue)
             {
-                _activeEntriesWindow.VisibleIndices = (entryIndex, entryIndex);
+                _activeEntriesWindow.VisibleIndexRange = (entryIndex, entryIndex);
                 return;
             }
             
-            (int Start, int End) newVisibleIndices = _activeEntriesWindow.VisibleIndices.Value;
+            (int Start, int End) newVisibleIndices = _activeEntriesWindow.VisibleIndexRange.Value;
             
-            if (entryIndex < _activeEntriesWindow.VisibleStartIndex)
+            if (entryIndex < _activeEntriesWindow.VisibleIndexRange.Value.Start)
             {
                 newVisibleIndices.Start = entryIndex;
             }
             
-            if (entryIndex > _activeEntriesWindow.VisibleEndIndex)
+            if (entryIndex > _activeEntriesWindow.VisibleIndexRange.Value.End)
             {
                 newVisibleIndices.End = entryIndex;
             }
 
-            _activeEntriesWindow.VisibleIndices = newVisibleIndices;
+            _activeEntriesWindow.VisibleIndexRange = newVisibleIndices;
         }
 
         // Not visible
         void EntryIsNotVisible(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
         {
-            if (!_activeEntriesWindow.VisibleIndices.HasValue)
+            if (!_activeEntriesWindow.VisibleIndexRange.HasValue)
             {
                 return;
             }
             
-            (int Start, int End) newVisibleIndices = _activeEntriesWindow.VisibleIndices.Value;
+            (int Start, int End) newVisibleIndices = _activeEntriesWindow.VisibleIndexRange.Value;
             int entryIndex = entry.Index;
             bool wentOffTop = Vector3.Dot(entry.RectTransform.position - viewport.transform.position, viewport.transform.up) > 0;
             
@@ -588,12 +588,12 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             if (AreEntriesIncreasing)
             {
                 // Anything off the top means we are scrolling down, away from entry 0, away from lesser indices
-                if (wentOffTop && _activeEntriesWindow.VisibleStartIndex <= entryIndex)
+                if (wentOffTop && _activeEntriesWindow.VisibleIndexRange.Value.Start <= entryIndex)
                 {
                     newVisibleIndices.Start = entryIndex + 1;
                 }
                 // Anything off the bot means we are scrolling up, toward entry 0, toward lesser indices
-                else if (!wentOffTop && _activeEntriesWindow.VisibleEndIndex >= entryIndex)
+                else if (!wentOffTop && _activeEntriesWindow.VisibleIndexRange.Value.End >= entryIndex)
                 {
                     newVisibleIndices.End = entryIndex - 1;
                 }
@@ -602,18 +602,18 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             else
             {
                 // Anything off the top means we are scrolling down, toward entry 0, toward lesser indices
-                if (wentOffTop && _activeEntriesWindow.VisibleEndIndex >= entryIndex)
+                if (wentOffTop && _activeEntriesWindow.VisibleIndexRange.Value.End >= entryIndex)
                 {
                     newVisibleIndices.End = entryIndex - 1;
                 }
                 // Anything off the bottom means we are scrolling up, away from entry 0, away from lesser indices
-                else if (!wentOffTop && _activeEntriesWindow.VisibleStartIndex <= entryIndex)
+                else if (!wentOffTop && _activeEntriesWindow.VisibleIndexRange.Value.Start <= entryIndex)
                 {
                     newVisibleIndices.Start = entryIndex + 1;
                 }
             }
 
-            _activeEntriesWindow.VisibleIndices = newVisibleIndices;
+            _activeEntriesWindow.VisibleIndexRange = newVisibleIndices;
         }
     }
 
@@ -979,13 +979,13 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
              if (!_activeEntriesWindow.Contains(index))
              {
                  // Scroll toward lesser indices
-                 if (index < _activeEntriesWindow.StartCacheStartIndex)
+                 if (index < _activeEntriesWindow.ActiveEntriesRange.Value.Start)
                  {
                      // If the entries are increasing, then lesser entries are found at the top with a higher normalized scroll position
                      newNormalizedY = Mathf.MoveTowards(currNormalizedY, AreEntriesIncreasing ? 1 : 0, normalizedDistanceToTravelThisFrame);
                  }
                  // Scroll toward greater indices
-                 else if (index > _activeEntriesWindow.EndCacheEndIndex)
+                 else if (index > _activeEntriesWindow.ActiveEntriesRange.Value.End)
                  {
                      // If the entries are increasing, then greater entries are found at the bottom with a lower normalized scroll position
                      newNormalizedY = Mathf.MoveTowards(currNormalizedY, AreEntriesIncreasing ? 0 : 1, normalizedDistanceToTravelThisFrame);
