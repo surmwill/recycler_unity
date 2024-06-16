@@ -1076,7 +1076,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
              _entryKeyToCurrentIndex[data.Key] = index + i;
          }
          
-         // Actual insertion (and modification) of data
+         // Actual insertion (and modification) of underlying data
          _activeEntriesWindow.InsertRange(index, entryData.Count);
         _dataForEntries.InsertRange(index, entryData);
     }
@@ -1095,7 +1095,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         // Remove the inserted entry from our key mapping
         _entryKeyToCurrentIndex.Remove(_dataForEntries[index].Key);
         
-        // Actual removal (and modification) of data
+        // Actual removal (and modification) of underlying data
         _activeEntriesWindow.Remove(index);
         _dataForEntries.RemoveAt(index);
     }
