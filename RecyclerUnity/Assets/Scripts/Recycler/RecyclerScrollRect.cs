@@ -246,11 +246,6 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     private void ShiftIndicesBoundEntries(int startIndex, int shiftAmount)
     {
-        if (!_activeEntries.Any())
-        {
-            
-        }
-        
         // Shift our active entries
        Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> shiftedActiveEntries = new Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
 
@@ -639,7 +634,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     {
         int index = entry.Index;
 
-        if (!_activeEntriesWindow.Exists || index == RecyclerScrollRectEntry<TEntryData, TKeyEntryData>.UnboundIndex)
+        if (!_activeEntriesWindow.HasData || index == RecyclerScrollRectEntry<TEntryData, TKeyEntryData>.UnboundIndex)
         {
             return RecyclerScrollRectEntryState.InPoolUnbound;
         }
