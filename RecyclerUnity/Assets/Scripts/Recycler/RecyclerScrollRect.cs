@@ -73,6 +73,11 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// The entries with active GameObjects, including both visible and cached
     /// </summary>
     public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> ActiveEntries => _activeEntries;
+    
+    /// <summary>
+    /// Contains information about the range of indices of active entries
+    /// </summary>
+    public IRecyclerScrollRectActiveEntriesWindow ActiveEntriesWindow => _activeEntriesWindow;
 
     // In the scene hierarchy, are our entries' indices increasing as we go down the sibling list?
     // Increasing entries mean our first entry with index 0 is at the top, and so is our start cache.
@@ -369,9 +374,9 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             }
             
             // Determine what entries need to be added to the start or end cache
-            if (_activeEntriesWindow.CachedStartIndex >= 0)
+            if (_activeEntriesWindow.StartCacheStartIndex >= 0)
             {
-                for (int i = _activeEntriesWindow.VisibleStartIndex - 1; i >= _activeEntriesWindow.CachedStartIndex; i--)
+                for (int i = _activeEntriesWindow.VisibleStartIndex - 1; i >= _activeEntriesWindow.StartCacheStartIndex; i--)
                 {
                     if (!_activeEntries.ContainsKey(i))
                     {
@@ -380,9 +385,9 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
                 }   
             }
 
-            if (_activeEntriesWindow.CachedEndIndex >= 0)
+            if (_activeEntriesWindow.EndCacheEndIndex >= 0)
             {
-                for (int i = Mathf.Max(_activeEntriesWindow.VisibleEndIndex, 0); i <= _activeEntriesWindow.CachedEndIndex; i++)
+                for (int i = Mathf.Max(_activeEntriesWindow.VisibleEndIndex, 0); i <= _activeEntriesWindow.EndCacheEndIndex; i++)
                 {
                     if (!_activeEntries.ContainsKey(i))
                     {
@@ -971,13 +976,13 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
              if (!_activeEntriesWindow.Contains(index))
              {
                  // Scroll toward lesser indices
-                 if (index < _activeEntriesWindow.CachedStartIndex)
+                 if (index < _activeEntriesWindow.StartCacheStartIndex)
                  {
                      // If the entries are increasing, then lesser entries are found at the top with a higher normalized scroll position
                      newNormalizedY = Mathf.MoveTowards(currNormalizedY, AreEntriesIncreasing ? 1 : 0, normalizedDistanceToTravelThisFrame);
                  }
                  // Scroll toward greater indices
-                 else if (index > _activeEntriesWindow.CachedEndIndex)
+                 else if (index > _activeEntriesWindow.EndCacheEndIndex)
                  {
                      // If the entries are increasing, then greater entries are found at the bottom with a lower normalized scroll position
                      newNormalizedY = Mathf.MoveTowards(currNormalizedY, AreEntriesIncreasing ? 0 : 1, normalizedDistanceToTravelThisFrame);
