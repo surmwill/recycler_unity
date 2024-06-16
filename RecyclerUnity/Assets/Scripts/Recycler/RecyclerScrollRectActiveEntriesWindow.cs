@@ -42,7 +42,7 @@ public class RecyclerScrollRectActiveEntriesWindow
         Mathf.Min(VisibleIndices.HasValue ? VisibleIndices.Value.End + _numCached : _numCached - 1, WindowSize - 1);
     
     /// <summary>
-    /// 
+    /// Whether the window of active entries has changed
     /// </summary>
     public bool IsDirty { get; private set; }
 
@@ -84,6 +84,10 @@ public class RecyclerScrollRectActiveEntriesWindow
 
     private int _windowSizeBacking;
 
+    /// <summary>
+    /// Inserts new entries into the window. These entries are considered non-visible until they tell us otherwise, unless
+    /// they fall in-between the current visible range.
+    /// </summary>
     public void InsertRange(int index, int num)
     {
         if (index > WindowSize)
@@ -115,6 +119,9 @@ public class RecyclerScrollRectActiveEntriesWindow
         VisibleIndices = shiftedVisibleIndices;
     }
 
+    /// <summary>
+    /// Removes an entry from the window
+    /// </summary>
     public void Remove(int index)
     {
         if (index < 0 || index >= WindowSize)
