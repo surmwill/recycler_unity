@@ -21,7 +21,7 @@ public class TestInsertAndResizeRecycler : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            _recycler.InsertRange(InsertionIndex, CreateDataForEntries(NumInsertionEntries, true));
+            _recycler.InsertRangeAtIndex(InsertionIndex, CreateDataForEntries(NumInsertionEntries, true));
         }
     }
 

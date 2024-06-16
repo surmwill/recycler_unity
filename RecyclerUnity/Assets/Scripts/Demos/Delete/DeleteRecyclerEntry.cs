@@ -39,7 +39,7 @@ public class DeleteRecyclerEntry : RecyclerScrollRectEntry<EmptyRecyclerData, st
                 .OnUpdate(() => RecalculateDimensions(FixEntries.Mid)))
             .OnComplete(() =>
             {
-                Recycler.RemoveAt(Index, FixEntries.Above);
+                Recycler.RemoveAtIndex(Index, FixEntries.Above);
                 _deleteSequence = null;
                 RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(initHeight);
             });
