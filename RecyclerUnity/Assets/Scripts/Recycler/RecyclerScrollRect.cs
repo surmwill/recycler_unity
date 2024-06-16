@@ -148,6 +148,11 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     public void InsertAtIndex(int index, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
     {
+        if (index < 0 || index > _dataForEntries.Count)
+        {
+            throw new ArgumentException($"index \"{index}\" must be >= 0 and <= the length of data \"{_dataForEntries.Count}\"");
+        }
+        
         // Update bookkeeping to reflect the new entry. Determine if we actually need to create it now
         InsertDataForEntryAt(index, entryData);
         
@@ -228,6 +233,11 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     public void RemoveAtIndex(int index, FixEntries fixEntries = FixEntries.Below)
     {
+        if (index < 0 || index >= _dataForEntries.Count)
+        {
+            throw new ArgumentException($"index \"{index}\" must be >= 0 and < the length of data \"{_dataForEntries.Count}\"");
+        }
+        
         if (index == _currScrollingToIndex)
         {
             StopScrollToIndexCoroutine();
@@ -682,33 +692,44 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Returns the state of an entry
+    /// Returns the state of the entry at the given index
     /// </summary>
-    public RecyclerScrollRectEntryState GetStateOfEntry(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
+    public RecyclerScrollRectContentState GetStateOfEntryWithIndex(int index)
     {
-        int index = entry.Index;
-
-        if (!_activeEntriesWindow.HasData || index == RecyclerScrollRectEntry<TEntryData, TKeyEntryData>.UnboundIndex)
+        if (index < 0 || index >= _dataForEntries.Count)
         {
-            return RecyclerScrollRectEntryState.InPoolUnbound;
+            throw new ArgumentException($"index \"{index}\" must be >= 0 and < the length of data \"{_dataForEntries.Count}\"");
         }
         
         if (_activeEntriesWindow.IsVisible(index))
         {
-            return RecyclerScrollRectEntryState.Visible;
+            return RecyclerScrollRectContentState.ActiveVisible;
         }
         
         if (_activeEntriesWindow.IsInStartCache(index))
         {
-            return RecyclerScrollRectEntryState.InStartCache;
+            return RecyclerScrollRectContentState.ActiveInStartCache;
         }
 
         if (_activeEntriesWindow.IsInEndCache(index))
         {
-            return RecyclerScrollRectEntryState.InEndCache;
+            return RecyclerScrollRectContentState.ActiveInEndCache;
         }
 
-        return RecyclerScrollRectEntryState.InPoolBound;
+        return RecyclerScrollRectContentState.InactiveInPool;
+    }
+
+    /// <summary>
+    /// Returns the state of the entry with a given key
+    /// </summary>
+    public RecyclerScrollRectContentState GetStateOfEntryWithKey(TKeyEntryData key)
+    {
+        if (!GetCurrentIndexForKey(key, out int index))
+        {
+            throw new ArgumentException($"No data with the key {key} exists");
+        }
+
+        return GetStateOfEntryWithIndex(index);
     }
 
     /// <summary>
@@ -978,6 +999,11 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
          float scrollSpeedViewportsPerSecond = DefaultScrollSpeedViewportsPerSecond, 
          bool isImmediate = false)
      {
+         if (index < 0 || index >= _dataForEntries.Count)
+         {
+             throw new ArgumentException($"index \"{index}\" must be >= 0 and < the length of data \"{_dataForEntries.Count}\"");
+         }
+
          if (_scrollToIndexCoroutine != null)
          {
              StopScrollToIndexCoroutine();

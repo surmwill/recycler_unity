@@ -4,18 +4,27 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// Maintains a dictionary of recycled entries as well as a LinkedList (acting as a queue) to track which entries have sat in recycling the longest
+/// Bookkeeping. Maintains a dictionary of recycled entries as well as as a queue (a LinkedList) to track which entries have sat in recycling the longest
 /// </summary>
 public class RecycledEntries<TEntryData, TKeyEntryData> where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
 {
+    // The entries in the recycling pool, placed in a dictionary for quick lookup 
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _entries = new();
 
-    private Dictionary<int, LinkedListNode<int>> _entriesQueuePosition = new();
-    
+    // The entries (their indices) in the recycling pool, but sorted front to back by whatever entry has been in the pool the longest
     private readonly LinkedList<int> _queueEntries = new();
+    
+    // Maps an entries index to its position in the recycling queue, allowing quick removal
+    private Dictionary<int, LinkedListNode<int>> _entriesQueuePosition = new();
 
+    /// <summary>
+    /// The recycled entries which can be looked up by their index
+    /// </summary>
     public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> Entries => _entries;
 
+    /// <summary>
+    /// Adds an entry to the recycling pool
+    /// </summary>
     public void Add(int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
     {
         _entries.Add(index, entry);
@@ -24,6 +33,9 @@ public class RecycledEntries<TEntryData, TKeyEntryData> where TEntryData : IRecy
         _entriesQueuePosition.Add(index, insertionQueuePosition);
     }
 
+    /// <summary>
+    /// Removes an entry from the recycling pool
+    /// </summary>
     public void Remove(int index)
     {
         _entries.Remove(index);
@@ -33,6 +45,9 @@ public class RecycledEntries<TEntryData, TKeyEntryData> where TEntryData : IRecy
         _entriesQueuePosition.Remove(index);
     }
 
+    /// <summary>
+    /// Shifts the indices of everything we are bookkeeping
+    /// </summary>
     public void ShiftIndices(int startIndex, int shiftAmount)
     {
         Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> shiftedEntries = new Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
@@ -57,6 +72,9 @@ public class RecycledEntries<TEntryData, TKeyEntryData> where TEntryData : IRecy
         _entriesQueuePosition = shiftedQueuePositions;
     }
 
+    /// <summary>
+    /// Returns the entry that has set in the recycling pool the longest
+    /// </summary>
     public KeyValuePair<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> GetOldestEntry()
     {
         int oldestIndex = _queueEntries.First.Value;
