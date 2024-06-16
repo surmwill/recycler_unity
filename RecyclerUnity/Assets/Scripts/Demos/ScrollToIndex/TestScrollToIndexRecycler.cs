@@ -24,10 +24,19 @@ public class TestScrollToIndexRecycler : MonoBehaviour
 
     private void Update()
     {
-        // Test scrolling
+        // Test scrolling to index
         if (Input.GetKeyDown(KeyCode.A))
         {
+            Debug.Log($"scrolling to index: {ScrollToIndex}");
             _recycler.ScrollToIndex(ScrollToIndex, scrollSpeedViewportsPerSecond:1f);
+        }
+        // Test scrolling to key
+        else if (Input.GetKeyDown(KeyCode.Q))
+        {
+            _recycler.GetKeyForCurrentIndex(ScrollToIndex, out string key);
+            
+            Debug.Log($"scrolling to: {key}");
+            _recycler.ScrollToKey(key, scrollSpeedViewportsPerSecond:1f);
         }
         // Test deletion while scrolling
         else if (Input.GetKeyDown(KeyCode.D))
