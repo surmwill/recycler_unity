@@ -98,7 +98,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
     private readonly List<TEntryData> _dataForEntries = new();
     
-    private SlidingIndexWindow _indexWindow;
+    private RecyclerScrollRectActiveEntriesWindow _indexWindow;
 
     private Vector2 _nonFilledScrollRectPivot;
 
@@ -127,7 +127,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         _nonFilledScrollRectPivot = content.pivot;
         
         // Keeps track of what indices are visible, and subsequently which indices are cached
-        _indexWindow = new SlidingIndexWindow(_numCachedBeforeStart);
+        _indexWindow = new RecyclerScrollRectActiveEntriesWindow(_numCachedBeforeStart);
 
         // All the entries in the bool are initially unbound
         RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = null;
@@ -145,16 +145,11 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     public void Insert(int index, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
     {
-        // Determine where the new insertion will be going
-        bool willBeInStartCache = _indexWindow.IsInStartCache(index);
-        bool willBeInEndCache = _indexWindow.IsInEndCache(index);
-        bool willBeVisible = _indexWindow.IsVisible(index);
-        
         // Update bookkeeping to reflect the new entry. Determine if we actually need to create it now
         InsertDataForEntryAt(index, entryData);
         
-        // We don't need to create the entry yet, it will get created when we scroll to it
-        if (_indexWindow.Exists && !willBeInStartCache && !willBeInEndCache && !willBeVisible)
+        // Not an active entry yet, it will get created when we scroll to it
+        if (!_indexWindow.Contains(index))
         {
             return;
         }
@@ -171,11 +166,11 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         }
 
         // Create the entry
-        if (willBeInStartCache)
+        if (_indexWindow.IsInStartCache(index))
         {
             CreateAndAddEntry(index, siblingIndex, StartCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above);
         }
-        else if (willBeInEndCache)
+        else if (_indexWindow.IsInEndCache(index))
         {
             CreateAndAddEntry(index, siblingIndex, EndCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above);
         }
@@ -185,7 +180,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         }
 
         // A new entry can update the visible window and subsequently require an update of what is cached
-        UpdateCaches();
+        UpdateActiveEntries();
     }
 
     /// <summary>
@@ -241,7 +236,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         // A deleted entry can update the visible window and subsequently require an update of what is cached
         if (shouldRecycle)
         {
-            UpdateCaches();
+            UpdateActiveEntries();
         }
     }
 
@@ -309,14 +304,6 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         {
             return;
         }
-
-        // First entries. Create them directly instead of being fetched from the not-yet-existent cache
-        bool areInitialEntries = _dataForEntries.Count == 0;
-        if (areInitialEntries)
-        {
-            InsertRange(0, newEntries);
-            return;
-        }
         
         // Entries (and cache) already exist. Since we're adding them to the end they'll get created normally via a cache request
         if (shouldAppend)
@@ -327,10 +314,10 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         {
             InsertDataForEntriesAt(0, new List<TEntryData>(newEntries.Reverse()));
         }
-        
+
         // Sometimes something put in the cache is actually visible. In this case updating the cache will cause more entries
         // to be created until they fit into the cache proper (i.e. are off-screen)
-        UpdateCaches();
+        UpdateActiveEntries();
     }
 
     protected override void LateUpdate()
@@ -345,7 +332,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         }
 
         // Update what should be in our start or end cache
-        UpdateCaches();
+        UpdateActiveEntries();
 
         // We now have the final set of entries in their correct positions for this frame.
         // Give the user the opportunity for to query/operate on them knowing they won't shift.
@@ -358,15 +345,15 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         #endif
     }
 
-    private void UpdateCaches()
+    private void UpdateActiveEntries()
     {
         // Get the current state of visible entries
         UpdateVisibility();
 
         // If the window of active entries changes we'll need to update the cache accordingly
-        if (_indexWindow.IsDirty)
+        while (_indexWindow.IsDirty)
         {
-            _indexWindow.IsDirty = false;
+            _indexWindow.SetNonDirty();
 
             List<int> toRecycleEntries = new();
             List<int> newCachedStartEntries = new();
@@ -382,20 +369,26 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             }
             
             // Determine what entries need to be added to the start or end cache
-            for (int i = _indexWindow.VisibleStartIndex.Value - 1; i >= _indexWindow.CachedStartIndex && i >= 0; i--)
+            if (_indexWindow.CachedStartIndex >= 0)
             {
-                if (!_activeEntries.ContainsKey(i))
+                for (int i = _indexWindow.VisibleStartIndex - 1; i >= _indexWindow.CachedStartIndex; i--)
                 {
-                    newCachedStartEntries.Add(i);
-                }
+                    if (!_activeEntries.ContainsKey(i))
+                    {
+                        newCachedStartEntries.Add(i);
+                    }
+                }   
             }
 
-            for (int i = _indexWindow.VisibleEndIndex.Value; i <= _indexWindow.CachedEndIndex && i < _dataForEntries.Count; i++)
+            if (_indexWindow.CachedEndIndex >= 0)
             {
-                if (!_activeEntries.ContainsKey(i))
+                for (int i = Mathf.Max(_indexWindow.VisibleEndIndex, 0); i <= _indexWindow.CachedEndIndex; i++)
                 {
-                    newCachedEndEntries.Add(i);
-                }
+                    if (!_activeEntries.ContainsKey(i))
+                    {
+                        newCachedEndEntries.Add(i);
+                    }
+                }   
             }
 
             // Recycle unneeded entries
@@ -536,12 +529,6 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     private void UpdateVisibility()
     {
-        if (!_activeEntries.Any())
-        {
-            _indexWindow.Reset();
-            return;
-        }
-        
         foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _activeEntries.Values)
         {
             bool isVisible = IsInViewport(entry.RectTransform);
@@ -560,35 +547,54 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         {
             int entryIndex = entry.Index;
 
-            if (!_indexWindow.VisibleStartIndex.HasValue || entryIndex < _indexWindow.VisibleStartIndex)
+            if (!_indexWindow.VisibleIndices.HasValue)
             {
-                _indexWindow.VisibleStartIndex = entryIndex;
+                _indexWindow.VisibleIndices = (entryIndex, entryIndex);
+                return;
             }
             
-            if (!_indexWindow.VisibleEndIndex.HasValue || entryIndex > _indexWindow.VisibleEndIndex)
+            (int Start, int End) newVisibleIndices = _indexWindow.VisibleIndices.Value;
+            
+            if (entryIndex < _indexWindow.VisibleStartIndex)
             {
-                _indexWindow.VisibleEndIndex = entryIndex;
+                newVisibleIndices.Start = entryIndex;
             }
+            
+            if (entryIndex > _indexWindow.VisibleEndIndex)
+            {
+                newVisibleIndices.End = entryIndex;
+            }
+
+            _indexWindow.VisibleIndices = newVisibleIndices;
         }
 
         // Not visible
         void EntryIsNotVisible(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
         {
+            if (!_indexWindow.VisibleIndices.HasValue)
+            {
+                return;
+            }
+            
+            (int Start, int End) newVisibleIndices = _indexWindow.VisibleIndices.Value;
             int entryIndex = entry.Index;
             bool wentOffTop = Vector3.Dot(entry.RectTransform.position - viewport.transform.position, viewport.transform.up) > 0;
             
+            // Note that for any entry to be non-visible there must be at least one other entry pushing it offscreen.
+            // This means there's a guaranteed existent entry below/above it and we can be safe adding +/- 1 to our index window bounds
+
             // Entries are increasing (entry 0 is at the top along with our start cache)
             if (AreEntriesIncreasing)
             {
                 // Anything off the top means we are scrolling down, away from entry 0, away from lesser indices
                 if (wentOffTop && _indexWindow.VisibleStartIndex <= entryIndex)
                 {
-                    _indexWindow.VisibleStartIndex = entryIndex + 1;
+                    newVisibleIndices.Start = entryIndex + 1;
                 }
                 // Anything off the bot means we are scrolling up, toward entry 0, toward lesser indices
                 else if (!wentOffTop && _indexWindow.VisibleEndIndex >= entryIndex)
                 {
-                    _indexWindow.VisibleEndIndex = entryIndex - 1;
+                    newVisibleIndices.End = entryIndex - 1;
                 }
             }
             // Entries are decreasing (entry 0 is at the bottom along with our start cache)
@@ -597,14 +603,16 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
                 // Anything off the top means we are scrolling down, toward entry 0, toward lesser indices
                 if (wentOffTop && _indexWindow.VisibleEndIndex >= entryIndex)
                 {
-                    _indexWindow.VisibleEndIndex = entryIndex - 1;
+                    newVisibleIndices.End = entryIndex - 1;
                 }
                 // Anything off the bottom means we are scrolling up, away from entry 0, away from lesser indices
                 else if (!wentOffTop && _indexWindow.VisibleStartIndex <= entryIndex)
                 {
-                    _indexWindow.VisibleStartIndex = entryIndex + 1;
+                    newVisibleIndices.Start = entryIndex + 1;
                 }
             }
+
+            _indexWindow.VisibleIndices = newVisibleIndices;
         }
     }
 
@@ -1007,7 +1015,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
              else
              {
                  distanceToTravelThisFrame -= distanceTravelledInIteration;
-                 UpdateCaches();
+                 UpdateActiveEntries();
              }
          }
          
