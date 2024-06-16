@@ -32,12 +32,12 @@ public class TestScrollToIndexRecycler : MonoBehaviour
         // Test deletion while scrolling
         else if (Input.GetKeyDown(KeyCode.D))
         {
-            _recycler.RemoveRange(10, 10, FixEntries.Above);
+            _recycler.RemoveRangeAtIndex(10, 10, FixEntries.Above);
         }
         // Test insertion while scrolling
         else if (Input.GetKeyDown(KeyCode.S))
         {
-            _recycler.InsertRange(10, CreateEntryData(10), FixEntries.Above);
+            _recycler.InsertRangeAtIndex(10, CreateEntryData(10), FixEntries.Above);
         }
         // Test immediate scrolling
         else if (Input.GetKeyDown(KeyCode.X))
