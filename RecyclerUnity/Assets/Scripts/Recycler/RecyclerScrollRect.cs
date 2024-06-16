@@ -246,9 +246,14 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     private void ShiftIndicesBoundEntries(int startIndex, int shiftAmount)
     {
+        if (!_activeEntries.Any())
+        {
+            
+        }
+        
         // Shift our active entries
        Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> shiftedActiveEntries = new Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
-            
+
        foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry) in _activeEntries)
        {
            int shiftedIndex = index + (index >= startIndex ? shiftAmount : 0);
@@ -271,7 +276,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
        }
     }
     
-    private void ShiftIndicesKeyMapping(int index, int shiftAmount)
+    private void ShiftKeyToIndexMapping(int index, int shiftAmount)
     {
         for (int i = index; i < _dataForEntries.Count; i++)
         {
@@ -1066,14 +1071,17 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
              throw new IndexOutOfRangeException($"Invalid index: {index}. Current data length: {_dataForEntries.Count}");
          }
          
+         // Shift the indices of existing entries that will be affected by the insertion
          ShiftIndicesBoundEntries(index, entryData.Count); 
-         ShiftIndicesKeyMapping(index, entryData.Count);
+         ShiftKeyToIndexMapping(index, entryData.Count);
          
+         // Add the inserted entries to our key mapping
          foreach ((TEntryData data, int i) in entryData.ZipWithIndex())
          {
              _entryKeyToCurrentIndex[data.Key] = index + i;
          }
          
+         // Actual insertion (and modification) of data
          _activeEntriesWindow.InsertRange(index, entryData.Count);
         _dataForEntries.InsertRange(index, entryData);
     }
@@ -1085,11 +1093,14 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             throw new IndexOutOfRangeException($"Invalid index: {index}. Current data length: {_dataForEntries.Count}");
         }
         
-        ShiftIndicesBoundEntries(index, -1);
-        ShiftIndicesKeyMapping(index, -1);
+        // Shift the indices of existing entries that will be affected by the deletion
+        ShiftIndicesBoundEntries(index + 1, -1);
+        ShiftKeyToIndexMapping(index + 1, -1);
 
+        // Remove the inserted entry from our key mapping
         _entryKeyToCurrentIndex.Remove(_dataForEntries[index].Key);
         
+        // Actual removal (and modification) of data
         _activeEntriesWindow.Remove(index);
         _dataForEntries.RemoveAt(index);
     }
