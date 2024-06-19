@@ -309,6 +309,24 @@ Scrolls to an entry at a given index. The entry doesn't need to be on screen at 
 - `scrollSpeedViewportsPerSecond:` the speed of the scroll, defined in viewports per second (ex: a value of 1 means we'll scroll past 1 full screen of entries every second)
 - `isImmediate:` whether the scroll should complete immediately. Warning: the scroll still occurs - just in one frame - meaning large jumps are costly.
 
+- ### ScrollToKey
+```
+void ScrollToKey(TKeyEntryData key, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeedViewportsPerSecond, bool isImmediate)
+```
+Scrolls to an entry with the given key. The entry doesn't need to be on screen at the time of the call.
+
+- `key:` the key of the entry to scroll to
+- `scrollToAlignment:` the position within the entry we want to center on (ex: the middle, the top edge, the bottom edge)
+- `onScrollComplete:` callback invoked once we've successfully scrolled to the entry
+- `scrollSpeedViewportsPerSecond:` the speed of the scroll, defined in viewports per second (ex: a value of 1 means we'll scroll past 1 full screen of entries every second)
+- `isImmediate:` whether the scroll should complete immediately. Warning: the scroll still occurs - just in one frame - meaning large jumps are costly.
+
+- ### CancelScrollTo
+```
+void CancelScrollTo()
+```
+Cancels the current ScrollToIndex/ScrollToKey animation.
+
 ### GetStateOfEntry
 ```
 RecyclerScrollRectEntryState GetStateOfEntry(RecyclerScrollRectEntry<TEntryData> entry)
