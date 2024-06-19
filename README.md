@@ -484,25 +484,27 @@ Below are public functions that are called on the entries by the Recycler. _They
 #### BindNewData
 `public void BindNewData(int index, TEntryData entryData)`
 
-Binds the entry to a new set of data.
+Called by the Recycler to bind the entry to a new set of data.
 
 #### RebindExisingData
 `public void RebindExistingData()`
 
-Rebinds the entry to its current set of data
+Called by the Recycler to bind to rebind the entry to its current set of data
 
 #### OnRecycled
 `public void OnRecycled()`
 
-Called when the entry gets sent to recycling
+Called by the Recycler when the entry gets recycled
 
 #### UnbindIndex
 `public void UnbindIndex()`
 
-Resets the entry to its default unbound index
+Called by the Recycler to reset the entry to its default unbound index
 
 #### SetIndex
 `public void SetIndex(int index)`
+
+Called by the Recycler to set the the entry's index
 
 Sets the index of the entry
 
