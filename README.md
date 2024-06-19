@@ -349,28 +349,38 @@ TKeyEntryData GetKeyForCurrentIndex(int index)
 
 - `index:` the index of entry to get the key of
 
-### GetStateOfEntry
+### GetStateOfEntryWithCurrentIndex
 ```
-RecyclerScrollRectEntryState GetStateOfEntry(RecyclerScrollRectEntry<TEntryData> entry)
+RecyclerScrollRectContentState GetStateOfEntryWithCurrentIndex(int index)
 ```
+Returns the state of the entry with a given index. Either:
+1. ActiveVisible: active and visible on screen
+2. ActiveInStartCache: active, but waiting just off screen in the start cache, ready to scroll to
+3. ActiveInEndCache: active, but waiting just off screen in the end cache, ready to scroll to
+4. InactiveInPool: inactive and waiting in the recycling pool to be bound/re-bound
 
-Returns the state of an entry, whether it is: 
-1. Visible (active, on-screen),
-2. In the start cache (active, waiting just off-screen),
-4. In the end cache (active, waiting just off-screen),
-5. In the recycling pool and bound (inactive, but was previously active and bound to some data we hope we can reuse)
-6. In the recycling pool and unbound (inactive, was never previously active and therefore holds no binding data)
+- `index:` the index of the entry to check the state of
 
-- `entry:` the entry to check the state of
+### GetStateOfEntryWithKey
+```
+RecyclerScrollRectContentState GetStateOfEntryWithCurrentIndex(TKeyEntryData key)
+```
+Returns the state of the entry with the given key. Either:
+1. ActiveVisible: active and visible on screen
+2. ActiveInStartCache: active, but waiting just off screen in the start cache, ready to scroll to
+3. ActiveInEndCache: active, but waiting just off screen in the end cache, ready to scroll to
+4. InactiveInPool: inactive and waiting in the recycling pool to be bound/re-bound
+
+- `key:` the key of the entry to check the state of
 
 ### GetStateOfEndcap
 ```
-RecyclerScrollRectEndcapState GetStateOfEndcap()
+RecyclerScrollRectContentState GetStateOfEndcap()
 ```
-Returns the state of the endcap, whether it is:
-1. Visible (active, on-screen)
-2. Cached (active, waiting just off-screen)
-3. In the recycling pool (inactive, waiting to be needed)
+Returns the state of the endcap. Either:
+1. ActiveVisible: active and visible on screen
+3. ActiveInEndCache: active, but waiting just off screen in the end cache, ready to scroll to (note that an _end_ cap will never be in the _start_ cache)
+4. InactiveInPool: inactive and waiting in the recycling pool
 
 ### RecalculateEntrySize
 ```
@@ -378,7 +388,7 @@ void RecalculateContentEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryDa
 ```
 Called by entries to alert the Recyler of their size change. See [RecyclerScrollRectEntry.RecalculateDimensions]()
 
-- `entry:` a Recycler entry with an updated size
+- `entry:` the entry with an updated size
 - `fixEntries:` as the RectTransform grows or shrinks other entries will get pushed away, or pulled in to the empty space. This defines how and what entries will move.
 
 ### RecalculateEndcapSize
