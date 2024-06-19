@@ -112,7 +112,7 @@ protected override void OnBindNewData(DemoRecyclerData entryData)
 protected override void OnRebindExistingData()
 {
     // Called instead of OnBindNewData when this entry is bound - but to the data it had before (and still currently contains).
-    // We might, for example, resume a paused async operation here instead of restarting everything.
+    // We might, for example, resume a paused async operation here instead of starting it all over again.
 }
 
 protected override void OnSentToRecycling()
@@ -146,7 +146,7 @@ protected override void OnBindNewData(DemoRecyclerData entryData)
 
 Note that if this entry gets rebound to the same data, (for our case) no action is needed and `OnRebindExistingData` can be left empty. 
 The entry will already have the text and background color set up from its initial `OnBindNewData` call.
-Nothing gets reset when it gets sent to recycling - the appearance holds steady.
+By default, nothing gets reset when it gets sent to recycling - the appearance holds steady.
 
 ### The Recycler
 
@@ -210,7 +210,7 @@ private void Start()
 
 ### InsertAtIndex
 ```
-void InsertAtIndex(int index, TEntryData entryData, FixEntries fixEntries)
+public void InsertAtIndex(int index, TEntryData entryData, FixEntries fixEntries)
 ```
 Inserts an entry at the given index. Existing entries will be shifted - equivalent behaviour to inserting into a list.
 - `index:` the index to insert the entry at
@@ -219,7 +219,7 @@ Inserts an entry at the given index. Existing entries will be shifted - equivale
 
 ### InsertAtKey
 ```
-void InsertAtKey(TKeyEntryData insertAtKey, TEntryData entryData, FixEntries fixEntries)
+public void InsertAtKey(TKeyEntryData insertAtKey, TEntryData entryData, FixEntries fixEntries)
 ```
 Inserts an entry at the given key. Existing entries will be shifted - equivalent behaviour to inserting into a list.
 - `insertAtKey:` the key to insert the entry at
@@ -228,7 +228,7 @@ Inserts an entry at the given key. Existing entries will be shifted - equivalent
 
 ### InsertRangeAtIndex
 ```
-void InsertRangeAtIndex(int index, IEnumerable<TEntryData> entryData, FixEntries fixEntries)
+public void InsertRangeAtIndex(int index, IEnumerable<TEntryData> entryData, FixEntries fixEntries)
 ```
 Inserts a range of entries at the given index. Existing entries will be shifted - equivalent behaviour to inserting into a list.
 - `index:` the index to insert the entries at
@@ -237,7 +237,7 @@ Inserts a range of entries at the given index. Existing entries will be shifted 
 
 - ### InsertRangeAtKey
 ```
-void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> entryData, FixEntries fixEntries)
+public void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> entryData, FixEntries fixEntries)
 ```
 Inserts a range of entries at the given key. Existing entries will be shifted - equivalent behaviour to inserting into a list.
 - `insertAtKey:` the index to insert the entries at
@@ -246,7 +246,7 @@ Inserts a range of entries at the given key. Existing entries will be shifted - 
 
 ### RemoveAtIndex
 ```
-void RemoveAtIndex(int index, FixEntries fixEntries)
+public void RemoveAtIndex(int index, FixEntries fixEntries)
 ```
 Removes an entry at the given index. Existing entries will be shifted - equivalent behaviour to removing from a list.
 - `index:` the index of the entry to remove
@@ -254,7 +254,7 @@ Removes an entry at the given index. Existing entries will be shifted - equivale
 
 ### RemoveAtKey
 ```
-void RemoveAtIndex(TKeyEntryData removeAtKey, FixEntries fixEntries)
+public void RemoveAtIndex(TKeyEntryData removeAtKey, FixEntries fixEntries)
 ```
 Removes an entry at the given key. Existing entries will be shifted - equivalent behaviour to removing from a list.
 - `removeAtKey:` the key of the entry to remove
@@ -262,7 +262,7 @@ Removes an entry at the given key. Existing entries will be shifted - equivalent
 
 ### RemoveRangeAtIndex
 ```
-void RemoveRangeAtIndex(int index, int count, FixEntries fixEntries)
+public void RemoveRangeAtIndex(int index, int count, FixEntries fixEntries)
 ```
 Removes a range of entries starting from the given index. Existing entries will be shifted - equivalent behavior to removing from a list.
 - `index:` the index to start removal at
@@ -271,7 +271,7 @@ Removes a range of entries starting from the given index. Existing entries will 
 
 ### RemoveRangeAtKey
 ```
-void RemoveRangeAtKey(TKeyEntryData removeAtKey, int count, FixEntries fixEntries)
+public void RemoveRangeAtKey(TKeyEntryData removeAtKey, int count, FixEntries fixEntries)
 ```
 Removes a range of entries starting from the given key. Existing entries will be shifted - equivalent behavior to removing from a list.
 - `removeAtKey:` the key of the entry to start removal at
@@ -280,7 +280,7 @@ Removes a range of entries starting from the given key. Existing entries will be
 
 ### AppendEntries
 ```
-void AppendEntries(IEnumerable<TEntryData> entries)
+public void AppendEntries(IEnumerable<TEntryData> entries)
 ```
 Appends a range of entries to the end of the existing list of data. 
 
@@ -290,7 +290,7 @@ Functionally equivalent to insertion - but more efficent - as we know we are tac
 
 ### PrependEntries
 ```
-void PrependEntries(IEnumerable<TEntryData> entries)
+public void PrependEntries(IEnumerable<TEntryData> entries)
 ```
 Prepends a range of entries to the beginning of the existing list of data. 
 
@@ -300,13 +300,13 @@ Functionally equivalent to insertion - but more efficent - as we know we are tac
 
 ### Clear
 ```
-void Clear()
+public void Clear()
 ```
 Clears the Recycler of all entries and their underlying data. A fresh start.
 
 ### ResetToBeginning
 ```
-void ResetToBeginning()
+public void ResetToBeginning()
 ```
 Resets the Recycler to its very beginning elements. 
 
@@ -314,7 +314,7 @@ Note that this is more efficent than a [`ScrollToIndex`](https://github.com/surm
 
 ### ScrollToIndex
 ```
-void ScrollToIndex(int index, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeedViewportsPerSecond, bool isImmediate)
+public void ScrollToIndex(int index, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeedViewportsPerSecond, bool isImmediate)
 ```
 Scrolls to an entry at a given index. The entry doesn't need to be on screen at the time of the call.
 
@@ -326,7 +326,7 @@ Scrolls to an entry at a given index. The entry doesn't need to be on screen at 
 
 ### ScrollToKey
 ```
-void ScrollToKey(TKeyEntryData key, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeedViewportsPerSecond, bool isImmediate)
+public void ScrollToKey(TKeyEntryData key, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeedViewportsPerSecond, bool isImmediate)
 ```
 Scrolls to an entry with the given key. The entry doesn't need to be on screen at the time of the call.
 
@@ -338,13 +338,13 @@ Scrolls to an entry with the given key. The entry doesn't need to be on screen a
 
 ### CancelScrollTo
 ```
-void CancelScrollTo()
+public void CancelScrollTo()
 ```
 Cancels the current [`ScrollToIndex`](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex)/[ScrollToKey](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex) animation.
 
 ### GetCurrentIndexForKey
 ```
-int GetCurrentIndexForKey(TKeyEntryData key)
+public int GetCurrentIndexForKey(TKeyEntryData key)
 ```
 Returns the current index of the entry with a given key.
 
@@ -352,14 +352,14 @@ Returns the current index of the entry with a given key.
 
 ### GetKeyForCurrentIndex
 ```
-TKeyEntryData GetKeyForCurrentIndex(int index)
+public TKeyEntryData GetKeyForCurrentIndex(int index)
 ```
 
 - `index:` the index of entry to get the key of
 
 ### GetStateOfEntryWithCurrentIndex
 ```
-RecyclerScrollRectContentState GetStateOfEntryWithCurrentIndex(int index)
+public RecyclerScrollRectContentState GetStateOfEntryWithCurrentIndex(int index)
 ```
 Returns the state of the entry with a given index. Either:
 1. ActiveVisible: active and visible on screen
@@ -371,7 +371,7 @@ Returns the state of the entry with a given index. Either:
 
 ### GetStateOfEntryWithKey
 ```
-RecyclerScrollRectContentState GetStateOfEntryWithCurrentIndex(TKeyEntryData key)
+public RecyclerScrollRectContentState GetStateOfEntryWithCurrentIndex(TKeyEntryData key)
 ```
 Returns the state of the entry with the given key. Either:
 1. ActiveVisible: active and visible on screen
@@ -383,7 +383,7 @@ Returns the state of the entry with the given key. Either:
 
 ### GetStateOfEndcap
 ```
-RecyclerScrollRectContentState GetStateOfEndcap()
+public RecyclerScrollRectContentState GetStateOfEndcap()
 ```
 Returns the state of the endcap. Either:
 1. ActiveVisible: active and visible on screen
@@ -392,7 +392,7 @@ Returns the state of the endcap. Either:
 
 ### RecalculateEntrySize
 ```
-void RecalculateContentEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries)
+public void RecalculateContentEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries)
 ```
 Called by entries to alert the Recyler of their size change. See [RecyclerScrollRectEntry.RecalculateDimensions]()
 
@@ -401,20 +401,20 @@ Called by entries to alert the Recyler of their size change. See [RecyclerScroll
 
 ### RecalculateEndcapSize
 ```
-void RecalculateEndcapSize()
+public void RecalculateEndcapSize()
 ```
 Called by the endcap to alert the Recycler of its size change. See [RecyclerScrollRectEndcap.RecalculateDimensions]()
 
 ### DataForEntries
 ```
-IReadOnlyList<TEntryData> DataForEntries { get; }
+public IReadOnlyList<TEntryData> DataForEntries { get; }
 ```
 
 Returns the list of data being bound to the entries.
 
 ### ActiveEntries
 ```
-IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> ActiveEntries { get; }
+public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> ActiveEntries { get; }
 ```
 
 Returns the currently active entries (both visible on-screen and cached just off-screen), which can be looked up by their index. Note that `GetStateOfEntry` can be called on any entry here for a more fine-grained state, and, for example, to decipher which entries are in the cache and which are visible.
@@ -436,7 +436,7 @@ These ranges also provide additional information about the entries returned in [
 
 ### OnRecyclerUpdated
 ```
-event Action OnRecyclerUpdated
+public event Action OnRecyclerUpdated
 ```
 
 Invoked at the end of LateUpdate once scrolling has been handled, and the current viewport of entries is not expected to change (this frame) except through manual user calls (Insert, Delete, etc...). The state of the entries can be queried here without worry of them changing.
@@ -445,7 +445,7 @@ Invoked at the end of LateUpdate once scrolling has been handled, and the curren
 
 ### OnBindNewData
 ```
-abstract void OnBindNewData(TEntryData entryData)
+protected abstract void OnBindNewData(TEntryData entryData)
 ```
 
 Lifecycle method called when the entry gets bound to a new piece of data. Use this data to adjust the appearance and state of the entry.
@@ -453,11 +453,18 @@ Lifecycle method called when the entry gets bound to a new piece of data. Use th
 - `entryData:` the new data that the entry is being bound to
 
 ### OnRebindExistingData
+```
+protected abstract void OnRebindExistingData()
+```
 
-Lifecycle method called instead of [`OnBindNewData`](https://github.com/surmwill/recycler_unity/blob/master/README.md#onbindnewdata)
+Lifecycle method called instead of [`OnBindNewData`](https://github.com/surmwill/recycler_unity/blob/master/README.md#onbindnewdata) when the entry is bound - but to data it had before (and still currently contains). We might, for example, resume a paused async operation here instead of starting it all over again. By default, nothing gets reset when an entry gets sent to recycling; hence we can pick up
+from the state right where we left off, just before it got recycled.
 
 ### OnSentToRecycling
 ```
+protected abstract void OnSentToRecyling()
+```
 
+Lifecycle method called when the entry gets sent back to the recycling pool.
 
 ## RecyclerScrollRectEndcap
