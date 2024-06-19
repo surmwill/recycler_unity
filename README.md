@@ -101,7 +101,7 @@ Recycler entries are prefabs that will get bound to your data. To begin, create 
 To make it operable with the Recycler you must include a `RecyclerScrollRectEntry<TEntryData, TEntryDataKey>` component. 
 Specifically, as generic classes cannot be components, you must create an of instance of the generic class with your data and its corresponding key as the types `class DemoRecyclerEntry : RecyclerScrollRectEntry<DemoRecyclerData, string>`
 
-Upon creating the class you will be asked to implement three different lifecycle methods:
+Upon creating the class you will be asked to implement three different lifecycle methods. Each can be left empty until use of them is required:
 
 ```
 protected override void OnBindNewData(DemoRecyclerData entryData)
@@ -125,10 +125,10 @@ We will use the passed data in `OnBindNewData` to adjust the appearance of the e
 
 ```
 [SerializeField]
-private TMP_Text _wordText = null;
+private Text _wordText = null;
 
 [SerializeField]
-private TMP_Text _indexText = null;
+private Text _indexText = null;
 
 [SerializeField]
 private Image _background = null;
@@ -143,6 +143,10 @@ protected override void OnBindNewData(DemoRecyclerData entryData)
     _indexText.text = Index.ToString();
 }
 ```
+
+Note that if this entry gets rebound to the same data, (for our case) no action is needed and `OnRebindExistingData` can be left empty. 
+The entry will already have the text and background color set up from its initial `OnBindNewData` call.
+Nothing gets reset when it gets sent to recycling, the appearance holds steady.
 
 ### The Recycler
 
