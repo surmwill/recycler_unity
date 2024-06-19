@@ -413,7 +413,7 @@ Returns the list of data being bound to the entries.
 
 ### ActiveEntries
 ```
-IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData>> ActiveEntries { get; }
+IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> ActiveEntries { get; }
 ```
 
 Returns the currently active entries (both visible on-screen and cached just off-screen), which can be looked up by their index. Note that `GetStateOfEntry` can be called on any entry here for a more fine-grained state, and, for example, to decipher which entries are in the cache and which are visible. 
