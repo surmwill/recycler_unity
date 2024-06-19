@@ -237,7 +237,7 @@ Inserts a range of entries at the given index. Existing entries will be shifted 
 - `entryData:` the data for the entries
 - `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved.
 
-- ### InsertRangeAtKey
+### InsertRangeAtKey
 ```
 public void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> entryData, FixEntries fixEntries)
 ```
