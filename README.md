@@ -444,6 +444,41 @@ Invoked at the end of LateUpdate once scrolling has been handled, and the curren
 
 ## RecyclerScrollRectEntry
 
+### UnboundIndex
+```
+public const int UnboundIndex;
+```
+
+The index corresponding to an unbound entry.
+
+### Index
+```
+public int Index { get; }
+```
+
+The current index of the entry (note that indices can shift as things are added/removed).
+
+### Data
+```
+public TEntryData Data { get; }
+```
+
+The current data this entry is bound to.
+
+### RectTransform
+```
+public RectTransform { get; } 
+```
+
+A saved reference to the entry's RectTransform for quick access.
+
+### Recyler
+```
+public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; }
+```
+
+A reference to the Recyler containing this entry.
+
 ### OnBindNewData
 ```
 protected abstract void OnBindNewData(TEntryData entryData)
