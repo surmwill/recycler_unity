@@ -397,13 +397,6 @@ void RecalculateEndcapSize()
 ```
 Called by the endcap to alert the Recycler of its size change. See [RecyclerScrollRectEndcap.RecalculateDimensions]()
 
-### OnRecyclerUpdated
-```
-event Action OnRecyclerUpdated
-```
-
-Invoked at the end of LateUpdate once scrolling has been handled, and the current viewport of entries is not expected to change (this frame) except through manual user calls (Insert, Delete, etc...). The state of the entries can be queried here without worry of them changing.
-
 ### DataForEntries
 ```
 IReadOnlyList<TEntryData> DataForEntries { get; }
@@ -432,6 +425,13 @@ Returns information about the current index ranges of active entries. Queryable 
 The indices returned can be combined with [GetKeyForCurrentIndex](https://github.com/surmwill/recycler_unity/blob/master/README.md#getkeyforcurrentindex) to get ranges of keys. 
 
 These ranges also provide additional information about the entries returned in [ActiveEntries](https://github.com/surmwill/recycler_unity/blob/master/README.md#activeentries) without needing to go through the entire dictionary.
+
+### OnRecyclerUpdated
+```
+event Action OnRecyclerUpdated
+```
+
+Invoked at the end of LateUpdate once scrolling has been handled, and the current viewport of entries is not expected to change (this frame) except through manual user calls (Insert, Delete, etc...). The state of the entries can be queried here without worry of them changing.
 
 ## RecyclerScrollRectEntry
 
