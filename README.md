@@ -350,16 +350,20 @@ Returns the state of the endcap, whether it is:
 2. Cached (active, waiting just off-screen)
 3. In the recycling pool (inactive, waiting to be needed)
 
-### RecalculateContentChildSize
+### RecalculateEntrySize
 ```
-void RecalculateContentChildSize(RectTransform contentChild, FixEntries fixEntries)
+void RecalculateContentEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries)
 ```
+Called by entries to alert the Recyler of their size change. See [RecyclerScrollRectEntry.RecalculateDimensions]()
 
-This function shouldn't be used unless you know what you're doing. It is public to be used by the entries and endcap to alert the Recycler to size changes. 
-Technically any old RectTransform can be inserted into the content and this function called to properly display it, but this is undefined behaviour and risks messing up the bookkeeping of what entries are on and off-screen.
-
-- `contentChild:` a RectTransform in the ScrollRect's content that needs to have its size updated and properly displayed.
+- `entry:` a Recycler entry with an updated size
 - `fixEntries:` as the RectTransform grows or shrinks other entries will get pushed away, or pulled in to the empty space. This defines how and what entries will move.
+
+### RecalculateEndcapSize
+```
+void RecalculateEndcapSize()
+```
+Called by the endcap to alert the Recycler of its size change. See [RecyclerScrollRectEndcap.RecalculateDimensions]()
 
 ### OnRecyclerUpdated
 ```
