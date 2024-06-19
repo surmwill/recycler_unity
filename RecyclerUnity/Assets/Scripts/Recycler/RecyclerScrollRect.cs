@@ -916,9 +916,9 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// <summary>
     /// Called when the endcap has updated dimensions, and now the Recycler needs to update its own dimensions in turn
     /// </summary>
-    public void RecalculateEndcapSize()
+    public void RecalculateEndcapSize(FixEntries fixEntries = FixEntries.Below)
     {
-        RecalculateContentChildSize(_endcap.RectTransform, EndCacheTransformPosition == RecyclerTransformPosition.Bot ? FixEntries.Above : FixEntries.Below);
+        RecalculateContentChildSize(_endcap.RectTransform, fixEntries);
     }
 
     /// <summary>
