@@ -467,4 +467,13 @@ protected abstract void OnSentToRecyling()
 
 Lifecycle method called when the entry gets sent back to the recycling pool.
 
+### RecalculateDimensions
+```
+protected void RecalculateDimensions(FixEntries fixEntries)
+```
+
+After modifying the dimensions of the entry, call this to alert the Recycler to its size change and to re-align the entry list.
+
+- `fixEntries:` resizing an entry will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
+
 ## RecyclerScrollRectEndcap
