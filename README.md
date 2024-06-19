@@ -513,9 +513,9 @@ After modifying the dimensions of the entry, call this to alert the Recycler to 
 
 - `fixEntries:` resizing an entry will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
 
-### Other (completeness only: intended use is for interaction between the Recyler and entry, not the user)
+### Other
 
-Below are public functions that are called on the entries by the Recycler. _They should not be called by users_ but are listed here for the sake of completeness.
+Below are public functions that are called on the entries by the Recycler. That is, they are intended for interaction between the Recycler and the entry,  _not users_. They are listed here for the sake of completeness.
 
 #### BindNewData
 `public void BindNewData(int index, TEntryData entryData)`
