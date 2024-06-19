@@ -416,7 +416,22 @@ Returns the list of data being bound to the entries.
 IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> ActiveEntries { get; }
 ```
 
-Returns the currently active entries (both visible on-screen and cached just off-screen), which can be looked up by their index. Note that `GetStateOfEntry` can be called on any entry here for a more fine-grained state, and, for example, to decipher which entries are in the cache and which are visible. 
+Returns the currently active entries (both visible on-screen and cached just off-screen), which can be looked up by their index. Note that `GetStateOfEntry` can be called on any entry here for a more fine-grained state, and, for example, to decipher which entries are in the cache and which are visible.
+
+### ActiveEntriesWindow
+```
+public IRecyclerScrollRectActiveEntriesWindow ActiveEntriesWindow { get; }
+```
+
+Returns information about the current index ranges of active entries. Queryable is:
+1. The range of indices of visible entries
+2. The range of indices of entries in the start cache
+3. The range of indices of entries in the end cache
+4. The total range of active entries (start cache, visible, and end cache)
+
+The indices returned can be combined with [GetKeyForCurrentIndex](https://github.com/surmwill/recycler_unity/blob/master/README.md#getkeyforcurrentindex) to get ranges of keys. 
+
+These ranges also provide additional information about the entries returned in [ActiveEntries](https://github.com/surmwill/recycler_unity/blob/master/README.md#activeentries) without needing to go through the entire dictionary.
 
 ## RecyclerScrollRectEntry
 
