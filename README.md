@@ -225,7 +225,7 @@ Inserts a range of entries at the given index. Existing entries will be shifted 
 void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> entryData, FixEntries fixEntries)
 ```
 Inserts a range of entries at the given key. Existing entries will be shifted - equivalent behaviour to inserting into a list.
-- `index:` the index to insert the entries at
+- `insertAtKey:` the index to insert the entries at
 - `entryData:` the data for the entries
 - `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved.
 
@@ -236,6 +236,14 @@ void RemoveAtIndex(int index, FixEntries fixEntries)
 Removes an entry at the given index. Existing entries will be shifted - equivalent behaviour to removing from a list.
 - `index:` the index of the entry to remove
 - `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
+- 
+### RemoveAtKey
+```
+void RemoveAtIndex(TKeyEntryData removeAtKey, FixEntries fixEntries)
+```
+Removes an entry at the given key. Existing entries will be shifted - equivalent behaviour to removing from a list.
+- `removeAtKey:` the key of the entry to remove
+- `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
 
 ### RemoveRangeAtIndex
 ```
@@ -243,6 +251,15 @@ void RemoveRangeAtIndex(int index, int count, FixEntries fixEntries)
 ```
 Removes a range of entries starting from the given index. Existing entries will be shifted - equivalent behavior to removing from a list.
 - `index:` the index to start removal at
+- `count:` the number of entries to remove
+- `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
+
+- ### RemoveRangeAtKey
+```
+void RemoveRangeAtKey(TKeyEntryData removeAtKey, int count, FixEntries fixEntries)
+```
+Removes a range of entries starting from the given key. Existing entries will be shifted - equivalent behavior to removing from a list.
+- `removeAtKey:` the key of the entry to start removal at
 - `count:` the number of entries to remove
 - `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
 
