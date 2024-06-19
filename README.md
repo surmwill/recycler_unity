@@ -254,7 +254,7 @@ Removes a range of entries starting from the given index. Existing entries will 
 - `count:` the number of entries to remove
 - `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
 
-- ### RemoveRangeAtKey
+### RemoveRangeAtKey
 ```
 void RemoveRangeAtKey(TKeyEntryData removeAtKey, int count, FixEntries fixEntries)
 ```
@@ -295,7 +295,7 @@ void ResetToBeginning()
 ```
 Resets the Recycler to its very beginning elements. 
 
-Note that this is more efficent than a `ScrollToIndex` call with an index of 0 and `isImmediate = true` (i.e. an immediate scroll to index 0, our first element). The immediate scroll still actually scrolls through all the elements - just in one frame. Here we take advantage of knowing we want to return the very beginning of the Recycler by clearing it and then recreating it with the same data: this gives us our initial window of entries without all the intermediate scrolling. 
+Note that this is more efficent than a [ScrollToIndex](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex) call with an index of 0 and `isImmediate = true` (i.e. an immediate scroll to index 0, our first element). The immediate scroll still actually scrolls through all the elements - just in one frame. Here we take advantage of knowing we want to return the very beginning of the Recycler by clearing it and then recreating it with the same data. This gives us our initial window of entries without all the intermediate scrolling. 
 
 ### ScrollToIndex
 ```
