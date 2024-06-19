@@ -394,7 +394,8 @@ Returns the state of the endcap. Either:
 ```
 public void RecalculateContentEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries)
 ```
-Called by entries to alert the Recyler of their size change. See [RecyclerScrollRectEntry.RecalculateDimensions]()
+Called by entries to alert the Recyler of their size change. See [`RecyclerScrollRectEntry.RecalculateDimensions`](https://github.com/surmwill/recycler_unity/blob/master/README.md#recalculatedimensions).
+This should never need to be called directly.
 
 - `entry:` the entry with an updated size
 - `fixEntries:` as the RectTransform grows or shrinks other entries will get pushed away, or pulled in to the empty space. This defines how and what entries will move.
@@ -403,7 +404,7 @@ Called by entries to alert the Recyler of their size change. See [RecyclerScroll
 ```
 public void RecalculateEndcapSize()
 ```
-Called by the endcap to alert the Recycler of its size change. See [RecyclerScrollRectEndcap.RecalculateDimensions]()
+Called by the endcap to alert the Recycler of its size change. See [`RecyclerScrollRectEndcap.RecalculateDimensions`](). This should never need to be called directly.
 
 ### DataForEntries
 ```
@@ -475,5 +476,24 @@ protected void RecalculateDimensions(FixEntries fixEntries)
 After modifying the dimensions of the entry, call this to alert the Recycler to its size change and to re-align the entry list.
 
 - `fixEntries:` resizing an entry will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
+
+### Other
+
+Below are public functions that are called on the entries by the Recycler. _They should not be called by users_ but are listed here for the sake of completeness.
+
+#### BindNewData
+Binds the entry to a new set of data.
+
+#### RebindExisingData
+Rebinds the entry to its current set of data
+
+#### OnRecycled
+Called when the entry gets sent to recycling
+
+#### UnbindIndex
+Resets the entry to its default unbound index
+
+#### SetIndex
+Sets the index of the entry
 
 ## RecyclerScrollRectEndcap
