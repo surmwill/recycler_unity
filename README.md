@@ -202,11 +202,29 @@ Inserts an entry at the given index. Existing entries will be shifted - equivale
 - `entryData:` the data representing the entry
 - `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved.
 
+### InsertAtKey
+```
+void InsertAtKey(TKeyEntryData insertAtKey, TEntryData entryData, FixEntries fixEntries)
+```
+Inserts an entry at the given key. Existing entries will be shifted - equivalent behaviour to inserting into a list.
+- `insertAtKey:` the key to insert the entry at
+- `entryData:` the data representing the entry
+- `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved.
+
 ### InsertRangeAtIndex
 ```
 void InsertRangeAtIndex(int index, IEnumerable<TEntryData> entryData, FixEntries fixEntries)
 ```
 Inserts a range of entries at the given index. Existing entries will be shifted - equivalent behaviour to inserting into a list.
+- `index:` the index to insert the entries at
+- `entryData:` the data for the entries
+- `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved.
+
+- ### InsertRangeAtKey
+```
+void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> entryData, FixEntries fixEntries)
+```
+Inserts a range of entries at the given key. Existing entries will be shifted - equivalent behaviour to inserting into a list.
 - `index:` the index to insert the entries at
 - `entryData:` the data for the entries
 - `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved.
