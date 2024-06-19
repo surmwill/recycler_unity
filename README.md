@@ -443,5 +443,21 @@ Invoked at the end of LateUpdate once scrolling has been handled, and the curren
 
 ## RecyclerScrollRectEntry
 
+### OnBindNewData
+```
+abstract void OnBindNewData(TEntryData entryData)
+```
+
+Lifecycle method called when the entry gets bound to a new piece of data. Use this data to adjust the appearance and state of the entry.
+
+- `entryData:` the new data that the entry is being bound to
+
+### OnRebindExistingData
+
+Lifecycle method called instead of OnBind
+
+### OnSentToRecycling
+```
+
 
 ## RecyclerScrollRectEndcap
