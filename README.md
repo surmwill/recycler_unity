@@ -477,23 +477,33 @@ After modifying the dimensions of the entry, call this to alert the Recycler to 
 
 - `fixEntries:` resizing an entry will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
 
-### Other
+### Other (intended use is for interaction with the Recyler, not the user)
 
 Below are public functions that are called on the entries by the Recycler. _They should not be called by users_ but are listed here for the sake of completeness.
 
 #### BindNewData
+`public void BindNewData(int index, TEntryData entryData)`
+
 Binds the entry to a new set of data.
 
 #### RebindExisingData
+`public void RebindExistingData()`
+
 Rebinds the entry to its current set of data
 
 #### OnRecycled
+`public void OnRecycled()`
+
 Called when the entry gets sent to recycling
 
 #### UnbindIndex
+`public void UnbindIndex()`
+
 Resets the entry to its default unbound index
 
 #### SetIndex
+`public void SetIndex(int index)`
+
 Sets the index of the entry
 
 ## RecyclerScrollRectEndcap
