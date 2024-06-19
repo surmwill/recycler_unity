@@ -106,12 +106,14 @@ Upon creating the class you will be asked to implement three different lifecycle
 ```
 protected override void OnBindNewData(DemoRecyclerData entryData)
 {
-    // Called when this entry has been brought out of the recycling pool and is being bound to new data
+    // Called when this entry has been retrieved from the recycling pool and is being bound to new data
 }
 
 protected override void OnRebindExistingData()
 {
-    // Called instead of OnBindNewData when this entry is bound - but to the data it had before (and still currently contains).
+    // Called instead of OnBindNewData when this entry is retrieved from the recycling pool and bound.
+    // Here, the only difference is the data being bound is the same data that the entry had before (and still currently contains).
+    // By default, nothing gets reset when an entry gets sent to recycling; hence we can pick up from the state right where we left off, just before it got recycled.
     // We might, for example, resume a paused async operation here instead of starting it all over again.
 }
 
@@ -465,13 +467,6 @@ public TEntryData Data { get; }
 
 The data this entry is currently bound to.
 
-### RectTransform
-```
-public RectTransform { get; } 
-```
-
-A saved reference to the entry's RectTransform for quick access.
-
 ### Recyler
 ```
 public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; }
@@ -479,12 +474,19 @@ public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; }
 
 A reference to the Recyler containing this entry.
 
+### RectTransform
+```
+public RectTransform { get; } 
+```
+
+A saved reference to the entry's RectTransform for quick access.
+
 ### OnBindNewData
 ```
 protected abstract void OnBindNewData(TEntryData entryData)
 ```
 
-Lifecycle method called when the entry gets bound to a new piece of data. Use this data to adjust the appearance and state of the entry.
+Lifecycle method called when the entry is retrieved from recycling and gets bound to a new piece of data. Use the data to adjust the appearance and state of the entry.
 
 - `entryData:` the new data that the entry is being bound to
 
@@ -493,8 +495,7 @@ Lifecycle method called when the entry gets bound to a new piece of data. Use th
 protected abstract void OnRebindExistingData()
 ```
 
-Lifecycle method called instead of [`OnBindNewData`](https://github.com/surmwill/recycler_unity/blob/master/README.md#onbindnewdata) when the entry is bound - but to data it had before (and still currently contains). We might, for example, resume a paused async operation here instead of starting it all over again. By default, nothing gets reset when an entry gets sent to recycling; hence we can pick up
-from the state right where we left off, just before it got recycled.
+Lifecycle method called instead of [`OnBindNewData`](https://github.com/surmwill/recycler_unity/blob/master/README.md#onbindnewdata) when the entry is retrieved from recycling and bound. Here, the only difference is the data being bound is the same data that the entry had before (and still currently contains). We might, for example, resume a paused async operation here instead of starting it all over again. By default, nothing gets reset when an entry gets sent to recycling; hence we can pick up from the state right where we left off, just before it got recycled.
 
 ### OnSentToRecycling
 ```
@@ -508,7 +509,7 @@ Lifecycle method called when the entry gets sent back to the recycling pool.
 protected void RecalculateDimensions(FixEntries fixEntries)
 ```
 
-After modifying the dimensions of the entry, call this to alert the Recycler to its size change and to re-align the entry list.
+After modifying the dimensions of the entry, call this to alert the Recycler to its size change and to re-align its content.
 
 - `fixEntries:` resizing an entry will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
 
@@ -542,3 +543,40 @@ Called by the Recycler to reset the entry to its default unbound index.
 Called by the Recycler to set the the entry's index.
 
 ## RecyclerScrollRectEndcap
+
+### Recyler
+```
+public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; }
+```
+
+A reference to the Recyler containing this endcap.
+
+### RectTransform
+```
+public RectTransform { get; } 
+```
+
+A saved reference to the endcaps's RectTransform for quick access.
+
+### OnFetchedFromRecycling
+```
+public abstract void OnFetchedFromRecycling();
+```
+
+Lifecycle method called when the endcap is retrieved from recycling.
+
+### OnSentToRecycling
+```
+public abstract void OnSentToRecyling()
+```
+
+Lifecycle method called when the endcap gets sent back to recycling.
+
+### RecalculateDimensions
+```
+protected void RecalculateDimensions(FixEntries fixEntries)
+```
+
+After modifying the dimensions of the endcap, call this to alert the Recycler to its size change and to re-align its content.
+
+- `fixEntries:` resizing an entry will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
