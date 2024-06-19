@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class DemoRecyclerData : IRecyclerScrollRectData<string>
 {
+    /// <summary>
+    /// IRecyclerScrollRectData implementation
+    /// </summary>
     public string Key => Word;
     
     public string Word { get; private set; }

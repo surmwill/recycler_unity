@@ -2,10 +2,6 @@ using UnityEngine;
 
 /// <summary>
 /// The end-cap to a recycler.
-///
-/// The functions found in this class are similar to those in <see cref="RecyclerScrollRectEntry{TEntryData}"/>.
-/// See that class for more detailed documentation.
-///
 /// Note that all ScrollRect entries are force expanded to the size of the viewport.
 /// </summary>
 public abstract class RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> : MonoBehaviour where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
