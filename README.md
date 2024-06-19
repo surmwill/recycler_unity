@@ -463,7 +463,7 @@ The current index of the entry (note that indices can shift as things are added/
 public TEntryData Data { get; }
 ```
 
-The current data this entry is bound to.
+The data this entry is currently bound to.
 
 ### RectTransform
 ```
