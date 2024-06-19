@@ -75,14 +75,21 @@ The two core classes - the Recycler and its entries - can be found under:
 ### The Data
 
 Here is some sample data in which we store a word to display and a background color.
+
 ```
-public class DemoRecyclerData
+public class DemoRecyclerData : IRecyclerScrollRectData<string>
 {
+    // IRecyclerScrollRectData<string> implementation
+    public Key => Word;
+
     public string Word { get; private set; }
     
     public Color BackgroundColor { get; private set; }
 }
 ```
+
+Each piece of data is required to have a unique key, enforced by the `IRecyclerScrollRectData` interface. 
+As entries get added and removed their indices change. Instead of keeping track of all the shifting yourself, you can instead reference a piece of data by their unchanging keys.
 
 ### The Recycler Entry
 
