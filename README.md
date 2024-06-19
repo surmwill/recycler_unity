@@ -406,7 +406,7 @@ This should never need to be called directly.
 ```
 public void RecalculateEndcapSize()
 ```
-Called by the endcap to alert the Recycler of its size change. See [`RecyclerScrollRectEndcap.RecalculateDimensions`](). This should never need to be called directly.
+Called by the endcap to alert the Recycler of its size change. See [`RecyclerScrollRectEndcap.RecalculateDimensions`](https://github.com/surmwill/recycler_unity/blob/master/README.md#recalculatedimensions-1). This should never need to be called directly.
 
 ### DataForEntries
 ```
