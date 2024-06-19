@@ -91,6 +91,9 @@ public class DemoRecyclerData : IRecyclerScrollRectData<string>
 Each piece of data is required to have a unique key, enforced by the `IRecyclerScrollRectData` interface. 
 As entries get added and removed their indices change. Instead of keeping track of all the shifting yourself, you can instead reference a piece of data by their unchanging keys.
 
+(A quick way to generate unique keys without much thought or structure is to generate a `Guid.NewGuid().ToString()` as a key. Keys are passed as a parameter to reference specific pieces of data;
+if you do not require such methods, the actual key is not that important apart from needing _something_ that is unique).
+
 ### The Recycler Entry
 
 Recycler entries are prefabs that will get bound to your data. To begin, create the prefab. 
