@@ -560,7 +560,7 @@ A saved reference to the endcaps's RectTransform for quick access.
 
 ### OnFetchedFromRecycling
 ```
-public abstract void OnFetchedFromRecycling();
+public abstract void OnFetchedFromRecycling()
 ```
 
 Lifecycle method called when the endcap is retrieved from recycling.
