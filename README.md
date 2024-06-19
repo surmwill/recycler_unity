@@ -334,6 +334,21 @@ void CancelScrollTo()
 ```
 Cancels the current [ScrollToIndex](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex)/[ScrollToKey](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex) animation.
 
+### GetCurrentIndexForKey
+```
+int GetCurrentIndexForKey(TKeyEntryData key)
+```
+Returns the current index of the entry with a given key.
+
+- `key:` the key of the entry to get the current index of
+
+### GetKeyForCurrentIndex
+```
+TKeyEntryData GetKeyForCurrentIndex(int index)
+```
+
+- `index:` the index of entry to get the key of
+
 ### GetStateOfEntry
 ```
 RecyclerScrollRectEntryState GetStateOfEntry(RecyclerScrollRectEntry<TEntryData> entry)
