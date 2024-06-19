@@ -196,12 +196,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     public void InsertAtKey(TKeyEntryData insertAtKey, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
     {
-        if (!GetCurrentIndexForKey(insertAtKey, out int index))
-        {
-            throw new ArgumentException($"No data with the key {insertAtKey} exists"); 
-        }
-
-        InsertAtIndex(index, entryData, fixEntries);
+        InsertAtIndex(GetCurrentIndexForKey(insertAtKey), entryData, fixEntries);
     }
 
     /// <summary>
@@ -220,12 +215,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     public void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> entryData, FixEntries fixEntries = FixEntries.Below)
     {
-        if (!GetCurrentIndexForKey(insertAtKey, out int index))
-        {
-            throw new ArgumentException($"No data with the key {insertAtKey} exists");
-        }
-
-        InsertRangeAtIndex(index, entryData, fixEntries);
+        InsertRangeAtIndex(GetCurrentIndexForKey(insertAtKey), entryData, fixEntries);
     }
 
     /// <summary>
@@ -273,12 +263,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     public void RemoveAtKey(TKeyEntryData removeAtKey, FixEntries fixEntries = FixEntries.Below)
     {
-        if (!GetCurrentIndexForKey(removeAtKey, out int index))
-        {
-            throw new ArgumentException($"No data with the key {removeAtKey} exists");
-        }
-        
-        RemoveAtIndex(index, fixEntries);
+        RemoveAtIndex(GetCurrentIndexForKey(removeAtKey), fixEntries);
     }
     
     /// <summary>
@@ -297,12 +282,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     public void RemoveRangeAtKey(TKeyEntryData removeAtKey, int count, FixEntries fixEntries = FixEntries.Below)
     {
-        if (!GetCurrentIndexForKey(removeAtKey, out int index))
-        {
-            throw new ArgumentException($"No data with the key {removeAtKey} exists");
-        }
-        
-        RemoveRangeAtIndex(index, count, fixEntries);
+        RemoveRangeAtIndex(GetCurrentIndexForKey(removeAtKey), count, fixEntries);
     }
 
     /// <summary>
@@ -694,7 +674,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// <summary>
     /// Returns the state of the entry at the given index
     /// </summary>
-    public RecyclerScrollRectContentState GetStateOfEntryWithIndex(int index)
+    public RecyclerScrollRectContentState GetStateOfEntryWithCurrentIndex(int index)
     {
         if (index < 0 || index >= _dataForEntries.Count)
         {
@@ -724,30 +704,25 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     public RecyclerScrollRectContentState GetStateOfEntryWithKey(TKeyEntryData key)
     {
-        if (!GetCurrentIndexForKey(key, out int index))
-        {
-            throw new ArgumentException($"No data with the key {key} exists");
-        }
-
-        return GetStateOfEntryWithIndex(index);
+        return GetStateOfEntryWithCurrentIndex(GetCurrentIndexForKey(key));
     }
 
     /// <summary>
     /// Returns the state of the endcap
     /// </summary>
-    public RecyclerScrollRectEndcapState GetStateOfEndcap()
+    public RecyclerScrollRectContentState GetStateOfEndcap()
     {
         if (!_endcap.gameObject.activeSelf)
         {
-            return RecyclerScrollRectEndcapState.InPool;
+            return RecyclerScrollRectContentState.InactiveInPool;
         }
         
         if (IsInViewport(_endcap.RectTransform))
         {
-            return RecyclerScrollRectEndcapState.Visible;
+            return RecyclerScrollRectContentState.ActiveVisible;
         }
 
-        return RecyclerScrollRectEndcapState.InCache;
+        return RecyclerScrollRectContentState.ActiveInEndCache;
     }
 
     /// <summary>
@@ -1023,12 +998,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         float scrollSpeedViewportsPerSecond = DefaultScrollSpeedViewportsPerSecond,
         bool isImmediate = false)
     {
-        if (!GetCurrentIndexForKey(key, out int index))
-        {
-            throw new ArgumentException($"No data with the key {key} exists");
-        }
-        
-        ScrollToIndex(index, scrollToAlignment, onScrollComplete, scrollSpeedViewportsPerSecond, isImmediate);
+        ScrollToIndex(GetCurrentIndexForKey(key), scrollToAlignment, onScrollComplete, scrollSpeedViewportsPerSecond, isImmediate);
     }
 
     private IEnumerator ScrollToIndexInner(ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeedViewportsPerSecond, bool isImmediate)
@@ -1198,7 +1168,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// <summary>
     /// Stops scrolling to an index
     /// </summary>
-    public void CancelScrollToIndex()
+    public void CancelScrollTo()
     {
         if (_scrollToIndexCoroutine != null)
         {
@@ -1209,25 +1179,17 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// <summary>
     /// Returns the current index of an entry with a given key
     /// </summary>
-    public bool GetCurrentIndexForKey(TKeyEntryData key, out int index)
+    public int GetCurrentIndexForKey(TKeyEntryData key)
     {
-        return _entryKeyToCurrentIndex.TryGetValue(key, out index);
+        return _entryKeyToCurrentIndex[key];
     }
 
     /// <summary>
     /// Returns the key of an entry at the given current index
     /// </summary>
-    public bool GetKeyForCurrentIndex(int index, out TKeyEntryData key)
+    public TKeyEntryData GetKeyForCurrentIndex(int index)
     {
-        key = default;
-        
-        if (index < 0 || index >= _dataForEntries.Count)
-        {
-            return false;
-        }
-
-        key = _dataForEntries[index].Key;
-        return true;
+        return _dataForEntries[index].Key;
     }
 
     private void StopScrollToIndexCoroutine()

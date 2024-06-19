@@ -33,7 +33,7 @@ public class TestScrollToIndexRecycler : MonoBehaviour
         // Test scrolling to key
         else if (Input.GetKeyDown(KeyCode.Q))
         {
-            _recycler.GetKeyForCurrentIndex(ScrollToIndex, out string key);
+            string key = _recycler.GetKeyForCurrentIndex(ScrollToIndex);
             
             Debug.Log($"scrolling to: {key}");
             _recycler.ScrollToKey(key, scrollSpeedViewportsPerSecond:1f);
@@ -56,7 +56,7 @@ public class TestScrollToIndexRecycler : MonoBehaviour
         // Test cancelling scrolling
         else if (Input.GetKeyDown(KeyCode.Z))
         {
-            _recycler.CancelScrollToIndex();
+            _recycler.CancelScrollTo();
         }
     }
 

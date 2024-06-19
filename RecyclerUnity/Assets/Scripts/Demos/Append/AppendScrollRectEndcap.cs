@@ -36,7 +36,7 @@ public class AppendScrollRectEndcap : RecyclerScrollRectEndcap<EmptyRecyclerData
 
     private void Update()
     {
-        if (_fetchWhenOnScreen == null && Recycler.GetStateOfEndcap() == RecyclerScrollRectEndcapState.Visible)
+        if (_fetchWhenOnScreen == null && Recycler.GetStateOfEndcap() == RecyclerScrollRectContentState.ActiveVisible)
         {
             _fetchWhenOnScreen = StartCoroutine(FetchWhenOnScreen());
         }
@@ -51,7 +51,7 @@ public class AppendScrollRectEndcap : RecyclerScrollRectEndcap<EmptyRecyclerData
         
         while (timeLeft > 0)
         {
-            if (Recycler.GetStateOfEndcap() != RecyclerScrollRectEndcapState.Visible)
+            if (Recycler.GetStateOfEndcap() != RecyclerScrollRectContentState.ActiveVisible)
             {
                Reset();
                yield break;
