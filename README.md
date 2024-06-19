@@ -80,7 +80,7 @@ Here is some sample data in which we store a word to display and a background co
 public class DemoRecyclerData : IRecyclerScrollRectData<string>
 {
     // IRecyclerScrollRectData<string> implementation
-    public Key => Word;
+    public string Key => Word;
 
     public string Word { get; private set; }
     
@@ -88,8 +88,8 @@ public class DemoRecyclerData : IRecyclerScrollRectData<string>
 }
 ```
 
-Each piece of data is required to have a unique key, implemented by the `IRecyclerScrollRectData` interface. 
-As entries get added and removed their indices change. Instead of keeping track of all the shifting yourself, you can instead reference pieces of data by their unchanging keys.
+Each piece of data is required to have a unique key, implemented by the `IRecyclerScrollRectData<TEntryDataKey>` interface. 
+As entries get added and removed their indices change. Instead of keeping track of all the shifting yourself, you can reference pieces of data by their unchanging keys.
 
 (Tip: a quick way to generate unique keys without much thought or structure is to generate a `Guid.NewGuid().ToString()` as a key. Keys are passed as a parameter to reference specific pieces of data;
 if you do not require such methods, the actual key is not that important apart from needing _something_ that is unique).
@@ -98,20 +98,21 @@ if you do not require such methods, the actual key is not that important apart f
 
 Recycler entries are prefabs that will get bound to your data. To begin, create the prefab. 
 
-To make it operable with the Recycler you must include a `RecyclerScrollRectEntry<TEntryData>` component. 
-Specifically, as generic classes cannot be components, you must create an of instance of the generic class with your data as the type `class DemoRecyclerEntry : RecyclerScrollRectEntry<DemoRecyclerData>`
+To make it operable with the Recycler you must include a `RecyclerScrollRectEntry<TEntryData, TEntryDataKey>` component. 
+Specifically, as generic classes cannot be components, you must create an of instance of the generic class with your data and its corresponding key as the types `class DemoRecyclerEntry : RecyclerScrollRectEntry<DemoRecyclerData, string>`
 
 Upon creating the class you will be asked to implement three different lifecycle methods:
 
 ```
 protected override void OnBindNewData(DemoRecyclerData entryData)
 {
-    // Called when this entry is bound to new data
+    // Called when this entry has been brought out of the recycling pool and is being bound to new data
 }
 
 protected override void OnRebindExistingData()
 {
-    // Called when this entry is bound, but with the data it had before (and still currently contains)
+    // Called instead of OnBindNewData when this entry is bound - but to the data it had before (and still currently contains).
+    // We might, for example, resume a paused async operation here instead of restarting everything.
 }
 
 protected override void OnSentToRecycling()
