@@ -309,7 +309,7 @@ Scrolls to an entry at a given index. The entry doesn't need to be on screen at 
 - `scrollSpeedViewportsPerSecond:` the speed of the scroll, defined in viewports per second (ex: a value of 1 means we'll scroll past 1 full screen of entries every second)
 - `isImmediate:` whether the scroll should complete immediately. Warning: the scroll still occurs - just in one frame - meaning large jumps are costly.
 
-- ### ScrollToKey
+### ScrollToKey
 ```
 void ScrollToKey(TKeyEntryData key, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeedViewportsPerSecond, bool isImmediate)
 ```
@@ -321,11 +321,11 @@ Scrolls to an entry with the given key. The entry doesn't need to be on screen a
 - `scrollSpeedViewportsPerSecond:` the speed of the scroll, defined in viewports per second (ex: a value of 1 means we'll scroll past 1 full screen of entries every second)
 - `isImmediate:` whether the scroll should complete immediately. Warning: the scroll still occurs - just in one frame - meaning large jumps are costly.
 
-- ### CancelScrollTo
+### CancelScrollTo
 ```
 void CancelScrollTo()
 ```
-Cancels the current ScrollToIndex/ScrollToKey animation.
+Cancels the current [ScrollToIndex](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex)/[ScrollToKey](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex) animation.
 
 ### GetStateOfEntry
 ```
