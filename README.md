@@ -310,7 +310,7 @@ void ResetToBeginning()
 ```
 Resets the Recycler to its very beginning elements. 
 
-Note that this is more efficent than a [ScrollToIndex](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex) call with an index of 0 and `isImmediate = true` (i.e. an immediate scroll to index 0, our first element). The immediate scroll still actually scrolls through all the elements - just in one frame. Here we take advantage of knowing we want to return the very beginning of the Recycler by clearing it and then recreating it with the same data. This gives us our initial window of entries without all the intermediate scrolling. 
+Note that this is more efficent than a [`ScrollToIndex`](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex) call with an index of 0 and `isImmediate = true` (i.e. an immediate scroll to index 0, our first element). The immediate scroll still actually scrolls through all the elements - just in one frame. Here we take advantage of knowing we want to return the very beginning of the Recycler by clearing it and then recreating it with the same data. This gives us our initial window of entries without all the intermediate scrolling. 
 
 ### ScrollToIndex
 ```
@@ -340,7 +340,7 @@ Scrolls to an entry with the given key. The entry doesn't need to be on screen a
 ```
 void CancelScrollTo()
 ```
-Cancels the current [ScrollToIndex](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex)/[ScrollToKey](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex) animation.
+Cancels the current [`ScrollToIndex`](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex)/[ScrollToKey](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex) animation.
 
 ### GetCurrentIndexForKey
 ```
@@ -430,9 +430,9 @@ Returns information about the current index ranges of active entries. Queryable 
 3. The range of indices of entries in the end cache
 4. The total range of active entries (start cache, visible, and end cache)
 
-The indices returned can be combined with [GetKeyForCurrentIndex](https://github.com/surmwill/recycler_unity/blob/master/README.md#getkeyforcurrentindex) to get ranges of keys. 
+The indices returned can be combined with [`GetKeyForCurrentIndex`](https://github.com/surmwill/recycler_unity/blob/master/README.md#getkeyforcurrentindex) to get ranges of keys. 
 
-These ranges also provide additional information about the entries returned in [ActiveEntries](https://github.com/surmwill/recycler_unity/blob/master/README.md#activeentries) without needing to go through the entire dictionary.
+These ranges also provide additional information about the entries returned in [`ActiveEntries`](https://github.com/surmwill/recycler_unity/blob/master/README.md#activeentries) without needing to go through the entire dictionary.
 
 ### OnRecyclerUpdated
 ```
