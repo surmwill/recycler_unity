@@ -454,7 +454,7 @@ Lifecycle method called when the entry gets bound to a new piece of data. Use th
 
 ### OnRebindExistingData
 
-Lifecycle method called instead of OnBind
+Lifecycle method called instead of [`OnBindNewData`](https://github.com/surmwill/recycler_unity/blob/master/README.md#onbindnewdata)
 
 ### OnSentToRecycling
 ```
