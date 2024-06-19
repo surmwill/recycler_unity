@@ -243,7 +243,7 @@ void RemoveAtIndex(int index, FixEntries fixEntries)
 Removes an entry at the given index. Existing entries will be shifted - equivalent behaviour to removing from a list.
 - `index:` the index of the entry to remove
 - `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
-- 
+
 ### RemoveAtKey
 ```
 void RemoveAtIndex(TKeyEntryData removeAtKey, FixEntries fixEntries)
