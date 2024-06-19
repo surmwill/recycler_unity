@@ -477,7 +477,7 @@ After modifying the dimensions of the entry, call this to alert the Recycler to 
 
 - `fixEntries:` resizing an entry will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
 
-### Other (intended use is for interaction with the Recyler, _not the user_)
+### Other (intended use is for interaction with the Recyler, not the user)
 
 Below are public functions that are called on the entries by the Recycler. _They should not be called by users_ but are listed here for the sake of completeness.
 
