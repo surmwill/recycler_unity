@@ -530,7 +530,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         // Endcap does not exist, see if we need to create it
         else if (!endcapExists && shouldEndcapExist)
         {
-            _endcap.transform.SetParent(content);
+            _endcap.transform.SetParent(content, false);
             _endcap.gameObject.SetActive(true);
             _endcap.OnFetchedFromRecycling();
 
@@ -543,7 +543,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
     private void RecycleEndcap()
     {
-        RemoveFromContent(_endcap.RectTransform, EndCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above).SetParent(_endcapParent);
+        RemoveFromContent(_endcap.RectTransform, EndCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above).SetParent(_endcapParent, false);
         _endcap.OnSentToRecycling();
     }
 
@@ -788,7 +788,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         // Handle the GameObject
         RectTransform entryTransform = entry.RectTransform;
         RemoveFromContent(entryTransform, fixEntries);
-        entryTransform.SetParent(_poolParent);
+        entryTransform.SetParent(_poolParent, false);
 
         // Mark the entry for re-use
         if (_recycledEntries.Entries.ContainsKey(entry.Index))
@@ -830,8 +830,12 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             return false;
         }
 
-        entry.transform.SetParent(content);
+        // Note: if we are using a Canvas with "Screen Space - Camera" then previously recycled entries could have a different z based on the position 
+        // of the canvas at the time they were recycled. Reset this back to 0 to align with the current Canvas position.
+        entry.transform.SetParent(content, false);
+        entry.transform.localPosition = entry.transform.localPosition.WithZ(0f);
         entry.gameObject.SetActive(true);
+
         return true;
     }
 
@@ -853,7 +857,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         Behaviour[] layoutBehaviours = LayoutUtilities.GetLayoutBehaviours(child.gameObject, true);
 
         // Proper hierarchy
-        child.SetParent(content);
+        child.SetParent(content, false);
         child.SetSiblingIndex(siblingIndex);
         
         // Force expand the width
@@ -1206,7 +1210,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     {
         // The value of z is not anything special since everything is in 2D - just a healthy buffer
         _viewportCollider = GetComponent<BoxCollider>();
-        _viewportCollider.size = new Vector3(viewport.rect.width, viewport.rect.height, 1000f);
+        _viewportCollider.size = new Vector3(viewport.rect.width, viewport.rect.height, 1f);
     }
     
     private bool IsInViewport(RectTransform rectTransform)
