@@ -12,9 +12,9 @@ public static class RectTransformExtensions
     {
         Vector2 offset = pivot - rectTransform.pivot;
         offset.Scale(rectTransform.rect.size);
-        Vector3 worldPos = rectTransform.position + rectTransform.TransformVector(offset);
+        Vector3 localPos = rectTransform.localPosition + offset.WithZ(0f);
         rectTransform.pivot = pivot;
-        rectTransform.position = worldPos;                 
+        rectTransform.localPosition = localPos;
     }
 
     /// <summary>
