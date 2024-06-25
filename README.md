@@ -437,6 +437,13 @@ The indices returned can be combined with [`GetKeyForCurrentIndex`](https://gith
 
 These ranges also provide additional information about the entries returned in [`ActiveEntries`](https://github.com/surmwill/recycler_unity/blob/master/README.md#activeentries) without needing to go through the entire dictionary.
 
+### Endcap
+```
+public RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> Endcap { get; }
+```
+
+Returns a reference to the endcap (if it exists - it is optional).
+
 ### OnRecyclerUpdated
 ```
 public event Action OnRecyclerUpdated
@@ -574,9 +581,10 @@ Lifecycle method called when the endcap gets sent back to recycling.
 
 ### RecalculateDimensions
 ```
-protected void RecalculateDimensions(FixEntries fixEntries)
+protected void RecalculateDimensions(FixEntries? fixEntries)
 ```
 
 After modifying the dimensions of the endcap, call this to alert the Recycler to its size change and to re-align its content.
 
 - `fixEntries:` resizing an entry will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
+Unless specified, being at the _end_, a null value will fix all the entries that came before it (i.e. the endcap grows downwards if it's configured to be at the bottom or upwards if it's configured to be at the top). 
