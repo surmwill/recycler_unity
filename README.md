@@ -65,6 +65,10 @@ The two core classes - the Recycler and its entries - can be found under:
   
  ![](README_Images/recycler_scroll_to_index.gif)
 
+ ### Auto-sized entries
+ - Here each entry generates a random number of lines of text. The entry is auto-sized to contain the text using a VerticalLayoutGroup and a ContentSizeFitter.
+ - (Note: precautions have been taken to) 
+
  # Getting Started
 
  You will need 3 things:
@@ -588,3 +592,21 @@ After modifying the dimensions of the endcap, call this to alert the Recycler to
 
 - `fixEntries:` resizing an entry will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
 Unless specified, being at the _end_, a null value will fix all the entries that came before it (i.e. the endcap grows downwards if it's configured to be at the bottom or upwards if it's configured to be at the top). 
+
+# Nuances
+
+### Preventing spam layout recalculations
+The Recycler is ultimately a list of things, in Unity terms, a VerticalLayoutGroup. The entries fall under this VerticalLayoutGroup (the GameObject called "Entries", or more abstractly, the underlying ScrollRect's "content" field).
+The way layout calculation works, every time the dimensions of the list changes: adding, removing, or modifying entries, the list will ask each individual entry to recalculate its size to know the new total size of all the entries.
+Likely however, our entries mostly stay the same, and asking them for a recalculation will give the same dimensions as before. Nothing changes, and this is a big waste of time. For this reason, it is recommended, and default implemented,
+that the list of entries does not control the entries width or height (i.e. unchecking ControlChildSize on the VerticalLayoutGroup).
+
+To get around this, and still have entries be auto-sized, the entries can control their own height and width (use their own LayoutGroup and their own ContentSizeFitter). The Recycler will ask the entry to calculate its own layout, fill out the
+correct RectTransform values, and then treat the entry like any other RectTransform, auto-calculated or not. The VerticalLayoutGroup can still align the RectTransform properly, it's just relieved of the duty of constantly recalculting its dimensions.
+This is why entries have the method [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master#recalculatedimensions) and the endcap as well [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master#recalculatedimensions-1).
+
+### Entries are default expanded to the Recycler's width
+
+### Auto-sized entries should control their own height
+
+(Also mention how to use DoTween with UpdateDimensions)
