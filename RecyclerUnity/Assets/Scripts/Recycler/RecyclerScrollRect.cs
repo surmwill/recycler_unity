@@ -53,7 +53,8 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     
     [SerializeField]
     private RectTransform _endcapParent = null;
-
+    
+    [ReadOnly]
     [SerializeField]
     private RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> _endcap = null;
 
