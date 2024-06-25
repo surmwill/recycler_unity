@@ -63,18 +63,20 @@ The two core classes - the Recycler and its entries - can be found under:
 - Includes indices that are not currently active in the recycler.
 - Works with dynamically sized entries.
   
- ![](README_Images/recycler_scroll_to_index.gif)
+![](README_Images/recycler_scroll_to_index.gif)
 
- ### Auto-sized entries
- - Here each entry generates a random number of lines of text. The entry is auto-sized to contain the text using a VerticalLayoutGroup and a ContentSizeFitter.
- - (Note: precautions have been taken to) 
+### Auto-sized entries
+- Here each entry generates a random number of lines of text. The entry is auto-sized to fit the text using a VerticalLayoutGroup and a ContentSizeFitter.
+- (Note: precautions have been taken to prevent inefficent spam layout calculations. See [Nuances](https://github.com/surmwill/recycler_unity/tree/master?tab=readme-ov-file#preventing-spam-layout-recalculations))
 
- # Getting Started
+![](README_Images/recycler_unity/blob/master/README_Images/recycler_autosize.gif)
 
- You will need 3 things:
- 1. The data you will pass to the Recycler (a normal C# class).
- 2. A recycler entry to bind the data to (a prefab).
- 3. The Recycler itself (a component).
+# Getting Started
+
+You will need 3 things:
+1. The data you will pass to the Recycler (a normal C# class).
+2. A recycler entry to bind the data to (a prefab).
+3. The Recycler itself (a component).
 
 ### The Data
 
