@@ -31,6 +31,5 @@ public class PrintOnAutoSizeRecalculation : MonoBehaviour, ILayoutElement
     
     private void OnDisable()
     {
-        enabled = true;
     }
 }

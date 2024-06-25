@@ -1,9 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
-public class DemoEndcap : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
+/// <summary>
+/// Endcap for demoing
+/// </summary>
+public class DemoEndcap : RecyclerScrollRectEndcap<DemoRecyclerData, string>
 {
+    private const int GrowSize = 600;
+    private const float GrowTimeSeconds = 2f;
+
+    private Tween _resizeTween = null;
+    
     public override void OnFetchedFromRecycling()
     {
         
@@ -11,6 +20,12 @@ public class DemoEndcap : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
 
     public override void OnSentToRecycling()
     {
-       
+       _resizeTween?.Kill(true);
+    }
+
+    public void Resize()
+    {
+        _resizeTween ??= RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowTimeSeconds)
+            .OnUpdate(() => RecalculateDimensions());
     }
 }

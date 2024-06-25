@@ -33,9 +33,12 @@ public abstract class RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> : Mono
     public abstract void OnSentToRecycling();
 
     /// <summary>
-    /// Recalculates the end-caps dimensions
+    /// Recalculates the endcaps dimensions.
+    /// 
+    /// Unless specified, as the endcap is at the end, we fix all entries that come before it
+    /// (i.e. if the endcap is at the bottom we grow downwards, and if the endcap is a the top we grow upwards)
     /// </summary>
-    protected void RecalculateDimensions(FixEntries fixEntries = FixEntries.Below)
+    protected void RecalculateDimensions(FixEntries? fixEntries = null)
     {
         Recycler.RecalculateEndcapSize(fixEntries);
     }
