@@ -79,6 +79,11 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     public IRecyclerScrollRectActiveEntriesWindow ActiveEntriesWindow => _activeEntriesWindow;
 
+    /// <summary>
+    /// The endcap (if it exists - it is optional)
+    /// </summary>
+    public RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> Endcap => _endcap;
+
     // In the scene hierarchy, are our entries' indices increasing as we go down the sibling list?
     // Increasing entries mean our first entry with index 0 is at the top, and so is our start cache.
     // Decreasing entries mean our first entry with index 0 is at the bottom, and so is our start cache.
@@ -933,11 +938,14 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Called when the endcap has updated dimensions, and now the Recycler needs to update its own dimensions in turn
+    /// Recalculates the endcaps dimensions.
+    /// 
+    /// Unless specified, as the endcap is at the end, we fix all entries that come before it
+    /// (i.e. if the endcap is at the bottom we grow downwards, and if the endcap is a the top we grow upwards)
     /// </summary>
-    public void RecalculateEndcapSize(FixEntries fixEntries = FixEntries.Below)
+    public void RecalculateEndcapSize(FixEntries? fixEntries = null)
     {
-        RecalculateContentChildSize(_endcap.RectTransform, fixEntries);
+        RecalculateContentChildSize(_endcap.RectTransform, fixEntries ?? (EndCacheTransformPosition == RecyclerTransformPosition.Bot ? FixEntries.Above : FixEntries.Below));
     }
 
     /// <summary>
