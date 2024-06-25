@@ -36,6 +36,10 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     [SerializeField]
     private bool _setTargetFrameRateTo60 = true;
 
+    [Tooltip("Perform sanity checks in the editor, ensuring for example, that we aren't skipping indices. (Note that if my code was perfect this wouldn't be needed).")]
+    [SerializeField]
+    private bool _debugPerformEditorChecks = true;
+
     [Header("Pool")]
     [SerializeField]
     private RectTransform _poolParent = null;
@@ -390,9 +394,14 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         
         // Sanity checks
         #if UNITY_EDITOR
-        DebugCheckWindow();
-        DebugCheckDuplicates();  
-        DebugCheckOrdering();
+        
+        if (_debugPerformEditorChecks)
+        {
+            DebugCheckWindow();
+            DebugCheckDuplicates();  
+            DebugCheckOrdering();   
+        }
+        
         #endif
     }
 

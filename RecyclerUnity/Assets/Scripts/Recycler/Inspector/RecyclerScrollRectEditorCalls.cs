@@ -160,44 +160,78 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
                 return;
             }
 
-            int entryIndex = entry.Index;
-            switch (GetStateOfEntryWithCurrentIndex(entry.Index))
+            if (IsInViewport(entry.RectTransform))
             {
-                case RecyclerScrollRectContentState.ActiveInStartCache:
-                    indicesInStartCache.Remove(entryIndex);
-                    break;
-                
-                case RecyclerScrollRectContentState.ActiveInEndCache:
-                    indicesInEndCache.Remove(entryIndex);
-                    break;
-                
-                case RecyclerScrollRectContentState.ActiveVisible:
-                    visibleIndices.Remove(entryIndex);
-                    break;
-                
-                case RecyclerScrollRectContentState.InactiveInPool:
-                    Debug.LogError($"{entryIndex} should be in the recycling pool, not active entries");
+                if (!visibleIndices.Remove(entry.Index))
+                {
+                    Debug.LogError($"{entry.Index} should be in the visible index window.\n\n {_activeEntriesWindow.PrintRanges()}");
                     Debug.Break();
                     return;
+                }
+            }
+            else if (IsAboveViewport(entry.RectTransform))
+            {
+                if (StartCacheTransformPosition == RecyclerTransformPosition.Top)
+                {
+                    if (!indicesInStartCache.Remove(entry.Index))
+                    {
+                        Debug.LogError($"{entry.Index} should be in the start cache window.\n\n {_activeEntriesWindow.PrintRanges()}");
+                        Debug.Break();
+                        return;
+                    }
+                }
+                else
+                {
+                    if (!indicesInEndCache.Remove(entry.Index))
+                    {
+                        Debug.LogError($"{entry.Index} should be in the end cache window.\n\n {_activeEntriesWindow.PrintRanges()}");
+                        Debug.Break();
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                if (StartCacheTransformPosition == RecyclerTransformPosition.Bot)
+                {
+                    if (!indicesInStartCache.Remove(entry.Index))
+                    {
+                        Debug.LogError($"{entry.Index} should be in the start cache window.\n\n {_activeEntriesWindow.PrintRanges()}");
+                        Debug.Break();
+                        return;
+                    }
+                }
+                else
+                {
+                    if (!indicesInEndCache.Remove(entry.Index))
+                    {
+                        Debug.LogError($"{entry.Index} should be in the end cache window.\n\n {_activeEntriesWindow.PrintRanges()}");
+                        Debug.Break();
+                        return;
+                    }
+                }
             }
         }
         
         if (indicesInStartCache.Any())
         {
-            Debug.LogError($"The following entries were reported to be in the start cache but weren't found there: {string.Join(',', indicesInStartCache)}");
+            Debug.LogError($"The following entries were reported in the start cache window but couldn't be found in the start cache: {string.Join(',', indicesInStartCache)}");
             Debug.Break();
+            return;
         }
             
         if (indicesInEndCache.Any())
         {
-            Debug.LogError($"The following entries were reported to be in the end cache but weren't found there: {string.Join(',', indicesInEndCache)}");
+            Debug.LogError($"The following entries were reported to be in the end cache window but weren't found in the end cache: {string.Join(',', indicesInEndCache)}");
             Debug.Break();
+            return;
         }
             
         if (visibleIndices.Any())
         {
-            Debug.LogError($"The following entries were reported to be visible but weren't found: {string.Join(',', visibleIndices)}");
+            Debug.LogError($"The following entries were reported to be visible window but weren't found to be visible: {string.Join(',', visibleIndices)}");
             Debug.Break();
+            return;
         }
     }
 
