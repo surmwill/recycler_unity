@@ -122,6 +122,86 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             }
         }
     }
+    
+    private void DebugCheckWindow()
+    {
+        HashSet<int> indicesInStartCache = new HashSet<int>();
+        HashSet<int> indicesInEndCache = new HashSet<int>();
+        HashSet<int> visibleIndices = new HashSet<int>();
+        
+        Debug.Log(_activeEntriesWindow.PrintRanges());
+
+        if (_activeEntriesWindow.StartCacheIndexRange.HasValue)
+        {
+            (int Start, int End) = _activeEntriesWindow.StartCacheIndexRange.Value;
+            indicesInStartCache = new HashSet<int>(Enumerable.Range(Start, End + 1));
+        }
+        
+        if (_activeEntriesWindow.EndCacheIndexRange.HasValue)
+        {
+            (int Start, int End) = _activeEntriesWindow.EndCacheIndexRange.Value;
+            indicesInEndCache = new HashSet<int>(Enumerable.Range(Start, End + 1));
+        }
+        
+        if (_activeEntriesWindow.VisibleIndexRange.HasValue)
+        {
+            (int Start, int End) = _activeEntriesWindow.VisibleIndexRange.Value;
+            visibleIndices = new HashSet<int>(Enumerable.Range(Start, End + 1));
+        }
+
+        foreach (Transform t in content)
+        {
+            if (!t.gameObject.activeInHierarchy)
+            {
+                continue;
+            }
+            
+            RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
+            if (entry == null)
+            {
+                return;
+            }
+
+            int entryIndex = entry.Index;
+            switch (GetStateOfEntryWithCurrentIndex(entry.Index))
+            {
+                case RecyclerScrollRectContentState.ActiveInStartCache:
+                    indicesInStartCache.Remove(entryIndex);
+                    break;
+                
+                case RecyclerScrollRectContentState.ActiveInEndCache:
+                    indicesInEndCache.Remove(entryIndex);
+                    break;
+                
+                case RecyclerScrollRectContentState.ActiveVisible:
+                    visibleIndices.Remove(entryIndex);
+                    break;
+                
+                case RecyclerScrollRectContentState.InactiveInPool:
+                    Debug.LogError($"{entryIndex} should be in the recycling pool, not active entries");
+                    Debug.Break();
+                    return;
+            }
+
+            if (indicesInStartCache.Any())
+            {
+                Debug.LogError($"The following entries were reported to be in the start cache but weren't found there: {string.Join(',', indicesInStartCache)}");
+                Debug.Break();
+            }
+            
+            if (indicesInEndCache.Any())
+            {
+                Debug.LogError($"The following entries were reported to be in the end cache but weren't found there: {string.Join(',', indicesInEndCache)}");
+                Debug.Break();
+            }
+            
+            if (visibleIndices.Any())
+            {
+                Debug.LogError($"The following entries were reported to be visible but weren't found: {string.Join(',', visibleIndices)}");
+                Debug.Break();
+            }
+        }
+    }
 
     private void DebugCheckDuplicates()
     {
