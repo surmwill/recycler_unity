@@ -10,7 +10,7 @@ using UnityEngine;
 public class TestAppendRecycler : MonoBehaviour
 {
    [SerializeField]
-   private AppendRecyclerScrollRect _appendRecycler = null;
+   private EmptyRecyclerScrollRect _appendRecycler = null;
    
    private const int InitEntries = 30;
 
