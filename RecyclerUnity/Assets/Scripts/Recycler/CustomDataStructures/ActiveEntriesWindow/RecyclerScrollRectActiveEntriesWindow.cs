@@ -216,9 +216,9 @@ public class RecyclerScrollRectActiveEntriesWindow : IRecyclerScrollRectActiveEn
     /// </summary>
     public string PrintRanges()
     {
-        return $"Visible Index Range: [{VisibleIndexRange?.Start ?? -1}, {VisibleIndexRange?.End ?? -1}]\n" +
-               $"Start Cache Range: [{StartCacheIndexRange?.Start ?? -1}, {EndCacheIndexRange?.End ?? -1})\n" +
-               $"End Cache Range: ({EndCacheIndexRange?.Start ?? -1}, {EndCacheIndexRange?.End ?? -1}]";
+        return $"Visible Index Range: {(!VisibleIndexRange.HasValue ? "[]" : $"[{VisibleIndexRange.Value.Start},{VisibleIndexRange.Value.End}]")}\n" +
+               $"Start Cache Range: {(!StartCacheIndexRange.HasValue ? "[]" : $"[{StartCacheIndexRange.Value.Start},{StartCacheIndexRange.Value.End}]")}\n" +
+               $"End Cache Range: {(!EndCacheIndexRange.HasValue ? "[]" : $"[{EndCacheIndexRange.Value.Start},{EndCacheIndexRange.Value.End}]")}";
     }
 
     public RecyclerScrollRectActiveEntriesWindow(int numCached)

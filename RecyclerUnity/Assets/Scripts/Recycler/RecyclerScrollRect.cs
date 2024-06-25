@@ -390,6 +390,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         
         // Sanity checks
         #if UNITY_EDITOR
+        DebugCheckWindow();
         DebugCheckDuplicates();  
         DebugCheckOrdering();
         #endif
