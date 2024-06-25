@@ -81,7 +81,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             for (int i = 0; i < poolDifference; i++)
             {
                 RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry =
-                    InstantiatePrefabPreserveRectTransform(_recyclerEntryPrefab.gameObject, _poolParent)
+                    ((GameObject) PrefabUtility.InstantiatePrefab(_recyclerEntryPrefab.gameObject, _poolParent))
                         .GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
 
                 entry.name = RecyclerScrollRectEntry<TEntryData, TKeyEntryData>.UnboundIndex.ToString();
@@ -114,12 +114,17 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
                 _endcap = _endcapParent.GetComponentInChildren<RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>>(true);
                 if (_endcap == null)
                 {
-                    _endcap = InstantiatePrefabPreserveRectTransform(_endcapPrefab.gameObject, _endcapParent)
+                    _endcap = ((GameObject) PrefabUtility.InstantiatePrefab(_endcapPrefab.gameObject, _endcapParent))
                         .GetComponent<RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>>();
                     
                     _endcap.gameObject.SetActive(false);
                 }
             }
+        }
+        // If we are swapping out endcaps then destroy the previous one
+        else if (_endcap != null)
+        {
+            EditorUtils.DestroyOnValidate(_endcap.gameObject);
         }
     }
     
@@ -289,27 +294,5 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
            
             lastIndex = currentIndex;
         }
-    }
-
-    private static GameObject InstantiatePrefabPreserveRectTransform(GameObject prefab, Transform parent)
-    {
-        RectTransform rectTransform = (RectTransform) prefab.transform;
-        if (rectTransform == null)
-        {
-            throw new ArgumentException("Expected a prefab with a RectTransform");
-        }
-        
-        GameObject instance = (GameObject) PrefabUtility.InstantiatePrefab(prefab, parent);
-        CopyTransformValues(rectTransform, (RectTransform) instance.transform);
-
-        return instance;
-    }
-    
-    private static void CopyTransformValues(RectTransform from, RectTransform to)
-    {
-        to.pivot = from.pivot;
-        (to.anchorMin, to.anchorMax) = (from.anchorMin, from.anchorMax);
-        to.anchoredPosition = from.anchoredPosition;
-        to.sizeDelta = from.sizeDelta;
     }
 }
