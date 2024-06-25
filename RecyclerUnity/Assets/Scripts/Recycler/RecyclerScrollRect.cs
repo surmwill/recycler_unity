@@ -31,7 +31,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
     [SerializeField]
     private RecyclerTransformPosition _appendTo = RecyclerTransformPosition.Bot;
-    
+
     [Tooltip("On mobile, the target frame rate is often lower than technically possible to preserve battery, but a higher frame rate will result in smoother scrolling.")]
     [SerializeField]
     private bool _setTargetFrameRateTo60 = true;
@@ -141,6 +141,11 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
         // Used to detect what entries are on screen
         InitViewportCollider();
+
+        if (Application.isEditor)
+        {
+            WarnAboutInefficientLayoutGroups();
+        }
     }
 
     /// <summary>
@@ -1223,6 +1228,27 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     private bool IsAboveViewport(RectTransform rectTransform)
     {
         return Vector3.Dot(Vector3.ProjectOnPlane(rectTransform.position - viewport.position, viewport.forward), viewport.up) > 0;
+    }
+    
+    private void WarnAboutInefficientLayoutGroups()
+    {
+        VerticalLayoutGroup v = content.GetComponent<VerticalLayoutGroup>();
+        
+        if (v.childControlWidth)
+        {
+            Debug.LogWarning($"\"{content.gameObject.name}\" cannot control the entries' width efficiently without spam recalculations. It is recommended to uncheck {nameof(v.childControlWidth)}.\n" +
+                             $"Every time an entry is added, removed, or modified, it will trigger a recalculation of all the others when they likely haven't changed.\n" +
+                             $"It is advised (and supported) that the entry itself control its own width with its own {nameof(ContentSizeFitter)}.\n" +
+                             $"Also note that all entries are by default expanded to meet the width of the recycler (equivalent to {nameof(v.childForceExpandWidth)}), and this behaviour need not be replicated through the layout group.");
+        }
+        
+        if (v.childControlHeight)
+        {
+            Debug.LogWarning($"\"{content.gameObject.name}\" cannot control the entries' height efficiently without spam recalculations. It is recommended to uncheck {nameof(v.childControlHeight)}.\n" +
+                             $"Every time an entry is added, removed, or modified, it will trigger a recalculation of all the others when they likely haven't changed.\n" +
+                             $"It is advised (and supported) that the entry itself control its own height with its own {nameof(ContentSizeFitter)}.\n" +
+                             $"Also note that all entries are by default expanded to meet the width of the recycler (equivalent to {nameof(v.childForceExpandWidth)}) to base your auto-calculated height on.");
+        }
     }
 
     private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)
