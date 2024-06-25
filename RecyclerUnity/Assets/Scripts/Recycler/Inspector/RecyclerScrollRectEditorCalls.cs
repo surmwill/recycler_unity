@@ -129,24 +129,22 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         HashSet<int> indicesInEndCache = new HashSet<int>();
         HashSet<int> visibleIndices = new HashSet<int>();
         
-        Debug.Log(_activeEntriesWindow.PrintRanges());
-
         if (_activeEntriesWindow.StartCacheIndexRange.HasValue)
         {
             (int Start, int End) = _activeEntriesWindow.StartCacheIndexRange.Value;
-            indicesInStartCache = new HashSet<int>(Enumerable.Range(Start, End + 1));
+            indicesInStartCache = new HashSet<int>(Enumerable.Range(Start, End - Start + 1));
         }
         
         if (_activeEntriesWindow.EndCacheIndexRange.HasValue)
         {
             (int Start, int End) = _activeEntriesWindow.EndCacheIndexRange.Value;
-            indicesInEndCache = new HashSet<int>(Enumerable.Range(Start, End + 1));
+            indicesInEndCache = new HashSet<int>(Enumerable.Range(Start, End - Start + 1));
         }
         
         if (_activeEntriesWindow.VisibleIndexRange.HasValue)
         {
             (int Start, int End) = _activeEntriesWindow.VisibleIndexRange.Value;
-            visibleIndices = new HashSet<int>(Enumerable.Range(Start, End + 1));
+            visibleIndices = new HashSet<int>(Enumerable.Range(Start, End - Start + 1));
         }
 
         foreach (Transform t in content)
@@ -182,24 +180,24 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
                     Debug.Break();
                     return;
             }
-
-            if (indicesInStartCache.Any())
-            {
-                Debug.LogError($"The following entries were reported to be in the start cache but weren't found there: {string.Join(',', indicesInStartCache)}");
-                Debug.Break();
-            }
+        }
+        
+        if (indicesInStartCache.Any())
+        {
+            Debug.LogError($"The following entries were reported to be in the start cache but weren't found there: {string.Join(',', indicesInStartCache)}");
+            Debug.Break();
+        }
             
-            if (indicesInEndCache.Any())
-            {
-                Debug.LogError($"The following entries were reported to be in the end cache but weren't found there: {string.Join(',', indicesInEndCache)}");
-                Debug.Break();
-            }
+        if (indicesInEndCache.Any())
+        {
+            Debug.LogError($"The following entries were reported to be in the end cache but weren't found there: {string.Join(',', indicesInEndCache)}");
+            Debug.Break();
+        }
             
-            if (visibleIndices.Any())
-            {
-                Debug.LogError($"The following entries were reported to be visible but weren't found: {string.Join(',', visibleIndices)}");
-                Debug.Break();
-            }
+        if (visibleIndices.Any())
+        {
+            Debug.LogError($"The following entries were reported to be visible but weren't found: {string.Join(',', visibleIndices)}");
+            Debug.Break();
         }
     }
 

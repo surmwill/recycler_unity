@@ -45,14 +45,14 @@ public class RecyclerScrollRectActiveEntriesWindow : IRecyclerScrollRectActiveEn
     /// </summary>
     public (int Start, int End)? StartCacheIndexRange => !HasData || !VisibleIndexRange.HasValue || VisibleIndexRange.Value.Start == 0 ? 
         null : 
-        (Mathf.Max(VisibleIndexRange.Value.Start - _numCached, 0), VisibleIndexRange.Value.Start);
+        (Mathf.Max(VisibleIndexRange.Value.Start - _numCached, 0), VisibleIndexRange.Value.Start - 1);
 
     /// <summary>
     /// The range of entry indices contained in the end cache 
     /// </summary>
     public (int Start, int End)? EndCacheIndexRange => !HasData || (VisibleIndexRange.HasValue && VisibleIndexRange.Value.End == WindowSize - 1) ?
         null :
-        (VisibleIndexRange?.End ?? 0, Mathf.Min(VisibleIndexRange.HasValue ? VisibleIndexRange.Value.End + _numCached : _numCached - 1, WindowSize - 1));
+        (VisibleIndexRange?.End + 1 ?? 0, Mathf.Min(VisibleIndexRange.HasValue ? VisibleIndexRange.Value.End + _numCached : _numCached - 1, WindowSize - 1));
 
     /// <summary>
     /// The range of active entries: both visible and cached
@@ -183,7 +183,7 @@ public class RecyclerScrollRectActiveEntriesWindow : IRecyclerScrollRectActiveEn
     /// </summary>
     public bool IsInStartCache(int index)
     {
-        return StartCacheIndexRange.HasValue && index >= StartCacheIndexRange.Value.Start && index < StartCacheIndexRange.Value.End;
+        return StartCacheIndexRange.HasValue && index >= StartCacheIndexRange.Value.Start && index <= StartCacheIndexRange.Value.End;
     }
 
     /// <summary>
@@ -191,7 +191,7 @@ public class RecyclerScrollRectActiveEntriesWindow : IRecyclerScrollRectActiveEn
     /// </summary>
     public bool IsInEndCache(int index)
     {
-        return EndCacheIndexRange.HasValue && index > EndCacheIndexRange.Value.Start && index <= EndCacheIndexRange.Value.End;
+        return EndCacheIndexRange.HasValue && index >= EndCacheIndexRange.Value.Start && index <= EndCacheIndexRange.Value.End;
     }
 
     /// <summary>
