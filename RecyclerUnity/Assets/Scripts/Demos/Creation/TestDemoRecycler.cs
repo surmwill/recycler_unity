@@ -1,9 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+/// <summary>
+/// A simple demo recycler with entries and an endcap
+/// </summary>
 public class TestDemoRecycler : MonoBehaviour
 {
     [SerializeField]
@@ -31,5 +31,14 @@ public class TestDemoRecycler : MonoBehaviour
         }
         
         _recycler.AppendEntries(entryData);
+    }
+
+    private void Update()
+    {
+        // One additional test resizing the endcap, as it is a small test and doesn't justify belonging on its own
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            ((DemoEndcap) _recycler.Endcap).Resize();
+        }
     }
 }
