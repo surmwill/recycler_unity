@@ -13,7 +13,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
     private const string ContentName = "Entries";
     private const string PoolParentName = "Pool";
     private const string EndcapParentName = "Endcap";
-
+    
     protected override void OnValidate()
     {
         _numCachedBeforeStart = Mathf.Max(1, _numCachedBeforeStart);
@@ -24,7 +24,6 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         (vertical, horizontal) = (true, false);
 
         // Clamped only
-        // TODO: remember and explain why this is
         movementType = MovementType.Clamped;
         
         // Ensure there is a viewport
@@ -53,8 +52,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             
             // Default assume we are force expanding each entries width to fit the width of the Recycler
             VerticalLayoutGroup v = entriesParent.GetComponent<VerticalLayoutGroup>();
-            v.childControlWidth = true;
-            (v.childForceExpandWidth, v.childForceExpandHeight) = (true, false);
+            (v.childForceExpandWidth, v.childForceExpandHeight) = (false, false);
 
             // Entries will start at the top if we're appending downwards, or the bottom if we're appending upwards
             (content.localPosition, content.localScale) = (Vector3.zero, Vector3.one);
