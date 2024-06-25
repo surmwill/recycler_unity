@@ -47,19 +47,21 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             entriesParent.SetParent(transform);
             content = entriesParent;
 
-            // Entries are in charge of their own width and height
-            VerticalLayoutGroup v = entriesParent.GetComponent<VerticalLayoutGroup>();
-            (v.childForceExpandWidth, v.childForceExpandHeight) = (false, false);
-
             // Grow the list along with the entries
             ContentSizeFitter c = entriesParent.GetComponent<ContentSizeFitter>();
             c.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            
+            // Default assume we are force expanding each entries width to fit the width of the Recycler
+            VerticalLayoutGroup v = entriesParent.GetComponent<VerticalLayoutGroup>();
+            v.childControlWidth = true;
+            (v.childForceExpandWidth, v.childForceExpandHeight) = (true, false);
 
             // Entries will start at the top if we're appending downwards, or the bottom if we're appending upwards
+            (content.localPosition, content.localScale) = (Vector3.zero, Vector3.one);
             (content.anchorMin, content.anchorMax) = (new Vector2(0f, AreEntriesIncreasing ? 1 : 0), new Vector2(1f, AreEntriesIncreasing ? 1 : 0));
             (content.offsetMin, content.offsetMax) = (Vector2.zero, Vector2.zero);
             content.anchoredPosition = Vector2.zero;
-            
+
             // Appended entries will grow downwards (not pushing any higher entries) when we're appending downwards,
             // or grow upwards (not pushing any lower entries) when we're appending upwards.
             content.pivot = content.pivot.WithY(AreEntriesIncreasing ? 1 : 0);
