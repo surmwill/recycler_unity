@@ -46,7 +46,7 @@ The two core classes - the Recycler and its entries - can be found under:
 
 # Feature Videos
 ### Basic Functionality
-![](README_Images/recycler_basic_functionality_circles.gif)
+![](README_Images/recycler_basic_functionality.gif)
 
 ### Insertion/Resizing
 ![](README_Images/recycler_insertion_resize.gif)
