@@ -236,7 +236,9 @@ public abstract void OnSentToRecycling()
 }
 ```
 
-With a simple endcap, we will leave these empty. Serialize the endcap prefab in Recyler:
+With a simple endcap, we will leave these empty. 
+
+Serialize the endcap prefab in Recyler:
 
 ![](README_Images/recycler_appending_and_endcap.gif)
 
