@@ -646,7 +646,7 @@ In short, the `VerticalLayoutGroup` of the entire Recycler should not have any o
 
 ### Entries are default expanded to the Recycler's width
 
-Based on the above [Recycler cannot control an entry's width or height](https://github.com/surmwill/recycler_unity#the-recycler-cannot-control-an-entrys-width-or-height) the entries' roots are default expanded to the full width of the Recyler,
+Based on the above [Recycler cannot control an entry's width or height](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) the entries' roots are default expanded to the full width of the Recyler,
 as this is behaviour expected out of most use cases. Obviously, we cannot use `VerticalLayoutGroup` with `childControlWidth` and `childForceExpandWidth` as that would be the Recycler controlling the entries' widths, so we do this behind the scenes
 another way. For entries with a desired width less than that of the full Recyler, a child GameObject with the desired dimensions can be created under the root.
 
