@@ -633,15 +633,14 @@ Unless specified, being at the _end_, a null value will fix all the entries that
 # Nuances
 
 ### Preventing spam layout recalculations
-The Recycler is ultimately a list of things, in Unity terms, a VerticalLayoutGroup. The entries fall under this VerticalLayoutGroup (the GameObject called "Entries", or more abstractly, the underlying ScrollRect's "content" field).
+
+The Recycler is ultimately a list of things, in Unity terms, a `VerticalLayoutGroup`. The entries fall under this VerticalLayoutGroup (the GameObject called "Entries", or more abstractly, the underlying `ScrollRect`'s "content" field).
 
 The way layout calculation works, every time the dimensions of the list changes: adding, removing, or modifying entries, the list will ask each individual entry to recalculate its size to know the new total size of all the entries.
 Likely however, our entries mostly stay the same, and asking them for a recalculation will give the same dimensions as before. Nothing changes, and this is a big waste of time. For this reason, it is recommended, and default implemented,
-that the list of entries does not control the entries width or height (i.e. unchecking ControlChildSize on the VerticalLayoutGroup).
+that the list of entries does not control the entries width or height (i.e. unchecking the "ControlChildSize" fields on the `VerticalLayoutGroup`).
 
-To get around this, and still have entries be auto-sized, the entries can control their own height and width (use their own LayoutGroup and their own ContentSizeFitter). The Recycler will ask the entry to calculate its own layout, fill out the
-correct RectTransform values, and then treat the entry like any other RectTransform, auto-calculated or not. The VerticalLayoutGroup can still align the RectTransform properly, it's just relieved of the duty of constantly recalculting its dimensions.
-This is why entries have the method [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master#recalculatedimensions) as well as the endcap [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master#recalculatedimensions-1).
+To get around this, and still have entries be auto-sized, the entries can control their own height and width (use their own `LayoutGroup` and their own `ContentSizeFitter`). Upon binding, the Recycler will ask that entry, and only that entry, to calculate its own layout, fill out the correct `RectTransform` values, and then treat the entry like any other RectTransform, auto-calculated or not. The `VerticalLayoutGroup` can still align the `RectTransform` properly, it's just relieved of the duty of constantly checking and recalculating its dimensions. Subsequently, if entries need to update their dimensions beyond the initial binding, they alert the Recycler manually by calling [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master#recalculatedimensions), or if we're the endcap: [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master#recalculatedimensions-1).
 
 ### Entries are default expanded to the Recycler's width
 
