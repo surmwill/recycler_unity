@@ -63,12 +63,14 @@ The two core classes - the Recycler and its entries - can be found under:
 ### Scrolling to index (45)
 - Includes indices that are not currently active in the recycler.
 - Works with dynamically sized entries.
+- Center on different part of the entry: middle, top edge, bottom edge.
+- An immediate scroll is available.
   
 ![](README_Images/recycler_scroll_to_index.gif)
 
 ### Auto-sized entries
-- Here each entry generates a random number of lines of text. The entry is auto-sized to fit the text using a VerticalLayoutGroup and a ContentSizeFitter.
-- (Note: precautions have been taken to prevent inefficent spam layout calculations. See [Nuances](https://github.com/surmwill/recycler_unity/#preventing-spam-layout-recalculations).)
+- Here each entry generates a random number of lines of text. The entry is auto-sized to fit the text using a `VerticalLayoutGroup` and a `ContentSizeFitter`.
+- (Note: precautions have been taken to prevent inefficent spam layout calculations. See [Nuances](https://github.com/surmwill/recycler_unity/blob/master/README.md#preventing-spam-layout-recalculations).)
 
 ![](README_Images/recycler_autosize.gif)
 
