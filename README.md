@@ -385,7 +385,7 @@ Scrolls to an entry with the given key. The entry doesn't need to be on screen a
 ```
 public void CancelScrollTo()
 ```
-Cancels the current [`ScrollToIndex`](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex)/[ScrollToKey](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex) animation.
+Cancels the current [`ScrollToIndex`](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex)/[`ScrollToKey`](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex) animation.
 
 ### GetCurrentIndexForKey
 ```
