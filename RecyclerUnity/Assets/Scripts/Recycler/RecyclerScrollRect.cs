@@ -154,7 +154,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
         if (Application.isEditor)
         {
-            WarnAboutInefficientLayoutGroups();
+            CheckInvalidContentLayoutGroup();
         }
     }
 
@@ -1249,13 +1249,13 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         return Vector3.Dot(Vector3.ProjectOnPlane(rectTransform.position - viewport.position, viewport.forward), viewport.up) > 0;
     }
     
-    private void WarnAboutInefficientLayoutGroups()
+    private void CheckInvalidContentLayoutGroup()
     {
         VerticalLayoutGroup v = content.GetComponent<VerticalLayoutGroup>();
         
         if (v.childControlWidth || v.childControlHeight)
         {
-            Debug.LogError($"The {nameof(VerticalLayoutGroup)} on \"{content.gameObject.name}\" cannot have {nameof(v.childControlWidth)} or {nameof(v.childControlHeight)} checked - please uncheck it.\n\n" +
+            throw new Exception($"The {nameof(VerticalLayoutGroup)} on \"{content.gameObject.name}\" cannot have {nameof(v.childControlWidth)} or {nameof(v.childControlHeight)} checked - please uncheck it.\n\n" +
                            
                            $"Upon binding, all LayoutElements and LayoutControllers on an entry's root are disabled.\n" +
                            $"Reasoning: every time an entry is added, removed, or modified, the Recycler's content recalculates its size and subsequently all of its children. " +
