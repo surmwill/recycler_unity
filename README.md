@@ -70,7 +70,7 @@ The two core classes - the Recycler and its entries - can be found under:
 
 ### Auto-sized entries
 - Here each entry generates a random number of lines of text. The entry is auto-sized to fit the text using a `VerticalLayoutGroup` and a `ContentSizeFitter`.
-- (Note: precautions have been taken to prevent inefficent spam layout calculations. See [Nuances](https://github.com/surmwill/recycler_unity/blob/master/README.md#preventing-spam-layout-recalculations).)
+- (Note: precautions have been taken to prevent inefficent spam layout calculations. See [Nuances](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights).)
 
 ![](README_Images/recycler_autosize.gif)
 
