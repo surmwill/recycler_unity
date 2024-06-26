@@ -240,11 +240,11 @@ With a simple endcap, we will leave these empty.
 
 Serialize the endcap prefab in Recyler:
 
-![](README_Images/recycler_appending_and_endcap.gif)
+![](README_Images/creating_recycler_adding_endcap.gif)
 
 And our end result looks like:
 
-![](README_Images/recycler_appending_and_endcap.gif)
+![](README_Images/creating_recycler_end_result_with_endcap.gif)
 
 # Documentation
 
