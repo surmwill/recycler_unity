@@ -660,7 +660,7 @@ except in specific small windows of time to save on performance. Because of this
 Based on the above [Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) any auto-sized entries should calculate their own dimensions, with their own
 `VerticalLayoutGroup` and `ContentSizeFitter`. 
 
-A side effect of this is for animations, entries will need to constantly call [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master#recalculatedimensions) to alert the Recycler of size changes as progress is made. For example, using the DoTween library, you can attach an `OnUpdate` call to your animation with `RecalculateDimensions` to do this.
+A side effect of this is for animations, entries will need to constantly call [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions) to alert the Recycler of size changes as progress is made. For example, using the DoTween library, you can attach an `OnUpdate` call to your animation with `RecalculateDimensions` to do this.
 
 ```
 RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowTimeSeconds)
