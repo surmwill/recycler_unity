@@ -644,6 +644,8 @@ To prevent unnecessary recalculations, we disable all the `LayoutGroups` and `La
 
 ### Entries are default expanded to the Recycler's width
 
+### Entry prefabs will have `ILayoutElements` and `ILayoutControllers` disabled in their root
+
 ### Auto-sized entries should control their own height
 
 (Also mention how to use DoTween with UpdateDimensions)
