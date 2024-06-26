@@ -646,18 +646,18 @@ In short, the `VerticalLayoutGroup` of the entire Recycler should not have any o
 
 ### Entries are default expanded to the Recycler's width
 
-Based on the above [Recycler cannot control an entry's width or height](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) the entries' roots are default expanded to the full width of the Recyler,
+Based on the above [Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) the entries' roots are default expanded to the full width of the Recyler,
 as this is behaviour expected out of most use cases. Obviously, we cannot use `VerticalLayoutGroup` with `childControlWidth` and `childForceExpandWidth` as that would be the Recycler controlling the entries' widths, so we do this behind the scenes
 another way. For entries with a desired width less than that of the full Recyler, a child GameObject with the desired dimensions can be created under the root.
 
 ### Entry prefabs will have `ILayoutElements` and `ILayoutControllers` disabled in their root
 
-Based on the above [Recycler cannot control an entry's width or height](https://github.com/surmwill/recycler_unity#the-recycler-cannot-control-an-entrys-width-or-height) the entries' roots will have all their `ILayoutGroups` and `ILayoutElements` disabled
+Based on the above [Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) the entries' roots will have all their `ILayoutGroups` and `ILayoutElements` disabled
 except in specific small windows of time to save on performance. Because of this, things like `Images` will also get disabled - they should be moved to a child GameObject instead. 
 
 ### Auto-sized entries should control their own height
 
-Based on the above [Recycler cannot control an entry's width or height](https://github.com/surmwill/recycler_unity#the-recycler-cannot-control-an-entrys-width-or-height) any auto-sized entries should calculate their own dimensions, with their own
+Based on the above [Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) any auto-sized entries should calculate their own dimensions, with their own
 `VerticalLayoutGroup` and `ContentSizeFitter`. 
 
 A side effect of this is for animations, entries will need to constantly call [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master#recalculatedimensions) to alert the Recycler of size changes as progress is made. For example, using the DoTween library, you can attach an `OnUpdate` call to your animation with `RecalculateDimensions` to do this.
