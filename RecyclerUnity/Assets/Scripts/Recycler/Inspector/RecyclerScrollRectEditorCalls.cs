@@ -17,6 +17,11 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
     
     protected override void OnValidate()
     {
+        if (Application.isPlaying)
+        {
+            return;
+        }
+        
         _numCachedBeforeStart = Mathf.Max(1, _numCachedBeforeStart);
         _numCachedAfterEnd = Mathf.Max(1, _numCachedAfterEnd);
         _poolSize = Mathf.Max(0, _poolSize);
