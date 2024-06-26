@@ -34,6 +34,7 @@ Here, all those cases are covered with the following features:
 - Resizing (auto-calculation supported)
 - Endcaps
 - Scrolling to any index (including those off screen)
+- Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases ("World Space" untested).
 
 ### Code
 The code is currently in a state of being finalized and documented. It can be found under:
@@ -238,7 +239,7 @@ public abstract void OnSentToRecycling()
 
 With a simple endcap, we will leave these empty. 
 
-Serialize the endcap prefab in Recyler:
+Serialize the endcap prefab in Recyler. A new pool for the endcap will get created:
 
 ![](README_Images/creating_recycler_adding_endcap.gif)
 
