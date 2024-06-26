@@ -70,12 +70,22 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         {
             _poolParent = RectTransformFactory.CreateFullRect(PoolParentName, transform);
         }
+        
+        // Remove old entries from the pool that are not the current entry prefab (for example, we changed prefabs)
+        foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> oldEntry in _poolParent.GetComponentsInChildren<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>(true)
+                     .Where(e => _recyclerEntryPrefab == null || !IsInstanceOfEntryPrefab(e)))
+        {
+            EditorUtils.DestroyOnValidate(oldEntry.gameObject);
+        }
 
         // Ensure the pool is the correct size
         if (_recyclerEntryPrefab != null)
         {
-            int numInPool = _poolParent.Children().Count(t => t.HasComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>());
-            int poolDifference = _poolSize - numInPool;
+            RecyclerScrollRectEntry<TEntryData, TKeyEntryData>[] currentEntries = _poolParent.GetComponentsInChildren<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>(true)
+                .Where(IsInstanceOfEntryPrefab)
+                .ToArray();
+            
+            int poolDifference = _poolSize - currentEntries.Length;
 
             // Add any missing entries
             for (int i = 0; i < poolDifference; i++)
@@ -91,10 +101,9 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             // Delete any extra entries
             if (poolDifference < 0)
             {
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData>[] entries = _poolParent.GetComponentsInChildren<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>(true);
-                for (int i = 0; i < Mathf.Min(entries.Length, Mathf.Abs(poolDifference)); i++)
+                for (int i = 0; i < Mathf.Min(currentEntries.Length, Mathf.Abs(poolDifference)); i++)
                 {
-                    EditorUtils.DestroyOnValidate(entries[i].gameObject);
+                    EditorUtils.DestroyOnValidate(currentEntries[i].gameObject);
                 }
             }
         }
@@ -238,6 +247,11 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             Debug.Break();
             return;
         }
+    }
+
+    private bool IsInstanceOfEntryPrefab(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
+    {
+        return PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(entry) == AssetDatabase.GetAssetPath(_recyclerEntryPrefab);
     }
 
     private void DebugCheckDuplicates()
