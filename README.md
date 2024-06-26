@@ -632,7 +632,7 @@ Unless specified, being at the _end_, a null value will fix all the entries that
 
 # Nuances
 
-### The Recycler cannot control an entry's width or height
+### The Recycler cannot control an entries' width or height
 
 The Recycler is ultimately a list of things; in Unity terms, a `VerticalLayoutGroup`. The entries fall under this `VerticalLayoutGroup` (the GameObject called "Entries", or more abstractly, the underlying `ScrollRect`'s "content" field). This `VerticalLayoutGroup` cannot have `childControlWidth` or `childControlHeight` checked. Entries - the children - must control their own width and their own height with their own `VerticalLayoutGroup` and `ContentSizeFitter`.
 
