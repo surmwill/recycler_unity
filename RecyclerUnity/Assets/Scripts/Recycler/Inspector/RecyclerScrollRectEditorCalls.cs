@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 /// <summary>
 /// Contains editor and debugging calls for our recycler scroll rect
@@ -111,6 +112,13 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         // Ensure we have a single end-cap pooled if one is provided
         if (_endcapPrefab != null)
         {
+            // If we have an old endcap, get rid of it
+            if (_endcap != null && !IsInstanceOfEndcapPrefab(_endcap))
+            {
+                EditorUtils.DestroyOnValidate(_endcap);
+                _endcap = null;
+            }
+            
             // Ensure there is a pool for the endcap
             if (_endcapParent == null)
             {
@@ -120,7 +128,8 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             // Ensure the endcap exists in the pool
             if (_endcap == null)
             {
-                _endcap = _endcapParent.GetComponentInChildren<RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>>(true);
+                _endcap = _endcapParent.GetComponentsInChildren<RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>>(true).FirstOrDefault(IsInstanceOfEndcapPrefab);
+
                 if (_endcap == null)
                 {
                     _endcap = ((GameObject) PrefabUtility.InstantiatePrefab(_endcapPrefab.gameObject, _endcapParent))
@@ -130,7 +139,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
                 }
             }
         }
-        // If we are swapping out endcaps then destroy the previous one
+        // The prefab is null, if reference to the endcap is not, then destroy the endcap (we must be swapping out endcaps) 
         else if (_endcap != null)
         {
             EditorUtils.DestroyOnValidate(_endcap.gameObject);
@@ -251,7 +260,17 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
 
     private bool IsInstanceOfEntryPrefab(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
     {
-        return PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(entry) == AssetDatabase.GetAssetPath(_recyclerEntryPrefab);
+        return IsInstanceOfPrefab(entry, _recyclerEntryPrefab);
+    }
+    
+    private bool IsInstanceOfEndcapPrefab(RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap)
+    {
+        return IsInstanceOfPrefab(endcap, _endcapPrefab);
+    }
+
+    private bool IsInstanceOfPrefab(Object instanceComponentOrGameObject, Object prefabAsset)
+    {
+        return PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(instanceComponentOrGameObject) == AssetDatabase.GetAssetPath(prefabAsset);
     }
 
     private void DebugCheckDuplicates()
