@@ -1253,20 +1253,18 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     {
         VerticalLayoutGroup v = content.GetComponent<VerticalLayoutGroup>();
         
-        if (v.childControlWidth)
+        if (v.childControlWidth || v.childControlHeight)
         {
-            Debug.LogWarning($"\"{content.gameObject.name}\" cannot control the entries' width efficiently without spam recalculations. It is recommended to uncheck {nameof(v.childControlWidth)}.\n" +
-                             $"Every time an entry is added, removed, or modified, it will trigger a recalculation of all the others when they likely haven't changed.\n" +
-                             $"It is advised (and supported) that the entry itself control its own width with its own {nameof(ContentSizeFitter)}.\n" +
-                             $"Also note that all entries are by default expanded to meet the width of the recycler (equivalent to {nameof(v.childForceExpandWidth)}), and this behaviour need not be replicated through the layout group.");
-        }
-        
-        if (v.childControlHeight)
-        {
-            Debug.LogWarning($"\"{content.gameObject.name}\" cannot control the entries' height efficiently without spam recalculations. It is recommended to uncheck {nameof(v.childControlHeight)}.\n" +
-                             $"Every time an entry is added, removed, or modified, it will trigger a recalculation of all the others when they likely haven't changed.\n" +
-                             $"It is advised (and supported) that the entry itself control its own height with its own {nameof(ContentSizeFitter)}.\n" +
-                             $"Also note that all entries are by default expanded to meet the width of the recycler (equivalent to {nameof(v.childForceExpandWidth)}) to base your auto-calculated height on.");
+            Debug.LogError($"The {nameof(VerticalLayoutGroup)} on \"{content.gameObject.name}\" cannot have {nameof(v.childControlWidth)} or {nameof(v.childControlHeight)} checked - please uncheck it.\n\n" +
+                           
+                           $"Upon binding, all LayoutElements and LayoutControllers on an entry's root are disabled.\n" +
+                           $"Reasoning: every time an entry is added, removed, or modified, the Recycler's content recalculates its size and subsequently all of its children. " +
+                           $"If the children have disabled LayoutElements and LayoutControllers then no calculation occurs in that child's subtree, saving time. " +
+                           $"(When entries are added, removed, or modified, it is unlikely all the other entries also change size and need this costly recalculation.)\n" +
+                           $"Disabled LayoutElements and LayoutControllers will report a 0 width and 0 height, clearly something we don't want.\n\n" +
+                           
+                           $"It is advised (and supported) that the entry control its own width and height with a {nameof(ContentSizeFitter)}, and, apart from binding (which is already covered), alert the Recycler of its size changes through the RecalculateDimensions method.\n" +
+                           $"Also note that all entries are by default expanded to meet the width of the recycler (equivalent to {nameof(v.childForceExpandWidth)}), and this behaviour need not be replicated through the layout group.\n");
         }
     }
 

@@ -342,8 +342,8 @@ MonoBehaviour:
   m_Spacing: 0
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
@@ -2224,6 +2224,7 @@ MonoBehaviour:
   _numCachedAfterEnd: 2
   _appendTo: 1
   _setTargetFrameRateTo60: 1
+  _debugPerformEditorChecks: 1
   _poolParent: {fileID: 1880450207}
   _poolSize: 15
   _endcapPrefab: {fileID: 0}
