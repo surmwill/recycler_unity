@@ -650,7 +650,7 @@ Based on the above [Recycler cannot control entries' widths or heights](https://
 as this is behaviour expected out of most use cases. Obviously, we cannot use `VerticalLayoutGroup` with `childControlWidth` and `childForceExpandWidth` as that would be the Recycler controlling the entries' widths, so we do this behind the scenes
 another way. For entries with a desired width less than that of the full Recyler, a child GameObject with the desired dimensions can be created under the root.
 
-### Entry prefabs will have `ILayoutElements` and `ILayoutControllers` disabled in their root
+### Entries will have `ILayoutElements` and `ILayoutControllers` disabled in their root
 
 Based on the above [Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) the entries' roots will have all their `ILayoutGroups` and `ILayoutElements` disabled
 except in specific small windows of time to save on performance. Because of this, things like `Images` will also get disabled - they should be moved to a child GameObject instead. 
