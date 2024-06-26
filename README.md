@@ -197,7 +197,7 @@ private static readonly string[] Words =
 
 private void Start()
 {
-     // Create data containing the words from the array, each with a random background color
+    // Create data containing the words from the array, each with a random background color
     DemoRecyclerData[] entryData = new DemoRecyclerData[Words.Length];
     for (int i = 0; i < Words.Length; i++)
     {
@@ -211,6 +211,34 @@ private void Start()
 ### End Result
 
 ![](README_Images/creating_recycler_end_result.gif)
+
+### (Optional) Endcap
+
+It might be useful to have a different entry at the end of the list than the others. 
+For example, this entry could have a button to fetch the next page of entries, or do so automatically upon becoming visible for a set amount of time.
+(Note: while we have no problem displaying a large amount of entries, fetching all the data to make them from a database could be costly - literally. Hence paging is still a useful concept.) 
+
+The process is similar to creating a normal entry. Construct your prefab, then to make it operable with the Recycler include a `RecyclerScrollRectEndcap<TEntryData, TEntryDataKey>` component at the root, filled in
+with your corresponding key and data types. Again, as generic classes cannot be components we must create an instance of the generic class ourselves, and use that: `public class DemoEndcap : RecyclerScrollRectEndcap<DemoRecyclerData, string>`.
+
+We are asked to implement two lifecycle methods which can be left empty until needed.
+
+```
+public abstract void OnFetchedFromRecycling()
+{
+  // Called when the endcap has been fetched from the pool and become active.
+  // It is either visible on screen or waiting just offscreen in the cache.        
+}
+
+public abstract void OnSentToRecycling()
+{
+  // Called when the endcap has been returned to the pool
+}
+```
+
+With a simple endcap, we will leave these empty. Our end result:
+
+![](README_Images/recycler_appending_and_endcap.gif)
 
 # Documentation
 
