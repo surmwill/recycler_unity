@@ -634,7 +634,7 @@ Unless specified, being at the _end_, a null value will fix all the entries that
 
 ### Preventing spam layout recalculations
 
-The Recycler is ultimately a list of things, in Unity terms, a `VerticalLayoutGroup`. The entries fall under this VerticalLayoutGroup (the GameObject called "Entries", or more abstractly, the underlying `ScrollRect`'s "content" field).
+The Recycler is ultimately a list of things, in Unity terms, a `VerticalLayoutGroup`. The entries fall under this `VerticalLayoutGroup` (the GameObject called "Entries", or more abstractly, the underlying `ScrollRect`'s "content" field).
 
 The way layout calculation works, every time the dimensions of the list changes: adding, removing, or modifying entries, the list will ask each individual entry to recalculate its size to know the new total size of all the entries.
 Likely however, our entries mostly stay the same, and asking them for a recalculation will give the same dimensions as before. Nothing changes, and this is a big waste of time. For this reason, it is recommended, and default implemented,
