@@ -120,7 +120,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             // If we have an old endcap, get rid of it
             if (_endcap != null && !IsInstanceOfEndcapPrefab(_endcap))
             {
-                EditorUtils.DestroyOnValidate(_endcap);
+                EditorUtils.DestroyOnValidate(_endcap.gameObject);
                 _endcap = null;
             }
             
