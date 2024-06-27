@@ -247,7 +247,7 @@ Serialize the endcap prefab in Recyler. A new pool for the endcap will get creat
 
 And our end result looks like:
 
-![](README_Images/creating_recycler_end_result_with_endcap.gif)
+![](README_Images/creating_recycler_endcap.gif)
 
 # Documentation
 
