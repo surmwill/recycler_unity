@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -786,6 +787,9 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         // Clear the data for the entries
         _dataForEntries.Clear();
         
+        // Clear the keys for all the data
+        _entryKeyToCurrentIndex.Clear();
+        
         // Reset our window back to one with no entries
         _activeEntriesWindow.Reset();
 
@@ -797,43 +801,43 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
         if (_dataForEntries.Any())
         {
-            throw new Exception("The data is supposed to cleared, but there is still some present.");
+            throw new DataException("The data is supposed to cleared, but there is still some present.");
         }
         
         if (_entryKeyToCurrentIndex.Any())
         {
-            throw new Exception("The data has been cleared. There should be no keys either.");
+            throw new DataException("The data has been cleared. There should be no keys either.");
         }
         
         if (_activeEntries.Any())
         {
-            throw new Exception($"The data has been cleared. We should not have any active entries.");
+            throw new DataException($"The data has been cleared. We should not have any active entries.");
         }
         
-        if (_activeEntriesWindow.HasData)
+        if (_activeEntriesWindow.Exists || _activeEntriesWindow.IsDirty || _activeEntriesWindow.ActiveEntriesRange.HasValue)
         {
-            throw new Exception($"The data has been cleared and the window should not exist. There's no underlying data to have a window over.");
+            throw new DataException($"The data has been cleared and the window should not exist. There's no underlying data to have a window over.");
         }
 
         if (_recycledEntries.Entries.Any())
         {
-            throw new Exception($"After clearing, all entries should return to the pool unbound. There are still {_recycledEntries.Entries.Count} entries in the pool bound.");
+            throw new DataException($"After clearing, all entries should return to the pool unbound. There are still {_recycledEntries.Entries.Count} entries in the pool bound.");
         }
 
         int numMissingUnboundEntries = numTargetUnboundEntries - _unboundEntries.Count; 
         if (numMissingUnboundEntries != 0)
         {
-            throw new Exception($"After clearing, all entries should return to the pool unbound. Missing {numMissingUnboundEntries} entries.");
+            throw new DataException($"After clearing, all entries should return to the pool unbound. Missing {numMissingUnboundEntries} entries.");
         }
 
         if (_endcap != null)
         {
-            throw new Exception("The data has been cleared. We expect an empty window and therefore the endcap should not exist.");
+            throw new DataException("The data has been cleared. We expect an empty window and therefore the endcap should not exist.");
         }
 
         if (_currScrollingToIndex.HasValue || _scrollToIndexCoroutine != null)
         {
-            throw new Exception("The data has been cleared. We should not be auto-scrolling to an index.");
+            throw new DataException("The data has been cleared. We should not be auto-scrolling to an index.");
         }
 
         #endif
@@ -1266,8 +1270,12 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     private void StopScrollToIndexCoroutine()
     {
         _currScrollingToIndex = null;
-        StopCoroutine(_scrollToIndexCoroutine);
-        _scrollToIndexCoroutine = null;
+        
+        if (_scrollToIndexCoroutine != null)
+        {
+            StopCoroutine(_scrollToIndexCoroutine);
+            _scrollToIndexCoroutine = null;   
+        }
     }
 
     /// <summary>

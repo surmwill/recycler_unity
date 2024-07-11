@@ -10,7 +10,7 @@ public interface IRecyclerScrollRectActiveEntriesWindow
     /// <summary>
     /// Returns true if the window exists, that is, we've added some underlying data to have a window over in the first place
     /// </summary>
-    public bool HasData { get; }
+    public bool Exists { get; }
 
     /// <summary>
     /// The range of entry indices that are visible
