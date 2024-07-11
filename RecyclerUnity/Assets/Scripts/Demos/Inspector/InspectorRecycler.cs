@@ -6,7 +6,7 @@ using UnityEngine;
 /// Recycler to test inspector options
 /// (ex: increasing/decreasing the pool size and having the corresponding amount of GameObjects)
 /// </summary>
-public class InspectorRecycler : RecyclerScrollRect<InspectorData, string>
+public class InspectorRecycler : RecyclerScrollRect<EmptyRecyclerData, string>
 {
 
 }

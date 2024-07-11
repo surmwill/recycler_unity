@@ -6,7 +6,7 @@ using UnityEngine;
 /// Endcap to test inspector options
 /// (ex: switching endcaps and ensuring the old one gets replaced with the new one)
 /// </summary>
-public class InspectorEndcapTwo : RecyclerScrollRectEndcap<InspectorData, string>
+public class InspectorEndcapTwo : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
 {
     public override void OnFetchedFromRecycling()
     {

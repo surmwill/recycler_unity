@@ -6,9 +6,9 @@ using UnityEngine;
 /// Entry to test inspector options
 /// (ex: increasing/decreasing the pool size and having the corresponding amount of GameObjects)
 /// </summary>
-public class InspectorEntry : RecyclerScrollRectEntry<InspectorData, string>
+public class InspectorEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
 {
-    protected override void OnBindNewData(InspectorData entryData)
+    protected override void OnBindNewData(EmptyRecyclerData entryData)
     {
     }
 
