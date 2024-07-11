@@ -5,12 +5,13 @@ using System;
 /// </summary>
 public class AutoSizeData : IRecyclerScrollRectData<string>
 {
-    public string Key => Guid.NewGuid().ToString();
-    
+    public string Key { get; }
+
     public int NumLines { get; }
 
     public AutoSizeData(int numLines)
     {
         NumLines = numLines;
+        Key = Guid.NewGuid().ToString();
     }
 }

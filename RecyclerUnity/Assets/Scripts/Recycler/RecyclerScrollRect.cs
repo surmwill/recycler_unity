@@ -754,6 +754,15 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         // Stop any active dragging
         StopMovementAndDrag();
         
+        // Stop auto-scrolling to an index
+        StopScrollToIndexCoroutine();
+
+        // Upon clearing, all entries should return to the pool unbound. We expect (and will check for) this amount of unbound entries
+        #if UNITY_EDITOR
+        int numTotalBoundEntries = _activeEntries.Count + _recycledEntries.Entries.Count;
+        int numTargetUnboundEntries = numTotalBoundEntries + _unboundEntries.Count;
+        #endif
+        
         // Recycle all the entries
         foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _activeEntries.Values.ToList())
         {
@@ -768,18 +777,6 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             _unboundEntries.Enqueue(entry);
         }
 
-        #if UNITY_EDITOR
-        if (!_activeEntries.Any())
-        {
-            Debug.LogError($"Everything should be unbound, but there are still \"{_activeEntries.Count}\" left");
-        }
-
-        if (_recycledEntries.Entries.Any())
-        {
-            Debug.LogError($"Everything should be unbound, but there are still \"{_recycledEntries.Entries.Count}\" bound recycled entries left");
-        }
-        #endif
-
         // Recycle the end-cap if it exists
         if (_endcap != null)
         {
@@ -788,12 +785,58 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
         // Clear the data for the entries
         _dataForEntries.Clear();
+        
+        // Reset our window back to one with no entries
+        _activeEntriesWindow.Reset();
 
         // Reset our pivot to whatever its initial value was
         content.pivot = _nonFilledScrollRectPivot;
 
-        // Reset our window back to one with no entries
-        _activeEntriesWindow.Reset();
+        // Check that we have returned to the initial state
+        #if UNITY_EDITOR
+
+        if (_dataForEntries.Any())
+        {
+            throw new Exception("The data is supposed to cleared, but there is still some present.");
+        }
+        
+        if (_entryKeyToCurrentIndex.Any())
+        {
+            throw new Exception("The data has been cleared. There should be no keys either.");
+        }
+        
+        if (_activeEntries.Any())
+        {
+            throw new Exception($"The data has been cleared. We should not have any active entries.");
+        }
+        
+        if (_activeEntriesWindow.HasData)
+        {
+            throw new Exception($"The data has been cleared and the window should not exist. There's no underlying data to have a window over.");
+        }
+
+        if (_recycledEntries.Entries.Any())
+        {
+            throw new Exception($"After clearing, all entries should return to the pool unbound. There are still {_recycledEntries.Entries.Count} entries in the pool bound.");
+        }
+
+        int numMissingUnboundEntries = numTargetUnboundEntries - _unboundEntries.Count; 
+        if (numMissingUnboundEntries != 0)
+        {
+            throw new Exception($"After clearing, all entries should return to the pool unbound. Missing {numMissingUnboundEntries} entries.");
+        }
+
+        if (_endcap != null)
+        {
+            throw new Exception("The data has been cleared. We expect an empty window and therefore the endcap should not exist.");
+        }
+
+        if (_currScrollingToIndex.HasValue || _scrollToIndexCoroutine != null)
+        {
+            throw new Exception("The data has been cleared. We should not be auto-scrolling to an index.");
+        }
+
+        #endif
     }
 
     private void StopMovementAndDrag()
