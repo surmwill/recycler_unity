@@ -333,4 +333,36 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             lastIndex = currentIndex;
         }
     }
+
+    private void DebugCheckIndexToKeyMapping()
+    {
+        for (int i = 0; i < _dataForEntries.Count; i++)
+        {
+            TKeyEntryData actualKey = _dataForEntries[i].Key;
+            TKeyEntryData mappedKey = GetKeyForCurrentIndex(i);
+            
+            if (!EqualityComparer<TKeyEntryData>.Default.Equals(actualKey, mappedKey))
+            {
+                Debug.LogError($"The mapped key corresponding to index {i} \"{mappedKey}\" does not match the actual key of the data at index {i} \"{actualKey}\"");
+                Debug.Break();
+                return;
+            }
+        }
+    }
+
+    private void DebugCheckKeyToIndexMapping()
+    {
+        for (int i = 0; i < _dataForEntries.Count; i++)
+        {
+            TKeyEntryData key = _dataForEntries[i].Key;
+            int mappedIndex = GetCurrentIndexForKey(_dataForEntries[i].Key);
+            
+            if (mappedIndex != i)
+            {
+                Debug.LogError($"The mapped index {mappedIndex} for key \"{key}\" does not match its actual index {i}");
+                Debug.Break();
+                return;
+            }
+        }
+    }
 }

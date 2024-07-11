@@ -335,7 +335,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     {
         for (int i = index; i < _dataForEntries.Count; i++)
         {
-            _entryKeyToCurrentIndex[_dataForEntries[index].Key] += shiftAmount;
+            _entryKeyToCurrentIndex[_dataForEntries[i].Key] += shiftAmount;
         }
     }
 
@@ -405,8 +405,12 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         if (_debugPerformEditorChecks)
         {
             DebugCheckWindow();
-            DebugCheckDuplicates();  
-            DebugCheckOrdering();   
+            
+            DebugCheckDuplicates();
+            DebugCheckOrdering();
+            
+            DebugCheckIndexToKeyMapping();
+            DebugCheckKeyToIndexMapping();
         }
         
         #endif
