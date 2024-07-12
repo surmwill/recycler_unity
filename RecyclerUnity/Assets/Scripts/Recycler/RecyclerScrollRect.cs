@@ -10,12 +10,29 @@ using Debug = UnityEngine.Debug;
 using Transform = UnityEngine.Transform;
 
 /// <summary>
-/// A scroll rect containing a list of data, only processing that data which can be seen on-screen.
+/// A ScrollRect that renders a long list of data, but only that data which fits onscreen (or is waiting just offscreen in the cache to scroll to).
+///
+/// Steps:
+/// 1.) Create a normal C# class containing your data, ensuring it implements IRecyclerScrollRectData<TEntryKeyData> (i.e. supplies a unique key).
+/// (The generic type represents the type of your key.)
 /// 
-/// Note: all entries and the end-cap can have auto-calculated dimensions but their widths are by default force expanded to
-/// to the width of the viewport. Additionally to prevent spam layout recalculations, once calculated, all layout components
-/// (ILayoutElement, ILayoutController) such as VerticalLayoutGroups get disabled; however, this also includes such things as Images.
-/// In this case the Image should be moved as a child. 
+/// 2.) Create an entry prefab to display your data, adding a RecyclerScrollRectEntry<TEntryData, TKeyEntryData> component at its root.
+/// This component contains methods that consume and map your above data to the prefab when it becomes visible onscreen.
+/// You define how the data gets bound to the prefab by implementing the methods.
+/// (The generic types represent the type of your data, and the type of its corresponding key.)
+///
+/// 3.) Add a RecyclerScrollRect<TEntryData, TKeyEntryData> component to a RectTransform and serialize your entry prefab.
+/// (The generic types represents the type of your data, and the type of its corresponding key.)
+///
+/// 4.) Append, prepend, or insert data. The Recycler handles what data gets shown at what time, and you have defined how that data binds to each entry.
+/// Happy scrolling!
+///
+/// 5.) Optionally create an endcap prefab that looks/operates differently than the other entries, and appears at the very end of the list.
+/// Add a RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> component to its root and serialize the prefab in your RecyclerScrollRect<TEntryData, TKeyEntryData>.
+/// This can be used for example, not to display the data like other entries, but fetch the next page of data.
+/// (The generic types represents the type of your data, and the type of its corresponding key.)
+///
+/// See full documentation at: https://github.com/surmwill/recycler_unity
 /// </summary>
 [RequireComponent(typeof(BoxCollider))]
 public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : ScrollRect, IPointerDownHandler where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
