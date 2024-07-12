@@ -21,5 +21,9 @@ public class TestClearAndFillRecycler : MonoBehaviour
         {
             _recycler.Clear();
         }
+        else if (Input.GetKeyDown(KeyCode.R))
+        {
+            _recycler.ResetToBeginning();
+        }
     }
 }
