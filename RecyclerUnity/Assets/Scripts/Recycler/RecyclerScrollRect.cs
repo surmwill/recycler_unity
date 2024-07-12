@@ -10,27 +10,37 @@ using Debug = UnityEngine.Debug;
 using Transform = UnityEngine.Transform;
 
 /// <summary>
-/// A ScrollRect that renders a long list of data, but only that data which fits onscreen (or is waiting just offscreen in the cache to scroll to).
+/// A Recycler.
 ///
-/// Steps:
-/// 1.) Create a normal C# class containing your data, ensuring it implements IRecyclerScrollRectData<TEntryKeyData> (i.e. supplies a unique key).
-/// (The generic type represents the type of your key.)
+/// If you have a long list of data to render (say a 1000 text message conversation) it makes no sense to render the entire
+/// conversation, as the entire conversation cannot fit on-screen. Instead you only render the chunk of the conversation that
+/// can fit on-screen. When a message gets scrolled off-screen, that same message is not discarded, but re-used and re-bound
+/// to new message data, the next message we are scrolling to on-screen: the message is recycled.
+///
+/// There are 3 main parts.
+///
+/// 1.) Your data (a text message)
+/// 2.) An entry prefab that can gets bound to your data (the text message bubble)
+/// 3.) The recycler which manages displaying and recycling all entries (the sum total conversation you scroll through)
 /// 
-/// 2.) Create an entry prefab to display your data, adding a RecyclerScrollRectEntry<TEntryData, TKeyEntryData> component at its root.
-/// This component contains methods that consume and map your above data to the prefab when it becomes visible onscreen.
-/// You define how the data gets bound to the prefab by implementing the methods.
-/// (The generic types represent the type of your data, and the type of its corresponding key.)
+/// Steps:
+/// 1.) Create a normal C# class containing your data, ensuring it implements IRecyclerScrollRectData (i.e. supplies a unique key).
+/// Ex: A class containing a text message.
+/// 
+/// 2.) Create an entry prefab to display your data, adding a RecyclerScrollRectEntry component at its root.
+/// This component contains lifecycle methods that bind your data to the prefab when it becomes visible on-screen.
+/// You implement these methods to define how exactly the binding works.
+/// Ex: A text message bubble. The bubble sets its text component to the whatever message it's bound to.
 ///
-/// 3.) Add a RecyclerScrollRect<TEntryData, TKeyEntryData> component to a RectTransform and serialize your entry prefab.
-/// (The generic types represents the type of your data, and the type of its corresponding key.)
+/// 3.) Add a RecyclerScrollRect component to a RectTransform and serialize your entry prefab.
 ///
-/// 4.) Append, prepend, or insert data. The Recycler handles what data gets shown at what time, and you have defined how that data binds to each entry.
+/// 4.) Append, prepend, or insert your data to the RecyclerScrollRect.
+/// The Recycler handles what data gets shown at what time, and you have defined how that data binds to each entry.
 /// Happy scrolling!
 ///
-/// 5.) Optionally create an endcap prefab that looks/operates differently than the other entries, and appears at the very end of the list.
-/// Add a RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> component to its root and serialize the prefab in your RecyclerScrollRect<TEntryData, TKeyEntryData>.
-/// This can be used for example, not to display the data like other entries, but fetch the next page of data.
-/// (The generic types represents the type of your data, and the type of its corresponding key.)
+/// 5.) Optionally create an endcap prefab that looks/operates differently than all the other entries, appearing at the very end of the list.
+/// Add a RecyclerScrollRectEndcap component to its root, and serialize that prefab in your RecyclerScrollRect.
+/// Ex: A loading indicator that fetches the next 50 text messages from the database, and appends them. 
 ///
 /// See full documentation at: https://github.com/surmwill/recycler_unity
 /// </summary>
