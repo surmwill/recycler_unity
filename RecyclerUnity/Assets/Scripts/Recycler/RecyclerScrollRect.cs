@@ -93,29 +93,30 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     private bool _debugPerformEditorChecks = true;
 
     /// <summary>
-    /// Called after the Recycler's scroll has been handled and we have the correct final set of entries on screen (for this frame).
-    /// Unless the user performs a manual operation (append/prepend/insert/delete), the entries will remain where they are on screen
-    /// and can operated on under this assumption
+    /// Called after the Recycler's scroll has been handled in LateUpdate and we have a final set of entries on-screen for this frame.
+    /// Unless the user performs a manual operation (append/prepend/insert/delete) after this, the entries will remain where they are
+    /// and can queried under this assumption (see ActiveEntries and ActiveEntriesWindow)
     /// </summary>
     public event Action OnRecyclerUpdated;
 
     /// <summary>
-    /// The current data being bound to the entries
+    /// The data being bound to the entries
     /// </summary>
     public IReadOnlyList<TEntryData> DataForEntries => _dataForEntries;
 
     /// <summary>
-    /// The entries with active GameObjects, including both visible and cached
+    /// The currently active entries, visible and cached. The key is their index. 
     /// </summary>
     public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> ActiveEntries => _activeEntries;
     
     /// <summary>
-    /// Contains information about the range of indices of active entries
+    /// Contains information about the ranges of indices that are currently visible or cached.
+    /// You can use the index information here to know what keys to access in ActiveEntries. 
     /// </summary>
     public IRecyclerScrollRectActiveEntriesWindow ActiveEntriesWindow => _activeEntriesWindow;
 
     /// <summary>
-    /// The endcap (if it exists - it is optional)
+    /// The endcap (if it exists; it is optional)
     /// </summary>
     public RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> Endcap => _endcap;
 
