@@ -834,9 +834,9 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             throw new DataException($"After clearing, all entries should return to the pool unbound. Missing {numMissingUnboundEntries} entries.");
         }
 
-        if (_endcap != null)
+        if (_endcap != null && _endcap.gameObject.activeSelf)
         {
-            throw new DataException("The data has been cleared. We expect an empty window and therefore the endcap should not exist.");
+            throw new DataException("The data has been cleared. We expect an empty window and therefore the endcap should not be active.");
         }
 
         if (_currScrollingToIndex.HasValue || _scrollToIndexCoroutine != null)
