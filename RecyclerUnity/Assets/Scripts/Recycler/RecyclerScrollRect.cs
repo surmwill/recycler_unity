@@ -38,15 +38,15 @@ using Transform = UnityEngine.Transform;
 public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : ScrollRect, IPointerDownHandler where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
 {
     [Header("Recycler")]
+    [Tooltip("The prefab which your data gets bound to.")]
     [SerializeField]
     private RecyclerScrollRectEntry<TEntryData, TKeyEntryData> _recyclerEntryPrefab = null;
 
+    [Tooltip("The number of cached entries waiting just above and just below the visible entries to smoothly scroll into.")]
     [SerializeField]
-    private int _numCachedBeforeStart = 2;
-    
-    [SerializeField]
-    private int _numCachedAfterEnd = 2;
+    private int _numCachedAtEachEnd = 2;
 
+    [Tooltip("The direction appended entries get added to.")]
     [SerializeField]
     private RecyclerTransformPosition _appendTo = RecyclerTransformPosition.Bot;
 
@@ -54,24 +54,29 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     [SerializeField]
     private bool _setTargetFrameRateTo60 = true;
 
-    [Tooltip("Perform sanity checks in the editor, ensuring for example, that we aren't skipping indices. (Note that if my code was perfect this wouldn't be needed).")]
+    [Tooltip("Used for debugging. Performs sanity checks in the editor, ensuring for example, that we aren't skipping indices.")]
     [SerializeField]
     private bool _debugPerformEditorChecks = true;
 
+    [Tooltip("The transform under which our entries waiting to be bound/rebound wait.")]
     [Header("Pool")]
     [SerializeField]
     private RectTransform _poolParent = null;
 
+    [Tooltip("The starting number of entries waiting to be bound, so we don't need to freshly instantiate everything at runtime.")]
     [SerializeField]
     private int _poolSize = 15;
 
     [Header("Endcap (optional)")]
+    [Tooltip("The endcap which gets appended at the very end of your entries.")]
     [SerializeField]
     private RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> _endcapPrefab = null;
     
+    [Tooltip("The transform under which the endcap waits to become an active part of the entry list.")]
     [SerializeField]
     private RectTransform _endcapParent = null;
     
+    [Tooltip("A reference to the endcap itself. Read-only and created when the endcap prefab gets serialized.")]
     [ReadOnly]
     [SerializeField]
     private RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> _endcap = null;
@@ -158,7 +163,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         _nonFilledScrollRectPivot = content.pivot;
         
         // Keeps track of what indices are visible, and subsequently which indices are cached
-        _activeEntriesWindow = new RecyclerScrollRectActiveEntriesWindow(_numCachedBeforeStart);
+        _activeEntriesWindow = new RecyclerScrollRectActiveEntriesWindow(_numCachedAtEachEnd);
 
         // All the entries in the bool are initially unbound
         RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = null;

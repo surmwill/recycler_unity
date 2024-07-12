@@ -22,8 +22,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             return;
         }
         
-        _numCachedBeforeStart = Mathf.Max(1, _numCachedBeforeStart);
-        _numCachedAfterEnd = Mathf.Max(1, _numCachedAfterEnd);
+        _numCachedAtEachEnd = Mathf.Max(1, _numCachedAtEachEnd);
         _poolSize = Mathf.Max(0, _poolSize);
 
         // Vertical only supported (currently)
