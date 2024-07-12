@@ -372,4 +372,41 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             }
         }
     }
+
+    private void DebugCheckWindowAlignment()
+    {
+        if (!ActiveEntriesWindow.ActiveEntriesRange.HasValue && !ActiveEntries.Any())
+        {
+            return;
+        }
+
+        if (!ActiveEntriesWindow.ActiveEntriesRange.HasValue && ActiveEntries.Any())
+        {
+            Debug.LogError("The window states there are no active indices, but we are still referencing active entries.");
+            Debug.Break();
+            return;
+        }
+
+        (int activeIndicesStart, int activeIndicesEnd) = ActiveEntriesWindow.ActiveEntriesRange.Value;
+        
+        for (int i = activeIndicesStart; i <= activeIndicesEnd; i++)
+        {
+            if (!ActiveEntries.ContainsKey(i))
+            {
+                Debug.LogError($"The window states that index {i} should be active, but there is no reference to an active entry with that index.");
+                Debug.Break();
+                return;
+            }
+        }
+
+        foreach (int index in ActiveEntries.Keys)
+        {
+            if (index < activeIndicesStart || index > activeIndicesEnd)
+            {
+                Debug.LogError($"We have a reference to an active entry with index {index}, but the window does not contain this active index.");
+                Debug.Break();
+                return;
+            }
+        }
+    }
 }

@@ -439,6 +439,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         if (_debugPerformEditorChecks)
         {
             DebugCheckWindow();
+            DebugCheckWindowAlignment();
             
             DebugCheckDuplicates();
             DebugCheckOrdering();
