@@ -25,12 +25,20 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         _numCachedAtEachEnd = Mathf.Max(1, _numCachedAtEachEnd);
         _poolSize = Mathf.Max(0, _poolSize);
 
-        // Vertical only supported (currently)
-        (vertical, horizontal) = (true, false);
+        // Currently vertical only supported
+        if (!vertical || horizontal)
+        {
+            Debug.LogWarning("Only vertical RecyclerScrollRects are currently supported.");
+            (vertical, horizontal) = (true, false);
+        }
 
         // Clamped only
-        movementType = MovementType.Clamped;
-        
+        if (movementType != MovementType.Clamped)
+        {
+            Debug.LogWarning("Only clamped movement is supported.");
+            movementType = MovementType.Clamped;
+        }
+
         // Ensure there is a viewport
         if (viewport == null)
         {

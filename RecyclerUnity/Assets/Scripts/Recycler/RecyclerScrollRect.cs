@@ -50,14 +50,6 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     [SerializeField]
     private RecyclerTransformPosition _appendTo = RecyclerTransformPosition.Bot;
 
-    [Tooltip("On mobile, the target frame rate is often lower than technically possible to preserve battery, but a higher frame rate will result in smoother scrolling.")]
-    [SerializeField]
-    private bool _setTargetFrameRateTo60 = true;
-
-    [Tooltip("Used for debugging. Performs sanity checks in the editor, ensuring for example, that we aren't skipping indices.")]
-    [SerializeField]
-    private bool _debugPerformEditorChecks = true;
-
     [Tooltip("The transform under which our entries waiting to be bound/rebound wait.")]
     [Header("Pool")]
     [SerializeField]
@@ -80,6 +72,15 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     [ReadOnly]
     [SerializeField]
     private RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> _endcap = null;
+    
+    [Header("Extra")]
+    [Tooltip("On mobile, the target frame rate is often lower than technically possible to preserve battery, but a higher frame rate will result in smoother scrolling.")]
+    [SerializeField]
+    private bool _setTargetFrameRateTo60 = true;
+
+    [Tooltip("Used for debugging. Performs sanity checks in the editor, ensuring for example, that we aren't skipping indices.")]
+    [SerializeField]
+    private bool _debugPerformEditorChecks = true;
 
     /// <summary>
     /// Called after the Recycler's scroll has been handled and we have the correct final set of entries on screen (for this frame).
