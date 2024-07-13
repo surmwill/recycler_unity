@@ -47,6 +47,8 @@ using Transform = UnityEngine.Transform;
 [RequireComponent(typeof(BoxCollider))]
 public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : ScrollRect, IPointerDownHandler where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
 {
+    private const float DefaultScrollSpeedViewportsPerSecond = 0.5f;
+    
     [Header("Recycler")]
     [Tooltip("The prefab which your data gets bound to.")]
     [SerializeField]
@@ -111,48 +113,36 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     
     /// <summary>
     /// Contains information about the ranges of indices that are currently visible or cached.
-    /// You can use the index information here to know what keys to access in ActiveEntries. 
+    /// You can use the index information here to know what keys are in ActiveEntries without iterating through the entire dictionary. 
     /// </summary>
     public IRecyclerScrollRectActiveEntriesWindow ActiveEntriesWindow => _activeEntriesWindow;
 
     /// <summary>
-    /// The endcap (if it exists; it is optional)
+    /// The endcap (if it exists - it is optional)
     /// </summary>
     public RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> Endcap => _endcap;
-
-    // In the scene hierarchy, are our entries' indices increasing as we go down the sibling list?
-    // Increasing entries mean our first entry with index 0 is at the top, and so is our start cache.
-    // Decreasing entries mean our first entry with index 0 is at the bottom, and so is our start cache.
-    private bool AreEntriesIncreasing => _appendTo == RecyclerTransformPosition.Bot;
+    
+    private bool IsZerothEntryAtTop => _appendTo == RecyclerTransformPosition.Bot;
     
     private RecyclerTransformPosition StartCacheTransformPosition => InverseRecyclerTransformPosition(_appendTo);
-
+    
     private RecyclerTransformPosition EndCacheTransformPosition => InverseRecyclerTransformPosition(StartCacheTransformPosition);
-
-    private const float DefaultScrollSpeedViewportsPerSecond = 0.5f;
-
-    private BoxCollider _viewportCollider = null;
     
-    // All the active entries in the scene, visible and cached
+    private readonly List<TEntryData> _dataForEntries = new();
+    private readonly Dictionary<TKeyEntryData, int> _entryKeyToCurrentIndex = new();
+    
     private Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _activeEntries = new();
-    
-    // Previously bound entries waiting (recycled) in the pool
     private readonly RecycledEntries<TEntryData, TKeyEntryData> _recycledEntries = new();
-    
-    // Unbound entries waiting in the pool
     private readonly Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _unboundEntries = new();
 
-    private readonly Dictionary<TKeyEntryData, int> _entryKeyToCurrentIndex = new();
-
-    private readonly List<TEntryData> _dataForEntries = new();
-    
     private RecyclerScrollRectActiveEntriesWindow _activeEntriesWindow;
 
     private Vector2 _nonFilledScrollRectPivot;
 
     private Coroutine _scrollToIndexCoroutine;
-
     private int? _currScrollingToIndex;
+    
+    private BoxCollider _viewportCollider;
 
     protected override void Awake()
     {
@@ -177,7 +167,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         // Keeps track of what indices are visible, and subsequently which indices are cached
         _activeEntriesWindow = new RecyclerScrollRectActiveEntriesWindow(_numCachedAtEachEnd);
 
-        // All the entries in the bool are initially unbound
+        // All the entries in the pool are initially unbound
         RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = null;
         foreach (Transform _ in _poolParent.Children().Where(t => t.TryGetComponent(out entry)))
         {
@@ -213,13 +203,13 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         }
 
         // Find the proper place in the hierarchy for the entry
-        int siblingIndex = AreEntriesIncreasing ? 0 : content.childCount;
+        int siblingIndex = IsZerothEntryAtTop ? 0 : content.childCount;
         foreach (Transform entryTransform in content)
         {
             RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry = entryTransform.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
             if (activeEntry != null && activeEntry.Index == index - 1)
             {
-                siblingIndex = activeEntry.transform.GetSiblingIndex() + (AreEntriesIncreasing ? 1 : 0);
+                siblingIndex = activeEntry.transform.GetSiblingIndex() + (IsZerothEntryAtTop ? 1 : 0);
             }
         }
 
@@ -597,7 +587,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
             AddToContent(
                 _endcap.RectTransform,
-                AreEntriesIncreasing ? content.childCount : 0,
+                IsZerothEntryAtTop ? content.childCount : 0,
                 EndCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above);
         }
     }
@@ -690,7 +680,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             // This means there's a guaranteed existent entry below/above it and we can be safe adding +/- 1 to our index window bounds
 
             // Entries are increasing (entry 0 is at the top along with our start cache)
-            if (AreEntriesIncreasing)
+            if (IsZerothEntryAtTop)
             {
                 // Anything off the top means we are scrolling down, away from entry 0, away from lesser indices
                 if (wentOffTop && _activeEntriesWindow.VisibleIndexRange.Value.Start <= entryIndex)
@@ -1153,13 +1143,13 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
                  if (index < _activeEntriesWindow.ActiveEntriesRange.Value.Start)
                  {
                      // If the entries are increasing, then lesser entries are found at the top with a higher normalized scroll position
-                     newNormalizedY = Mathf.MoveTowards(currNormalizedY, AreEntriesIncreasing ? 1 : 0, normalizedDistanceToTravelThisFrame);
+                     newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 1 : 0, normalizedDistanceToTravelThisFrame);
                  }
                  // Scroll toward greater indices
                  else if (index > _activeEntriesWindow.ActiveEntriesRange.Value.End)
                  {
                      // If the entries are increasing, then greater entries are found at the bottom with a lower normalized scroll position
-                     newNormalizedY = Mathf.MoveTowards(currNormalizedY, AreEntriesIncreasing ? 0 : 1, normalizedDistanceToTravelThisFrame);
+                     newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 0 : 1, normalizedDistanceToTravelThisFrame);
                  }
                  
                  normalizedPosition = normalizedPosition.WithY(newNormalizedY);

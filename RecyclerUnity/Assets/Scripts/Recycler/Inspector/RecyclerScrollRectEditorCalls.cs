@@ -69,13 +69,13 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
 
             // Entries will start at the top if we're appending downwards, or the bottom if we're appending upwards
             (content.localPosition, content.localScale) = (Vector3.zero, Vector3.one);
-            (content.anchorMin, content.anchorMax) = (new Vector2(0f, AreEntriesIncreasing ? 1 : 0), new Vector2(1f, AreEntriesIncreasing ? 1 : 0));
+            (content.anchorMin, content.anchorMax) = (new Vector2(0f, IsZerothEntryAtTop ? 1 : 0), new Vector2(1f, IsZerothEntryAtTop ? 1 : 0));
             (content.offsetMin, content.offsetMax) = (Vector2.zero, Vector2.zero);
             content.anchoredPosition = Vector2.zero;
 
             // Appended entries will grow downwards (not pushing any higher entries) when we're appending downwards,
             // or grow upwards (not pushing any lower entries) when we're appending upwards.
-            content.pivot = content.pivot.WithY(AreEntriesIncreasing ? 1 : 0);
+            content.pivot = content.pivot.WithY(IsZerothEntryAtTop ? 1 : 0);
         }
 
         // Ensure there is a pool of waiting to be bound entries
