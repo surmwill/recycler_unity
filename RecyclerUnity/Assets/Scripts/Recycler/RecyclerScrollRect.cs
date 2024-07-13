@@ -326,10 +326,10 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// The indices of entry data are also used in other data structures.
-    /// When we insert/remove data these indices shift, and these data structures also need to reflect the shift.
+    /// Each piece of entry data is referenced by its index.
+    /// When we insert/remove entry data their indices shift, and we need to update any data structure that references those indices to also shift.
     /// </summary>
-    private void OnEntryDataIndicesShifted(int startIndex, int shiftAmount)
+    private void ShiftIndices(int startIndex, int shiftAmount)
     { 
         // Shift our active entries
         Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> shiftedActiveEntries = new Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
@@ -348,19 +348,17 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
        
         // Shift our recycled entries
         _recycledEntries.ShiftIndices(startIndex, shiftAmount);
+        
+        // Shift the index each key maps to
+        for (int i = startIndex; i < _dataForEntries.Count; i++)
+        {
+            _entryKeyToCurrentIndex[_dataForEntries[i].Key] += shiftAmount;
+        }
        
         // Shift the entry we are currently scrolling to
         if (_currScrollingToIndex.HasValue && _currScrollingToIndex.Value >= startIndex)
         {
             _currScrollingToIndex += shiftAmount;
-        }
-    }
-    
-    private void ShiftKeyToIndexMapping(int index, int shiftAmount)
-    {
-        for (int i = index; i < _dataForEntries.Count; i++)
-        {
-            _entryKeyToCurrentIndex[_dataForEntries[i].Key] += shiftAmount;
         }
     }
 
@@ -1229,9 +1227,8 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
          }
          
          // Shift the indices of existing entries that will be affected by the insertion
-         OnEntryDataIndicesShifted(index, entryData.Count); 
-         ShiftKeyToIndexMapping(index, entryData.Count);
-         
+         ShiftIndices(index, entryData.Count);
+
          // Add the inserted entries to our key mapping
          foreach ((TEntryData data, int i) in entryData.ZipWithIndex())
          {
@@ -1241,6 +1238,8 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
          // Actual insertion (and modification) of underlying data
          _activeEntriesWindow.InsertRange(index, entryData.Count);
         _dataForEntries.InsertRange(index, entryData);
+        
+        
     }
 
     private void RemoveDataForEntryAt(int index)
@@ -1251,8 +1250,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         }
         
         // Shift the indices of existing entries that will be affected by the deletion
-        OnEntryDataIndicesShifted(index + 1, -1);
-        ShiftKeyToIndexMapping(index + 1, -1);
+        ShiftIndices(index + 1, -1);
 
         // Remove the inserted entry from our key mapping
         _entryKeyToCurrentIndex.Remove(_dataForEntries[index].Key);
