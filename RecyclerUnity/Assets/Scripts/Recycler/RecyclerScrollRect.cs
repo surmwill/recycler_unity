@@ -327,7 +327,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
     /// <summary>
     /// Each piece of entry data is referenced by its index.
-    /// When we insert/remove entry data their indices shift, and we need to update any data structure that references those indices to also shift.
+    /// When we insert/remove entry data, indices shift, and we need to update any data structure that references those indices to also shift.
     /// </summary>
     private void ShiftIndices(int startIndex, int shiftAmount)
     { 
