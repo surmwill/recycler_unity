@@ -363,45 +363,27 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Adds entries to the end of the list
+    /// Appends entries to the end of the recycler.
     /// </summary>
     public void AppendEntries(IEnumerable<TEntryData> entries)
     {
-        AddEntries(entries, true);
+        if (entries?.Any() ?? false)
+        {
+            InsertDataForEntriesAt(_dataForEntries.Count, new List<TEntryData>(entries));
+            RecalculateActiveEntries();
+        }
     }
 
     /// <summary>
-    /// Adds entries to the start of the list
+    /// Prepends entries to the start of the recycler. Existing entries will be shifted like a list insertion.
     /// </summary>
     public void PrependEntries(IEnumerable<TEntryData> entries)
     {
-        AddEntries(entries, false);
-    }
-
-    /// <summary>
-    /// Adds additional entries to display
-    /// TODO: have an option not to copy over data if it's a big list. Make this take a list then
-    /// </summary>
-    private void AddEntries(IEnumerable<TEntryData> newEntries, bool shouldAppend)
-    {
-        if (newEntries == null || !newEntries.Any())
+        if (entries?.Any() ?? false)
         {
-            return;
+            InsertDataForEntriesAt(0, new List<TEntryData>(entries.Reverse()));
+            RecalculateActiveEntries();
         }
-        
-        // Entries (and cache) already exist. Since we're adding them to the end they'll get created normally via a cache request
-        if (shouldAppend)
-        {
-            InsertDataForEntriesAt(_dataForEntries.Count, new List<TEntryData>(newEntries));
-        }
-        else
-        {
-            InsertDataForEntriesAt(0, new List<TEntryData>(newEntries.Reverse()));
-        }
-
-        // Sometimes something put in the cache is actually visible. In this case updating the cache will cause more entries
-        // to be created until they fit into the cache proper (i.e. are off-screen)
-        RecalculateActiveEntries();
     }
 
     protected override void LateUpdate()
