@@ -154,7 +154,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             return;
         }
         
-        // On mobile, the target frame rate is often lower than technically possible to preserve battery, but a 
+        // On mobile, the target frame rate is often lower than technically possible to preserve battery, but a
         // higher frame rate will result in smoother scrolling.
         if (_setTargetFrameRateTo60)
         {
@@ -184,7 +184,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Inserts an element at the given index
+    /// Inserts an entry at the given index. Existing entries will be shifted like a list insertion.
     /// </summary>
     public void InsertAtIndex(int index, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
     {
@@ -193,10 +193,10 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             throw new ArgumentException($"index \"{index}\" must be >= 0 and <= the length of data \"{_dataForEntries.Count}\"");
         }
         
-        // Update bookkeeping to reflect the new entry. Determine if we actually need to create it now
+        // Shift indices
         InsertDataForEntryAt(index, entryData);
         
-        // Not an active entry yet, it will get created when we scroll to it
+        // If the index isn't currently active, we don't need to create the entry, it will be created when we scroll to it
         if (!_activeEntriesWindow.Contains(index))
         {
             return;
@@ -226,13 +226,13 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         {
             CreateAndAddEntry(index, siblingIndex, fixEntries);
         }
-
-        // A new entry can update the visible window and subsequently require an update of what is cached
-        UpdateActiveEntries();
+        
+        // Adding the entry shifted things around, possibly pushing things offscreen. Recalculate what entries are active
+        RecalculateActiveEntries();
     }
     
     /// <summary>
-    /// Inserts an element at the index corresponding to the given key
+    /// Inserts an element at the index corresponding to the given key. Existing entries will be shifted like a list insertion.
     /// </summary>
     public void InsertAtKey(TKeyEntryData insertAtKey, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
     {
@@ -240,7 +240,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Inserts elements at the given index
+    /// Inserts elements at the given index. Existing entries will be shifted like a list insertion.
     /// </summary>
     public void InsertRangeAtIndex(int index, IEnumerable<TEntryData> entryData, FixEntries fixEntries = FixEntries.Below)
     {
@@ -251,7 +251,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Inserts elements at the index corresponding to the given key
+    /// Inserts elements at the index corresponding to the given key. Existing entries will be shifted like a list insertion.
     /// </summary>
     public void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> entryData, FixEntries fixEntries = FixEntries.Below)
     {
@@ -259,7 +259,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Removes an element at the given index
+    /// Removes an element at the given index. Existing entries will be shifted like a list removal.
     /// </summary>
     public void RemoveAtIndex(int index, FixEntries fixEntries = FixEntries.Below)
     {
@@ -288,18 +288,18 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             _unboundEntries.Enqueue(entry);
         }
 
-        // Update bookkeeping to reflect the deleted entry
+        // Shift indices
         RemoveDataForEntryAt(index);
 
-        // A deleted entry can update the visible window and subsequently require an update of what is cached
+        // Deleting the entry shifted things around, possibly opening up space for new on-screen entries. Recalculate what entries are active
         if (shouldRecycle)
         {
-            UpdateActiveEntries();
+            RecalculateActiveEntries();
         }
     }
 
     /// <summary>
-    /// Removes an element with the given key
+    /// Removes an element with the given key. Existing entries will be shifted like a list removal.
     /// </summary>
     public void RemoveAtKey(TKeyEntryData removeAtKey, FixEntries fixEntries = FixEntries.Below)
     {
@@ -307,7 +307,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
     
     /// <summary>
-    /// Removes elements at the given index
+    /// Removes elements at the given index. Existing entries will be shifted like a list removal.
     /// </summary>
     public void RemoveRangeAtIndex(int index, int count, FixEntries fixEntries = FixEntries.Below)
     {
@@ -318,7 +318,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Removes elements at the index corresponding to the given key
+    /// Removes elements at the index corresponding to the given key. Existing entries will be shifted like a list removal.
     /// </summary>
     public void RemoveRangeAtKey(TKeyEntryData removeAtKey, int count, FixEntries fixEntries = FixEntries.Below)
     {
@@ -326,33 +326,34 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Shifts the indices of entries forward or back by 1. Update bookkeeping to reflect this
+    /// The indices of entry data are also used in other data structures.
+    /// When we insert/remove data these indices shift, and these data structures also need to reflect the shift.
     /// </summary>
-    private void ShiftIndicesBoundEntries(int startIndex, int shiftAmount)
-    {
+    private void OnEntryDataIndicesShifted(int startIndex, int shiftAmount)
+    { 
         // Shift our active entries
-       Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> shiftedActiveEntries = new Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
-
-       foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry) in _activeEntries)
-       {
+        Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> shiftedActiveEntries = new Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
+        
+        foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry) in _activeEntries) 
+        {
            int shiftedIndex = index + (index >= startIndex ? shiftAmount : 0);
            if (shiftedIndex != index)
            {
                activeEntry.SetIndex(shiftedIndex);   
            }
            shiftedActiveEntries[shiftedIndex] = activeEntry;
-       }
+        }
 
-       _activeEntries = shiftedActiveEntries;
+        _activeEntries = shiftedActiveEntries;
        
-       // Shift our recycled entries
-       _recycledEntries.ShiftIndices(startIndex, shiftAmount);
+        // Shift our recycled entries
+        _recycledEntries.ShiftIndices(startIndex, shiftAmount);
        
-       // Shift the entry we are currently scrolling to
-       if (_currScrollingToIndex.HasValue && _currScrollingToIndex.Value >= startIndex)
-       {
-           _currScrollingToIndex += shiftAmount;
-       }
+        // Shift the entry we are currently scrolling to
+        if (_currScrollingToIndex.HasValue && _currScrollingToIndex.Value >= startIndex)
+        {
+            _currScrollingToIndex += shiftAmount;
+        }
     }
     
     private void ShiftKeyToIndexMapping(int index, int shiftAmount)
@@ -402,7 +403,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
         // Sometimes something put in the cache is actually visible. In this case updating the cache will cause more entries
         // to be created until they fit into the cache proper (i.e. are off-screen)
-        UpdateActiveEntries();
+        RecalculateActiveEntries();
     }
 
     protected override void LateUpdate()
@@ -417,7 +418,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         }
 
         // Update what should be in our start or end cache
-        UpdateActiveEntries();
+        RecalculateActiveEntries();
 
         // We now have the final set of entries in their correct positions for this frame.
         // Give the user the opportunity for to query/operate on them knowing they won't shift.
@@ -441,7 +442,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         #endif
     }
 
-    private void UpdateActiveEntries()
+    private void RecalculateActiveEntries()
     {
         // Get the current state of visible entries
         UpdateVisibility();
@@ -1184,7 +1185,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
              else
              {
                  distanceToTravelThisFrame -= distanceTravelledInIteration;
-                 UpdateActiveEntries();
+                 RecalculateActiveEntries();
              }
          }
          
@@ -1228,7 +1229,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
          }
          
          // Shift the indices of existing entries that will be affected by the insertion
-         ShiftIndicesBoundEntries(index, entryData.Count); 
+         OnEntryDataIndicesShifted(index, entryData.Count); 
          ShiftKeyToIndexMapping(index, entryData.Count);
          
          // Add the inserted entries to our key mapping
@@ -1250,7 +1251,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         }
         
         // Shift the indices of existing entries that will be affected by the deletion
-        ShiftIndicesBoundEntries(index + 1, -1);
+        OnEntryDataIndicesShifted(index + 1, -1);
         ShiftKeyToIndexMapping(index + 1, -1);
 
         // Remove the inserted entry from our key mapping
