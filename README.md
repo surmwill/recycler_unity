@@ -647,10 +647,12 @@ Entries (root <strong>VerticalLayoutGroup</strong> with <i>childControlHeight</i
   
 Do:
 
+<pre>
 Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <strong>ContentSizeFitter</strong>)
   |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>childControlHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
   |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>childControlHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
   |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>childControlHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
+</pre>
 
 ### Entries are default expanded to the Recycler's width
 
