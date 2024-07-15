@@ -636,6 +636,8 @@ Unless specified, being at the _end_, a null value will fix all the entries that
 
 ### The Recycler cannot control entries' widths or heights
 
+Entries must control their own width and height. If the root controls the entries' width or height we will have spam recalculations and performance hits.
+
 Instead of:
 
 <pre>
@@ -654,20 +656,18 @@ Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <
   |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>childControlHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
 </pre>
 
-If the root controls the entries' width or height we will have spam recalculations and performance hits.
-
 ### Entries are default expanded to the Recycler's width
 
-The root transform of each entry will be force expanded to the width of the recycler. Should you want a different width, a child transform can be created.
+The root transform of each entry will be force expanded to the width of the recycler. Should you want a different width, a child transform with the desired width can be created and the root left empty.
 
 ### Entries will have `ILayoutElements` and `ILayoutControllers` disabled in their root
 
 Except during binding/rebinding, or during [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions), all `ILayoutElements` and `ILayoutControllers` will be disabled on an entries' root.
-This includes things such as images, which should go under a child transform instead. `LayoutGroups` and `ContentSizeFitters` still belong on the root, as they will be enabled during dimension recaulations (binding/rebinding, or during [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions)), used to calculate the auto-size, and then promptly disabled.
+This includes things such as images, which should go under a child transform instead. `LayoutGroups` and `ContentSizeFitters` still belong on the root, as they will be enabled during dimension recaulations (binding/rebinding, or during [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions)), quickly used to calculate the auto-size, and then promptly disabled for performance reasons.
 
-### Animations/dimension changes
+### Dimension changes must be followed 
 
-Every dimension change of an entry must be followed by a call [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions) to alert the Recycler of it.
+Every dimension change of an entry, except during binding/rebinding, must be followed by a call [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions) to alert the Recycler of it.
 
 For example, to animate a an entry growing using DoTween, the below code is used to update the Recycler on every step.
 
