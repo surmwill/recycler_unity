@@ -660,7 +660,7 @@ _Long Explanation:_
 
 The root of all of entries is a `VerticalLayoutGroup` with a `ContentSizeFitter`. Every time an entry is added, removed, or resized we need to trigger a recalculation of the size of the entire list. This beckons problems.
 
-1.) Performance problems: `VerticalLayoutGroup` size recalculations propagate. If a child entry also has a `VerticalLayoutGroup` then it recalculates its size (going down its subtree) and reports that back to the root. Likely our entries don't change size that often and this is wasted recalculation. Instead, except during explicitly defined times (binding, manual size recalculation calls), we disable all `LayoutGroups` of all the children. This cuts the propagation.
+1.) Performance problems: `VerticalLayoutGroup` size recalculations propagate. If a child entry also has a `VerticalLayoutGroup` (or more specificially, an `ILayoutElement` or `ILayoutController`) then it recalculates its size (going down its subtree) and reports that back to the root. Likely our entries don't change size that often and this is wasted recalculation. Instead, except during explicitly defined times (binding, manual size recalculation calls), we disable all `LayoutGroups` of all the children. This cuts the propagation.
 
 Importantly, we still allow things to be auto-sized by enabling these components during binding and manual size recalculation calls: we enable any `LayoutGroups` and `ContentSizeFitters` on the child during this time, trigger a layout recalculation of just that child which sets its `RectTransform` values accordingly, then disable those components and treat the child like any other plain `RectTransform`.
 
@@ -674,9 +674,9 @@ The root transform of each entry will be force expanded to the width of the recy
 
 ### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots, is `LayoutGroups` and `ContentSizeFitters`
 
-Except during explcitly defined times all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root.
+Except during explicitly defined times all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root for performance reasons.
 This includes things such as `Images`, which should go under a child transform instead. 
-`LayoutGroups` and `ContentSizeFitters` can still go on the root as they are needed for auto-size calculations. They will be temporarily enabled during dimension recaulations (binding/rebinding, or manual size recalculation calls [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions)), used to calculate the auto-size and set `RectTransform` values, and then disabled for performance reasons.
+`LayoutGroups` and `ContentSizeFitters` can still go on the root as they are needed for auto-size calculations.
 
 (See the long explanation on [The Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) for more.)
 
