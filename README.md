@@ -670,7 +670,7 @@ This includes things such as `Images`, which should go under a child transform i
 
 Every dimension change of an entry, except during binding/rebinding, must be followed by a call [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions) to alert the Recycler of it.
 
-For example, to animate a an entry growing using DoTween, the below code is used to update the Recycler at each step.
+For example, to animate an entry growing using DoTween, the below code is used to update the Recycler at each step.
 
 ```
 RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowTimeSeconds)
