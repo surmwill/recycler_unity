@@ -639,18 +639,18 @@ Unless specified, being at the _end_, a null value will fix all the entries that
 Instead of:
 
 <pre>
-Entries (root `VerticalLayoutGroup` with `childControlHeight` checked, and a `ContentSizeFitter`)
-  |- Entry 1 (`VerticalLayoutGroup` with `childControlHeight` checked)
-  |- Entry 2 (`VerticalLayoutGroup` with `childControlHeight` checked)
-  |- Entry 3 (`VerticalLayoutGroup` with `childControlHeight` checked)
+Entries (root <strong>VerticalLayoutGroup</strong> with `childControlHeight` checked, and a <strong>ContentSizeFitter</strong>)
+  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with `childControlHeight` checked)
+  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with `childControlHeight` checked)
+  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with `childControlHeight` checked)
 </pre>
   
 Do:
 
-Entries (root `VerticalLayoutGroup` with nothing checked, and a `ContentSizeFitter`)
-  |- Entry 1 (`VerticalLayoutGroup` with `childControlHeight` checked, and a `ContentSizeFitter`)
-  |- Entry 2 (`VerticalLayoutGroup` with `childControlHeight` checked, and a `ContentSizeFitter`)
-  |- Entry 3 (`VerticalLayoutGroup` with `childControlHeight` checked, and a `ContentSizeFitter`)
+Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <strong>ContentSizeFitter</strong>)
+  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with `childControlHeight` checked, and a <strong>ContentSizeFitter</strong>)
+  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with `childControlHeight` checked, and a <strong>ContentSizeFitter</strong>)
+  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with `childControlHeight` checked, and a <strong>ContentSizeFitter</strong>)
 
 ### Entries are default expanded to the Recycler's width
 
