@@ -559,7 +559,7 @@ Lifecycle method called when the entry gets sent back to the recycling pool.
 protected void RecalculateDimensions(FixEntries fixEntries)
 ```
 
-After modifying the dimensions of the entry, call this to alert the Recycler to its size change and to re-align its content.
+After modifying the dimensions of the entry, call this to alert the Recycler to its size change and to re-align its content. (Note: this also triggers a LayoutRebuild, re-calculating any auto-sized content).
 
 - `fixEntries:` resizing an entry will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
 
