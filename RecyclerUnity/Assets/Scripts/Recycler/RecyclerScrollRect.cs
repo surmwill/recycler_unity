@@ -923,17 +923,24 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Adds a child under the (parent) content.
-    /// 
-    /// Children control their own width and height (one exception below). This stems from it being necessary for (the parent) content's layout
-    /// group to not "control child size width/height". It is possible for the parent to do so, but every time its size changes
-    /// as a result of binding and recycling entries it will force a size re-calculation on each child, possibly getting very expensive.
-    /// Therefore children will calculate their own size once, disable their LayoutBehaviours to avoid future size re-calculations,
-    /// and relay their size to the parent for it to figure out how it fits in its own layout calculation.
+    /// Adds a child under the (parent) content. This is not straightforward.
     ///
-    /// Exception: the child is force expanded to the viewport width. If the child has auto-calculated height these things are often defined
-    /// relative to the viewport width (ex: how does this paragraph of text fit on-screen). Since the parent layout cannot "control child size"
-    /// we can't have the parent force expand the width for us; this is our equivalent. Without this we would lose such information.
+    /// The root of all of entries is a VerticalLayoutGroup with a ContentSizeFitter. Every time an entry is added, removed,
+    /// or resized we need to trigger a recalculation of the size of the entire list. This beckons problems.
+    ///
+    /// 1.) Performance problems: VerticalLayoutGroup size recalculations propagate. If a child entry also has a VerticalLayoutGroup
+    /// then it recalculates its size (going down its subtree) and reports that back to the root. Likely our entries don't change
+    /// size that often and this is wasted recalculation. Instead, except during explicitly defined times (binding, manual size recalculation calls),
+    /// we disable all LayoutGroups of all the children. This cuts the propagation.
+    ///
+    /// Importantly, we still allow things to be auto-sized by enabling these components during binding and manual size recalculation calls: 
+    /// we enable any LayoutGroups and ContentSizeFitters on the child during this time, trigger a layout recalculation of just that child
+    /// which sets its RectTransform values accordingly, then disable those components and treat the child like any other plain RectTransform.
+    ///
+    /// 2.) Because of the above, LayoutGroups and ContentSizeFitters are disabled on children almost all of the time. If the root of all entries
+    /// ControlsChildSize Width/Height then we will get entries with 0 height and 0 width. With the components disabled, this is dimensions they report.
+    /// Enabling them during size recalculation re-introduces the performance issues. Thus the root of all entries cannot ControlChildSize Width/Height.
+    /// 
     /// </summary>
     private void AddToContent(RectTransform child, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
     {
