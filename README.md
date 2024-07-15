@@ -666,11 +666,11 @@ Except during binding/rebinding, or during [RecalculateDimensions](https://githu
 This includes things such as `Images`, which should go under a child transform instead. 
 `LayoutGroups` and `ContentSizeFitters` still belong on the root, as they will be enabled during dimension recaulations (binding/rebinding, or during [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions)), quickly used to calculate the auto-size, and then promptly disabled for performance reasons.
 
-### The Recycler must be manually informed of an entries' dimension changes 
+### The Recycler must be manually informed of an entry's dimension changes 
 
 Every dimension change of an entry, except during binding/rebinding, must be followed by a call [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions) to alert the Recycler of it.
 
-For example, to animate a an entry growing using DoTween, the below code is used to update the Recycler on every step.
+For example, to animate a an entry growing using DoTween, the below code is used to update the Recycler at each step.
 
 ```
 RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowTimeSeconds)
