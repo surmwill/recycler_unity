@@ -636,15 +636,19 @@ Unless specified, being at the _end_, a null value will fix all the entries that
 
 ### The Recycler cannot control entries' widths or heights
 
-The Recycler is ultimately a list of things; in Unity terms, a `VerticalLayoutGroup`. The entries fall under this `VerticalLayoutGroup` (by default, the `GameObject` called "Entries"). This `VerticalLayoutGroup` cannot have `childControlWidth` or `childControlHeight` checked. Entries—the children—must control their own width and their own height using their own `VerticalLayoutGroup` and `ContentSizeFitter`.
+Instead of:
 
-The way layout calculation works, every time the dimensions of the list changes: adding, removing, or modifying entries, the list will ask each individual entry to recalculate its size to know the new total size of all the entries.
-Likely however, our entries mostly stay the same, and asking them for a recalculation will give the same dimensions as before. Nothing changes, and this is a big waste of time.
-To prevent unnecessary recalculations, we disable all `ILayoutGroups` and `ILayoutElements` on the entry except during the small windows of binding and manual size recalculations (see [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master#recalculatedimensions)). This ensures no size recalculation of the child's subtree on adding, removing, and modifying other entries - and performance. However, disabled layout components coupled with a `VerticalLayoutGroup` with `childControlWidth` or `childControlHeight` will result in a default 0 width and height calculation on the next layout pass. The entry disappears, and the `VerticalLayoutGroup` must not have these checked, as to to leave their dimensions alone.
+Entries (root `VerticalLayoutGroup` with `childControlHeight` checked, and a `ContentSizeFitter`)
+|- Entry 1 (`VerticalLayoutGroup` with `childControlHeight` checked)
+|- Entry 2 (`VerticalLayoutGroup` with `childControlHeight` checked)
+|- Entry 3 (`VerticalLayoutGroup` with `childControlHeight` checked)
 
-**To get around this**, and still have entries be auto-sized, the entries can control their own height and width by using their own `LayoutGroup` and their own `ContentSizeFitter`. Upon binding, or manual size updates ([RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions)), the entry will briefly have its layout components enabled, calculate its auto-size (setting its `RectTransform` values accordingly), and then have its layout components disabled again. Since the Recycler no longer has `childControlWidth` or `childControlHeight` checked, it is not interested in querying disabled layout elements for size, and instead uses the `RectTransform` values filled in by the latest auto-size update. These `RectTransform` values don't change until the next manual update, and entries will maintain their size.
+Do:
 
-In short, the `VerticalLayoutGroup` of the entire Recycler should not have any of its fields changed. The `VerticalLayoutGroup` of a individual entry can take on whatever fields it likes.
+Entries (root `VerticalLayoutGroup` with nothing checked, and a `ContentSizeFitter`)
+|- Entry 1 (`VerticalLayoutGroup` with `childControlHeight` checked, and a `ContentSizeFitter`)
+|- Entry 2 (`VerticalLayoutGroup` with `childControlHeight` checked, and a `ContentSizeFitter`)
+|- Entry 3 (`VerticalLayoutGroup` with `childControlHeight` checked, and a `ContentSizeFitter`)
 
 ### Entries are default expanded to the Recycler's width
 
