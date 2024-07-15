@@ -610,8 +610,8 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
     
     /// <summary>
-    /// Updates what entries are currently shown.
-    /// As we cache the entries just before and just after what is visible, this also affects what is cached.
+    /// Updates the range of entries that are currently shown.
+    /// As we cache the entries just before and just after what is visible, this also affects the range of what is cached.
     /// </summary>
     private void UpdateVisibility()
     {
@@ -701,7 +701,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Shows the beginning of the list
+    /// Resets our position to the beginning of the list of entries
     /// </summary>
     public void ResetToBeginning()
     {
@@ -711,7 +711,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Returns the state of the entry at the given index
+    /// Returns the state of the entry at the given index: visible, in the start cache, in the end cache, or in the recycling pool
     /// </summary>
     public RecyclerScrollRectContentState GetStateOfEntryWithCurrentIndex(int index)
     {
@@ -739,7 +739,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Returns the state of the entry with a given key
+    /// Returns the state of the entry with a given key: visible, in the start cache, in the end cache, or in the recycling pool
     /// </summary>
     public RecyclerScrollRectContentState GetStateOfEntryWithKey(TKeyEntryData key)
     {
@@ -747,7 +747,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Returns the state of the endcap
+    /// Returns the state of the endcap: visible, in the end cache, or waiting in the pool
     /// </summary>
     public RecyclerScrollRectContentState GetStateOfEndcap()
     {
@@ -765,7 +765,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Resets the scroll rect to its initial state with no entries
+    /// Resets the Recycler to its initial state: no active entries, no active endcap, and no data.
     /// </summary>
     public void Clear()
     {
@@ -868,8 +868,6 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
     private void SendToRecycling(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
     {
-        Debug.Log("RECYCLED: " + entry.Index + " " + Time.frameCount);
-
         // Handle the GameObject
         RectTransform entryTransform = entry.RectTransform;
         RemoveFromContent(entryTransform, fixEntries);
@@ -878,7 +876,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         // Mark the entry for re-use
         if (_recycledEntries.Entries.ContainsKey(entry.Index))
         {
-            throw new InvalidOperationException("We should not have two copies of the same entry in recycling, we only need one.");
+            throw new InvalidOperationException("We should not have two copies of the same entry in recycling; we only need one.");
         }
         _recycledEntries.Add(entry.Index, entry);
 
@@ -902,14 +900,14 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         else if (_unboundEntries.TryDequeue(out entry))
         {
         }
-        // Then try and use just any already bound entry waiting in recycling
+        // Then try and use the bound entry in recycling that's been there the longest
         else if (_recycledEntries.Entries.Any())
         {
             (int firstIndex, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> firstEntry) = _recycledEntries.GetOldestEntry();
             entry = firstEntry;
             _recycledEntries.Remove(firstIndex);
         }
-        // Nothing to fetch from recycling, we'll have to create something new
+        // If all else fails, we'll have to instantiate something new
         else
         {
             return false;
