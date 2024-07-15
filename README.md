@@ -641,19 +641,19 @@ Entries must control their own width and height. If the root controls the entrie
 Instead of:
 
 <pre>
-Entries (root <strong>VerticalLayoutGroup</strong> with <i>childControlHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
-  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>childControlHeight</i> checked)
-  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>childControlHeight</i> checked)
-  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>childControlHeight</i> checked)
+Entries (root <strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
+  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked)
+  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked)
+  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked)
 </pre>
   
 Do:
 
 <pre>
 Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <strong>ContentSizeFitter</strong>)
-  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>childControlHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
-  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>childControlHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
-  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>childControlHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
+  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
+  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
+  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
 </pre>
 
 ### Entries are default expanded to the Recycler's width
