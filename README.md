@@ -654,23 +654,22 @@ Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <
   |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>childControlHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
 </pre>
 
+If the root controls the entries' width or height we will have spam recalculations and performance hits.
+
 ### Entries are default expanded to the Recycler's width
 
-Based on the above [Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) the entries' roots are default expanded to the full width of the Recyler,
-as this is behaviour expected out of most use cases. Obviously, we cannot use `VerticalLayoutGroup` with `childControlWidth` and `childForceExpandWidth` as that would be the Recycler controlling the entries' widths, so we do this behind the scenes
-another way. For entries with a desired width less than that of the full Recyler, a child GameObject with the desired dimensions can be created under the root.
+The root transform of each entry will be force expanded to the width of the recycler. Should you want a different width, a child transform can be created.
 
 ### Entries will have `ILayoutElements` and `ILayoutControllers` disabled in their root
 
-Based on the above [Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) the entries' roots will have all their `ILayoutGroups` and `ILayoutElements` disabled
-except in specific small windows of time to save on performance. Because of this, things like `Images` will also get disabled - they should be moved to a child GameObject instead. 
+Except during binding/rebinding, or during [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions), all `ILayoutElements` and `ILayoutControllers` will be disabled on an entries' root.
+This includes things such as images, which should go under a child transform instead. `LayoutGroups` and `ContentSizeFitters` still belong on the root, as they will be enabled during dimension recaulations (binding/rebinding, or during [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions)), used to calculate the auto-size, and then promptly disabled.
 
-### Auto-sized entries should control their own height
+### Animations/dimension changes
 
-Based on the above [Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) any auto-sized entries should calculate their own dimensions, with their own
-`VerticalLayoutGroup` and `ContentSizeFitter`. 
+Every dimension change of an entry must be followed by a call [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions) to alert the Recycler of it.
 
-A side effect of this is for animations, entries will need to constantly call [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions) to alert the Recycler of size changes as progress is made. For example, using the DoTween library, you can attach an `OnUpdate` call to your animation with `RecalculateDimensions` to do this.
+For example, to animate a an entry growing using DoTween, the below code is used to update the Recycler on every step.
 
 ```
 RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowTimeSeconds)
