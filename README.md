@@ -639,15 +639,21 @@ Unless specified, being at the _end_, a null value will fix all the entries that
 Instead of:
 
 Entries (root `VerticalLayoutGroup` with `childControlHeight` checked, and a `ContentSizeFitter`)
+
 |- Entry 1 (`VerticalLayoutGroup` with `childControlHeight` checked)
+
 |- Entry 2 (`VerticalLayoutGroup` with `childControlHeight` checked)
+
 |- Entry 3 (`VerticalLayoutGroup` with `childControlHeight` checked)
 
 Do:
 
 Entries (root `VerticalLayoutGroup` with nothing checked, and a `ContentSizeFitter`)
+
 |- Entry 1 (`VerticalLayoutGroup` with `childControlHeight` checked, and a `ContentSizeFitter`)
+
 |- Entry 2 (`VerticalLayoutGroup` with `childControlHeight` checked, and a `ContentSizeFitter`)
+
 |- Entry 3 (`VerticalLayoutGroup` with `childControlHeight` checked, and a `ContentSizeFitter`)
 
 ### Entries are default expanded to the Recycler's width
