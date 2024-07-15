@@ -388,7 +388,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
     protected override void LateUpdate()
     {
-        // Scrolling is handled here which may shift the visible window
+        // Handles scrolling
         base.LateUpdate();
 
         // The base ScrollRect has [ExecuteAlways] but the recycler does not work as such
@@ -401,7 +401,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         RecalculateActiveEntries();
 
         // We now have the final set of entries in their correct positions for this frame.
-        // Give the user the opportunity for to query/operate on them knowing they won't shift.
+        // Give the user the opportunity to query/operate on them knowing they won't shift.
         OnRecyclerUpdated?.Invoke();
         
         // Sanity checks
@@ -422,12 +422,16 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         #endif
     }
 
+    /// <summary>
+    /// Determines what entries are visible, which are not, and what entries need to be in the start and end caches.
+    /// Creates and recycles entries accordingly.
+    /// </summary>
     private void RecalculateActiveEntries()
     {
-        // Get the current state of visible entries
+        // Check which entries are visible, which are not, and what entries need to be in the start/end caches
         UpdateVisibility();
-
-        // If the window of active entries changes we'll need to update the cache accordingly
+        
+        // If the range of active entries (visible and cached) has changed, we'll need to add or recycle entries
         while (_activeEntriesWindow.IsDirty)
         {
             _activeEntriesWindow.SetNonDirty();
@@ -445,7 +449,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
                 }
             }
             
-            // Determine what entries need to be added to the start or end cache
+            // Determine what entries need to be added to the start cache
             if (_activeEntriesWindow.StartCacheIndexRange.HasValue)
             {
                 for (int i = _activeEntriesWindow.StartCacheIndexRange.Value.End; i >= _activeEntriesWindow.StartCacheIndexRange.Value.Start; i--)
@@ -457,6 +461,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
                 }   
             }
 
+            // Determine what entries need to be added to the end cache
             if (_activeEntriesWindow.EndCacheIndexRange.HasValue)
             {
                 for (int i = _activeEntriesWindow.EndCacheIndexRange.Value.Start; i <= _activeEntriesWindow.EndCacheIndexRange.Value.End; i++)
@@ -495,13 +500,18 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
                     isEndCacheAtTop ? FixEntries.Below : FixEntries.Above);
             }
 
-            // We just added/removed entries. This may have shifted the visible window
+            // Cached entries come just before and just after what is visible. We may have added entries initially as part of the cache, but there's actually room
+            // for them to be visible. Thus we'll check if they are visible, and loop fetching the next set entries to be part of the start/end cache if so.
+            // This allows us, for example, to initially insert a single entry of many, have that entry fetch more entries, those entries fetch more, and so on and so on,
+            // until we have completely filled up the screen and caches. 
             UpdateVisibility();
         }
         
+        // Add an endcap if we are near the last entry, or remove it if not
         UpdateEndcap();
 
-        // Returns the number of consecutive non-entries from the top or bottom of the scene hierarchy. Used to insert past endcaps
+        // Returns the number of consecutive non-entries from the top or bottom of the entry list.
+        // Used to insert entries in their rightful sibling index, past any endcaps.
         int GetNumConsecutiveNonEntries(bool fromTop)
         {
             int numConsecutiveNonEntries = 0;
@@ -542,7 +552,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// The end-cap should exist only if the last entry exists
+    /// Adds/removes the endcap, dependent on if we are near the last entry
     /// </summary>
     private void UpdateEndcap()
     {
@@ -581,8 +591,6 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
     private void CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
     {
-        Debug.Log("CREATING " + dataIndex + " " + Time.frameCount);
-        
         if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
         {
             entry = Instantiate(_recyclerEntryPrefab, content);
@@ -602,7 +610,8 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
     
     /// <summary>
-    /// Updates the window of entries that are shown (which also affects what entries need to be waiting in the cache)
+    /// Updates what entries are currently shown.
+    /// As we cache the entries just before and just after what is visible, this also affects what is cached.
     /// </summary>
     private void UpdateVisibility()
     {
@@ -659,8 +668,6 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             
             // Note that for any entry to be non-visible there must be at least one other entry pushing it offscreen.
             // This means there's a guaranteed existent entry below/above it and we can be safe adding +/- 1 to our index window bounds
-
-            // Entries are increasing (entry 0 is at the top along with our start cache)
             if (IsZerothEntryAtTop)
             {
                 // Anything off the top means we are scrolling down, away from entry 0, away from lesser indices
@@ -674,7 +681,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
                     newVisibleIndices.End = entryIndex - 1;
                 }
             }
-            // Entries are decreasing (entry 0 is at the bottom along with our start cache)
+            // Zeroth entry is at the bottom
             else
             {
                 // Anything off the top means we are scrolling down, toward entry 0, toward lesser indices
