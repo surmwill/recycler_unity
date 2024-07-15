@@ -656,7 +656,7 @@ Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <
   |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
 </pre>
 
-Long Explanation:
+_Long Explanation:_
 
 The root of all of entries is a `VerticalLayoutGroup` with a `ContentSizeFitter`. Every time an entry is added, removed, or resized we need to trigger a recalculation of the size of the entire list. This beckons problems.
 
