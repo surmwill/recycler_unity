@@ -636,7 +636,7 @@ Unless specified, being at the _end_, a null value will fix all the entries that
 
 ### The Recycler cannot control entries' widths or heights
 
-Entries must control their own width and height. If the root controls the entries' width or height we will have spam recalculations and performance hits.
+Entries must control their own width and height. If the root controls the entries' width or height we will have spam recalculations and performance hits. If your content is not auto-sized, this is not an issue.
 
 Instead of:
 
@@ -655,6 +655,16 @@ Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <
   |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
   |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
 </pre>
+
+Long Explanation:
+
+The root of all of entries is a `VerticalLayoutGroup` with a `ContentSizeFitter`. Every time an entry is added, removed, or resized we need to trigger a recalculation of the size of the entire list. This beckons problems.
+
+1.) Performance problems: `VerticalLayoutGroup` size recalculations propagate. If a child entry also has a `VerticalLayoutGroup` then it recalculates its size (going down its subtree) and reports that back to the root. Likely our entries don't change size that often and this is wasted recalculation. Instead, except during explicitly defined times (binding, manual size recalculation calls), we disable all `LayoutGroups` of all the children. This cuts the propagation.
+
+Importantly, we still allow things to be auto-sized by enabling these components during binding and manual size recalculation calls: we enable any `LayoutGroups` and `ContentSizeFitters` on the child during this time, trigger a layout recalculation of just that child which sets its `RectTransform` values accordingly, then disable those components and treat the child like any other plain `RectTransform`.
+
+2.) Because of the above, `LayoutGroups` and `ContentSizeFitters` are disabled on children almost all of the time. If the root of all entries has ControlsChildSize Width/Height checked, then we will get entries with 0 height and 0 width. With the components disabled, this is dimensions they report. Enabling them during size recalculation re-introduces the performance issues. Thus the root of all entries cannot have ControlChildSize Width/Height checked.
 
 ### Entries are default expanded to the Recycler's width
 
