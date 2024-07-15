@@ -660,7 +660,7 @@ Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <
 
 The root transform of each entry will be force expanded to the width of the recycler. Should you want a different width, a child transform with the desired width can be created and the root left empty.
 
-### The only `ILayoutElements` and `ILayoutControllers` components entries should have present on their roots, is `LayoutGroups` and `ContentSizeFitters`
+### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots, is `LayoutGroups` and `ContentSizeFitters`
 
 Except during binding/rebinding, or during [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions), all `ILayoutElements` and `ILayoutControllers` will be disabled on an entries' root.
 This includes things such as `Images`, which should go under a child transform instead. 
