@@ -670,11 +670,15 @@ Importantly, we still allow things to be auto-sized by enabling these components
 
 The root transform of each entry will be force expanded to the width of the recycler. Should you want a different width, a child transform with the desired width can be created and the root left empty.
 
+(See the long explanation on [The Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) for more. Since the we cannot control the entries' width, we cannot force expand its width via the root layout group, which is assumed to be the desired behaviour most of the time. Thus we implement it another way.)
+
 ### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots, is `LayoutGroups` and `ContentSizeFitters`
 
-Except during binding/rebinding, or during [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions), all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root.
+Except during explcitly defined times all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root.
 This includes things such as `Images`, which should go under a child transform instead. 
-`LayoutGroups` and `ContentSizeFitters` still belong on the root, as they will be enabled during dimension recaulations (binding/rebinding, or during [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions)), quickly used to calculate the auto-size, and then promptly disabled for performance reasons.
+`LayoutGroups` and `ContentSizeFitters` can still go on the root as they are needed for auto-size calculations. They will be temporarily enabled during dimension recaulations (binding/rebinding, or manual size recalculation calls [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions)), used to calculate the auto-size and set `RectTransform` values, and then disabled for performance reasons.
+
+(See the long explanation on [The Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) for more.)
 
 ### The Recycler must be manually informed of an entry's dimension changes 
 
@@ -686,3 +690,5 @@ For example, to animate an entry growing using DoTween, the below code is used t
 RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowTimeSeconds)
             .OnUpdate(() => RecalculateDimensions());
 ```
+
+(See the long explanation on [The Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) for more. The child controls its own size and is therefore responsible for telling the Recycler of when it changes.)
