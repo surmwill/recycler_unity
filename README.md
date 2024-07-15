@@ -662,7 +662,7 @@ The root transform of each entry will be force expanded to the width of the recy
 
 ### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots, is `LayoutGroups` and `ContentSizeFitters`
 
-Except during binding/rebinding, or during [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions), all `ILayoutElements` and `ILayoutControllers` will be disabled on an entries' root.
+Except during binding/rebinding, or during [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions), all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root.
 This includes things such as `Images`, which should go under a child transform instead. 
 `LayoutGroups` and `ContentSizeFitters` still belong on the root, as they will be enabled during dimension recaulations (binding/rebinding, or during [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions)), quickly used to calculate the auto-size, and then promptly disabled for performance reasons.
 
