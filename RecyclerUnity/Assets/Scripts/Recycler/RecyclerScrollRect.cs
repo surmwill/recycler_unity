@@ -946,20 +946,21 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     {
         Behaviour[] layoutBehaviours = LayoutUtilities.GetLayoutBehaviours(child.gameObject, true);
 
-        // Proper hierarchy
+        // Ensure proper hierarchy
         child.SetParent(content, false);
         child.SetSiblingIndex(siblingIndex);
         
-        // Force expand the width
+        // Force expand the width (as we cannot do so through the root VerticalLayoutGroup without also controlling the child size).
+        // We assume this is the desired behaviour of most recyclers.
         (child.anchorMin, child.anchorMax) = (Vector2.one * 0.5f, Vector2.one * 0.5f);
         child.sizeDelta = child.sizeDelta.WithX(viewport.rect.width);
         
-        // Auto-calculate the height given the width, then disable layout behaviours to prevent spam recalculations
+        // Calculate the height of the child
         SetBehavioursEnabled(layoutBehaviours, true);
         LayoutRebuilder.ForceRebuildLayoutImmediate(child);
         SetBehavioursEnabled(layoutBehaviours, false);
         
-        // Now calculate the change in parent size given the child's size
+        // Calculate the change in parent size given the child's size
         RecalculateContentSize(fixEntries);
     }
 
