@@ -656,7 +656,7 @@ Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <
   |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
 </pre>
 
-Note that editor checks will ensure controlChildWidth/Height is never accidentally checked on the root of the entries. In fact, this root `VerticalLayoutGroup` should never be touched, or any of its other components.
+Note that editor checks will ensure controlChildWidth/Height is never accidentally checked on the root of the entries. In fact, this root `VerticalLayoutGroup` should never be touched, neither any of its sibling components.
 
 _Long Explanation:_
 
