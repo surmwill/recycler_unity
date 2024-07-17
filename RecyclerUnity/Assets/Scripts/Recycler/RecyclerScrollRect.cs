@@ -940,7 +940,10 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// 2.) Because of the above, LayoutGroups and ContentSizeFitters are disabled on children almost all of the time. If the root of all entries
     /// ControlsChildSize Width/Height then we will get entries with 0 height and 0 width. With the components disabled, this is dimensions they report.
     /// Enabling them during size recalculation re-introduces the performance issues. Thus the root of all entries cannot ControlChildSize Width/Height.
-    /// 
+    ///
+    /// (Note: upon further thought, we may be temped to check ControlChildSize Width and ChildForceExpand Width. If we're force expanding the width, this
+    /// does not care about any disabled components reporting 0 values as we don't care what they report; we simply set it to the maximum width. However,
+    /// merely checking ControlChildSize incurs a performance cost, including GetComponent calls. It is just easier to not ControlChildSize.) 
     /// </summary>
     private void AddToContent(RectTransform child, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
     {
@@ -959,7 +962,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         SetBehavioursEnabled(layoutBehaviours, true);
         LayoutRebuilder.ForceRebuildLayoutImmediate(child);
         SetBehavioursEnabled(layoutBehaviours, false);
-        
+
         // Calculate the change in parent size given the child's size
         RecalculateContentSize(fixEntries);
     }
