@@ -373,6 +373,9 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         }
     }
 
+    /// <summary>
+    /// Ensures that the range of active indices reported in the index window correspond to our set of references to active entries
+    /// </summary>
     private void DebugCheckWindowAlignment()
     {
         if (!ActiveEntriesWindow.ActiveEntriesRange.HasValue && !ActiveEntries.Any())
