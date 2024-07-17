@@ -1036,7 +1036,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// space for the new one. The user then chooses how things will get shifted around.
     ///
     /// 2.) Inserting/removing an element will cause any held drags to jump. ScrollRects calculate their scroll based on the start drag anchored position and the
-    /// current drag anchored positions. If the content size changes then the previous anchored position will be defined relative to a differently sized ScrollRect.
+    /// current drag anchored position. If the content size changes then the previous anchored positions will be defined relative to a differently sized ScrollRect.
     /// For example, if we started our scroll on element 5, scrolled down to element 10, then inserted a new element 6, we'd need to add a value to the offset equal
     /// to the size of element 6 to stay on element 10. However, there is no way to add this offset directly; instead, we move the pivot, where the start drag happened,
     /// equal to the offset.
