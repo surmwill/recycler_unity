@@ -1112,7 +1112,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
          // Scrolling should not fight existing movement
          StopMovementAndDrag();
 
-         // The position within the child we will scroll to
+         // The position within the child the scroll will center on (ex: middle, top edge, bottom edge)
          float normalizedPositionWithinChild = 0f;
          switch (scrollToAlignment)
          {
@@ -1138,19 +1138,17 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
              float currNormalizedY = normalizedPosition.y;
              float newNormalizedY = 0f;
 
-             // Scroll through entries until the entry we want is created, then we'll know the exact position to scroll to
+             // Scroll through entries until the entry we want is active; then we'll know the exact position to center on
              if (!_activeEntriesWindow.Contains(index))
              {
                  // Scroll toward lesser indices
                  if (index < _activeEntriesWindow.ActiveEntriesRange.Value.Start)
                  {
-                     // If the entries are increasing, then lesser entries are found at the top with a higher normalized scroll position
                      newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 1 : 0, normalizedDistanceToTravelThisFrame);
                  }
                  // Scroll toward greater indices
                  else if (index > _activeEntriesWindow.ActiveEntriesRange.Value.End)
                  {
-                     // If the entries are increasing, then greater entries are found at the bottom with a lower normalized scroll position
                      newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 0 : 1, normalizedDistanceToTravelThisFrame);
                  }
                  

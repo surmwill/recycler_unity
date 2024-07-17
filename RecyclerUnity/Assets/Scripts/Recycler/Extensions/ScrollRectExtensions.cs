@@ -74,14 +74,14 @@ public static class ScrollRectExtensions
     /// <summary>
     /// Returns true if we are at a given normalized position.
     /// 
-    /// Note that the normalized position is based on a calculation of the position of the viewport within its encompassing content.
+    /// Note that the normalized position is based on a calculation of the position of the viewport relative to its encompassing content.
     /// When we set the normalized position the viewport moves, however there is a tiny minimum threshold of movement required.
     /// Because of these two reasons it's possible to have a normalized position very close to 0, set it to 0, and the value gets
-    /// ignored because the viewport doesn't move enough. Since the viewport didn't move we will still *get* the same value as before
+    /// ignored because the viewport doesn't move enough. Since the viewport didn't move we will still get the same value as before
     /// (very close to 0, but not 0).
     /// 
     /// This can get confusing for example, if we are expecting a normalized y position of 0 when we're at the bottom, but we're
-    /// actually in that special case where we're very close to 0 (and setting it directly to 0 won't help). To cover this case we
+    /// actually in that special case where we're very close to 0 - and setting it directly to 0 won't help. To cover this case we
     /// also check if setting the normalized position to 0 results in the same normalized position as before (i.e. we are in that tiny threshold).
     /// </summary>
     public static bool IsAtNormalizedPosition(this ScrollRect scrollRect, Vector2 targetNormalizedPosition)
@@ -90,7 +90,7 @@ public static class ScrollRectExtensions
         {
             return true;
         }
-
+        
         Vector2 prevNormalizedPosition = scrollRect.normalizedPosition;
         scrollRect.normalizedPosition = targetNormalizedPosition;
         if (scrollRect.normalizedPosition == prevNormalizedPosition)
