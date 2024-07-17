@@ -641,7 +641,7 @@ Entries must control their own width and height. If the root `VerticalLayoutGrou
 Instead of what is typically done:
 
 <pre>
-Entries (root <strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
+Entries (root <strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>) - baked into Recycler, cannot modify. Here with wrong values for demonstration.
   |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked)
   |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked)
   |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked)
@@ -650,10 +650,19 @@ Entries (root <strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i
 We need:
 
 <pre>
-Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <strong>ContentSizeFitter</strong>)
+Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <strong>ContentSizeFitter</strong>) - baked into Recycler, cannot modify
   |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
   |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
   |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
+</pre>
+
+Again, if your entries are not auto-sized this is not an issue. This is perfectly valid:
+
+<pre>
+Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <strong>ContentSizeFitter</strong>) - baked into Recycler, cannot modify
+  |- Entry 1 (normal <strong> RectTransform </strong> with static values)
+  |- Entry 2 (normal <strong> RectTransform </strong> with static values)
+  |- Entry 3 (normal <strong> RectTransform </strong> with static values)
 </pre>
 
 Note that editor checks will ensure _controlChildWidth/Height_ is never accidentally checked on the root of the entries. In fact, this root `VerticalLayoutGroup` should never be touched, neither any of its sibling components.
@@ -668,7 +677,7 @@ Importantly, we still allow things to be auto-sized by enabling these components
 
 2.) Because of the above, `LayoutGroups` and `ContentSizeFitters` are disabled on children almost all of the time. If the root of all entries has _ControlsChildSize Width/Height_ checked, then we will get entries with 0 height and 0 width; with the components disabled, this is dimensions they report. Enabling them during size recalculation re-introduces the performance issues. Thus the root of all entries cannot have _ControlChildSize Width/Height_ checked.
 
-(Note: upon further thought, we may be temped to check _ControlChildSize Width_ and _ChildForceExpand Width_. If we're force expanding the width, this does not care about any disabled components reporting 0 values as we don't care what they report: we simply set it to the maximum width. However, merely checking _ControlChildSize_ incurs a performance cost, including `GetComponent` calls. It is just easier to not _ControlChildSize_. Additionally, behind the scenes, entries are default expanded to the Recycler's width without checking this fields - see [Entries are default expanded to the Recycler's width](https://github.com/surmwill/recycler_unity/blob/master/README.md#entries-are-default-expanded-to-the-recyclers-width).) 
+(Note: upon further thought, we may be temped to check _ControlChildSize Width_ and _ChildForceExpand Width_. If we're force expanding the width, this does not care about any disabled components reporting 0 values as we don't care what they report: we simply set it to the maximum width. However, merely checking _ControlChildSize_ incurs a performance cost, including `GetComponent` calls. It is easier just to not _ControlChildSize_. Additionally, behind the scenes, entries are default expanded to the Recycler's width without checking this fields - see [Entries are default expanded to the Recycler's width](https://github.com/surmwill/recycler_unity/blob/master/README.md#entries-are-default-expanded-to-the-recyclers-width).) 
 
 ### Entries are default expanded to the Recycler's width
 
