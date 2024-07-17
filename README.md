@@ -638,25 +638,25 @@ Unless specified, being at the _end_, a null value will fix all the entries that
 
 Entries must control their own width and height. If the root `VerticalLayoutGroup` of all the entries controls their widths or heights we will get disappearing entries (0 width and 0 height), as a side effect of necessary performance concessions (see the long explanation below). If your content is not auto-sized, this is not an issue.
 
-(Note that editor checks will throw an exception if controlChildWidth/Height is accidentally checked on the root of the entries.)
-
-Instead of:
+Instead of what is typically done:
 
 <pre>
-Entries (root <strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
-  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked)
-  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked)
-  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked)
+Entries (root <strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
+  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked)
+  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked)
+  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked)
 </pre>
   
-Do:
+We need:
 
 <pre>
 Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <strong>ContentSizeFitter</strong>)
-  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
-  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
-  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
+  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
+  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
+  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
 </pre>
+
+Note that editor checks will ensure controlChildWidth/Height is never accidentally checked on the root of the entries. In fact, this root `VerticalLayoutGroup` should never be touched.
 
 _Long Explanation:_
 
@@ -666,7 +666,7 @@ The root of all of entries is a `VerticalLayoutGroup` with a `ContentSizeFitter`
 
 Importantly, we still allow things to be auto-sized by enabling these components during binding and manual size recalculation calls: we enable any `LayoutGroups` and `ContentSizeFitters` on the child during this time, trigger a layout recalculation of just that child which sets its `RectTransform` values accordingly, then disable those components and treat the child like any other plain `RectTransform`.
 
-2.) Because of the above, `LayoutGroups` and `ContentSizeFitters` are disabled on children almost all of the time. If the root of all entries has ControlsChildSize Width/Height checked, then we will get entries with 0 height and 0 width. With the components disabled, this is dimensions they report. Enabling them during size recalculation re-introduces the performance issues. Thus the root of all entries cannot have ControlChildSize Width/Height checked.
+2.) Because of the above, `LayoutGroups` and `ContentSizeFitters` are disabled on children almost all of the time. If the root of all entries has ControlsChildSize Width/Height checked, then we will get entries with 0 height and 0 width: with the components disabled, this is dimensions they report. Enabling them during size recalculation re-introduces the performance issues. Thus the root of all entries cannot have ControlChildSize Width/Height checked.
 
 ### Entries are default expanded to the Recycler's width
 
