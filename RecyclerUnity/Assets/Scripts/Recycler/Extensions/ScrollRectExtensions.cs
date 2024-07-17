@@ -16,31 +16,35 @@ public static class ScrollRectExtensions
 
         Vector3 contentTopPosition = contentWorldRect.TopLeftCorner;
         Vector3 contentBotPosition = contentWorldRect.BotLeftCorner;
+        
         Vector3 contentBotToTop = contentTopPosition - contentBotPosition;
+        Vector3 contentBotToTopNormalized = contentBotToTop.normalized;
 
-        (Vector3 contentBotToTopNormalized, float viewportHeight) = (contentBotToTop.normalized, viewportWorldRect.Height);
-        Vector3 viewportTopPosition = contentTopPosition - (contentBotToTopNormalized * viewportHeight / 2f);
-        Vector3 viewportBotPosition = contentBotPosition + (contentBotToTopNormalized * viewportHeight / 2f);
-        Vector3 viewportBotToTop = viewportTopPosition - viewportBotPosition;
-        
+        float viewportHeight = viewportWorldRect.Height;
+        Vector3 viewportTopmostPosition = contentTopPosition - (contentBotToTopNormalized * viewportHeight / 2f);
+        Vector3 viewportBotmostPosition = contentBotPosition + (contentBotToTopNormalized * viewportHeight / 2f);
+        Vector3 viewportPositionsBotToTop = viewportTopmostPosition - viewportBotmostPosition;
+
         // Where in the child are we scrolling to (ex: its middle, top edge, bot edge, etc...)
-        Vector3 childPosition = viewportBotPosition + Vector3.Project(
-            childContentWorldRect.Center + childContent.up * ((normalizedPositionInChild - 0.5f) * childContentWorldRect.Height) - viewportBotPosition, viewportBotToTop);
+        Vector3 positionInChild = childContentWorldRect.Center + childContent.up * ((normalizedPositionInChild - 0.5f) * childContentWorldRect.Height);
+        Vector3 childViewportPosition = viewportBotmostPosition + Vector3.Project(positionInChild - viewportBotmostPosition, viewportPositionsBotToTop);
         
-        Vector3 viewportBotToChildPosition = childPosition - viewportBotPosition;
-        Vector3 viewportTopToChildPosition = childPosition - viewportTopPosition;
+        Vector3 viewportBotmostToChildPosition = childViewportPosition - viewportBotmostPosition;
+        Vector3 viewportTopmostToChildPosition = childViewportPosition - viewportTopmostPosition;
         
-        if (Vector3.Dot(viewportBotToChildPosition, viewportBotToTop) < 0)
+        // Can still be seen in the lower half of viewport, but can't move the viewport down enough to center on it without hitting the end of the content 
+        if (Vector3.Dot(viewportBotmostToChildPosition, viewportPositionsBotToTop) < 0)
         {
             return 0f;
         }
 
-        if (Vector3.Dot(viewportTopToChildPosition, -viewportBotToTop) < 0)
+        // Can still be seen in the upper half of viewport, but can't move the viewport up enough to center on it without hitting the end of the content 
+        if (Vector3.Dot(viewportTopmostToChildPosition, -viewportPositionsBotToTop) < 0)
         {
             return 1f;
         }
 
-        float normalizedPositionInViewportBotToTop = viewportBotToChildPosition.magnitude / viewportBotToTop.magnitude;
+        float normalizedPositionInViewportBotToTop = viewportBotmostToChildPosition.magnitude / viewportPositionsBotToTop.magnitude;
         return normalizedPositionInViewportBotToTop;
     }
 
@@ -53,22 +57,6 @@ public static class ScrollRectExtensions
         Rect viewportRect = scrollRect.viewport.rect;
         return scrollRect.vertical && contentRect.height > viewportRect.height ||
                scrollRect.horizontal && contentRect.width > viewportRect.width;
-    }
-
-    /// <summary>
-    /// Returns true if the ScrollRect is at its topmost position (can't scroll any higher)
-    /// </summary>
-    public static bool IsAtTop(this ScrollRect scrollRect)
-    {
-        return IsAtNormalizedPosition(scrollRect, scrollRect.normalizedPosition.WithY(1f));
-    }
-    
-    /// <summary>
-    /// Returns true if the ScrollRect is at its bottommost position (can't scroll any lower)
-    /// </summary>
-    public static bool IsAtBottom(this ScrollRect scrollRect)
-    {
-        return IsAtNormalizedPosition(scrollRect, scrollRect.normalizedPosition.WithY(0f));
     }
 
     /// <summary>
