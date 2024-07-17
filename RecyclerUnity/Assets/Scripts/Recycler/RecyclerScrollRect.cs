@@ -123,10 +123,10 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     public RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> Endcap => _endcap;
     
     private bool IsZerothEntryAtTop => _appendTo == RecyclerTransformPosition.Bot;
-    
-    private RecyclerTransformPosition StartCacheTransformPosition => InverseRecyclerTransformPosition(_appendTo);
-    
-    private RecyclerTransformPosition EndCacheTransformPosition => InverseRecyclerTransformPosition(StartCacheTransformPosition);
+
+    private RecyclerTransformPosition StartCacheTransformPosition => IsZerothEntryAtTop ? RecyclerTransformPosition.Top : RecyclerTransformPosition.Bot;
+
+    private RecyclerTransformPosition EndCacheTransformPosition => IsZerothEntryAtTop ? RecyclerTransformPosition.Bot : RecyclerTransformPosition.Top;
     
     private readonly List<TEntryData> _dataForEntries = new();
     private readonly Dictionary<TKeyEntryData, int> _entryKeyToCurrentIndex = new();
@@ -1269,7 +1269,10 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         _dataForEntries.RemoveAt(index);
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+     /// <summary>
+     /// Handles what happens when the user taps on the Recycler
+     /// </summary>
+     public void OnPointerDown(PointerEventData eventData)
     {
         if (_scrollToIndexCoroutine != null)
         {
@@ -1343,36 +1346,15 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         
         if (v.childControlWidth || v.childControlHeight)
         {
-            throw new Exception($"The {nameof(VerticalLayoutGroup)} on \"{content.gameObject.name}\" cannot have {nameof(v.childControlWidth)} or {nameof(v.childControlHeight)} checked - please uncheck it.\n\n" +
-                           
-                           $"Upon binding, all LayoutElements and LayoutControllers on an entry's root are disabled.\n" +
-                           $"Reasoning: every time an entry is added, removed, or modified, the Recycler's content recalculates its size and subsequently all of its children. " +
-                           $"If the children have disabled LayoutElements and LayoutControllers then no calculation occurs in that child's subtree, saving time. " +
-                           $"(When entries are added, removed, or modified, it is unlikely all the other entries also change size and need this costly recalculation.)\n" +
-                           $"Disabled LayoutElements and LayoutControllers will report a 0 width and 0 height, clearly something we don't want.\n\n" +
-                           
-                           $"It is advised (and supported) that the entry control its own width and height with a {nameof(ContentSizeFitter)}, and, apart from binding (which is already covered), alert the Recycler of its size changes through the RecalculateDimensions method.\n" +
-                           $"Also note that all entries are by default expanded to meet the width of the recycler (equivalent to {nameof(v.childForceExpandWidth)}), and this behaviour need not be replicated through the layout group.\n");
+            throw new Exception(
+                $"The {nameof(VerticalLayoutGroup)} on \"{content.gameObject.name}\" cannot have {nameof(v.childControlWidth)} or {nameof(v.childControlHeight)} checked; please uncheck them.\n" +
+                $"Children can still be auto-sized by using their own {nameof(ContentSizeFitter)}; this is supported.\n" +
+                $"Please see documentation for more. This is a necessary nuance to save on performance.");
         }
     }
 
     private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)
     {
         Array.ForEach(behaviours, l => l.enabled = isEnabled);
-    }
-
-    private static RecyclerTransformPosition InverseRecyclerTransformPosition(RecyclerTransformPosition position)
-    {
-        switch (position)
-        {
-            case RecyclerTransformPosition.Bot:
-                return RecyclerTransformPosition.Top;
-
-            case RecyclerTransformPosition.Top:
-                return RecyclerTransformPosition.Bot;
-
-            default:
-                throw new InvalidOperationException();
-        }
     }
 }
