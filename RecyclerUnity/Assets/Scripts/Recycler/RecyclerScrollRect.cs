@@ -947,8 +947,6 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     private void AddToContent(RectTransform child, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
     {
-        Behaviour[] layoutBehaviours = LayoutUtilities.GetLayoutBehaviours(child.gameObject, true);
-
         // Ensure proper hierarchy
         child.SetParent(content, false);
         child.SetSiblingIndex(siblingIndex);
@@ -959,6 +957,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         child.sizeDelta = child.sizeDelta.WithX(viewport.rect.width);
         
         // Calculate the height of the child
+        Behaviour[] layoutBehaviours = LayoutUtilities.GetLayoutBehaviours(child.gameObject, true);
         SetBehavioursEnabled(layoutBehaviours, true);
         LayoutRebuilder.ForceRebuildLayoutImmediate(child);
         SetBehavioursEnabled(layoutBehaviours, false);
@@ -983,7 +982,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Called when a child needs its dimensions updated
+    /// Called when a child has updated its dimensions, and needs to alert the parent Recycler of its new size
     /// </summary>
     private void RecalculateContentChildSize(RectTransform contentChild, FixEntries fixEntries = FixEntries.Below)
     {
@@ -993,18 +992,18 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             fixEntries = IsAboveViewport(contentChild) ? FixEntries.Below : FixEntries.Above;
         }
 
-        // Children control their own height (see AddToContent)
+        // Calculate the height of the child
         Behaviour[] layoutBehaviours = LayoutUtilities.GetLayoutBehaviours(contentChild.gameObject, true);
         SetBehavioursEnabled(layoutBehaviours, true);
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentChild);
         SetBehavioursEnabled(layoutBehaviours, false);
         
-        // Now calculate the change in parent size given the child's size
+        // Calculate the change in parent size given the change in the child's size
         RecalculateContentSize(fixEntries);
     }
 
     /// <summary>
-    /// Called when an entry has updated its dimensions, and now the Recycler needs to update its own dimensions in turn
+    /// Called when an entry has updated its dimensions, and needs to alert the parent Recycler of its new size
     /// </summary>
     public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
     {
@@ -1012,10 +1011,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Recalculates the endcaps dimensions.
-    /// 
-    /// Unless specified, as the endcap is at the end, we fix all entries that come before it
-    /// (i.e. if the endcap is at the bottom we grow downwards, and if the endcap is a the top we grow upwards)
+    /// Called when the endcap has updated its dimensions, and needs to alert the parent Recycler of its new size
     /// </summary>
     public void RecalculateEndcapSize(FixEntries? fixEntries = null)
     {
