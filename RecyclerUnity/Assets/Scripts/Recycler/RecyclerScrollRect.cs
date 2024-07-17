@@ -1217,8 +1217,10 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
      }
      
      /// <summary>
-     /// Inserts data for a new entry in the list, possibly also switching around the indices of currently bound entries.
-     /// Note that this only updates bookkeeping, if the entry should also be created, that must be done separately
+     /// Inserts data for a new entry in the list, possibly shifting indices.
+     ///
+     /// Note that each piece of entry data is referenced by its index.
+     /// When we insert/remove entry data, indices shift, and we need to update any data structure that references those indices to also shift.
      /// </summary>
      private void InsertDataForEntriesAt(int index, IReadOnlyCollection<TEntryData> entryData) 
      {
