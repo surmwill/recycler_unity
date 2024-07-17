@@ -636,7 +636,7 @@ Unless specified, being at the _end_, a null value will fix all the entries that
 
 ### The Recycler cannot control entries' widths or heights
 
-Entries must control their own width and height. If the root `VerticalLayoutGroup` of all the entries controls their widths or heights we will get disappearing entries (0 width and 0 height), as a side effect of necessary performance concessions (see the long explanation below). If your content is not auto-sized, this is not an issue.
+Entries must control their own width and height. If the root `VerticalLayoutGroup` of all the entries controls their widths or heights, we will get disappearing entries (0 width and 0 height) as a side effect of necessary performance concessions (see the long explanation below). If your content is not auto-sized, this is not an issue.
 
 Instead of what is typically done:
 
