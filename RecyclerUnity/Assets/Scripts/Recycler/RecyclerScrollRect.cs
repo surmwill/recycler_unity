@@ -1019,19 +1019,27 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     }
 
     /// <summary>
-    /// Recalculates the size of the entire ScrollRect. Each child is required to have calculated its size prior to this
-    /// (i.e the ScrollRect is not a layout controller).
+    /// Recalculates the size of the ScrollRect's content, reflecting any size changes of its elements.
     /// 
-    /// A dynamically sized ScrollRect has 2 problems:
+    /// A ScrollRect with dynamic content has 2 problems:
     ///
-    /// 1.) Inserting/removing an element will offset and push around the other elements causing things to jump around on-screen. By setting the anchor.y to 1 or 0
-    /// we can control this offsetting behaviour. An anchor.y of 0 is like driving a stake into the bottom of the ScrollRect with any size changes coming off the top.
-    /// If for example we are adding an element to the top, and all size changes are coming off the top, then only this new element will get pushed around which is fine
-    /// as it's being added (not visible) yet. Thus we are able to add/remove elements while keeping a static view of what's currently visible.
+    /// 1.) Inserting/removing an element will push around the other elements, causing things to jump around on-screen.
+    /// We can control how things are pushed around by setting the pivot. For example, a pivot with y = 1 will cause any size
+    /// changes to come off the bottom of the RectTransform; a pivot with y = 0.5 will cause any size changes to come equally of
+    /// the top and bottom of RectTransform; and a pivot with y = 0 will cause any size changes to come off the top of the RectTransform.
     ///
-    /// 2.) Inserting/removing an element will cause any held drags to jump. ScrollRects calculate their scroll based on previous and current anchored positions;
-    /// if the content size changes then the previous anchored position will be defined relative to a differently sized ScrollRect. We'll get an unnatural jump in values.
-    /// Upon resizing we then ensure our anchored position remains the same by moving the anchor itself. 
+    /// If we are appending elements to the bottom for example, we can preserve our current view of things by setting the pivot to y = 1. The size
+    /// increase will be added to the bottom, not shifting our current view of things, but possibly now allowing it to scroll down farther to see
+    /// the appended elements.
+    ///
+    /// If we are inserting elements directly into the viewport then inevitably the current view of elements will need to shift around to make
+    /// space for the new one. The user then chooses how things will get shifted around.
+    ///
+    /// 2.) Inserting/removing an element will cause any held drags to jump. ScrollRects calculate their scroll based on the start drag anchored position and the
+    /// current drag anchored positions. If the content size changes then the previous anchored position will be defined relative to a differently sized ScrollRect.
+    /// For example, if we started our scroll on element 5, scrolled down to element 10, then inserted a new element 6, we'd need to add a value to the offset equal
+    /// to the size of element 6 to stay on element 10. However, there is no way to add this offset directly; instead, we move the pivot, where the start drag happened,
+    /// equal to the offset.
     /// </summary>
     private void RecalculateContentSize(FixEntries fixEntries)
     {
@@ -1039,23 +1047,24 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         Vector2 initPivot = content.pivot;
         float initY = content.anchoredPosition.y;
 
-        // Temporarily set the pivot to only push itself and the elements above or below it, and rebuild (1)
+        // Define how the size change will come off the RectTransform, then incorporate the size change
         content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f : fixEntries == FixEntries.Above ? 1f : 0.5f));
         LayoutRebuilder.ForceRebuildLayoutImmediate(content);
-
-        // If we haven't filled up the viewport yet, there's no need to be moving the pivot around to maintain our current view (everything can already be seen)
+        
+        // ScrollRects act differently if there's not enough content to scroll through in the first place
         if (!this.IsScrollable())
         {
+            // With < fullscreen worth of content, the pivot controls where in the viewport the content is centered. Reset it to whatever it was on initialization
             content.pivot = _nonFilledScrollRectPivot;
             
-            // This seems superfluous, but with < fullscreen worth of content the pivot also controls where in the viewport the (< fullscreen) content
-            // is centered. This alignment does not immediately occur upon pivot change, so we trigger it immediately here by a normalized position call.
+            // This seems superfluous, but changing the pivot does not recenter things immediately. We trigger the re-centering here by a normalized position call
             normalizedPosition = normalizedPosition.WithY(0f);
             
+            // If we haven't filled up the viewport yet, there's no need to preserve a current scroll (preventing jumps) because we can't scroll in the first place
             return;
         }
 
-        // Maintain our anchored position by moving the pivot (2)
+        // Maintain our current scroll, preventing jumps, by moving the anchor equal to the size change
         content.SetPivotWithoutMoving(initPivot);
         float diffY = content.anchoredPosition.y - initY;
         content.SetPivotWithoutMoving(content.pivot + Vector2.up * -diffY / content.rect.height);
