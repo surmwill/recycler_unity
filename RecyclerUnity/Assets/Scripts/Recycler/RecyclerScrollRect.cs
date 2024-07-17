@@ -327,7 +327,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
     /// <summary>
     /// Each piece of entry data is referenced by its index.
-    /// When we insert/remove entry data, indices shift, and we need to update any data structure that references those indices to also shift.
+    /// When we insert/remove entry data, indices possibly shift, and we need to update any data structure that references those indices to also shift.
     /// </summary>
     private void ShiftIndices(int startIndex, int shiftAmount)
     { 
@@ -943,7 +943,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     ///
     /// (Note: upon further thought, we may be temped to check ControlChildSize Width and ChildForceExpand Width. If we're force expanding the width, this
     /// does not care about any disabled components reporting 0 values as we don't care what they report; we simply set it to the maximum width. However,
-    /// merely checking ControlChildSize incurs a performance cost, including GetComponent calls. It is just easier to not ControlChildSize.) 
+    /// merely checking ControlChildSize incurs a performance cost, including GetComponent calls. It is easier just to not ControlChildSize.) 
     /// </summary>
     private void AddToContent(RectTransform child, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
     {
@@ -1129,12 +1129,12 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
                  break;
          }
          
-         float distanceToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
+         float distanceLeftToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
          while (this.IsScrollable())
          {
              int index = _currScrollingToIndex.Value;
              
-             float normalizedDistanceToTravelThisFrame = DistanceToNormalizedScrollDistance(distanceToTravelThisFrame);
+             float normalizedScrollDistanceLeftToTravelThisFrame = DistanceToNormalizedScrollDistance(distanceLeftToTravelThisFrame);
              float currNormalizedY = normalizedPosition.y;
              float newNormalizedY = 0f;
 
@@ -1144,12 +1144,12 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
                  // Scroll toward lesser indices
                  if (index < _activeEntriesWindow.ActiveEntriesRange.Value.Start)
                  {
-                     newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 1 : 0, normalizedDistanceToTravelThisFrame);
+                     newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 1 : 0, normalizedScrollDistanceLeftToTravelThisFrame);
                  }
                  // Scroll toward greater indices
                  else if (index > _activeEntriesWindow.ActiveEntriesRange.Value.End)
                  {
-                     newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 0 : 1, normalizedDistanceToTravelThisFrame);
+                     newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 0 : 1, normalizedScrollDistanceLeftToTravelThisFrame);
                  }
                  
                  normalizedPosition = normalizedPosition.WithY(newNormalizedY);
@@ -1160,7 +1160,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
              {
                  float entryNormalizedY = this.GetNormalizedVerticalPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild);
 
-                 newNormalizedY = Mathf.MoveTowards(currNormalizedY, entryNormalizedY, normalizedDistanceToTravelThisFrame);
+                 newNormalizedY = Mathf.MoveTowards(currNormalizedY, entryNormalizedY, normalizedScrollDistanceLeftToTravelThisFrame);
                  normalizedPosition = normalizedPosition.WithY(newNormalizedY);
 
                  if (this.IsAtNormalizedPosition(normalizedPosition.WithY(entryNormalizedY)))
@@ -1169,9 +1169,10 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
                  }
              }
              
-             // If we didn't make any progress in our iteration we must have travelled the full frame distance - otherwise keep scrolling.
-             // Note: it would be clearer to check if the distance to travel this frame is 0, but in practice it only approaches it (and outside of Mathf.Approximately)
+             // We may not have travelled the full desired distance in this iteration as we might need to spawn the next set of active entries (and scroll past them)
              float distanceTravelledInIteration = NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
+             
+             // If we didn't make any progress in our current iteration we must have travelled the full frame distance (or hit the very end of the list)
              if (Mathf.Approximately(distanceTravelledInIteration, 0f))
              {
                  if (!isImmediate)
@@ -1179,11 +1180,12 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
                      yield return null;   
                  }
                  
-                 distanceToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
+                 distanceLeftToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
              }
+             // Otherwise there is still distance left to scroll. Spawn the next set of active entries to scroll past
              else
              {
-                 distanceToTravelThisFrame -= distanceTravelledInIteration;
+                 distanceLeftToTravelThisFrame -= distanceTravelledInIteration;
                  RecalculateActiveEntries();
              }
          }
@@ -1220,7 +1222,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
      /// Inserts data for a new entry in the list, possibly shifting indices.
      ///
      /// Note that each piece of entry data is referenced by its index.
-     /// When we insert/remove entry data, indices shift, and we need to update any data structure that references those indices to also shift.
+     /// When we insert entry data, indices possibly shift, and we need to update any data structure that references those indices to also shift.
      /// </summary>
      private void InsertDataForEntriesAt(int index, IReadOnlyCollection<TEntryData> entryData) 
      {
@@ -1241,10 +1243,14 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
          // Actual insertion (and modification) of underlying data
          _activeEntriesWindow.InsertRange(index, entryData.Count);
         _dataForEntries.InsertRange(index, entryData);
-        
-        
-    }
+     }
 
+     /// <summary>
+     /// Removes data for an entry in the list, possibly shifting indices.
+     ///
+     /// Note that each piece of entry data is referenced by its index.
+     /// When we remove entry data, indices possibly shift, and we need to update any data structure that references those indices to also shift.
+     /// </summary>
     private void RemoveDataForEntryAt(int index)
     {
         if (index < 0 || index >= _dataForEntries.Count)
