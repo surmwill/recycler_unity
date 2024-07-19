@@ -1,9 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// An entry in the list displayed by a RecyclerScrollRect.
-/// 
-/// Note that all ScrollRect entries are force expanded to the size of the viewport.
+/// Base class for all entries displayed in the Recycler (excluding the optional endcap)
 /// </summary>
 [RequireComponent(typeof(RectTransform))]
 public abstract class RecyclerScrollRectEntry<TEntryData, TKeyEntryData> : MonoBehaviour where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
@@ -14,22 +12,22 @@ public abstract class RecyclerScrollRectEntry<TEntryData, TKeyEntryData> : MonoB
     public const int UnboundIndex = -1;
 
     /// <summary>
-    /// This entries' index
+    /// This entry's index
     /// </summary>
     public int Index { get; private set; } = UnboundIndex;
     
     /// <summary>
-    /// This entries' RectTransform
+    /// This entry's RectTransform
     /// </summary>
     public RectTransform RectTransform { get; private set; }
 
     /// <summary>
-    /// The data bound to this entry
+    /// The current data bound to this entry
     /// </summary>
     public TEntryData Data { get; private set; }
     
     /// <summary>
-    /// The scroll rect this is a part of
+    /// The recycler this is entry is a part of
     /// </summary>
     public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; private set; }
 
@@ -48,13 +46,13 @@ public abstract class RecyclerScrollRectEntry<TEntryData, TKeyEntryData> : MonoB
     protected abstract void OnBindNewData(TEntryData entryData);
 
     /// <summary>
-    /// Re-binds the entry to its current set of data (i.e. it was fetched from the cache)
+    /// Rebinds this entry to its existing held data, possibly allowing a resumption of operations instead of a fresh restart
     /// </summary>
     protected abstract void OnRebindExistingData();
 
     /// <summary>
-    /// Called when the entry gets sent to recycling (i.e. it is not actively part of the list, that is, not visible and not cached).
-    /// The next call for this entry will either be OnBindNewData or OnRebindExistingData depending on its next binding data.
+    /// Called when the entry gets sent to recycling.
+    /// Its data will not be unbound until we know we need to be bind it to different data.
     /// </summary>
     protected abstract void OnSentToRecycling();
 
@@ -73,7 +71,7 @@ public abstract class RecyclerScrollRectEntry<TEntryData, TKeyEntryData> : MonoB
     }
 
     /// <summary>
-    /// Re-binds the entry to its current set of data (i.e. it was fetched from the cache)
+    /// Rebinds this entry to its existing held data, possibly allowing a resumption of operations instead of a fresh restart
     /// </summary>
     public void RebindExistingData()
     {
@@ -81,8 +79,8 @@ public abstract class RecyclerScrollRectEntry<TEntryData, TKeyEntryData> : MonoB
     }
 
     /// <summary>
-    /// Called when the entry gets sent to recycling (i.e. it is not actively part of the list, that is, not visible and not cached).
-    /// The next call for this entry will either be OnBindNewData or OnRebindExistingData depending on its next binding data.
+    /// Called when the entry gets sent to recycling.
+    /// Its data will not be unbound until we know we need to be bind it to different data.
     /// </summary>
     public void OnRecycled()
     {
@@ -90,7 +88,7 @@ public abstract class RecyclerScrollRectEntry<TEntryData, TKeyEntryData> : MonoB
     }
 
     /// <summary>
-    /// Resets the entry to its default unbound index
+    /// Unbinds the entry
     /// </summary>
     public void UnbindIndex()
     {
@@ -99,7 +97,6 @@ public abstract class RecyclerScrollRectEntry<TEntryData, TKeyEntryData> : MonoB
 
     /// <summary>
     /// Sets the index.
-    /// Should only be called by the controlling Recycler.
     /// </summary>
     public void SetIndex(int index)
     {
@@ -110,7 +107,8 @@ public abstract class RecyclerScrollRectEntry<TEntryData, TKeyEntryData> : MonoB
     #endregion
 
     /// <summary>
-    /// Recalculates the dimensions of the entry
+    /// Alerts the Recycler of size changes, allowing the Recycler to properly display it.
+    /// If the entry is auto-sized, this also triggers a auto-size recalculation prior to alerting the Recycler.
     /// </summary>
     protected void RecalculateDimensions(FixEntries fixEntries = FixEntries.Mid)
     {

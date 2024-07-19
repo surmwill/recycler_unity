@@ -1,8 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// The end-cap to a recycler.
-/// Note that all ScrollRect entries are force expanded to the size of the viewport.
+/// The endcap to a recycler: an entry different than all the others, appearing at the very end of the content.
+/// The unique logic could, for example, be used to fetch the next set of (normal) entries from a database.
 /// </summary>
 public abstract class RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> : MonoBehaviour where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
 {
@@ -12,7 +12,7 @@ public abstract class RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> : Mono
     public RectTransform RectTransform { get; private set; }
     
     /// <summary>
-    /// The Recycler the end-cap falls under
+    /// The Recycler this endcap is a part of
     /// </summary>
     protected RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; private set; }
     
@@ -33,10 +33,10 @@ public abstract class RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> : Mono
     public abstract void OnSentToRecycling();
 
     /// <summary>
-    /// Recalculates the endcaps dimensions.
+    /// Recalculates the endcap's dimensions.
     /// 
-    /// Unless specified, as the endcap is at the end, we fix all entries that come before it
-    /// (i.e. if the endcap is at the bottom we grow downwards, and if the endcap is a the top we grow upwards)
+    /// Unless specified, with the endcap coming at the very end if the list, we fix all entries that come before it, preserving the current view of things.
+    /// (I.e. if the endcap is at the bottom we grow downwards, and if the endcap is a the top we grow upwards).
     /// </summary>
     protected void RecalculateDimensions(FixEntries? fixEntries = null)
     {

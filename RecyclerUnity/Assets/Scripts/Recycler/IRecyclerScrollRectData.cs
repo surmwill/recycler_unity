@@ -8,7 +8,7 @@ using UnityEngine;
 public interface IRecyclerScrollRectData<TEntryDataKey>
 {
     /// <summary>
-    /// The key identifying this piece of data
+    /// A unique key identifying this piece of data
     /// </summary>
     TEntryDataKey Key { get; }
 }
