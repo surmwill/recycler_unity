@@ -1,4 +1,4 @@
-using System;
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -25,7 +25,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         _numCachedAtEachEnd = Mathf.Max(1, _numCachedAtEachEnd);
         _poolSize = Mathf.Max(0, _poolSize);
 
-        // Currently vertical only supported
+        // Vertical only (for now)
         if (!vertical || horizontal)
         {
             Debug.LogWarning("Only vertical RecyclerScrollRects are currently supported.");
@@ -88,7 +88,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> oldEntry in _poolParent.GetComponentsInChildren<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>(true)
                      .Where(e => _recyclerEntryPrefab == null || !IsInstanceOfEntryPrefab(e)))
         {
-            EditorUtils.DestroyOnValidate(oldEntry.gameObject);
+            EditorUtils.OnValidateDestroy(oldEntry.gameObject);
         }
 
         // Ensure the pool is the correct size
@@ -116,7 +116,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             {
                 for (int i = 0; i < Mathf.Min(currentEntries.Length, Mathf.Abs(poolDifference)); i++)
                 {
-                    EditorUtils.DestroyOnValidate(currentEntries[i].gameObject);
+                    EditorUtils.OnValidateDestroy(currentEntries[i].gameObject);
                 }
             }
         }
@@ -127,7 +127,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             // If we have an old endcap, get rid of it
             if (_endcap != null && !IsInstanceOfEndcapPrefab(_endcap))
             {
-                EditorUtils.DestroyOnValidate(_endcap.gameObject);
+                EditorUtils.OnValidateDestroy(_endcap.gameObject);
                 _endcap = null;
             }
             
@@ -154,7 +154,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         // The prefab is null, if reference to the endcap is not, then destroy the endcap (we must be swapping out endcaps) 
         else if (_endcap != null)
         {
-            EditorUtils.DestroyOnValidate(_endcap.gameObject);
+            EditorUtils.OnValidateDestroy(_endcap.gameObject);
         }
     }
     
@@ -413,3 +413,4 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         }
     }
 }
+#endif

@@ -1,11 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Draws our readonly attributed property in the inspector
+/// Draws a readonly property in the inspector
 /// </summary>
 [CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
 public class ReadOnlyProperyDrawer : PropertyDrawer
@@ -17,3 +15,4 @@ public class ReadOnlyProperyDrawer : PropertyDrawer
         GUI.enabled = true;
     }
 }
+#endif

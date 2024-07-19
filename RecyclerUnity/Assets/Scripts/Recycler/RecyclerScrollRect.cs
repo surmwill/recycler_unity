@@ -6,7 +6,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Debug = UnityEngine.Debug;
 using Transform = UnityEngine.Transform;
 
 /// <summary>
@@ -15,7 +14,7 @@ using Transform = UnityEngine.Transform;
 /// If you have a long list of data to render (say a 1000 text message conversation) it makes no sense to render the entire
 /// conversation, as the entire conversation cannot fit on-screen. Instead you only render the chunk of the conversation that
 /// can fit on-screen. When a message gets scrolled off-screen, that same message is not discarded, but re-used and re-bound
-/// to new message data, the next message we are scrolling to on-screen: the message is recycled.
+/// to new message data - the next message that we are scrolling into on-screen (i.e. the message is recycled).
 ///
 /// There are 3 main parts.
 ///
@@ -28,9 +27,9 @@ using Transform = UnityEngine.Transform;
 /// Ex: A class containing a text message.
 /// 
 /// 2.) Create an entry prefab to display your data, adding a RecyclerScrollRectEntry component at its root.
-/// This component contains lifecycle methods that bind your data to the prefab when it becomes visible on-screen.
+/// This component contains lifecycle methods that bind your data to the prefab when it's ready to become active on-screen.
 /// You implement these methods to define how exactly the binding works.
-/// Ex: A text message bubble. The bubble sets its text component to the whatever message it's bound to.
+/// Ex: A text message bubble prefab. The bubble sets its text component to the whatever message it's being bound to.
 ///
 /// 3.) Add a RecyclerScrollRect component to a RectTransform and serialize your entry prefab.
 ///

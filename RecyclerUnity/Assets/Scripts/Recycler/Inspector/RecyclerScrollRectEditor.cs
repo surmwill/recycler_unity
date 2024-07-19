@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.UI;
 
@@ -74,3 +75,4 @@ public class RecyclerScrollRectEditor : ScrollRectEditor
         serializedObject.ApplyModifiedProperties();
     }
 }
+#endif

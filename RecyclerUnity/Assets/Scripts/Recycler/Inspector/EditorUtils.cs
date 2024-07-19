@@ -9,9 +9,9 @@ public static class EditorUtils
 {
     /// <summary>
     /// Destroy is only allowed during runtime and the alternative, DestroyImmediate, is not allowed in OnValidate.
-    /// This moves the call outside of OnValidate
+    /// If we wish to destroy something during OnValidate we'll need to move the actual destruction outside of the call.
     /// </summary>
-    public static void DestroyOnValidate(Object obj)
+    public static void OnValidateDestroy(Object obj)
     {
         EditorApplication.delayCall += () =>
         {
