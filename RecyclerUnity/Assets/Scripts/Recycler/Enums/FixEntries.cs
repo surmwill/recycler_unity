@@ -1,14 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 /// <summary>
-/// When we insert, remove, or modify an entry the size of our list changes.
-/// This defines how the entries should get pushed around on a size change (or rather, which entries should not)
+/// When we insert or remove an entry or modify its size, and it's onscreen, other entries will need to get pushed around to accomodate its size change.
+/// This defines how the entries should get pushed around on a size change.
 /// </summary>
 public enum FixEntries
 {
-    Below = 0,  // All entries below where the existing/new entry is modified will be unmoved 
-    Above = 1,  // All entries above where the existing/new entry is modified will be unmoved
-    Mid = 2,    // The center where the existing/new entry is 
+    Below = 0,  // All entries below the modified entry will stay unmoved 
+    Above = 1,  // All entries above the modified entry will stay unmoved 
+    Mid = 2,    // The modified entry will push the entries above and below it equally
 }

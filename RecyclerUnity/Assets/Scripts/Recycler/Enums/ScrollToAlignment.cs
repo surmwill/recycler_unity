@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Defines the position within an entry to scroll to (i.e. this position will end up in the viewport center).
-/// If we have a large entry for example, we might want to scroll to the bottom of it instead of the middle.
+/// Defines the position within an entry to center on when we scroll to it.
+/// For example, we can scroll to an entry's middle or its top edge.
 /// </summary>
 public enum ScrollToAlignment
 {
-    EntryMiddle = 0,
-    EntryBottom = 1,
-    EntryTop = 2,
+    EntryMiddle = 0,    // Center on the middle of the entry
+    EntryBottom = 1,    // Center on the bottom edge of the entry
+    EntryTop = 2,       // Center on the top edge of the entry
 }

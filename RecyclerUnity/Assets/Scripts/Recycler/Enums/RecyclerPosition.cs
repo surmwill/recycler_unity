@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Defines where new entries get appended relative to the recycler list
+/// Defines two important locations of the Recycler list, the top and bottom
 /// </summary>
-public enum AppendLocation
+public enum RecyclerPosition
 {
     Top = 0,
     Bot = 1,

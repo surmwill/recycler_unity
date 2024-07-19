@@ -60,7 +60,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
     [Tooltip("The direction appended entries get added to.")]
     [SerializeField]
-    private RecyclerTransformPosition _appendTo = RecyclerTransformPosition.Bot;
+    private RecyclerPosition _appendTo = RecyclerPosition.Bot;
 
     [Tooltip("The transform under which our entries waiting to be bound/rebound wait.")]
     [Header("Pool")]
@@ -122,11 +122,11 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     public RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> Endcap => _endcap;
     
-    private bool IsZerothEntryAtTop => _appendTo == RecyclerTransformPosition.Bot;
+    private bool IsZerothEntryAtTop => _appendTo == RecyclerPosition.Bot;
 
-    private RecyclerTransformPosition StartCacheTransformPosition => IsZerothEntryAtTop ? RecyclerTransformPosition.Top : RecyclerTransformPosition.Bot;
+    private RecyclerPosition StartCachePosition => IsZerothEntryAtTop ? RecyclerPosition.Top : RecyclerPosition.Bot;
 
-    private RecyclerTransformPosition EndCacheTransformPosition => IsZerothEntryAtTop ? RecyclerTransformPosition.Bot : RecyclerTransformPosition.Top;
+    private RecyclerPosition EndCachePosition => IsZerothEntryAtTop ? RecyclerPosition.Bot : RecyclerPosition.Top;
     
     private readonly List<TEntryData> _dataForEntries = new();
     private readonly Dictionary<TKeyEntryData, int> _entryKeyToCurrentIndex = new();
@@ -216,11 +216,11 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         // Create the entry
         if (_activeEntriesWindow.IsInStartCache(index))
         {
-            CreateAndAddEntry(index, siblingIndex, StartCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above);
+            CreateAndAddEntry(index, siblingIndex, StartCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
         }
         else if (_activeEntriesWindow.IsInEndCache(index))
         {
-            CreateAndAddEntry(index, siblingIndex, EndCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above);
+            CreateAndAddEntry(index, siblingIndex, EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
         }
         else
         {
@@ -481,7 +481,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             }
             
             // Create new entries in the start cache
-            bool isStartCacheAtTop = StartCacheTransformPosition == RecyclerTransformPosition.Top;
+            bool isStartCacheAtTop = StartCachePosition == RecyclerPosition.Top;
             int siblingIndexOffset = GetNumConsecutiveNonEntries(isStartCacheAtTop);
             
             foreach (int index in newCachedStartEntries)
@@ -491,7 +491,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             }
             
             // Create new entries in the end cache
-            bool isEndCacheAtTop = EndCacheTransformPosition == RecyclerTransformPosition.Top;
+            bool isEndCacheAtTop = EndCachePosition == RecyclerPosition.Top;
             siblingIndexOffset = GetNumConsecutiveNonEntries(isEndCacheAtTop);
 
             foreach (int index in newCachedEndEntries)
@@ -579,13 +579,13 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             AddToContent(
                 _endcap.RectTransform,
                 IsZerothEntryAtTop ? content.childCount : 0,
-                EndCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above);
+                EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
         }
     }
 
     private void RecycleEndcap()
     {
-        RemoveFromContent(_endcap.RectTransform, EndCacheTransformPosition == RecyclerTransformPosition.Top ? FixEntries.Below : FixEntries.Above).SetParent(_endcapParent, false);
+        RemoveFromContent(_endcap.RectTransform, EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above).SetParent(_endcapParent, false);
         _endcap.OnSentToRecycling();
     }
 
@@ -1015,7 +1015,7 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     /// </summary>
     public void RecalculateEndcapSize(FixEntries? fixEntries = null)
     {
-        RecalculateContentChildSize(_endcap.RectTransform, fixEntries ?? (EndCacheTransformPosition == RecyclerTransformPosition.Bot ? FixEntries.Above : FixEntries.Below));
+        RecalculateContentChildSize(_endcap.RectTransform, fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
     }
 
     /// <summary>

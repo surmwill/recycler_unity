@@ -206,7 +206,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             }
             else if (IsAboveViewport(entry.RectTransform))
             {
-                if (StartCacheTransformPosition == RecyclerTransformPosition.Top)
+                if (StartCachePosition == RecyclerPosition.Top)
                 {
                     if (!indicesInStartCache.Remove(entry.Index))
                     {
@@ -227,7 +227,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             }
             else
             {
-                if (StartCacheTransformPosition == RecyclerTransformPosition.Bot)
+                if (StartCachePosition == RecyclerPosition.Bot)
                 {
                     if (!indicesInStartCache.Remove(entry.Index))
                     {

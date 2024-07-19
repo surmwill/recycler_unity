@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +9,7 @@ using UnityEngine.UI;
 public static class LayoutUtilities
 {
     /// <summary>
-    /// Returns all behaviours that contribute to layout calculations
+    /// Returns all behaviours that contribute to costly layout calculations
     /// </summary>
     public static Behaviour[] GetLayoutBehaviours(GameObject g, bool includeDisabled = false)
     {
