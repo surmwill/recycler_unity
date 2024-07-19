@@ -45,7 +45,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             viewport = (RectTransform) transform;
         }
         
-        // Ensure the viewport has a collider to test what is visible
+        // Ensure the viewport's collider is properly set up to know what is visible and not
         InitViewportCollider();
 
         // Ensure there is content (the active list of entries)
@@ -63,8 +63,9 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             ContentSizeFitter c = entriesParent.GetComponent<ContentSizeFitter>();
             c.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             
-            // Default assume we are force expanding each entries width to fit the width of the Recycler
+            // For performance, ensure we are not controlling the width or height
             VerticalLayoutGroup v = entriesParent.GetComponent<VerticalLayoutGroup>();
+            (v.childControlWidth, v.childControlHeight) = (false, false);
             (v.childForceExpandWidth, v.childForceExpandHeight) = (false, false);
 
             // Entries will start at the top if we're appending downwards, or the bottom if we're appending upwards
