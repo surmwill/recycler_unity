@@ -1,10 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 /// <summary>
-/// Bookkeeping. Maintains a dictionary of recycled entries as well as as a queue (a LinkedList) to track which entries have sat in recycling the longest
+/// Maintains a dictionary of recycled entries as well as as a queue (a LinkedList) to track which entries have sat in recycling the longest
 /// </summary>
 public class RecycledEntries<TEntryData, TKeyEntryData> where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
 {
@@ -14,7 +11,7 @@ public class RecycledEntries<TEntryData, TKeyEntryData> where TEntryData : IRecy
     // The entries (their indices) in the recycling pool, but sorted front to back by whatever entry has been in the pool the longest
     private readonly LinkedList<int> _queueEntries = new();
     
-    // Maps an entries index to its position in the recycling queue, allowing quick removal
+    // Maps an entries index to its position in the recycling queue
     private Dictionary<int, LinkedListNode<int>> _entriesQueuePosition = new();
 
     /// <summary>
@@ -46,7 +43,7 @@ public class RecycledEntries<TEntryData, TKeyEntryData> where TEntryData : IRecy
     }
 
     /// <summary>
-    /// Shifts the indices of everything we are bookkeeping
+    /// Shifts the indices of entries we are bookkeeping
     /// </summary>
     public void ShiftIndices(int startIndex, int shiftAmount)
     {

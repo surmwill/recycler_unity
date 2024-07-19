@@ -13,22 +13,22 @@ public interface IRecyclerScrollRectActiveEntriesWindow
     public bool Exists { get; }
 
     /// <summary>
-    /// The range of entry indices that are visible
+    /// The range of entry indices that are visible. Null if the range is empty.
     /// </summary>
     public (int Start, int End)? VisibleIndexRange { get; }
 
     /// <summary>
-    /// The range of entry indices contained in the start cache
+    /// The range of entry indices contained in the start cache. Null if the range is empty.
     /// </summary>
     public (int Start, int End)? StartCacheIndexRange { get; }
 
     /// <summary>
-    /// The range of entry indices contained in the end cache 
+    /// The range of entry indices contained in the end cache. Null if the range is empty.
     /// </summary>
     public (int Start, int End)? EndCacheIndexRange { get; }
 
     /// <summary>
-    /// The range of active entries: both visible and cached
+    /// The range of active entries: both visible and cached. Null if the range is empty.
     /// </summary>
     public (int Start, int End)? ActiveEntriesRange { get; }
 }
