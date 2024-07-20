@@ -3,23 +3,27 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Utilities for dealing with layouts
-/// </summary>
-public static class LayoutUtilities
+namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Returns all behaviours that contribute to costly layout calculations
+    /// Utilities for dealing with layouts
     /// </summary>
-    public static Behaviour[] GetLayoutBehaviours(GameObject g, bool includeDisabled = false)
+    public static class LayoutUtilities
     {
-        List<ILayoutElement> layoutElements = new List<ILayoutElement>();
-        g.GetComponents(layoutElements);
+        /// <summary>
+        /// Returns all behaviours that contribute to costly layout calculations
+        /// </summary>
+        public static Behaviour[] GetLayoutBehaviours(GameObject g, bool includeDisabled = false)
+        {
+            List<ILayoutElement> layoutElements = new List<ILayoutElement>();
+            g.GetComponents(layoutElements);
 
-        List<ILayoutController> layoutControllers = new List<ILayoutController>();
-        g.GetComponents(layoutControllers);
+            List<ILayoutController> layoutControllers = new List<ILayoutController>();
+            g.GetComponents(layoutControllers);
 
-        IEnumerable<Behaviour> layoutBehaviours = layoutElements.OfType<Behaviour>().Concat(layoutControllers.OfType<Behaviour>());
-        return (includeDisabled ? layoutBehaviours : layoutBehaviours.Where(b => b.isActiveAndEnabled)).ToArray();
+            IEnumerable<Behaviour> layoutBehaviours =
+                layoutElements.OfType<Behaviour>().Concat(layoutControllers.OfType<Behaviour>());
+            return (includeDisabled ? layoutBehaviours : layoutBehaviours.Where(b => b.isActiveAndEnabled)).ToArray();
+        }
     }
 }

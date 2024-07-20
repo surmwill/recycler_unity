@@ -2,17 +2,21 @@
 using UnityEditor;
 using UnityEngine;
 
-/// <summary>
-/// Draws a readonly property in the inspector
-/// </summary>
-[CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
-public class ReadOnlyProperyDrawer : PropertyDrawer
+namespace RecyclerScrollRect
 {
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    /// <summary>
+    /// Draws a readonly property in the inspector
+    /// </summary>
+    [CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
+    public class ReadOnlyProperyDrawer : PropertyDrawer
     {
-        GUI.enabled = false;
-        EditorGUI.PropertyField(position, property, label);
-        GUI.enabled = true;
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            GUI.enabled = false;
+            EditorGUI.PropertyField(position, property, label);
+            GUI.enabled = true;
+        }
     }
 }
+
 #endif

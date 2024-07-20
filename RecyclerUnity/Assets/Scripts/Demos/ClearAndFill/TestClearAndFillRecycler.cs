@@ -3,27 +3,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Tests clearing and adding entries to a recycler, one-by-one
-/// </summary>
-public class TestClearAndFillRecycler : MonoBehaviour
+namespace RecyclerScrollRect
 {
-    [SerializeField]
-    private EmptyRecyclerScrollRect _recycler = null;
-
-    private void Update()
+    /// <summary>
+    /// Tests clearing and adding entries to a recycler, one-by-one
+    /// </summary>
+    public class TestClearAndFillRecycler : MonoBehaviour
     {
-        if (Input.GetKeyDown(KeyCode.A))
+        [SerializeField]
+        private EmptyRecyclerScrollRect _recycler = null;
+
+        private void Update()
         {
-            _recycler.AppendEntries(new [] { new EmptyRecyclerData() });
-        }
-        else if (Input.GetKeyDown(KeyCode.C))
-        {
-            _recycler.Clear();
-        }
-        else if (Input.GetKeyDown(KeyCode.R))
-        {
-            _recycler.ResetToBeginning();
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                _recycler.AppendEntries(new[] { new EmptyRecyclerData() });
+            }
+            else if (Input.GetKeyDown(KeyCode.C))
+            {
+                _recycler.Clear();
+            }
+            else if (Input.GetKeyDown(KeyCode.R))
+            {
+                _recycler.ResetToBeginning();
+            }
         }
     }
 }

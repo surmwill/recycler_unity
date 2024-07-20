@@ -1,44 +1,47 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-/// <summary>
-/// A simple demo recycler with entries and an endcap
-/// </summary>
-public class TestDemoRecycler : MonoBehaviour
+namespace RecyclerScrollRect
 {
-    [SerializeField]
-    private DemoRecycler _recycler = null;
-    
-    private static readonly string[] Words =
-    { 
-        "hold", "work", "wore", "days", "meat",
-        "hill", "club", "boom", "tone", "grey",
-        "bowl", "bell", "kick", "hope", "over",
-        "year", "camp", "tell", "main", "lose",
-        "earn", "name", "hang", "bear", "heat",
-        "trip", "calm", "pace", "home", "bank",
-        "cell", "lake", "fall", "fear", "mood",
-        "head", "male", "evil", "toll", "base"
-    };
-
-    private void Start()
+    /// <summary>
+    /// A simple demo recycler with entries and an endcap
+    /// </summary>
+    public class TestDemoRecycler : MonoBehaviour
     {
-        // Create data containing the words from the array, each with a random background color
-        DemoRecyclerData[] entryData = new DemoRecyclerData[Words.Length];
-        for (int i = 0; i < Words.Length; i++)
+        [SerializeField]
+        private DemoRecycler _recycler = null;
+
+        private static readonly string[] Words =
         {
-            entryData[i] = new DemoRecyclerData(Words[i], Random.ColorHSV());
+            "hold", "work", "wore", "days", "meat",
+            "hill", "club", "boom", "tone", "grey",
+            "bowl", "bell", "kick", "hope", "over",
+            "year", "camp", "tell", "main", "lose",
+            "earn", "name", "hang", "bear", "heat",
+            "trip", "calm", "pace", "home", "bank",
+            "cell", "lake", "fall", "fear", "mood",
+            "head", "male", "evil", "toll", "base"
+        };
+
+        private void Start()
+        {
+            // Create data containing the words from the array, each with a random background color
+            DemoRecyclerData[] entryData = new DemoRecyclerData[Words.Length];
+            for (int i = 0; i < Words.Length; i++)
+            {
+                entryData[i] = new DemoRecyclerData(Words[i], Random.ColorHSV());
+            }
+
+            _recycler.AppendEntries(entryData);
         }
-        
-        _recycler.AppendEntries(entryData);
-    }
 
-    private void Update()
-    {
-        // One additional test resizing the endcap, as it is a small test and doesn't justify belonging on its own
-        if (Input.GetKeyDown(KeyCode.A))
+        private void Update()
         {
-            ((DemoEndcap) _recycler.Endcap).Resize();
+            // One additional test resizing the endcap, as it is a small test and doesn't justify belonging on its own
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                ((DemoEndcap) _recycler.Endcap).Resize();
+            }
         }
     }
 }

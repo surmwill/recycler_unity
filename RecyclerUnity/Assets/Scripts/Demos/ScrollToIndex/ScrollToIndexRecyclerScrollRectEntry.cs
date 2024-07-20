@@ -1,32 +1,35 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Recycler entry used to demo scrolling to an index
-/// </summary>
-public class ScrollToIndexRecyclerScrollRectEntry : RecyclerScrollRectEntry<ScrollToIndexData, string>
+namespace RecyclerScrollRect
 {
-    [SerializeField]
-    private Text _numberText = null;
-    
-    private const int NormalSize = 250;
-    private const int GrowSize = 500;
-
-    protected override void OnBindNewData(ScrollToIndexData entryData)
+    /// <summary>
+    /// Recycler entry used to demo scrolling to an index
+    /// </summary>
+    public class ScrollToIndexRecyclerScrollRectEntry : RecyclerScrollRectEntry<ScrollToIndexData, string>
     {
-        RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(entryData.ShouldResize ? GrowSize : NormalSize);
-    }
+        [SerializeField]
+        private Text _numberText = null;
 
-    protected override void OnRebindExistingData()
-    {
-    }
+        private const int NormalSize = 250;
+        private const int GrowSize = 500;
 
-    protected override void OnSentToRecycling()
-    {
-    }
+        protected override void OnBindNewData(ScrollToIndexData entryData)
+        {
+            RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(entryData.ShouldResize ? GrowSize : NormalSize);
+        }
 
-    private void Update()
-    {
-        _numberText.text = Index.ToString();
+        protected override void OnRebindExistingData()
+        {
+        }
+
+        protected override void OnSentToRecycling()
+        {
+        }
+
+        private void Update()
+        {
+            _numberText.text = Index.ToString();
+        }
     }
 }

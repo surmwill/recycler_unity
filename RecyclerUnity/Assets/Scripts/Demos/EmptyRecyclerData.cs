@@ -4,20 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-/// <summary>
-/// Empty data to send to the recycler if we just need to test simple things, like if entries are being created
-/// </summary>
-public class EmptyRecyclerData : IRecyclerScrollRectData<string>
+namespace RecyclerScrollRect
 {
-    public string Key { get; }
-    
-    public EmptyRecyclerData()
+    /// <summary>
+    /// Empty data to send to the recycler if we just need to test simple things, like if entries are being created
+    /// </summary>
+    public class EmptyRecyclerData : IRecyclerScrollRectData<string>
     {
-        Key = Guid.NewGuid().ToString();
-    }
+        public string Key { get; }
 
-    public static IEnumerable<EmptyRecyclerData> GenerateEmptyData(int count)
-    {
-        return Enumerable.Repeat<object>(null, count).Select(_ => new EmptyRecyclerData());
+        public EmptyRecyclerData()
+        {
+            Key = Guid.NewGuid().ToString();
+        }
+
+        public static IEnumerable<EmptyRecyclerData> GenerateEmptyData(int count)
+        {
+            return Enumerable.Repeat<object>(null, count).Select(_ => new EmptyRecyclerData());
+        }
     }
 }

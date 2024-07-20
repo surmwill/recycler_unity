@@ -4,18 +4,21 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-/// <summary>
-/// Demos appending entries to a Recycler. (The endcap will fetch and append more entries once we scroll to it)
-/// </summary>
-public class TestAppendRecycler : MonoBehaviour
+namespace RecyclerScrollRect
 {
-   [SerializeField]
-   private EmptyRecyclerScrollRect _appendRecycler = null;
-   
-   private const int InitEntries = 30;
-
-   private void Start()
+   /// <summary>
+   /// Demos appending entries to a Recycler. (The endcap will fetch and append more entries once we scroll to it)
+   /// </summary>
+   public class TestAppendRecycler : MonoBehaviour
    {
-      _appendRecycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(InitEntries));
+      [SerializeField]
+      private EmptyRecyclerScrollRect _appendRecycler = null;
+
+      private const int InitEntries = 30;
+
+      private void Start()
+      {
+         _appendRecycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(InitEntries));
+      }
    }
 }

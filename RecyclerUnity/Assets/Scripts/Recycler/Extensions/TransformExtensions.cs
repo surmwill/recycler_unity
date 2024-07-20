@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-/// <summary>
-/// Extension methods for Transforms
-/// </summary>
-public static class TransformExtensions
+namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Returns the children of a transform as an IEnumerable
+    /// Extension methods for Transforms
     /// </summary>
-    public static IEnumerable<Transform> Children(this Transform t)
+    public static class TransformExtensions
     {
-        return t.Cast<Transform>();
+        /// <summary>
+        /// Returns the children of a transform as an IEnumerable
+        /// </summary>
+        public static IEnumerable<Transform> Children(this Transform t)
+        {
+            return t.Cast<Transform>();
+        }
     }
 }
