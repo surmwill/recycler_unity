@@ -61,7 +61,6 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     [Tooltip("The direction appended entries get added to.")]
     [SerializeField]
     private RecyclerPosition _appendTo = DefaultAppendTo;
-    private RecyclerPosition _lastAppendTo = DefaultAppendTo == RecyclerPosition.Bot ? RecyclerPosition.Top : RecyclerPosition.Bot;
 
     [Tooltip("The transform under which our entries waiting to be bound/rebound wait.")]
     [Header("Pool")]

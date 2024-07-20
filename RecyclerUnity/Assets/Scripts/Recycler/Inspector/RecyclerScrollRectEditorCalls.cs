@@ -17,7 +17,9 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
     private const string EndcapParentName = "Endcap";
     
     private DrivenRectTransformTracker _tracker;
-    private RectTransform _drivenContent;
+    
+    private RecyclerPosition _lastAppendTo = DefaultAppendTo == RecyclerPosition.Bot ? RecyclerPosition.Top : RecyclerPosition.Bot;
+    private RectTransform _lastContent;
     
     protected override void OnValidate()
     {
@@ -181,10 +183,15 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         
         // Ensure the root of all entries has the proper anchor values.
         // Importantly, the anchored position will treated differently if the y's don't match (though the value we choose doesn't matter)
+        if (content != _lastContent)
+        {
+            _tracker.Clear();
+            _lastContent = content;
+        }
         _tracker.Add(this, content, DrivenTransformProperties.AnchorMin | DrivenTransformProperties.AnchorMax);
         content.anchorMin = new Vector2(0f, 0.5f);
         content.anchorMax = new Vector2(1f, 0.5f);
-        
+
         // Ensure the entries' root is not controlling the entries' widths or heights
         VerticalLayoutGroup v = content.GetComponent<VerticalLayoutGroup>();
         if (v == null)
