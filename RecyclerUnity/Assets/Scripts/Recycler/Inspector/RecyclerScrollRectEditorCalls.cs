@@ -72,7 +72,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             _lastAppendTo = _appendTo;
         }
 
-        // Ensure there is a pool of waiting to be bound entries
+        // Create a default pool
         if (_poolParent == null)
         {
             _poolParent = RectTransformFactory.CreateFullRect(PoolParentName, transform);
@@ -219,12 +219,17 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
     }
     
+    /// <summary>
+    /// Check that the indices we report as visible, in the start cache, and in the end cache, correspond to actual
+    /// entries that are visible, in the start cache, and in the end cache
+    /// </summary>
     private void DebugCheckWindow()
     {
         HashSet<int> indicesInStartCache = new HashSet<int>();
         HashSet<int> indicesInEndCache = new HashSet<int>();
         HashSet<int> visibleIndices = new HashSet<int>();
         
+        // Check which indices we report as visible, in the start cache, and in the end cache
         if (_activeEntriesWindow.StartCacheIndexRange.HasValue)
         {
             (int Start, int End) = _activeEntriesWindow.StartCacheIndexRange.Value;
@@ -245,17 +250,13 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
 
         foreach (Transform t in content)
         {
-            if (!t.gameObject.activeInHierarchy)
-            {
-                continue;
-            }
-            
             RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
             if (entry == null)
             {
                 return;
             }
 
+            // Entries that are actually visible, as according to the viewport collider
             if (IsInViewport(entry.RectTransform))
             {
                 if (!visibleIndices.Remove(entry.Index))
@@ -265,6 +266,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
                     return;
                 }
             }
+            // Entries that are actually in the start/end cache (depending on orientation), as according to the viewport collider
             else if (IsAboveViewport(entry.RectTransform))
             {
                 if (StartCachePosition == RecyclerPosition.Top)
@@ -286,6 +288,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
                     }
                 }
             }
+            // Entries that are actually in the start/end cache (depending on orientation), as according to the viewport collider
             else
             {
                 if (StartCachePosition == RecyclerPosition.Bot)
@@ -309,6 +312,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             }
         }
         
+        // Ensure all indices match with actual entries
         if (indicesInStartCache.Any())
         {
             Debug.LogError($"The following entries were reported in the start cache window but couldn't be found in the start cache: {string.Join(',', indicesInStartCache)}");
@@ -331,31 +335,14 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         }
     }
 
-    private bool IsInstanceOfEntryPrefab(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
-    {
-        return IsInstanceOfPrefab(entry, _recyclerEntryPrefab);
-    }
-    
-    private bool IsInstanceOfEndcapPrefab(RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap)
-    {
-        return IsInstanceOfPrefab(endcap, _endcapPrefab);
-    }
-
-    private bool IsInstanceOfPrefab(Object instanceComponentOrGameObject, Object prefabAsset)
-    {
-        return PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(instanceComponentOrGameObject) == AssetDatabase.GetAssetPath(prefabAsset);
-    }
-
+    /// <summary>
+    /// Check for duplicate entries
+    /// </summary>
     private void DebugCheckDuplicates()
     {
         HashSet<int> seenIndices = new HashSet<int>();
         foreach (Transform t in content)
         {
-            if (!t.gameObject.activeInHierarchy)
-            {
-                continue;
-            }
-            
             RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
             if (entry == null)
             {
@@ -374,16 +361,14 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         }
     }
 
+    /// <summary>
+    /// Check that the entries are in increasing/decreasing order
+    /// </summary>
     private void DebugCheckOrdering()
     {
         int? lastIndex = null;
         foreach (Transform t in content)
         {
-            if (!t.gameObject.activeInHierarchy)
-            {
-                continue;
-            }
-
             RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
             if (entry == null)
             {
@@ -402,6 +387,9 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         }
     }
 
+    /// <summary>
+    /// Ensure that as we insert and remove entries and their indices shift, their shifted index still maps to the same key
+    /// </summary>
     private void DebugCheckIndexToKeyMapping()
     {
         for (int i = 0; i < _dataForEntries.Count; i++)
@@ -418,6 +406,9 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         }
     }
 
+    /// <summary>
+    /// Ensure that as we insert and remove entries and their indices shift, their keys map to their shifted index
+    /// </summary>
     private void DebugCheckKeyToIndexMapping()
     {
         for (int i = 0; i < _dataForEntries.Count; i++)
@@ -435,15 +426,17 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
     }
 
     /// <summary>
-    /// Ensures that the range of active indices reported in the index window correspond to our set of references to active entries
+    /// Ensures that the range of active indices reported in the index window correspond to the set of actual references to active entries
     /// </summary>
     private void DebugCheckWindowAlignment()
     {
+        // No indices reported and no references to active entries
         if (!ActiveEntriesWindow.ActiveEntriesRange.HasValue && !ActiveEntries.Any())
         {
             return;
         }
 
+        // No indices reported but references to active entries
         if (!ActiveEntriesWindow.ActiveEntriesRange.HasValue && ActiveEntries.Any())
         {
             Debug.LogError("The window states there are no active indices, but we are still referencing active entries.");
@@ -453,6 +446,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
 
         (int activeIndicesStart, int activeIndicesEnd) = ActiveEntriesWindow.ActiveEntriesRange.Value;
         
+        // Check that each active index has a corresponding reference to an active entry
         for (int i = activeIndicesStart; i <= activeIndicesEnd; i++)
         {
             if (!ActiveEntries.ContainsKey(i))
@@ -463,6 +457,7 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             }
         }
 
+        // Check that each reference to an active entry has a corresponding active index
         foreach (int index in ActiveEntries.Keys)
         {
             if (index < activeIndicesStart || index > activeIndicesEnd)
@@ -472,6 +467,21 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
                 return;
             }
         }
+    }
+    
+    private bool IsInstanceOfEntryPrefab(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
+    {
+        return IsInstanceOfPrefab(entry, _recyclerEntryPrefab);
+    }
+    
+    private bool IsInstanceOfEndcapPrefab(RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap)
+    {
+        return IsInstanceOfPrefab(endcap, _endcapPrefab);
+    }
+
+    private bool IsInstanceOfPrefab(Object instanceComponentOrGameObject, Object prefabAsset)
+    {
+        return PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(instanceComponentOrGameObject) == AssetDatabase.GetAssetPath(prefabAsset);
     }
 }
 #endif
