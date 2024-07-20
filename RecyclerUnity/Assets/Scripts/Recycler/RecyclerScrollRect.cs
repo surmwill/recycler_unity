@@ -47,6 +47,7 @@ using Transform = UnityEngine.Transform;
 public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : ScrollRect, IPointerDownHandler where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
 {
     private const float DefaultScrollSpeedViewportsPerSecond = 0.5f;
+    private const RecyclerPosition DefaultAppendTo = RecyclerPosition.Bot;
     
     [Header("Recycler")]
     [Tooltip("The prefab which your data gets bound to.")]
@@ -59,7 +60,8 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
 
     [Tooltip("The direction appended entries get added to.")]
     [SerializeField]
-    private RecyclerPosition _appendTo = RecyclerPosition.Bot;
+    private RecyclerPosition _appendTo = DefaultAppendTo;
+    private RecyclerPosition _lastAppendTo = DefaultAppendTo == RecyclerPosition.Bot ? RecyclerPosition.Top : RecyclerPosition.Bot;
 
     [Tooltip("The transform under which our entries waiting to be bound/rebound wait.")]
     [Header("Pool")]
@@ -173,13 +175,8 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
             _unboundEntries.Enqueue(entry);
         }
 
-        // Used to detect what entries are on screen
-        InitViewportCollider();
-
-        if (Application.isEditor)
-        {
-            CheckInvalidContentLayoutGroup();
-        }
+        // Collider to detect what is on/offscreen
+        _viewportCollider = viewport.GetComponent<BoxCollider>();
     }
 
     /// <summary>
@@ -389,7 +386,13 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     {
         // Handles scrolling
         base.LateUpdate();
-
+        
+        // Ensure our hierarchy with its components are set up properly
+        #if UNITY_EDITOR
+        EditorSetViewportColliderDimensions();
+        EditorCheckRootEntriesComponents();
+        #endif
+        
         // The base ScrollRect has [ExecuteAlways] but the recycler does not work as such
         if (!Application.isPlaying)
         {
@@ -1279,7 +1282,16 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         }
     }
 
-    /// <summary>
+     protected override void OnDestroy()
+     {
+         base.OnDestroy();
+
+         #if  UNITY_EDITOR
+         _tracker.Clear();
+         #endif
+     }
+
+     /// <summary>
     /// Stops scrolling to an index
     /// </summary>
     public void CancelScrollTo()
@@ -1317,16 +1329,6 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
         }
     }
 
-    /// <summary>
-    /// Used to detect what is visible on screen
-    /// </summary>
-    private void InitViewportCollider()
-    {
-        // The value of z is not anything special since everything is in 2D - just a healthy buffer
-        _viewportCollider = GetComponent<BoxCollider>();
-        _viewportCollider.size = new Vector3(viewport.rect.width, viewport.rect.height, 1f);
-    }
-    
     private bool IsInViewport(RectTransform rectTransform)
     {
         Vector3[] worldCorners = new Vector3[4];
@@ -1337,19 +1339,6 @@ public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : Sc
     private bool IsAboveViewport(RectTransform rectTransform)
     {
         return Vector3.Dot(Vector3.ProjectOnPlane(rectTransform.position - viewport.position, viewport.forward), viewport.up) > 0;
-    }
-    
-    private void CheckInvalidContentLayoutGroup()
-    {
-        VerticalLayoutGroup v = content.GetComponent<VerticalLayoutGroup>();
-        
-        if (v.childControlWidth || v.childControlHeight)
-        {
-            throw new Exception(
-                $"The {nameof(VerticalLayoutGroup)} on \"{content.gameObject.name}\" cannot have {nameof(v.childControlWidth)} or {nameof(v.childControlHeight)} checked; please uncheck them.\n" +
-                $"Children can still be auto-sized by using their own {nameof(ContentSizeFitter)}; this is supported.\n" +
-                $"Please see documentation for more. This is a necessary nuance to save on performance.");
-        }
     }
 
     private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)

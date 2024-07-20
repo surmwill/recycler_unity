@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -14,6 +15,9 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
     private const string ContentName = "Entries";
     private const string PoolParentName = "Pool";
     private const string EndcapParentName = "Endcap";
+    
+    private DrivenRectTransformTracker _tracker;
+    private RectTransform _drivenContent;
     
     protected override void OnValidate()
     {
@@ -39,16 +43,13 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             movementType = MovementType.Clamped;
         }
 
-        // Ensure there is a viewport
+        // Create a default viewport
         if (viewport == null)
         {
             viewport = (RectTransform) transform;
         }
-        
-        // Ensure the viewport's collider is properly set up to know what is visible and not
-        InitViewportCollider();
 
-        // Ensure there is content (the active list of entries)
+        // Create default content (the root of the list of entries)
         if (content == null)
         {
             RectTransform entriesParent = (RectTransform) new GameObject(ContentName, 
@@ -58,25 +59,15 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
             
             entriesParent.SetParent(transform);
             content = entriesParent;
-
-            // Grow the list along with the entries
-            ContentSizeFitter c = entriesParent.GetComponent<ContentSizeFitter>();
-            c.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            
-            // For performance, ensure we are not controlling the width or height
-            VerticalLayoutGroup v = entriesParent.GetComponent<VerticalLayoutGroup>();
-            (v.childControlWidth, v.childControlHeight) = (false, false);
-            (v.childForceExpandWidth, v.childForceExpandHeight) = (false, false);
-
-            // Entries will start at the top if we're appending downwards, or the bottom if we're appending upwards
-            (content.localPosition, content.localScale) = (Vector3.zero, Vector3.one);
-            (content.anchorMin, content.anchorMax) = (new Vector2(0f, IsZerothEntryAtTop ? 1 : 0), new Vector2(1f, IsZerothEntryAtTop ? 1 : 0));
+            (content.localPosition, content.localRotation, content.localScale) = (Vector3.zero, Quaternion.identity, Vector3.one);
             (content.offsetMin, content.offsetMax) = (Vector2.zero, Vector2.zero);
-            content.anchoredPosition = Vector2.zero;
+        }
 
-            // Appended entries will grow downwards (not pushing any higher entries) when we're appending downwards,
-            // or grow upwards (not pushing any lower entries) when we're appending upwards.
-            content.pivot = content.pivot.WithY(IsZerothEntryAtTop ? 1 : 0);
+        // When appending downwards by default we start at the top, and vice-versa 
+        if (_lastAppendTo != _appendTo)
+        {
+            content.pivot = content.pivot.WithY(_appendTo == RecyclerPosition.Bot ? 1 : 0);
+            _lastAppendTo = _appendTo;
         }
 
         // Ensure there is a pool of waiting to be bound entries
@@ -157,6 +148,68 @@ public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
         {
             EditorUtils.OnValidateDestroy(_endcap.gameObject);
         }
+    }
+
+    /// <summary>
+    /// Ensure we have a collider with the correct values to detect when things are on/offscreen
+    /// </summary>
+    private void EditorSetViewportColliderDimensions()
+    {
+        if (viewport == null)
+        {
+            return;
+        }
+
+        BoxCollider bc = viewport.GetComponent<BoxCollider>();
+        if (bc == null)
+        {
+            bc = viewport.gameObject.AddComponent<BoxCollider>();
+        }
+        
+        bc.size = new Vector3(viewport.rect.width, viewport.rect.height, 1f);
+    }
+
+    /// <summary>
+    /// Ensure the root of all the entries has the necessary components with the necessary fields checked
+    /// </summary>
+    private void EditorCheckRootEntriesComponents()
+    {
+        if (content == null)
+        {
+            return;
+        }
+        
+        // Ensure the root of all entries has the proper anchor values.
+        // Importantly, the anchored position will treated differently if the y's don't match (though the value we choose doesn't matter)
+        _tracker.Add(this, content, DrivenTransformProperties.AnchorMin | DrivenTransformProperties.AnchorMax);
+        content.anchorMin = new Vector2(0f, 0.5f);
+        content.anchorMax = new Vector2(1f, 0.5f);
+        
+        // Ensure the entries' root is not controlling the entries' widths or heights
+        VerticalLayoutGroup v = content.GetComponent<VerticalLayoutGroup>();
+        if (v == null)
+        {
+            v = content.gameObject.AddComponent<VerticalLayoutGroup>();
+        }
+
+        if (v.childControlWidth || v.childControlHeight)
+        {
+            Debug.LogWarning(
+                $"The {nameof(VerticalLayoutGroup)} on the entries' root cannot have {nameof(v.childControlWidth)} or {nameof(v.childControlHeight)} checked for performance reasons; unchecking them.\n" +
+                $"Entries can still be auto-sized by controlling their own width and height with their own {nameof(ContentSizeFitter)}.\n" +
+                $"Please see documentation for more.");
+
+            (v.childControlWidth, v.childControlHeight) = (false, false);
+        }
+        (v.childForceExpandWidth, v.childForceExpandHeight) = (false, false);
+
+        // Ensure the content resizes along with the total size of the entries
+        ContentSizeFitter csf = content.GetComponent<ContentSizeFitter>();
+        if (csf == null)
+        {
+            csf = content.gameObject.AddComponent<ContentSizeFitter>();
+        }
+        csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
     }
     
     private void DebugCheckWindow()
