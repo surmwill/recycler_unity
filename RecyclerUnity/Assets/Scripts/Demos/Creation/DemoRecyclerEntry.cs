@@ -31,8 +31,8 @@ namespace RecyclerScrollRect
         // Called when this entry is bound with data it had before (and therefore still currently has)
         protected override void OnRebindExistingData()
         {
-            Debug.Log(Data.Word);
-            Debug.Log(Data.BackgroundColor);
+            // Debug.Log(Data.Word);
+            // Debug.Log(Data.BackgroundColor);
         }
 
         // Called when this entry has been sent back to the recycling pool

@@ -199,7 +199,7 @@ namespace RecyclerScrollRect
                 _lastContent = content;
             }
 
-            _tracker.Add(this, content, DrivenTransformProperties.AnchorMin | DrivenTransformProperties.AnchorMax);
+            //_tracker.Add(this, content, DrivenTransformProperties.AnchorMin | DrivenTransformProperties.AnchorMax);
             content.anchorMin = new Vector2(0f, 0.5f);
             content.anchorMax = new Vector2(1f, 0.5f);
 
