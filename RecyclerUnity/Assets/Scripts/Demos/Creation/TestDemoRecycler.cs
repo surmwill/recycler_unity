@@ -34,14 +34,5 @@ namespace RecyclerScrollRect
 
             _recycler.AppendEntries(entryData);
         }
-
-        private void Update()
-        {
-            // One additional test resizing the endcap, as it is a small test and doesn't justify belonging on its own
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                ((DemoEndcap) _recycler.Endcap).Resize();
-            }
-        }
     }
 }
