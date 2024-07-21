@@ -198,8 +198,7 @@ namespace RecyclerScrollRect
         {
             if (index < 0 || index > _dataForEntries.Count)
             {
-                throw new ArgumentException(
-                    $"index \"{index}\" must be >= 0 and <= the length of data \"{_dataForEntries.Count}\"");
+                throw new ArgumentException($"index \"{index}\" must be >= 0 and <= the length of data \"{_dataForEntries.Count}\"");
             }
 
             // Shift indices
@@ -215,8 +214,7 @@ namespace RecyclerScrollRect
             int siblingIndex = IsZerothEntryAtTop ? 0 : content.childCount;
             foreach (Transform entryTransform in content)
             {
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry =
-                    entryTransform.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
+                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry = entryTransform.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
                 if (activeEntry != null && activeEntry.Index == index - 1)
                 {
                     siblingIndex = activeEntry.transform.GetSiblingIndex() + (IsZerothEntryAtTop ? 1 : 0);
@@ -226,13 +224,11 @@ namespace RecyclerScrollRect
             // Create the entry
             if (_activeEntriesWindow.IsInStartCache(index))
             {
-                CreateAndAddEntry(index, siblingIndex,
-                    StartCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
+                CreateAndAddEntry(index, siblingIndex, StartCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
             else if (_activeEntriesWindow.IsInEndCache(index))
             {
-                CreateAndAddEntry(index, siblingIndex,
-                    EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
+                CreateAndAddEntry(index, siblingIndex, EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
             else
             {
@@ -289,8 +285,7 @@ namespace RecyclerScrollRect
         {
             if (index < 0 || index >= _dataForEntries.Count)
             {
-                throw new ArgumentException(
-                    $"index \"{index}\" must be >= 0 and < the length of data \"{_dataForEntries.Count}\"");
+                throw new ArgumentException($"index \"{index}\" must be >= 0 and < the length of data \"{_dataForEntries.Count}\"");
             }
 
             if (index == _currScrollingToIndex)
@@ -306,8 +301,7 @@ namespace RecyclerScrollRect
             }
 
             // Unbind the entry in recycling
-            if (_recycledEntries.Entries.TryGetValue(index,
-                    out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
+            if (_recycledEntries.Entries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
             {
                 entry.UnbindIndex();
                 _recycledEntries.Remove(index);
@@ -367,8 +361,7 @@ namespace RecyclerScrollRect
         private void ShiftIndices(int startIndex, int shiftAmount)
         {
             // Shift our active entries
-            Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> shiftedActiveEntries =
-                new Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
+            Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> shiftedActiveEntries = new();
 
             foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry) in _activeEntries)
             {
