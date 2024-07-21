@@ -152,9 +152,9 @@ namespace RecyclerScrollRect
 
         private BoxCollider _viewportCollider;
         
-        private LinkedList<int> _toRecycleEntries = new();
-        private LinkedList<int> _newCachedStartEntries = new();
-        private LinkedList<int> _newCachedEndEntries = new();
+        private readonly LinkedList<int> _toRecycleEntries = new();
+        private readonly LinkedList<int> _newCachedStartEntries = new();
+        private readonly LinkedList<int> _newCachedEndEntries = new();
 
         protected override void Awake()
         {
@@ -191,7 +191,10 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Inserts an entry at the given index. Existing entries will be shifted like a list insertion.
+        /// Inserts an entry at the given index. Existing entries' indices will be shifted like a list insertion.
+        /// 
+        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
+        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
         public void InsertAtIndex(int index, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
         {
@@ -243,19 +246,23 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Inserts an element at the index corresponding to the given key. Existing entries will be shifted like a list insertion.
+        /// Inserts an element at the index corresponding to the given key. Existing entries' indices will be shifted like a list insertion.
+        ///
+        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
+        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of wwhatever's on-screen. 
         /// </summary>
-        public void InsertAtKey(TKeyEntryData insertAtKey, TEntryData entryData,
-            FixEntries fixEntries = FixEntries.Below)
+        public void InsertAtKey(TKeyEntryData insertAtKey, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
         {
             InsertAtIndex(GetCurrentIndexForKey(insertAtKey), entryData, fixEntries);
         }
 
         /// <summary>
-        /// Inserts elements at the given index. Existing entries will be shifted like a list insertion.
+        /// Inserts elements at the given index. Existing entries' indices will be shifted like a list insertion.
+        ///
+        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
+        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
-        public void InsertRangeAtIndex(int index, IEnumerable<TEntryData> entryData,
-            FixEntries fixEntries = FixEntries.Below)
+        public void InsertRangeAtIndex(int index, IEnumerable<TEntryData> entryData, FixEntries fixEntries = FixEntries.Below)
         {
             foreach ((TEntryData entry, int i) in entryData.ZipWithIndex())
             {
@@ -264,16 +271,21 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Inserts elements at the index corresponding to the given key. Existing entries will be shifted like a list insertion.
+        /// Inserts elements at the index corresponding to the given key. Existing entries' indices will be shifted like a list insertion.
+        ///
+        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
+        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
-        public void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> entryData,
-            FixEntries fixEntries = FixEntries.Below)
+        public void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> entryData, FixEntries fixEntries = FixEntries.Below)
         {
             InsertRangeAtIndex(GetCurrentIndexForKey(insertAtKey), entryData, fixEntries);
         }
 
         /// <summary>
-        /// Removes an element at the given index. Existing entries will be shifted like a list removal.
+        /// Removes an element at the given index. Existing entries' indices will be shifted like a list removal.
+        ///
+        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
+        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
         public void RemoveAtIndex(int index, FixEntries fixEntries = FixEntries.Below)
         {
@@ -315,7 +327,10 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Removes an element with the given key. Existing entries will be shifted like a list removal.
+        /// Removes an element with the given key. Existing entries' indices will be shifted like a list removal.
+        ///
+        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
+        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
         public void RemoveAtKey(TKeyEntryData removeAtKey, FixEntries fixEntries = FixEntries.Below)
         {
@@ -323,7 +338,10 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Removes elements at the given index. Existing entries will be shifted like a list removal.
+        /// Removes elements at the given index. Existing entries' indices will be shifted like a list removal.
+        ///
+        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
+        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
         public void RemoveRangeAtIndex(int index, int count, FixEntries fixEntries = FixEntries.Below)
         {
@@ -334,7 +352,10 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Removes elements at the index corresponding to the given key. Existing entries will be shifted like a list removal.
+        /// Removes elements at the index corresponding to the given key. Existing entries' indices will be shifted like a list removal.
+        ///
+        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
+        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
         public void RemoveRangeAtKey(TKeyEntryData removeAtKey, int count, FixEntries fixEntries = FixEntries.Below)
         {
@@ -408,7 +429,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Prepends entries to the start of the recycler. Existing entries will be shifted like a list insertion.
+        /// Prepends entries to the start of the recycler. Existing entries' indices will be shifted like a list insertion.
         /// </summary>
         public void PrependEntries(IEnumerable<TEntryData> entries)
         {
@@ -475,8 +496,10 @@ namespace RecyclerScrollRect
             {
                 _activeEntriesWindow.SetNonDirty();
                 
-                (_toRecycleEntries, _newCachedStartEntries, _newCachedEndEntries) = (new(), new(), new());
-                
+                _toRecycleEntries.Clear();
+                _newCachedEndEntries.Clear();
+                _newCachedEndEntries.Clear();
+
                 // Determine what entries need to be removed (aren't in the cache and aren't visible)
                 foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> _) in _activeEntries)
                 {
@@ -489,9 +512,7 @@ namespace RecyclerScrollRect
                 // Determine what entries need to be added to the start cache
                 if (_activeEntriesWindow.StartCacheIndexRange.HasValue)
                 {
-                    for (int i = _activeEntriesWindow.StartCacheIndexRange.Value.End;
-                         i >= _activeEntriesWindow.StartCacheIndexRange.Value.Start;
-                         i--)
+                    for (int i = _activeEntriesWindow.StartCacheIndexRange.Value.End; i >= _activeEntriesWindow.StartCacheIndexRange.Value.Start; i--)
                     {
                         if (!_activeEntries.ContainsKey(i))
                         {
@@ -503,9 +524,7 @@ namespace RecyclerScrollRect
                 // Determine what entries need to be added to the end cache
                 if (_activeEntriesWindow.EndCacheIndexRange.HasValue)
                 {
-                    for (int i = _activeEntriesWindow.EndCacheIndexRange.Value.Start;
-                         i <= _activeEntriesWindow.EndCacheIndexRange.Value.End;
-                         i++)
+                    for (int i = _activeEntriesWindow.EndCacheIndexRange.Value.Start; i <= _activeEntriesWindow.EndCacheIndexRange.Value.End; i++)
                     {
                         if (!_activeEntries.ContainsKey(i))
                         {
@@ -572,8 +591,7 @@ namespace RecyclerScrollRect
                 {
                     for (int i = 0; i < content.childCount; i++)
                     {
-                        if (content.GetChild(i).GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>() ==
-                            null)
+                        if (content.GetChild(i).GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>() == null)
                         {
                             numConsecutiveNonEntries++;
                         }
@@ -588,8 +606,7 @@ namespace RecyclerScrollRect
                 {
                     for (int i = content.childCount - 1; i >= 0; i--)
                     {
-                        if (content.GetChild(i).GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>() ==
-                            null)
+                        if (content.GetChild(i).GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>() == null)
                         {
                             numConsecutiveNonEntries++;
                         }
@@ -638,9 +655,7 @@ namespace RecyclerScrollRect
 
         private void RecycleEndcap()
         {
-            RemoveFromContent(_endcap.RectTransform,
-                    EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above)
-                .SetParent(_endcapParent, false);
+            RemoveFromContent(_endcap.RectTransform, EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above).SetParent(_endcapParent, false);
             _endcap.OnSentToRecycling();
         }
 
@@ -719,8 +734,7 @@ namespace RecyclerScrollRect
 
                 (int Start, int End) newVisibleIndices = _activeEntriesWindow.VisibleIndexRange.Value;
                 int entryIndex = entry.Index;
-                bool wentOffTop = Vector3.Dot(entry.RectTransform.position - viewport.transform.position,
-                    viewport.transform.up) > 0;
+                bool wentOffTop = Vector3.Dot(entry.RectTransform.position - viewport.transform.position, viewport.transform.up) > 0;
 
                 // Note that for any entry to be non-visible there must be at least one other entry pushing it offscreen.
                 // This means there's a guaranteed existent entry below/above it and we can be safe adding +/- 1 to our index window bounds
@@ -773,8 +787,7 @@ namespace RecyclerScrollRect
         {
             if (index < 0 || index >= _dataForEntries.Count)
             {
-                throw new ArgumentException(
-                    $"index \"{index}\" must be >= 0 and < the length of data \"{_dataForEntries.Count}\"");
+                throw new ArgumentException($"index \"{index}\" must be >= 0 and < the length of data \"{_dataForEntries.Count}\"");
             }
 
             if (_activeEntriesWindow.IsVisible(index))
@@ -845,8 +858,7 @@ namespace RecyclerScrollRect
             }
 
             // Unbind everything
-            foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in
-                     _recycledEntries.Entries.Values.ToList())
+            foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _recycledEntries.Entries.Values.ToList())
             {
                 _recycledEntries.Remove(entry.Index);
                 entry.UnbindIndex();
@@ -889,30 +901,25 @@ namespace RecyclerScrollRect
                 throw new DataException($"The data has been cleared. We should not have any active entries.");
             }
 
-            if (_activeEntriesWindow.Exists || _activeEntriesWindow.IsDirty ||
-                _activeEntriesWindow.ActiveEntriesRange.HasValue)
+            if (_activeEntriesWindow.Exists || _activeEntriesWindow.IsDirty || _activeEntriesWindow.ActiveEntriesRange.HasValue)
             {
-                throw new DataException(
-                    $"The data has been cleared and the window should not exist. There's no underlying data to have a window over.");
+                throw new DataException($"The data has been cleared and the window should not exist. There's no underlying data to have a window over.");
             }
 
             if (_recycledEntries.Entries.Any())
             {
-                throw new DataException(
-                    $"After clearing, all entries should return to the pool unbound. There are still {_recycledEntries.Entries.Count} entries in the pool bound.");
+                throw new DataException($"After clearing, all entries should return to the pool unbound. There are still {_recycledEntries.Entries.Count} entries in the pool bound.");
             }
 
             int numMissingUnboundEntries = numTargetUnboundEntries - _unboundEntries.Count;
             if (numMissingUnboundEntries != 0)
             {
-                throw new DataException(
-                    $"After clearing, all entries should return to the pool unbound. Missing {numMissingUnboundEntries} entries.");
+                throw new DataException($"After clearing, all entries should return to the pool unbound. Missing {numMissingUnboundEntries} entries.");
             }
 
             if (_endcap != null && _endcap.gameObject.activeSelf)
             {
-                throw new DataException(
-                    "The data has been cleared. We expect an empty window and therefore the endcap should not be active.");
+                throw new DataException("The data has been cleared. We expect an empty window and therefore the endcap should not be active.");
             }
 
             if (_currScrollingToIndex.HasValue || _scrollToIndexCoroutine != null)
@@ -939,8 +946,7 @@ namespace RecyclerScrollRect
             // Mark the entry for re-use
             if (_recycledEntries.Entries.ContainsKey(entry.Index))
             {
-                throw new InvalidOperationException(
-                    "We should not have two copies of the same entry in recycling; we only need one.");
+                throw new InvalidOperationException("We should not have two copies of the same entry in recycling; we only need one.");
             }
 
             _recycledEntries.Add(entry.Index, entry);
@@ -968,8 +974,7 @@ namespace RecyclerScrollRect
             // Then try and use the bound entry in recycling that's been there the longest
             else if (_recycledEntries.Entries.Any())
             {
-                (int firstIndex, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> firstEntry) =
-                    _recycledEntries.GetOldestEntry();
+                (int firstIndex, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> firstEntry) = _recycledEntries.GetOldestEntry();
                 entry = firstEntry;
                 _recycledEntries.Remove(firstIndex);
             }
@@ -1069,10 +1074,12 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Called when an entry has updated its dimensions, and needs to alert the parent Recycler of its new size
+        /// Called when an entry has updated its dimensions, and needs to alert the parent Recycler of its new size.
+        ///
+        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
+        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
-        public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry,
-            FixEntries fixEntries = FixEntries.Below)
+        public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
         {
             RecalculateContentChildSize(entry.RectTransform, fixEntries);
         }
@@ -1082,8 +1089,7 @@ namespace RecyclerScrollRect
         /// </summary>
         public void RecalculateEndcapSize(FixEntries? fixEntries = null)
         {
-            RecalculateContentChildSize(_endcap.RectTransform,
-                fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
+            RecalculateContentChildSize(_endcap.RectTransform, fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
         }
 
         /// <summary>
@@ -1116,8 +1122,7 @@ namespace RecyclerScrollRect
             float initY = content.anchoredPosition.y;
 
             // Define how the size change will come off the RectTransform, then incorporate the size change
-            content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f :
-                fixEntries == FixEntries.Above ? 1f : 0.5f));
+            content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f : fixEntries == FixEntries.Above ? 1f : 0.5f));
             LayoutRebuilder.ForceRebuildLayoutImmediate(content);
 
             // ScrollRects act differently if there's not enough content to scroll through in the first place
@@ -1151,8 +1156,7 @@ namespace RecyclerScrollRect
         {
             if (index < 0 || index >= _dataForEntries.Count)
             {
-                throw new ArgumentException(
-                    $"index \"{index}\" must be >= 0 and < the length of data \"{_dataForEntries.Count}\"");
+                throw new ArgumentException($"index \"{index}\" must be >= 0 and < the length of data \"{_dataForEntries.Count}\"");
             }
 
             if (_scrollToIndexCoroutine != null)
@@ -1161,8 +1165,7 @@ namespace RecyclerScrollRect
             }
 
             _currScrollingToIndex = index;
-            _scrollToIndexCoroutine = StartCoroutine(ScrollToIndexInner(scrollToAlignment, onScrollComplete,
-                scrollSpeedViewportsPerSecond, isImmediate));
+            _scrollToIndexCoroutine = StartCoroutine(ScrollToIndexInner(scrollToAlignment, onScrollComplete, scrollSpeedViewportsPerSecond, isImmediate));
         }
 
         /// <summary>
@@ -1175,12 +1178,14 @@ namespace RecyclerScrollRect
             float scrollSpeedViewportsPerSecond = DefaultScrollSpeedViewportsPerSecond,
             bool isImmediate = false)
         {
-            ScrollToIndex(GetCurrentIndexForKey(key), scrollToAlignment, onScrollComplete,
-                scrollSpeedViewportsPerSecond, isImmediate);
+            ScrollToIndex(GetCurrentIndexForKey(key), scrollToAlignment, onScrollComplete, scrollSpeedViewportsPerSecond, isImmediate);
         }
 
-        private IEnumerator ScrollToIndexInner(ScrollToAlignment scrollToAlignment, Action onScrollComplete,
-            float scrollSpeedViewportsPerSecond, bool isImmediate)
+        private IEnumerator ScrollToIndexInner(
+            ScrollToAlignment scrollToAlignment, 
+            Action onScrollComplete,
+            float scrollSpeedViewportsPerSecond, 
+            bool isImmediate)
         {
             // Scrolling should not fight existing movement
             StopMovementAndDrag();
@@ -1207,8 +1212,7 @@ namespace RecyclerScrollRect
             {
                 int index = _currScrollingToIndex.Value;
 
-                float normalizedScrollDistanceLeftToTravelThisFrame =
-                    DistanceToNormalizedScrollDistance(distanceLeftToTravelThisFrame);
+                float normalizedScrollDistanceLeftToTravelThisFrame = DistanceToNormalizedScrollDistance(distanceLeftToTravelThisFrame);
                 float currNormalizedY = normalizedPosition.y;
                 float newNormalizedY = 0f;
 
@@ -1218,14 +1222,12 @@ namespace RecyclerScrollRect
                     // Scroll toward lesser indices
                     if (index < _activeEntriesWindow.ActiveEntriesRange.Value.Start)
                     {
-                        newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 1 : 0,
-                            normalizedScrollDistanceLeftToTravelThisFrame);
+                        newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 1 : 0, normalizedScrollDistanceLeftToTravelThisFrame);
                     }
                     // Scroll toward greater indices
                     else if (index > _activeEntriesWindow.ActiveEntriesRange.Value.End)
                     {
-                        newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 0 : 1,
-                            normalizedScrollDistanceLeftToTravelThisFrame);
+                        newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 0 : 1, normalizedScrollDistanceLeftToTravelThisFrame);
                     }
 
                     normalizedPosition = normalizedPosition.WithY(newNormalizedY);
@@ -1234,12 +1236,9 @@ namespace RecyclerScrollRect
                 // Find and scroll to the exact position of the now active entry
                 else
                 {
-                    float entryNormalizedY =
-                        this.GetNormalizedVerticalPositionOfChild(_activeEntries[index].RectTransform,
-                            normalizedPositionWithinChild);
+                    float entryNormalizedY = this.GetNormalizedVerticalPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild);
 
-                    newNormalizedY = Mathf.MoveTowards(currNormalizedY, entryNormalizedY,
-                        normalizedScrollDistanceLeftToTravelThisFrame);
+                    newNormalizedY = Mathf.MoveTowards(currNormalizedY, entryNormalizedY, normalizedScrollDistanceLeftToTravelThisFrame);
                     normalizedPosition = normalizedPosition.WithY(newNormalizedY);
 
                     if (this.IsAtNormalizedPosition(normalizedPosition.WithY(entryNormalizedY)))
@@ -1249,8 +1248,7 @@ namespace RecyclerScrollRect
                 }
 
                 // We may not have travelled the full desired distance in this iteration as we might need to spawn the next set of active entries (and scroll past them)
-                float distanceTravelledInIteration =
-                    NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
+                float distanceTravelledInIteration = NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
 
                 // If we didn't make any progress in our current iteration we must have travelled the full frame distance (or hit the very end of the list)
                 if (Mathf.Approximately(distanceTravelledInIteration, 0f))
@@ -1308,8 +1306,7 @@ namespace RecyclerScrollRect
         {
             if (index < 0 || index > _dataForEntries.Count)
             {
-                throw new IndexOutOfRangeException(
-                    $"Invalid index: {index}. Current data length: {_dataForEntries.Count}");
+                throw new IndexOutOfRangeException($"Invalid index: {index}. Current data length: {_dataForEntries.Count}");
             }
 
             // Shift the indices of existing entries that will be affected by the insertion
@@ -1336,8 +1333,7 @@ namespace RecyclerScrollRect
         {
             if (index < 0 || index >= _dataForEntries.Count)
             {
-                throw new IndexOutOfRangeException(
-                    $"Invalid index: {index}. Current data length: {_dataForEntries.Count}");
+                throw new IndexOutOfRangeException($"Invalid index: {index}. Current data length: {_dataForEntries.Count}");
             }
 
             // Shift the indices of existing entries that will be affected by the deletion
