@@ -49,9 +49,8 @@ namespace RecyclerScrollRect
         /// </summary>
         public void ShiftIndices(int startIndex, int shiftAmount)
         {
-            Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> shiftedEntries =
-                new Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
-            Dictionary<int, LinkedListNode<int>> shiftedQueuePositions = new Dictionary<int, LinkedListNode<int>>();
+            Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> shiftedEntries = new();
+            Dictionary<int, LinkedListNode<int>> shiftedQueuePositions = new();
 
             foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> recycledEntry) in _entries)
             {
@@ -78,8 +77,7 @@ namespace RecyclerScrollRect
         public KeyValuePair<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> GetOldestEntry()
         {
             int oldestIndex = _queueEntries.First.Value;
-            return new KeyValuePair<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>(oldestIndex,
-                _entries[oldestIndex]);
+            return new KeyValuePair<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>(oldestIndex, _entries[oldestIndex]);
         }
     }
 }

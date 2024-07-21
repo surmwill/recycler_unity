@@ -20,8 +20,7 @@ namespace RecyclerScrollRect
 
         private DrivenRectTransformTracker _tracker;
 
-        private RecyclerPosition _lastAppendTo =
-            DefaultAppendTo == RecyclerPosition.Bot ? RecyclerPosition.Top : RecyclerPosition.Bot;
+        private RecyclerPosition _lastAppendTo = DefaultAppendTo == RecyclerPosition.Bot ? RecyclerPosition.Top : RecyclerPosition.Bot;
 
         private RectTransform _lastContent;
 
@@ -65,8 +64,7 @@ namespace RecyclerScrollRect
 
                 entriesParent.SetParent(transform);
                 content = entriesParent;
-                (content.localPosition, content.localRotation, content.localScale) =
-                    (Vector3.zero, Quaternion.identity, Vector3.one);
+                (content.localPosition, content.localRotation, content.localScale) = (Vector3.zero, Quaternion.identity, Vector3.one);
                 (content.offsetMin, content.offsetMax) = (Vector2.zero, Vector2.zero);
             }
 
@@ -104,8 +102,7 @@ namespace RecyclerScrollRect
                 // Add any missing entries
                 for (int i = 0; i < poolDifference; i++)
                 {
-                    RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry =
-                        ((GameObject) PrefabUtility.InstantiatePrefab(_recyclerEntryPrefab.gameObject, _poolParent))
+                    RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = ((GameObject) PrefabUtility.InstantiatePrefab(_recyclerEntryPrefab.gameObject, _poolParent))
                         .GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
 
                     entry.name = RecyclerScrollRectEntry<TEntryData, TKeyEntryData>.UnboundIndex.ToString();
@@ -141,16 +138,14 @@ namespace RecyclerScrollRect
                 // Ensure the endcap exists in the pool
                 if (_endcap == null)
                 {
-                    _endcap = _endcapParent
-                        .GetComponentsInChildren<RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>>(true)
+                    _endcap = _endcapParent.GetComponentsInChildren<RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>>(true)
                         .FirstOrDefault(IsInstanceOfEndcapPrefab);
 
                     if (_endcap == null)
                     {
-                        _endcap =
-                            ((GameObject) PrefabUtility.InstantiatePrefab(_endcapPrefab.gameObject, _endcapParent))
+                        _endcap = ((GameObject) PrefabUtility.InstantiatePrefab(_endcapPrefab.gameObject, _endcapParent))
                             .GetComponent<RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>>();
-
+                        
                         _endcap.gameObject.SetActive(false);
                     }
                 }
@@ -275,8 +270,7 @@ namespace RecyclerScrollRect
                 {
                     if (!visibleIndices.Remove(entry.Index))
                     {
-                        Debug.LogError(
-                            $"{entry.Index} should be in the visible index window.\n\n {_activeEntriesWindow.PrintRanges()}");
+                        Debug.LogError($"{entry.Index} should be in the visible index window.\n\n {_activeEntriesWindow.PrintRanges()}");
                         Debug.Break();
                         return;
                     }
@@ -288,8 +282,7 @@ namespace RecyclerScrollRect
                     {
                         if (!indicesInStartCache.Remove(entry.Index))
                         {
-                            Debug.LogError(
-                                $"{entry.Index} should be in the start cache window.\n\n {_activeEntriesWindow.PrintRanges()}");
+                            Debug.LogError($"{entry.Index} should be in the start cache window.\n\n {_activeEntriesWindow.PrintRanges()}");
                             Debug.Break();
                             return;
                         }
@@ -298,8 +291,7 @@ namespace RecyclerScrollRect
                     {
                         if (!indicesInEndCache.Remove(entry.Index))
                         {
-                            Debug.LogError(
-                                $"{entry.Index} should be in the end cache window.\n\n {_activeEntriesWindow.PrintRanges()}");
+                            Debug.LogError($"{entry.Index} should be in the end cache window.\n\n {_activeEntriesWindow.PrintRanges()}");
                             Debug.Break();
                             return;
                         }
@@ -312,8 +304,7 @@ namespace RecyclerScrollRect
                     {
                         if (!indicesInStartCache.Remove(entry.Index))
                         {
-                            Debug.LogError(
-                                $"{entry.Index} should be in the start cache window.\n\n {_activeEntriesWindow.PrintRanges()}");
+                            Debug.LogError($"{entry.Index} should be in the start cache window.\n\n {_activeEntriesWindow.PrintRanges()}");
                             Debug.Break();
                             return;
                         }
@@ -322,8 +313,7 @@ namespace RecyclerScrollRect
                     {
                         if (!indicesInEndCache.Remove(entry.Index))
                         {
-                            Debug.LogError(
-                                $"{entry.Index} should be in the end cache window.\n\n {_activeEntriesWindow.PrintRanges()}");
+                            Debug.LogError($"{entry.Index} should be in the end cache window.\n\n {_activeEntriesWindow.PrintRanges()}");
                             Debug.Break();
                             return;
                         }
@@ -334,24 +324,21 @@ namespace RecyclerScrollRect
             // Ensure all indices match with actual entries
             if (indicesInStartCache.Any())
             {
-                Debug.LogError(
-                    $"The following entries were reported in the start cache window but couldn't be found in the start cache: {string.Join(',', indicesInStartCache)}");
+                Debug.LogError($"The following entries were reported in the start cache window but couldn't be found in the start cache: {string.Join(',', indicesInStartCache)}");
                 Debug.Break();
                 return;
             }
 
             if (indicesInEndCache.Any())
             {
-                Debug.LogError(
-                    $"The following entries were reported to be in the end cache window but weren't found in the end cache: {string.Join(',', indicesInEndCache)}");
+                Debug.LogError($"The following entries were reported to be in the end cache window but weren't found in the end cache: {string.Join(',', indicesInEndCache)}");
                 Debug.Break();
                 return;
             }
 
             if (visibleIndices.Any())
             {
-                Debug.LogError(
-                    $"The following entries were reported to be visible window but weren't found to be visible: {string.Join(',', visibleIndices)}");
+                Debug.LogError($"The following entries were reported to be visible window but weren't found to be visible: {string.Join(',', visibleIndices)}");
                 Debug.Break();
                 return;
             }
@@ -365,8 +352,7 @@ namespace RecyclerScrollRect
             HashSet<int> seenIndices = new HashSet<int>();
             foreach (Transform t in content)
             {
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry =
-                    t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
+                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
                 if (entry == null)
                 {
                     return;
@@ -392,8 +378,7 @@ namespace RecyclerScrollRect
             int? lastIndex = null;
             foreach (Transform t in content)
             {
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry =
-                    t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
+                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
                 if (entry == null)
                 {
                     return;
@@ -423,8 +408,7 @@ namespace RecyclerScrollRect
 
                 if (!EqualityComparer<TKeyEntryData>.Default.Equals(actualKey, mappedKey))
                 {
-                    Debug.LogError(
-                        $"The mapped key corresponding to index {i} \"{mappedKey}\" does not match the actual key of the data at index {i} \"{actualKey}\"");
+                    Debug.LogError($"The mapped key corresponding to index {i} \"{mappedKey}\" does not match the actual key of the data at index {i} \"{actualKey}\"");
                     Debug.Break();
                     return;
                 }
@@ -443,8 +427,7 @@ namespace RecyclerScrollRect
 
                 if (mappedIndex != i)
                 {
-                    Debug.LogError(
-                        $"The mapped index {mappedIndex} for key \"{key}\" does not match its actual index {i}");
+                    Debug.LogError($"The mapped index {mappedIndex} for key \"{key}\" does not match its actual index {i}");
                     Debug.Break();
                     return;
                 }
@@ -465,8 +448,7 @@ namespace RecyclerScrollRect
             // No indices reported but references to active entries
             if (!ActiveEntriesWindow.ActiveEntriesRange.HasValue && ActiveEntries.Any())
             {
-                Debug.LogError(
-                    "The window states there are no active indices, but we are still referencing active entries.");
+                Debug.LogError("The window states there are no active indices, but we are still referencing active entries.");
                 Debug.Break();
                 return;
             }
@@ -478,8 +460,7 @@ namespace RecyclerScrollRect
             {
                 if (!ActiveEntries.ContainsKey(i))
                 {
-                    Debug.LogError(
-                        $"The window states that index {i} should be active, but there is no reference to an active entry with that index.");
+                    Debug.LogError($"The window states that index {i} should be active, but there is no reference to an active entry with that index.");
                     Debug.Break();
                     return;
                 }
@@ -490,8 +471,7 @@ namespace RecyclerScrollRect
             {
                 if (index < activeIndicesStart || index > activeIndicesEnd)
                 {
-                    Debug.LogError(
-                        $"We have a reference to an active entry with index {index}, but the window does not contain this active index.");
+                    Debug.LogError($"We have a reference to an active entry with index {index}, but the window does not contain this active index.");
                     Debug.Break();
                     return;
                 }

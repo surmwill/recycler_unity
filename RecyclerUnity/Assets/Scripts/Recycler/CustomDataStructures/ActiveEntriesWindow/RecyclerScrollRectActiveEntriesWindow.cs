@@ -25,29 +25,23 @@ namespace RecyclerScrollRect
         /// <summary>
         /// The range of entry indices contained in the start cache. Null if the range is empty.
         /// </summary>
-        public (int Start, int End)? StartCacheIndexRange =>
-            !Exists || !VisibleIndexRange.HasValue || VisibleIndexRange.Value.Start == 0 ?
+        public (int Start, int End)? StartCacheIndexRange => !Exists || !VisibleIndexRange.HasValue || VisibleIndexRange.Value.Start == 0 ?
                 null :
                 (Mathf.Max(VisibleIndexRange.Value.Start - _numCached, 0), VisibleIndexRange.Value.Start - 1);
 
         /// <summary>
         /// The range of entry indices contained in the end cache. Null if the range is empty.
         /// </summary>
-        public (int Start, int End)? EndCacheIndexRange => !Exists || (VisibleIndexRange.HasValue &&
-                                                                       VisibleIndexRange.Value.End ==
-                                                                       _virContainer.CurrentDataSize - 1) ?
+        public (int Start, int End)? EndCacheIndexRange => !Exists || (VisibleIndexRange.HasValue && VisibleIndexRange.Value.End == _virContainer.CurrentDataSize - 1) ?
             null :
-            (VisibleIndexRange?.End + 1 ?? 0,
-                Mathf.Min(VisibleIndexRange.HasValue ? VisibleIndexRange.Value.End + _numCached : _numCached - 1,
-                    _virContainer.CurrentDataSize - 1));
+            (VisibleIndexRange?.End + 1 ?? 0, Mathf.Min(VisibleIndexRange.HasValue ? VisibleIndexRange.Value.End + _numCached : _numCached - 1, _virContainer.CurrentDataSize - 1));
 
         /// <summary>
         /// The range of active entries: both visible and cached. Null if the range is empty.
         /// </summary>
         public (int Start, int End)? ActiveEntriesRange => !Exists ?
             null :
-            (StartCacheIndexRange?.Start ?? VisibleIndexRange?.Start ?? 0,
-                EndCacheIndexRange?.End ?? VisibleIndexRange.Value.End);
+            (StartCacheIndexRange?.Start ?? VisibleIndexRange?.Start ?? 0, EndCacheIndexRange?.End ?? VisibleIndexRange.Value.End);
 
         /// <summary>
         /// Whether the window of active entries has changed
@@ -65,8 +59,7 @@ namespace RecyclerScrollRect
         {
             if (index > _virContainer.CurrentDataSize)
             {
-                throw new ArgumentException(
-                    $"index must \"{index}\" be non-negative and <= the window size \"{_virContainer.CurrentDataSize}\"");
+                throw new ArgumentException($"index must \"{index}\" be non-negative and <= the window size \"{_virContainer.CurrentDataSize}\"");
             }
 
             // Increase the size of the window
@@ -100,8 +93,7 @@ namespace RecyclerScrollRect
         {
             if (index < 0 || index >= _virContainer.CurrentDataSize)
             {
-                throw new ArgumentException(
-                    $"index must \"{index}\" be non-negative and < the window size \"{_virContainer.CurrentDataSize}\"");
+                throw new ArgumentException($"index must \"{index}\" be non-negative and < the window size \"{_virContainer.CurrentDataSize}\"");
             }
 
             // Decrease the size of the window
@@ -154,8 +146,7 @@ namespace RecyclerScrollRect
         /// </summary>
         public bool IsVisible(int index)
         {
-            return VisibleIndexRange.HasValue && index >= VisibleIndexRange.Value.Start &&
-                   index <= VisibleIndexRange.Value.End;
+            return VisibleIndexRange.HasValue && index >= VisibleIndexRange.Value.Start && index <= VisibleIndexRange.Value.End;
         }
 
         /// <summary>
@@ -163,8 +154,7 @@ namespace RecyclerScrollRect
         /// </summary>
         public bool IsInStartCache(int index)
         {
-            return StartCacheIndexRange.HasValue && index >= StartCacheIndexRange.Value.Start &&
-                   index <= StartCacheIndexRange.Value.End;
+            return StartCacheIndexRange.HasValue && index >= StartCacheIndexRange.Value.Start && index <= StartCacheIndexRange.Value.End;
         }
 
         /// <summary>
@@ -172,8 +162,7 @@ namespace RecyclerScrollRect
         /// </summary>
         public bool IsInEndCache(int index)
         {
-            return EndCacheIndexRange.HasValue && index >= EndCacheIndexRange.Value.Start &&
-                   index <= EndCacheIndexRange.Value.End;
+            return EndCacheIndexRange.HasValue && index >= EndCacheIndexRange.Value.Start && index <= EndCacheIndexRange.Value.End;
         }
 
         /// <summary>
