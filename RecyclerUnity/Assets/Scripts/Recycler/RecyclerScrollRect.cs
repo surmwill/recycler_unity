@@ -151,6 +151,10 @@ namespace RecyclerScrollRect
         private int? _currScrollingToIndex;
 
         private BoxCollider _viewportCollider;
+        
+        private LinkedList<int> _toRecycleEntries = new();
+        private LinkedList<int> _newCachedStartEntries = new();
+        private LinkedList<int> _newCachedEndEntries = new();
 
         protected override void Awake()
         {
@@ -374,6 +378,21 @@ namespace RecyclerScrollRect
             {
                 _currScrollingToIndex += shiftAmount;
             }
+
+            // If we are in the midst of updating what entries should be active, shift what we are, or going to be, recycling and adding to the caches
+            ShiftLinkedList(_toRecycleEntries);
+            ShiftLinkedList(_newCachedStartEntries);
+            ShiftLinkedList(_newCachedEndEntries);
+
+            void ShiftLinkedList(LinkedList<int> indices)
+            {
+                LinkedListNode<int> current = indices.First;
+                while (current != null)
+                {
+                    current.Value += current.Value >= startIndex ? shiftAmount : 0;
+                    current = current.Next;
+                }
+            }
         }
 
         /// <summary>
@@ -455,17 +474,15 @@ namespace RecyclerScrollRect
             while (_activeEntriesWindow.IsDirty)
             {
                 _activeEntriesWindow.SetNonDirty();
-
-                List<int> toRecycleEntries = new();
-                List<int> newCachedStartEntries = new();
-                List<int> newCachedEndEntries = new();
-
+                
+                (_toRecycleEntries, _newCachedStartEntries, _newCachedEndEntries) = (new(), new(), new());
+                
                 // Determine what entries need to be removed (aren't in the cache and aren't visible)
                 foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> _) in _activeEntries)
                 {
                     if (!_activeEntriesWindow.Contains(index))
                     {
-                        toRecycleEntries.Add(index);
+                        _toRecycleEntries.AddLast(index);
                     }
                 }
 
@@ -478,7 +495,7 @@ namespace RecyclerScrollRect
                     {
                         if (!_activeEntries.ContainsKey(i))
                         {
-                            newCachedStartEntries.Add(i);
+                            _newCachedStartEntries.AddLast(i);
                         }
                     }
                 }
@@ -492,38 +509,46 @@ namespace RecyclerScrollRect
                     {
                         if (!_activeEntries.ContainsKey(i))
                         {
-                            newCachedEndEntries.Add(i);
+                            _newCachedEndEntries.AddLast(i);
                         }
                     }
                 }
 
                 // Recycle unneeded entries
-                foreach (int index in toRecycleEntries)
+                LinkedListNode<int> current = _toRecycleEntries.First;
+                while (current != null)
                 {
-                    SendToRecycling(_activeEntries[index]);
-                    _activeEntries.Remove(index);
+                    _toRecycleEntries.RemoveFirst();
+                    SendToRecycling(_activeEntries[current.Value]);
+                    current = _toRecycleEntries.First;
                 }
 
                 // Create new entries in the start cache
                 bool isStartCacheAtTop = StartCachePosition == RecyclerPosition.Top;
                 int siblingIndexOffset = GetNumConsecutiveNonEntries(isStartCacheAtTop);
 
-                foreach (int index in newCachedStartEntries)
+                current = _newCachedStartEntries.First;
+                while (current != null)
                 {
-                    CreateAndAddEntry(index,
+                    _newCachedStartEntries.RemoveFirst();
+                    CreateAndAddEntry(current.Value,
                         isStartCacheAtTop ? siblingIndexOffset : content.childCount - siblingIndexOffset,
                         isStartCacheAtTop ? FixEntries.Below : FixEntries.Above);
+                    current = _newCachedStartEntries.First;
                 }
 
                 // Create new entries in the end cache
                 bool isEndCacheAtTop = EndCachePosition == RecyclerPosition.Top;
                 siblingIndexOffset = GetNumConsecutiveNonEntries(isEndCacheAtTop);
 
-                foreach (int index in newCachedEndEntries)
+                current = _newCachedEndEntries.First;
+                while (current != null)
                 {
-                    CreateAndAddEntry(index,
+                    _newCachedEndEntries.RemoveFirst();
+                    CreateAndAddEntry(current.Value,
                         isEndCacheAtTop ? siblingIndexOffset : content.childCount - siblingIndexOffset,
                         isEndCacheAtTop ? FixEntries.Below : FixEntries.Above);
+                    current = _newCachedEndEntries.First;
                 }
 
                 // Cached entries come just before and just after what is visible. We may have added entries initially as part of the cache, but there's actually room
@@ -904,8 +929,7 @@ namespace RecyclerScrollRect
             StopMovement();
         }
 
-        private void SendToRecycling(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry,
-            FixEntries fixEntries = FixEntries.Below)
+        private void SendToRecycling(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
         {
             // Handle the GameObject
             RectTransform entryTransform = entry.RectTransform;
@@ -1325,6 +1349,11 @@ namespace RecyclerScrollRect
             // Actual removal (and modification) of underlying data
             _activeEntriesWindow.Remove(index);
             _dataForEntries.RemoveAt(index);
+
+            // Remove from iteration
+            _toRecycleEntries.Remove(index);
+            _newCachedStartEntries.Remove(index);
+            _newCachedEndEntries.Remove(index);
         }
 
         /// <summary>
