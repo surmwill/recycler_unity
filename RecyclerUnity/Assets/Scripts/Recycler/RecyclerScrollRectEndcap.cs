@@ -6,8 +6,7 @@ namespace RecyclerScrollRect
     /// The endcap to a recycler: an entry different than all the others, appearing at the very end of the content.
     /// The unique logic could, for example, be used to fetch the next set of (normal) entries from a database.
     /// </summary>
-    public abstract class RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> : MonoBehaviour
-        where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
+    public abstract class RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> : MonoBehaviour where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         /// <summary>
         /// The end-cap's RectTransform

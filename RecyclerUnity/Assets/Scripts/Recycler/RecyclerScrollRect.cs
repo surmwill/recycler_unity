@@ -46,8 +46,7 @@ namespace RecyclerScrollRect
     /// See full documentation at: https://github.com/surmwill/recycler_unity
     /// </summary>
     [RequireComponent(typeof(BoxCollider))]
-    public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : ScrollRect, IPointerDownHandler
-        where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
+    public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : ScrollRect, IPointerDownHandler where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         private const float DefaultScrollSpeedViewportsPerSecond = 0.5f;
         private const RecyclerPosition DefaultAppendTo = RecyclerPosition.Bot;
@@ -1419,8 +1418,7 @@ namespace RecyclerScrollRect
 
         private bool IsAboveViewport(RectTransform rectTransform)
         {
-            return Vector3.Dot(Vector3.ProjectOnPlane(rectTransform.position - viewport.position, viewport.forward),
-                viewport.up) > 0;
+            return Vector3.Dot(Vector3.ProjectOnPlane(rectTransform.position - viewport.position, viewport.forward), viewport.up) > 0;
         }
 
         private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)

@@ -6,8 +6,7 @@ namespace RecyclerScrollRect
     /// Base class for all entries displayed in the Recycler (excluding the optional endcap)
     /// </summary>
     [RequireComponent(typeof(RectTransform))]
-    public abstract class RecyclerScrollRectEntry<TEntryData, TKeyEntryData> : MonoBehaviour
-        where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
+    public abstract class RecyclerScrollRectEntry<TEntryData, TKeyEntryData> : MonoBehaviour where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         /// <summary>
         /// Index for an entry that is not bound to any data
@@ -112,6 +111,9 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Alerts the Recycler of size changes, allowing the Recycler to properly display it.
         /// If the entry is auto-sized, this also triggers a auto-size recalculation prior to alerting the Recycler.
+        ///
+        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
+        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
         protected void RecalculateDimensions(FixEntries fixEntries = FixEntries.Mid)
         {
