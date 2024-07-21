@@ -38,8 +38,7 @@ namespace RecyclerScrollRect
 
         private void Update()
         {
-            if (_fetchWhenOnScreen == null &&
-                Recycler.GetStateOfEndcap() == RecyclerScrollRectContentState.ActiveVisible)
+            if (_fetchWhenOnScreen == null && Recycler.GetStateOfEndcap() == RecyclerScrollRectContentState.ActiveVisible)
             {
                 _fetchWhenOnScreen = StartCoroutine(FetchWhenOnScreen());
             }

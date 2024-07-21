@@ -115,8 +115,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// The currently active entries, visible and cached. The key is their index. 
         /// </summary>
-        public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> ActiveEntries =>
-            _activeEntries;
+        public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> ActiveEntries => _activeEntries;
 
         /// <summary>
         /// Contains information about the ranges of indices that are currently visible or cached.

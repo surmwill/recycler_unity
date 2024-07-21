@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,11 +24,9 @@ namespace RecyclerScrollRect
 
         private void Update()
         {
-            IReadOnlyDictionary<int, RecyclerScrollRectEntry<EmptyRecyclerData, string>> activeEntries =
-                _deleteRecyclerScrollRect.ActiveEntries;
+            IReadOnlyDictionary<int, RecyclerScrollRectEntry<EmptyRecyclerData, string>> activeEntries = _deleteRecyclerScrollRect.ActiveEntries;
 
-            if (Input.GetKeyDown(KeyCode.A) &&
-                Array.TrueForAll(IndicesToRemove, index => activeEntries.ContainsKey(index)))
+            if (Input.GetKeyDown(KeyCode.A) && Array.TrueForAll(IndicesToRemove, index => activeEntries.ContainsKey(index)))
             {
                 foreach (int index in IndicesToRemove)
                 {
