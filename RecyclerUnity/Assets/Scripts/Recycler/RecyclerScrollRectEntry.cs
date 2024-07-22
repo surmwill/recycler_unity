@@ -50,12 +50,12 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Binds the entry to a new set of data
         /// </summary>
-        protected abstract void OnBindNewData(TEntryData entryData, RecyclerScrollRectContentState onBindState);
+        protected abstract void OnBindNewData(TEntryData entryData, RecyclerScrollRectContentState startActiveState);
 
         /// <summary>
         /// Rebinds this entry to its existing held data, possibly allowing a resumption of operations instead of a fresh restart
         /// </summary>
-        protected virtual void OnRebindExistingData(RecyclerScrollRectContentState onRebindState)
+        protected virtual void OnRebindExistingData(RecyclerScrollRectContentState startActiveState)
         {
             // Empty
         }
@@ -70,9 +70,9 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Called when the active state of the entry changes, that is, when it moves from cached -> visible or visible -> cached
+        /// Called when the active state of the entry changes, that is, when it moves from: cached -> visible or visible -> cached.
         /// </summary>
-        protected virtual void OnActiveStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+        protected virtual void OnActiveStateChanged(RecyclerScrollRectContentState prevActiveState, RecyclerScrollRectContentState newActiveState)
         {
             // Empty
         }

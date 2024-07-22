@@ -27,41 +27,44 @@ namespace RecyclerScrollRect
 
         private Coroutine _fetchWhenOnScreen;
 
+        protected override void OnFetchedFromRecycling(RecyclerScrollRectContentState startActiveState)
+        {
+            OnActiveStateChanged(RecyclerScrollRectContentState.InactiveInPool, startActiveState);
+        }
+
         public override void OnSentToRecycling()
         {
             Reset();
         }
 
-        private void Update()
+        protected override void OnActiveStateChanged(RecyclerScrollRectContentState prevActiveState, RecyclerScrollRectContentState newActiveState)
         {
-            if (_fetchWhenOnScreen == null && Recycler.GetStateOfEndcap() == RecyclerScrollRectContentState.ActiveVisible)
+            if (newActiveState == RecyclerScrollRectContentState.ActiveVisible)
             {
                 _fetchWhenOnScreen = StartCoroutine(FetchWhenOnScreen());
             }
+            else
+            {
+                Reset();
+            }
         }
-
+        
         private IEnumerator FetchWhenOnScreen()
         {
             float timeLeft = TimeToLoadNextPageSeconds;
 
             float nextEllipseChange = timeLeft - TimeBetweenEllipseChangeSeconds;
-            string ellipse = string.Empty;
+            string textEllipses = string.Empty;
 
             while (timeLeft > 0)
             {
-                if (Recycler.GetStateOfEndcap() != RecyclerScrollRectContentState.ActiveVisible)
-                {
-                    Reset();
-                    yield break;
-                }
-
                 _timeLeftText.text = timeLeft.ToString(TimeFormat);
                 _loadingOutline.fillAmount = (TimeToLoadNextPageSeconds - timeLeft) / TimeToLoadNextPageSeconds;
 
                 if (timeLeft < nextEllipseChange)
                 {
-                    ellipse = ellipse.Length == 3 ? string.Empty : ellipse + ".";
-                    _titleText.text = TitleText + ellipse;
+                    textEllipses = textEllipses.Length == 3 ? string.Empty : textEllipses + ".";
+                    _titleText.text = TitleText + textEllipses;
                     nextEllipseChange -= TimeBetweenEllipseChangeSeconds;
                 }
 

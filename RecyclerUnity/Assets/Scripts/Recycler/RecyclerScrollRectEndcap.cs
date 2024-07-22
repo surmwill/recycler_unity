@@ -32,7 +32,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Called when the endcap becomes active
         /// </summary>
-        protected virtual void OnFetchedFromRecycling(RecyclerScrollRectContentState onFetchedState)
+        protected virtual void OnFetchedFromRecycling(RecyclerScrollRectContentState startActiveState)
         {
             // Empty   
         }
@@ -83,9 +83,9 @@ namespace RecyclerScrollRect
         }
         
         /// <summary>
-        /// Called when the active state of the endcap changes, that is, when it moves from cached -> visible or visible -> cached
+        /// Called when the active state of the endcap changes, that is, when it moves from: cached -> visible or visible -> cached.
         /// </summary>
-        protected virtual void OnActiveStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+        protected virtual void OnActiveStateChanged(RecyclerScrollRectContentState prevActiveState, RecyclerScrollRectContentState newActiveState)
         {
             // Empty
         }

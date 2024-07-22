@@ -13,7 +13,7 @@ namespace RecyclerScrollRect
 
         private Sequence _deleteSequence;
 
-        protected override void OnBindNewData(EmptyRecyclerData _, RecyclerScrollRectContentState onBindState)
+        protected override void OnBindNewData(EmptyRecyclerData _, RecyclerScrollRectContentState startActiveState)
         {
         }
 

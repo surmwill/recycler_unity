@@ -23,7 +23,7 @@ namespace RecyclerScrollRect
 
         private Sequence _growSequence;
 
-        protected override void OnBindNewData(InsertAndResizeData entryData, RecyclerScrollRectContentState onBindState)
+        protected override void OnBindNewData(InsertAndResizeData entryData, RecyclerScrollRectContentState startActiveState)
         {
             _displayNumber.alpha = 1f;
 
