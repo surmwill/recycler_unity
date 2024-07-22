@@ -9,9 +9,9 @@ namespace RecyclerScrollRect
     /// </summary>
     public enum RecyclerScrollRectContentState
     {
-        InactiveInPool = -1,
-        ActiveVisible = 0,
-        ActiveInStartCache = 1,
-        ActiveInEndCache = 2,
+        InactiveInPool = 0,
+        ActiveVisible = 1,
+        ActiveInStartCache = 2,
+        ActiveInEndCache = 3,
     }
 }

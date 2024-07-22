@@ -12,6 +12,8 @@ namespace RecyclerScrollRect
         /// The end-cap's RectTransform
         /// </summary>
         public RectTransform RectTransform { get; private set; }
+        
+        public RecyclerScrollRectContentState State { get; private set; }
 
         /// <summary>
         /// The Recycler this endcap is a part of
@@ -24,15 +26,49 @@ namespace RecyclerScrollRect
             Recycler = GetComponentInParent<RecyclerScrollRect<TEntryData, TKeyEntryData>>();
         }
 
+        #region CALLED_BY_PARENT_RECYCLER
+
         /// <summary>
         /// Called when the end-cap becomes active (note: can still be offscreen in the cache)
         /// </summary>
-        public abstract void OnFetchedFromRecycling();
+        public virtual void OnFetchedFromRecycling()
+        {
+            // Empty   
+        }
 
         /// <summary>
         /// Called when the end-cap gets recycled
         /// </summary>
-        public abstract void OnSentToRecycling();
+        public virtual void OnSentToRecycling()
+        {
+            // Empty
+        }
+
+        /// <summary>
+        /// Sets the state of the entry
+        /// </summary>
+        public void SetState(RecyclerScrollRectContentState newState)
+        {
+            RecyclerScrollRectContentState lastState = State;
+            State = newState;
+            
+            if (lastState != RecyclerScrollRectContentState.InactiveInPool && 
+                newState != RecyclerScrollRectContentState.InactiveInPool &&  
+                newState != lastState)
+            {
+                OnActiveStateChanged(lastState, newState);   
+            }
+        }
+        
+        /// <summary>
+        /// Called when the active state of the endcap changes, that is, when it moves from cached -> visible or visible -> cached
+        /// </summary>
+        protected virtual void OnActiveStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+        {
+            // Empty
+        }
+        
+        #endregion
 
         /// <summary>
         /// Recalculates the endcap's dimensions.

@@ -596,7 +596,7 @@ namespace RecyclerScrollRect
             // Update the state of the endcap
             if (_endcap != null)
             {
-                
+                _endcap.SetState(GetStateOfEndcap());
             }
 
             // Returns the number of consecutive non-entries from the top or bottom of the entry list.

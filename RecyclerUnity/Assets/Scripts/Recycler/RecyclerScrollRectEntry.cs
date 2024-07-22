@@ -70,7 +70,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Called when the active state of an entry changes, that is, when it moves from cached -> visible or visible -> cached
+        /// Called when the active state of the entry changes, that is, when it moves from cached -> visible or visible -> cached
         /// </summary>
         protected virtual void OnActiveStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
         {
@@ -79,7 +79,7 @@ namespace RecyclerScrollRect
 
         #endregion
 
-        #region USED_BY_PARENT_RECYCLER
+        #region CALLED_BY_PARENT_RECYCLER
 
         /// <summary>
         /// Binds the entry to a new set of data
@@ -105,7 +105,6 @@ namespace RecyclerScrollRect
         /// </summary>
         public void OnRecycled()
         {
-            State = RecyclerScrollRectContentState.InactiveInPool;
             OnSentToRecycling();
         }
 
