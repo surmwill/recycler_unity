@@ -56,8 +56,7 @@ namespace RecyclerScrollRect
         [SerializeField]
         private RecyclerScrollRectEntry<TEntryData, TKeyEntryData> _recyclerEntryPrefab = null;
 
-        [Tooltip(
-            "The number of cached entries waiting just above and just below the visible entries to smoothly scroll into.")]
+        [Tooltip("The number of cached entries waiting just above and just below the visible entries to smoothly scroll into.")]
         [SerializeField]
         private int _numCachedAtEachEnd = 2;
 
@@ -70,8 +69,7 @@ namespace RecyclerScrollRect
         [SerializeField]
         private RectTransform _poolParent = null;
 
-        [Tooltip(
-            "The starting number of entries waiting to be bound, so we don't need to freshly instantiate everything at runtime.")]
+        [Tooltip("The starting number of entries waiting to be bound, so we don't need to freshly instantiate everything at runtime.")]
         [SerializeField]
         private int _poolSize = 15;
 
@@ -90,13 +88,11 @@ namespace RecyclerScrollRect
         private RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> _endcap = null;
 
         [Header("Extra")]
-        [Tooltip(
-            "On mobile, the target frame rate is often lower than technically possible to preserve battery, but a higher frame rate will result in smoother scrolling.")]
+        [Tooltip("On mobile, the target frame rate is often lower than technically possible to preserve battery, but a higher frame rate will result in smoother scrolling.")]
         [SerializeField]
         private bool _setTargetFrameRateTo60 = true;
 
-        [Tooltip(
-            "Used for debugging. Performs sanity checks in the editor, ensuring for example, that we aren't skipping indices.")]
+        [Tooltip("Used for debugging. Performs sanity checks in the editor, ensuring for example, that we aren't skipping indices.")]
         [SerializeField]
         private bool _debugPerformEditorChecks = true;
 
