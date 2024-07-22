@@ -13,21 +13,13 @@ namespace RecyclerScrollRect
 
         private Sequence _deleteSequence;
 
-        protected override void OnBindNewData(EmptyRecyclerData _)
-        {
-        }
-
-        protected override void OnRebindExistingData()
+        protected override void OnBindNewData(EmptyRecyclerData _, RecyclerScrollRectContentState state)
         {
         }
 
         protected override void OnSentToRecycling()
         {
             _deleteSequence?.Kill(true);
-        }
-
-        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
-        {
         }
 
         public void Delete()

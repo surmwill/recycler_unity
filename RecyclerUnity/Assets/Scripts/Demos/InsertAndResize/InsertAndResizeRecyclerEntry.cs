@@ -23,7 +23,7 @@ namespace RecyclerScrollRect
 
         private Sequence _growSequence;
 
-        protected override void OnBindNewData(InsertAndResizeData entryData)
+        protected override void OnBindNewData(InsertAndResizeData entryData, RecyclerScrollRectContentState state)
         {
             _displayNumber.alpha = 1f;
 
@@ -52,17 +52,9 @@ namespace RecyclerScrollRect
             }
         }
 
-        protected override void OnRebindExistingData()
-        {
-        }
-
         protected override void OnSentToRecycling()
         {
             _growSequence?.Kill(true);
-        }
-
-        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
-        {
         }
 
         private void Update()

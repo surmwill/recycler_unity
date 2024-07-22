@@ -13,19 +13,7 @@ namespace RecyclerScrollRect
         [SerializeField]
         private Text _indexText = null;
 
-        protected override void OnBindNewData(EmptyRecyclerData _)
-        {
-        }
-
-        protected override void OnRebindExistingData()
-        {
-        }
-
-        protected override void OnSentToRecycling()
-        {
-        }
-
-        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
+        protected override void OnBindNewData(EmptyRecyclerData _, RecyclerScrollRectContentState state)
         {
         }
 

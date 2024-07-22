@@ -18,7 +18,7 @@ namespace RecyclerScrollRect
         private Image _background = null;
 
         // Called when this entry is bound to new data
-        protected override void OnBindNewData(DemoRecyclerData entryData)
+        protected override void OnBindNewData(DemoRecyclerData entryData, RecyclerScrollRectContentState state)
         {
             // Set the word and background color to whatever is passed in the data
             _wordText.text = entryData.Word;
@@ -29,7 +29,7 @@ namespace RecyclerScrollRect
         }
 
         // Called when this entry is bound with data it had before (and therefore still currently has)
-        protected override void OnRebindExistingData()
+        protected override void OnRebindExistingData(RecyclerScrollRectContentState state)
         {
             // Debug.Log(Data.Word);
             // Debug.Log(Data.BackgroundColor);
@@ -40,8 +40,9 @@ namespace RecyclerScrollRect
         {
 
         }
-
-        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
+        
+        // Called when the active state of an entry changes, that is, when it moves from cached -> visible or visible -> cached
+        protected override void OnActiveStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
         {
         }
     }

@@ -14,21 +14,9 @@ namespace RecyclerScrollRect
         private const int NormalSize = 250;
         private const int GrowSize = 500;
 
-        protected override void OnBindNewData(ScrollToIndexData entryData)
+        protected override void OnBindNewData(ScrollToIndexData entryData, RecyclerScrollRectContentState state)
         {
             RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(entryData.ShouldResize ? GrowSize : NormalSize);
-        }
-
-        protected override void OnRebindExistingData()
-        {
-        }
-
-        protected override void OnSentToRecycling()
-        {
-        }
-
-        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
-        {
         }
 
         private void Update()

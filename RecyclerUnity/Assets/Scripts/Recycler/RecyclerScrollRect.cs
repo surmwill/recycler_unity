@@ -221,15 +221,15 @@ namespace RecyclerScrollRect
             // Create the entry
             if (_activeEntriesWindow.IsInStartCache(index))
             {
-                CreateAndAddEntry(index, siblingIndex, StartCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
+                CreateAndAddEntry(index, siblingIndex, RecyclerScrollRectContentState.ActiveInStartCache, StartCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
             else if (_activeEntriesWindow.IsInEndCache(index))
             {
-                CreateAndAddEntry(index, siblingIndex, EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
+                CreateAndAddEntry(index, siblingIndex, RecyclerScrollRectContentState.ActiveInEndCache, EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
             else
             {
-                CreateAndAddEntry(index, siblingIndex, fixEntries);
+                CreateAndAddEntry(index, siblingIndex, RecyclerScrollRectContentState.ActiveVisible, fixEntries);
             }
 
             // Adding the entry shifted things around, possibly pushing things offscreen. Recalculate what entries are active
@@ -552,6 +552,7 @@ namespace RecyclerScrollRect
                     _newCachedStartEntries.RemoveFirst();
                     CreateAndAddEntry(current.Value,
                         isStartCacheAtTop ? siblingIndexOffset : content.childCount - siblingIndexOffset,
+                        RecyclerScrollRectContentState.ActiveInStartCache,
                         isStartCacheAtTop ? FixEntries.Below : FixEntries.Above);
                     current = _newCachedStartEntries.First;
                 }
@@ -566,6 +567,7 @@ namespace RecyclerScrollRect
                     _newCachedEndEntries.RemoveFirst();
                     CreateAndAddEntry(current.Value,
                         isEndCacheAtTop ? siblingIndexOffset : content.childCount - siblingIndexOffset,
+                        RecyclerScrollRectContentState.ActiveInEndCache,
                         isEndCacheAtTop ? FixEntries.Below : FixEntries.Above);
                     current = _newCachedEndEntries.First;
                 }
@@ -581,14 +583,15 @@ namespace RecyclerScrollRect
             UpdateEndcap();
             
             // Update the state of the entries
+            /*
             _updateEntriesState = new LinkedList<int>(ActiveEntries.Keys);
             
             current = _updateEntriesState.First;
             while (current != null)
             {
                 _updateEntriesState.RemoveFirst();
-                
             }
+            */
 
             // Returns the number of consecutive non-entries from the top or bottom of the entry list.
             // Used to insert entries in their rightful sibling index, past any endcaps.
@@ -674,13 +677,16 @@ namespace RecyclerScrollRect
             _endcap.OnSentToRecycling();
         }
 
-        private void CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
+        private void CreateAndAddEntry(int dataIndex, int siblingIndex, RecyclerScrollRectContentState state, FixEntries fixEntries = FixEntries.Below)
         {
             if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
             {
                 entry = Instantiate(_recyclerEntryPrefab, content);
             }
 
+            // If we are adding to cache but there is still room on-screen, then it is actually visible
+            entry.SetState(this.IsScrollable() ? state : RecyclerScrollRectContentState.ActiveVisible);
+            
             if (entry.Index != dataIndex)
             {
                 entry.BindNewData(dataIndex, _dataForEntries[dataIndex]);
@@ -968,6 +974,9 @@ namespace RecyclerScrollRect
 
             // Bookkeeping
             _activeEntries.Remove(entry.Index);
+            
+            // Update the state
+            entry.SetState(RecyclerScrollRectContentState.InactiveInPool);
 
             // Callback
             entry.OnRecycled();

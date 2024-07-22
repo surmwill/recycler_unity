@@ -15,25 +15,13 @@ namespace RecyclerScrollRect
         [SerializeField]
         private Text _linesText = null;
 
-        protected override void OnBindNewData(AutoSizeData entryData)
+        protected override void OnBindNewData(AutoSizeData entryData, RecyclerScrollRectContentState state)
         {
             _titleText.text = $"Randomly Generated <color=red>{entryData.NumLines}</color> Line(s)";
 
             _linesText.text = Enumerable.Range(0, entryData.NumLines)
                 .Aggregate(string.Empty, (s, i) => s + $"Line {i + 1}\n")
                 .Trim();
-        }
-
-        protected override void OnRebindExistingData()
-        {
-        }
-
-        protected override void OnSentToRecycling()
-        {
-        }
-
-        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
-        {
         }
     }
 }

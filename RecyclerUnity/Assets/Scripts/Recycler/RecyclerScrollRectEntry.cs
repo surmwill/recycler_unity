@@ -28,9 +28,8 @@ namespace RecyclerScrollRect
         /// </summary>
         public TEntryData Data { get; private set; }
         
-        
         /// <summary>
-        /// The state of the entry: in the pool, cached, or visible
+        /// The state of the bound entry: visible, cached, or in the pool.
         /// </summary>
         public RecyclerScrollRectContentState State { get; private set; }
 
@@ -51,26 +50,32 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Binds the entry to a new set of data
         /// </summary>
-        protected abstract void OnBindNewData(TEntryData entryData);
+        protected abstract void OnBindNewData(TEntryData entryData, RecyclerScrollRectContentState state);
 
         /// <summary>
         /// Rebinds this entry to its existing held data, possibly allowing a resumption of operations instead of a fresh restart
         /// </summary>
-        protected abstract void OnRebindExistingData();
+        protected virtual void OnRebindExistingData(RecyclerScrollRectContentState state)
+        {
+            // Empty
+        }
 
         /// <summary>
         /// Called when the entry gets sent to recycling.
         /// Its data will not be unbound until we know we need to be bind it to different data.
         /// </summary>
-        protected abstract void OnSentToRecycling();
+        protected virtual void OnSentToRecycling()
+        {
+            // Empty
+        }
 
         /// <summary>
-        /// Called when the active state of an entry changes, that is, when it moves from cached -> visible or visible -> cached, or,
-        /// if the previous state is null, then this is the entry's initial state.
-        ///
-        /// To know when an entry goes from active to returning to the pool, it suffices to use OnSentToRecycling.
+        /// Called when the active state of an entry changes, that is, when it moves from cached -> visible or visible -> cached
         /// </summary>
-        protected abstract void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState);
+        protected virtual void OnActiveStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+        {
+            // Empty
+        }
 
         #endregion
 
@@ -83,7 +88,7 @@ namespace RecyclerScrollRect
         {
             Data = entryData;
             SetIndex(index);
-            OnBindNewData(entryData);
+            OnBindNewData(entryData, State);
         }
 
         /// <summary>
@@ -91,7 +96,7 @@ namespace RecyclerScrollRect
         /// </summary>
         public void RebindExistingData()
         {
-            OnRebindExistingData();
+            OnRebindExistingData(State);
         }
 
         /// <summary>
@@ -100,6 +105,7 @@ namespace RecyclerScrollRect
         /// </summary>
         public void OnRecycled()
         {
+            State = RecyclerScrollRectContentState.InactiveInPool;
             OnSentToRecycling();
         }
 
@@ -121,13 +127,19 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Sets the active state of the entry: whether it is visible or in the cache
+        /// Sets the state of the entry
         /// </summary>
-        public void SetActiveState(RecyclerScrollRectContentState newState)
+        public void SetState(RecyclerScrollRectContentState newState)
         {
-            RecyclerScrollRectContentState? lastState = State != RecyclerScrollRectContentState.InactiveInPool ? State : null;
+            RecyclerScrollRectContentState lastState = State;
             State = newState;
-            OnActiveStateChanged(lastState, newState);
+            
+            if (lastState != RecyclerScrollRectContentState.InactiveInPool && 
+                newState != RecyclerScrollRectContentState.InactiveInPool &&  
+                newState != lastState)
+            {
+                OnActiveStateChanged(lastState, newState);   
+            }
         }
 
         #endregion
