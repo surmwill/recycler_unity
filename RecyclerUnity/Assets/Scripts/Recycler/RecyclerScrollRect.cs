@@ -219,11 +219,11 @@ namespace RecyclerScrollRect
             }
 
             // Create the entry
-            if (_activeEntriesWindow.IsInStartCache(index))
+            if (this.IsScrollable() && _activeEntriesWindow.IsInStartCache(index))
             {
                 CreateAndAddEntry(index, siblingIndex, RecyclerScrollRectContentState.ActiveInStartCache, StartCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
-            else if (_activeEntriesWindow.IsInEndCache(index))
+            else if (this.IsScrollable() && _activeEntriesWindow.IsInEndCache(index))
             {
                 CreateAndAddEntry(index, siblingIndex, RecyclerScrollRectContentState.ActiveInEndCache, EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
@@ -552,7 +552,7 @@ namespace RecyclerScrollRect
                     _newCachedStartEntries.RemoveFirst();
                     CreateAndAddEntry(current.Value,
                         isStartCacheAtTop ? siblingIndexOffset : content.childCount - siblingIndexOffset,
-                        RecyclerScrollRectContentState.ActiveInStartCache,
+                        this.IsScrollable() ? RecyclerScrollRectContentState.ActiveInStartCache : RecyclerScrollRectContentState.ActiveVisible,
                         isStartCacheAtTop ? FixEntries.Below : FixEntries.Above);
                     current = _newCachedStartEntries.First;
                 }
@@ -567,7 +567,7 @@ namespace RecyclerScrollRect
                     _newCachedEndEntries.RemoveFirst();
                     CreateAndAddEntry(current.Value,
                         isEndCacheAtTop ? siblingIndexOffset : content.childCount - siblingIndexOffset,
-                        RecyclerScrollRectContentState.ActiveInEndCache,
+                        this.IsScrollable() ? RecyclerScrollRectContentState.ActiveInEndCache : RecyclerScrollRectContentState.ActiveVisible,
                         isEndCacheAtTop ? FixEntries.Below : FixEntries.Above);
                     current = _newCachedEndEntries.First;
                 }
@@ -670,9 +670,7 @@ namespace RecyclerScrollRect
             {
                 _endcap.transform.SetParent(content, false);
                 _endcap.gameObject.SetActive(true);
-
-                // Being appended to the very end of the list, the endcap is initially to expected sit in the end cache, waiting to be scrolled to,
-                // but if the list is not yet full-screen, it can start as visible 
+                
                 _endcap.SetState(this.IsScrollable() ? RecyclerScrollRectContentState.ActiveInEndCache : RecyclerScrollRectContentState.ActiveVisible);
                 _endcap.FetchFromRecycling();
 
@@ -695,10 +693,8 @@ namespace RecyclerScrollRect
             {
                 entry = Instantiate(_recyclerEntryPrefab, content);
             }
-
-            // If we are adding to cache but there is still room on-screen, then it is actually visible
-            entry.SetState(this.IsScrollable() ? state : RecyclerScrollRectContentState.ActiveVisible);
             
+            entry.SetState(state);
             if (entry.Index != dataIndex)
             {
                 entry.BindNewData(dataIndex, _dataForEntries[dataIndex]);
