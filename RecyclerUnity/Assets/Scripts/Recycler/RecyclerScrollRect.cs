@@ -153,6 +153,7 @@ namespace RecyclerScrollRect
         private readonly LinkedList<int> _toRecycleEntries = new();
         private readonly LinkedList<int> _newCachedStartEntries = new();
         private readonly LinkedList<int> _newCachedEndEntries = new();
+        private LinkedList<int> _updateEntriesState = new();
 
         protected override void Awake()
         {
@@ -395,6 +396,7 @@ namespace RecyclerScrollRect
             ShiftLinkedList(_toRecycleEntries);
             ShiftLinkedList(_newCachedStartEntries);
             ShiftLinkedList(_newCachedEndEntries);
+            ShiftLinkedList(_updateEntriesState);
 
             void ShiftLinkedList(LinkedList<int> indices)
             {
@@ -481,8 +483,15 @@ namespace RecyclerScrollRect
         {
             // Check which entries are visible, which are not, and what entries need to be in the start/end caches
             UpdateVisibility();
-
-            // If the range of active entries (visible and cached) has changed, we'll need to add or recycle entries
+            
+            // If the range of active entries (visible and cached) has not changed, there is nothing more to do
+            if (!_activeEntriesWindow.IsDirty)
+            {
+                return;
+            }
+            
+            // Otherwise we'll need to recycle old entries and add new ones
+            LinkedListNode<int> current;
             while (_activeEntriesWindow.IsDirty)
             {
                 _activeEntriesWindow.SetNonDirty();
@@ -503,7 +512,9 @@ namespace RecyclerScrollRect
                 // Determine what entries need to be added to the start cache
                 if (_activeEntriesWindow.StartCacheIndexRange.HasValue)
                 {
-                    for (int i = _activeEntriesWindow.StartCacheIndexRange.Value.End; i >= _activeEntriesWindow.StartCacheIndexRange.Value.Start; i--)
+                    for (int i = _activeEntriesWindow.StartCacheIndexRange.Value.End; 
+                         i >= _activeEntriesWindow.StartCacheIndexRange.Value.Start; 
+                         i--)
                     {
                         if (!_activeEntries.ContainsKey(i))
                         {
@@ -515,7 +526,9 @@ namespace RecyclerScrollRect
                 // Determine what entries need to be added to the end cache
                 if (_activeEntriesWindow.EndCacheIndexRange.HasValue)
                 {
-                    for (int i = _activeEntriesWindow.EndCacheIndexRange.Value.Start; i <= _activeEntriesWindow.EndCacheIndexRange.Value.End; i++)
+                    for (int i = _activeEntriesWindow.EndCacheIndexRange.Value.Start; 
+                         i <= _activeEntriesWindow.EndCacheIndexRange.Value.End; 
+                         i++)
                     {
                         if (!_activeEntries.ContainsKey(i))
                         {
@@ -525,7 +538,7 @@ namespace RecyclerScrollRect
                 }
 
                 // Recycle unneeded entries
-                LinkedListNode<int> current = _toRecycleEntries.First;
+                current = _toRecycleEntries.First;
                 while (current != null)
                 {
                     _toRecycleEntries.RemoveFirst();
@@ -568,8 +581,18 @@ namespace RecyclerScrollRect
                 UpdateVisibility();
             }
 
-            // Add an endcap if we are near the last entry, or remove it if not
+            // Append an endcap if we are near the last entry, or remove it if not
             UpdateEndcap();
+            
+            // Update the state of the entries
+            _updateEntriesState = new LinkedList<int>(ActiveEntries.Keys);
+            
+            current = _updateEntriesState.First;
+            while (current != null)
+            {
+                _updateEntriesState.RemoveFirst();
+                
+            }
 
             // Returns the number of consecutive non-entries from the top or bottom of the entry list.
             // Used to insert entries in their rightful sibling index, past any endcaps.
@@ -625,13 +648,18 @@ namespace RecyclerScrollRect
             bool endcapExists = _endcap.gameObject.activeSelf;
             bool shouldEndcapExist = _dataForEntries.Any() && _activeEntriesWindow.Contains(_dataForEntries.Count - 1);
 
-            // Endcap exists, see if we need to remove it
-            if (endcapExists && !shouldEndcapExist)
+            if (endcapExists == shouldEndcapExist)
+            {
+                return;
+            }
+
+            // Endcap currently exists, but it shouldn't
+            if (!shouldEndcapExist)
             {
                 RecycleEndcap();
             }
-            // Endcap does not exist, see if we need to create it
-            else if (!endcapExists && shouldEndcapExist)
+            // Endcap doesn't currently exist, but it should
+            else
             {
                 _endcap.transform.SetParent(content, false);
                 _endcap.gameObject.SetActive(true);
@@ -1337,10 +1365,11 @@ namespace RecyclerScrollRect
             _activeEntriesWindow.Remove(index);
             _dataForEntries.RemoveAt(index);
 
-            // Remove from iteration
+            // If we are in the midst of updating what entries are active, ensure we don't operate on the removed data
             _toRecycleEntries.Remove(index);
             _newCachedStartEntries.Remove(index);
             _newCachedEndEntries.Remove(index);
+            _updateEntriesState.Remove(index);
         }
 
         /// <summary>

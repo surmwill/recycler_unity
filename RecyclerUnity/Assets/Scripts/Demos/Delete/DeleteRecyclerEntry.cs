@@ -26,6 +26,10 @@ namespace RecyclerScrollRect
             _deleteSequence?.Kill(true);
         }
 
+        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
+        {
+        }
+
         public void Delete()
         {
             if (_deleteSequence != null)

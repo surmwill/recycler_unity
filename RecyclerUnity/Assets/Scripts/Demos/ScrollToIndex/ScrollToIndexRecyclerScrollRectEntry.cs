@@ -27,6 +27,10 @@ namespace RecyclerScrollRect
         {
         }
 
+        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
+        {
+        }
+
         private void Update()
         {
             _numberText.text = Index.ToString();

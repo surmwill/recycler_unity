@@ -31,5 +31,9 @@ namespace RecyclerScrollRect
         protected override void OnSentToRecycling()
         {
         }
+
+        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
+        {
+        }
     }
 }

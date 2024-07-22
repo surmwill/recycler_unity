@@ -27,6 +27,12 @@ namespace RecyclerScrollRect
         /// The current data bound to this entry
         /// </summary>
         public TEntryData Data { get; private set; }
+        
+        
+        /// <summary>
+        /// The state of the entry: in the pool, cached, or visible
+        /// </summary>
+        public RecyclerScrollRectContentState State { get; private set; }
 
         /// <summary>
         /// The recycler this is entry is a part of
@@ -57,6 +63,14 @@ namespace RecyclerScrollRect
         /// Its data will not be unbound until we know we need to be bind it to different data.
         /// </summary>
         protected abstract void OnSentToRecycling();
+
+        /// <summary>
+        /// Called when the active state of an entry changes, that is, when it moves from cached -> visible or visible -> cached, or,
+        /// if the previous state is null, then this is the entry's initial state.
+        ///
+        /// To know when an entry goes from active to returning to the pool, it suffices to use OnSentToRecycling.
+        /// </summary>
+        protected abstract void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState);
 
         #endregion
 
@@ -104,6 +118,16 @@ namespace RecyclerScrollRect
         {
             Index = index;
             gameObject.name = index.ToString();
+        }
+
+        /// <summary>
+        /// Sets the active state of the entry: whether it is visible or in the cache
+        /// </summary>
+        public void SetActiveState(RecyclerScrollRectContentState newState)
+        {
+            RecyclerScrollRectContentState? lastState = State != RecyclerScrollRectContentState.InactiveInPool ? State : null;
+            State = newState;
+            OnActiveStateChanged(lastState, newState);
         }
 
         #endregion

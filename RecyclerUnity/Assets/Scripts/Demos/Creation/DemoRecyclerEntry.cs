@@ -40,5 +40,9 @@ namespace RecyclerScrollRect
         {
 
         }
+
+        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
+        {
+        }
     }
 }
