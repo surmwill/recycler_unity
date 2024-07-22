@@ -588,6 +588,7 @@ namespace RecyclerScrollRect
             current = _updateStateOfEntries.First;
             while (current != null)
             {
+                _updateStateOfEntries.RemoveFirst();
                 int entryIndex = current.Value;
                 _activeEntries[entryIndex].SetState(GetStateOfEntryWithCurrentIndex(entryIndex));
                 current = _updateStateOfEntries.First;
@@ -661,6 +662,7 @@ namespace RecyclerScrollRect
             // Endcap currently exists, but it shouldn't
             if (!shouldEndcapExist)
             {
+                _endcap.SetState(RecyclerScrollRectContentState.InactiveInPool);
                 RecycleEndcap();
             }
             // Endcap doesn't currently exist, but it should
@@ -668,7 +670,11 @@ namespace RecyclerScrollRect
             {
                 _endcap.transform.SetParent(content, false);
                 _endcap.gameObject.SetActive(true);
-                _endcap.OnFetchedFromRecycling();
+
+                // Being appended to the very end of the list, the endcap is initially to expected sit in the end cache, waiting to be scrolled to,
+                // but if the list is not yet full-screen, it can start as visible 
+                _endcap.SetState(this.IsScrollable() ? RecyclerScrollRectContentState.ActiveInEndCache : RecyclerScrollRectContentState.ActiveVisible);
+                _endcap.FetchFromRecycling();
 
                 AddToContent(
                     _endcap.RectTransform,

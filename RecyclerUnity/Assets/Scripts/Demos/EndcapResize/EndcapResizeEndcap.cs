@@ -15,11 +15,6 @@ namespace RecyclerScrollRect
 
         private Tween _resizeTween = null;
 
-        public override void OnFetchedFromRecycling()
-        {
-
-        }
-
         public override void OnSentToRecycling()
         {
             _resizeTween?.Kill(true);

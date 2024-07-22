@@ -9,10 +9,13 @@ namespace RecyclerScrollRect
     public abstract class RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> : MonoBehaviour where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         /// <summary>
-        /// The end-cap's RectTransform
+        /// The endcap's RectTransform
         /// </summary>
         public RectTransform RectTransform { get; private set; }
         
+        /// <summary>
+        /// The state of the endcap: visible, cached, or in the pool.
+        /// </summary>
         public RecyclerScrollRectContentState State { get; private set; }
 
         /// <summary>
@@ -25,15 +28,34 @@ namespace RecyclerScrollRect
             RectTransform = (RectTransform) transform;
             Recycler = GetComponentInParent<RecyclerScrollRect<TEntryData, TKeyEntryData>>();
         }
+        
+        /// <summary>
+        /// Called when the endcap becomes active
+        /// </summary>
+        protected virtual void OnFetchedFromRecycling(RecyclerScrollRectContentState onFetchedState)
+        {
+            // Empty   
+        }
+        
+        /// <summary>
+        /// Recalculates the endcap's dimensions.
+        /// 
+        /// Unless specified, with the endcap coming at the very end if the list, we fix all entries that come before it, preserving the current view of things.
+        /// (I.e. if the endcap is at the bottom we grow downwards, and if the endcap is a the top we grow upwards).
+        /// </summary>
+        protected void RecalculateDimensions(FixEntries? fixEntries = null)
+        {
+            Recycler.RecalculateEndcapSize(fixEntries);
+        }
 
         #region CALLED_BY_PARENT_RECYCLER
 
         /// <summary>
-        /// Called when the end-cap becomes active (note: can still be offscreen in the cache)
+        /// Called when the endcap becomes active
         /// </summary>
-        public virtual void OnFetchedFromRecycling()
+        public void FetchFromRecycling()
         {
-            // Empty   
+            OnFetchedFromRecycling(State);
         }
 
         /// <summary>
@@ -69,16 +91,5 @@ namespace RecyclerScrollRect
         }
         
         #endregion
-
-        /// <summary>
-        /// Recalculates the endcap's dimensions.
-        /// 
-        /// Unless specified, with the endcap coming at the very end if the list, we fix all entries that come before it, preserving the current view of things.
-        /// (I.e. if the endcap is at the bottom we grow downwards, and if the endcap is a the top we grow upwards).
-        /// </summary>
-        protected void RecalculateDimensions(FixEntries? fixEntries = null)
-        {
-            Recycler.RecalculateEndcapSize(fixEntries);
-        }
     }
 }

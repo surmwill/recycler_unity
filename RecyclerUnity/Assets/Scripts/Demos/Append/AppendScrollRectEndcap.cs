@@ -27,10 +27,6 @@ namespace RecyclerScrollRect
 
         private Coroutine _fetchWhenOnScreen;
 
-        public override void OnFetchedFromRecycling()
-        {
-        }
-
         public override void OnSentToRecycling()
         {
             Reset();

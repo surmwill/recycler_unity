@@ -10,12 +10,5 @@ namespace RecyclerScrollRect
     /// </summary>
     public class DemoEndcap : RecyclerScrollRectEndcap<DemoRecyclerData, string>
     {
-        public override void OnFetchedFromRecycling()
-        {
-        }
-
-        public override void OnSentToRecycling()
-        {
-        }
     }
 }

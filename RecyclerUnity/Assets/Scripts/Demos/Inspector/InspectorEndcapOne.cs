@@ -10,12 +10,5 @@ namespace RecyclerScrollRect
     /// </summary>
     public class InspectorEndcapOne : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
     {
-        public override void OnFetchedFromRecycling()
-        {
-        }
-
-        public override void OnSentToRecycling()
-        {
-        }
     }
 }
