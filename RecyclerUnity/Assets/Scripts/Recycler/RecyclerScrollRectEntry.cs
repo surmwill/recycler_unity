@@ -50,12 +50,12 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Binds the entry to a new set of data
         /// </summary>
-        protected abstract void OnBindNewData(TEntryData entryData, RecyclerScrollRectContentState state);
+        protected abstract void OnBindNewData(TEntryData entryData, RecyclerScrollRectContentState onBindState);
 
         /// <summary>
         /// Rebinds this entry to its existing held data, possibly allowing a resumption of operations instead of a fresh restart
         /// </summary>
-        protected virtual void OnRebindExistingData(RecyclerScrollRectContentState state)
+        protected virtual void OnRebindExistingData(RecyclerScrollRectContentState onRebindState)
         {
             // Empty
         }
