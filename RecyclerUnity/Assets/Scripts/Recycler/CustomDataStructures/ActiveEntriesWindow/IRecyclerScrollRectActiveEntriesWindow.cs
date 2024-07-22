@@ -7,7 +7,7 @@ namespace RecyclerScrollRect
     /// <summary>
     /// Interface for the user to query the indices of active entries in the Recycler
     /// </summary>
-    public interface IRecyclerScrollRectActiveEntriesWindow
+    public interface IRecyclerScrollRectActiveEntriesWindow : IEnumerable<int>
     {
         /// <summary>
         /// Returns true if the window exists, that is, we've added some underlying data to have a window over in the first place

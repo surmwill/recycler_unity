@@ -149,7 +149,7 @@ namespace RecyclerScrollRect
         private readonly LinkedList<int> _toRecycleEntries = new();
         private readonly LinkedList<int> _newCachedStartEntries = new();
         private readonly LinkedList<int> _newCachedEndEntries = new();
-        private LinkedList<int> _updateEntriesState = new();
+        private LinkedList<int> _updateStateOfEntries = new();
 
         protected override void Awake()
         {
@@ -392,7 +392,7 @@ namespace RecyclerScrollRect
             ShiftLinkedList(_toRecycleEntries);
             ShiftLinkedList(_newCachedStartEntries);
             ShiftLinkedList(_newCachedEndEntries);
-            ShiftLinkedList(_updateEntriesState);
+            ShiftLinkedList(_updateStateOfEntries);
 
             void ShiftLinkedList(LinkedList<int> indices)
             {
@@ -583,15 +583,21 @@ namespace RecyclerScrollRect
             UpdateEndcap();
             
             // Update the state of the entries
-            /*
-            _updateEntriesState = new LinkedList<int>(ActiveEntries.Keys);
+            _updateStateOfEntries = new LinkedList<int>(ActiveEntriesWindow);
             
-            current = _updateEntriesState.First;
+            current = _updateStateOfEntries.First;
             while (current != null)
             {
-                _updateEntriesState.RemoveFirst();
+                int entryIndex = current.Value;
+                _activeEntries[entryIndex].SetState(GetStateOfEntryWithCurrentIndex(entryIndex));
+                current = _updateStateOfEntries.First;
             }
-            */
+            
+            // Update the state of the endcap
+            if (_endcap != null)
+            {
+                
+            }
 
             // Returns the number of consecutive non-entries from the top or bottom of the entry list.
             // Used to insert entries in their rightful sibling index, past any endcaps.
@@ -1374,7 +1380,7 @@ namespace RecyclerScrollRect
             _toRecycleEntries.Remove(index);
             _newCachedStartEntries.Remove(index);
             _newCachedEndEntries.Remove(index);
-            _updateEntriesState.Remove(index);
+            _updateStateOfEntries.Remove(index);
         }
 
         /// <summary>

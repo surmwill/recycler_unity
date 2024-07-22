@@ -1,4 +1,8 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace RecyclerScrollRect
@@ -191,6 +195,28 @@ namespace RecyclerScrollRect
                 $"Visible Index Range: {(!VisibleIndexRange.HasValue ? "[]" : $"[{VisibleIndexRange.Value.Start},{VisibleIndexRange.Value.End}]")}\n" +
                 $"Start Cache Range: {(!StartCacheIndexRange.HasValue ? "[]" : $"[{StartCacheIndexRange.Value.Start},{StartCacheIndexRange.Value.End}]")}\n" +
                 $"End Cache Range: {(!EndCacheIndexRange.HasValue ? "[]" : $"[{EndCacheIndexRange.Value.Start},{EndCacheIndexRange.Value.End}]")}";
+        }
+        
+        /// <summary>
+        /// Returns the indices of all the active entries in an increasing order
+        /// </summary>
+        public IEnumerator<int> GetEnumerator()
+        {
+            if (!ActiveEntriesRange.HasValue)
+            {
+                return Enumerable.Empty<int>().GetEnumerator();
+            }
+
+            (int Start, int End) = ActiveEntriesRange.Value;
+            return Enumerable.Range(Start, End - Start + 1).GetEnumerator();
+        }
+
+        /// <summary>
+        /// Returns the indices of all the active entries in an increasing order
+        /// </summary>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         public RecyclerScrollRectActiveEntriesWindow(int numCached)
