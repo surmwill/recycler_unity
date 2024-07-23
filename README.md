@@ -37,7 +37,7 @@ Here, all those cases are covered with the following features:
 - Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases ("World Space" is untested).
 - 7 (optional) editor checks running every frame, ensuring valid behaviour. 9 Demos isolating and testing each individual piece of functionality.
 - Only uses native Unity UI elements
-- Fully commented and documented.
+- Fully commented and documented
 
 ### Code
 The code is currently in a state of being finalized and documented. It can be found under:
