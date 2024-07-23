@@ -466,6 +466,8 @@ namespace RecyclerScrollRect
 
                 DebugCheckIndexToKeyMapping();
                 DebugCheckKeyToIndexMapping();
+                
+                DebugCheckStates();
             }
 
             #endif
@@ -588,7 +590,7 @@ namespace RecyclerScrollRect
             {
                 _updateStateOfEntries.RemoveFirst();
                 int entryIndex = current.Value;
-                _activeEntries[entryIndex].SetState(GetStateOfEntryWithCurrentIndex(entryIndex));
+                _activeEntries[entryIndex].SetState(GetStateOfEntryWithIndex(entryIndex));
                 current = _updateStateOfEntries.First;
             }
             
@@ -806,9 +808,9 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Returns the state of the entry at the given index: visible, in the start cache, in the end cache, or in the recycling pool.
         /// </summary>
-        public RecyclerScrollRectContentState GetStateOfEntryWithCurrentIndex(int index)
+        public RecyclerScrollRectContentState GetStateOfEntryWithIndex(int index)
         {
-            if (index < 0 || index >= _dataForEntries.Count)
+            if (index != RecyclerScrollRectEntry<TEntryData, TKeyEntryData>.UnboundIndex && (index < 0 || index >= _dataForEntries.Count))
             {
                 throw new ArgumentException($"index \"{index}\" must be >= 0 and < the length of data \"{_dataForEntries.Count}\"");
             }
@@ -836,7 +838,7 @@ namespace RecyclerScrollRect
         /// </summary>
         public RecyclerScrollRectContentState GetStateOfEntryWithKey(TKeyEntryData key)
         {
-            return GetStateOfEntryWithCurrentIndex(GetCurrentIndexForKey(key));
+            return GetStateOfEntryWithIndex(GetCurrentIndexForKey(key));
         }
 
         /// <summary>
@@ -1447,6 +1449,11 @@ namespace RecyclerScrollRect
         private bool IsAboveViewport(RectTransform rectTransform)
         {
             return Vector3.Dot(Vector3.ProjectOnPlane(rectTransform.position - viewport.position, viewport.forward), viewport.up) > 0;
+        }
+
+        private bool IsBelowViewport(RectTransform rectTransform)
+        {
+            return Vector3.Dot(Vector3.ProjectOnPlane(rectTransform.position - viewport.position, viewport.forward), -viewport.up) > 0;
         }
 
         private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)
