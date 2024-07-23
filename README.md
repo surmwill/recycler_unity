@@ -574,6 +574,8 @@ Called when the state of the entry changes. The entry can be in the following st
 3. ActiveInStartCache
 4. ActiveInEndCache
 
+The entry starts in 1.
+
 The process of binding moves the entry from 1 -> 2, 3, or 4.
 
 While active the entry fluctuates between states 2, 3, and 4.
