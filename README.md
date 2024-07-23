@@ -551,17 +551,34 @@ Lifecycle method called when the entry is retrieved from recycling and gets boun
 
 ### OnRebindExistingData
 ```
-protected abstract void OnRebindExistingData()
+protected virtual void OnRebindExistingData()
 ```
 
 Lifecycle method called instead of [`OnBindNewData`](https://github.com/surmwill/recycler_unity/blob/master/README.md#onbindnewdata) when the entry is retrieved from recycling and bound. Here, the only difference is the data being bound is the same data that the entry had before (and still currently contains). We might, for example, resume a paused async operation here instead of starting it all over again. By default, nothing gets reset when an entry gets sent to recycling; hence we can pick up from the state right where we left off, just before it got recycled.
 
 ### OnSentToRecycling
 ```
-protected abstract void OnSentToRecyling()
+protected virtual void OnSentToRecyling()
 ```
 
 Lifecycle method called when the entry gets sent back to the recycling pool.
+
+### OnStateChanged
+```
+protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+```
+
+Called when the state of the entry changes. The entry can be in the following states:
+1. InactiveInPool
+2. ActiveVisible
+3. ActiveInStartCache
+4. ActiveInEndCache
+
+The process of binding moves the entry from 1 -> 2, 3, or 4.
+
+While active the entry fluctuates between states 2, 3, and 4.
+
+Once the entry moves too far offscreen it will move from state 3 or 4 -> 1.
 
 ### RecalculateDimensions
 ```
