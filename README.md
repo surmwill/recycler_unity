@@ -35,7 +35,8 @@ Here, all those cases are covered with the following features:
 - Endcaps
 - Scrolling to any index (including those off screen)
 - Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases ("World Space" is untested).
-- 6 (optional) editor checks running every frame, ensuring valid behaviour. 9 Demos isolating and testing each individual piece of functionality.
+- 7 (optional) editor checks running every frame, ensuring valid behaviour. 9 Demos isolating and testing each individual piece of functionality.
+- Only uses native Unity UI elements
 
 ### Code
 The code is currently in a state of being finalized and documented. It can be found under:
