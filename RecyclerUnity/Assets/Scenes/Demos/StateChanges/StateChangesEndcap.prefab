@@ -165,7 +165,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6576249205358348673}
-  - component: {fileID: 1784880736319672763}
+  - component: {fileID: 5303478575636747423}
   m_Layer: 0
   m_Name: StateChangesEndcap
   m_TagString: Untagged
@@ -195,7 +195,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1784880736319672763
+--- !u!114 &5303478575636747423
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -204,7 +204,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6576249205358348672}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ca48cad41fb7c840b72b7a7e6e6f3e3, type: 3}
+  m_Script: {fileID: 11500000, guid: a9532dbf04f82534aaa5e5ac02876410, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &6576249206108347025

@@ -203,7 +203,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1357053102421773414}
-  - component: {fileID: 1181395936754157696}
+  - component: {fileID: 5508979827583332474}
   m_Layer: 0
   m_Name: StateChangesEntry
   m_TagString: Untagged
@@ -235,7 +235,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1181395936754157696
+--- !u!114 &5508979827583332474
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -244,7 +244,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1357053102421773415}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b2e3b2e3e9ac6744aac760c23f25cd6, type: 3}
+  m_Script: {fileID: 11500000, guid: 75c96a9639dbd2349bd9a6906eba3945, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _indexText: {fileID: 716837246067209775}
