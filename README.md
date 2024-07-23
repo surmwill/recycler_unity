@@ -760,7 +760,7 @@ The root transform of each entry will be force expanded to the width of the recy
 
 (See the long explanation on [The Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) for more. Since the we cannot control the entries' width, we cannot force expand its width via the root layout group, which is assumed to be the desired behaviour most of the time. Thus we implement it another way.)
 
-### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots, is `LayoutGroups` and `ContentSizeFitters`
+### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots is `LayoutGroups` and `ContentSizeFitters`
 
 Except during explicitly defined times all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root for performance reasons.
 This includes things such as `Images`, which should go under a child transform instead. 
