@@ -110,14 +110,16 @@ Recycler entries are prefabs that will get bound to your data. To begin, create 
 To make it operable with the Recycler you must include a `RecyclerScrollRectEntry<TEntryData, TEntryDataKey>` component at the root of the prefab. 
 Specifically, as generic classes cannot be components, you must create an of instance of the generic class with your data and its corresponding key as the types `class DemoRecyclerEntry : RecyclerScrollRectEntry<DemoRecyclerData, string>`
 
-Upon creating the class you will be asked to implement three different lifecycle methods. Each can be left empty until use of them is required:
+Upon creating the class you will be asked to implement one mandatory lifecycle method, with 3 other optional ones:
 
 ```
+// Mandatory
 protected override void OnBindNewData(DemoRecyclerData entryData)
 {
     // Called when this entry has been retrieved from the recycling pool and is being bound to new data
 }
 
+// Optional
 protected override void OnRebindExistingData()
 {
     // Called instead of OnBindNewData when this entry is retrieved from the recycling pool and bound.
@@ -126,9 +128,16 @@ protected override void OnRebindExistingData()
     // We might, for example, resume a paused async operation here instead of starting it all over again.
 }
 
+// Optional
 protected override void OnSentToRecycling()
 {
-    // Called when this entry has been sent back to the recycling pool   
+    // Called when this entry has been sent back to the recycling pool.   
+}
+
+// Optional
+protected override void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+{
+    // Called when the state of the entry changes
 }
 ```
 
@@ -224,22 +233,22 @@ For example, this entry could have a button to fetch the next page of entries, o
 The process is similar to creating a normal entry. Construct your prefab, then to make it operable with the Recycler include a `RecyclerScrollRectEndcap<TEntryData, TEntryDataKey>` component at the root, filled in
 with your corresponding key and data types. Again, as generic classes cannot be components we must create an instance of the generic class ourselves, and use that: `public class DemoEndcap : RecyclerScrollRectEndcap<DemoRecyclerData, string>`.
 
-We are asked to implement two lifecycle methods which can be left empty until needed.
+We can optionally implement these two lifecycle methods, but they are not needed here.
 
 ```
+// Optional
 public abstract void OnFetchedFromRecycling()
 {
   // Called when the endcap has been fetched from the pool and become active.
   // It is either visible on screen or waiting just offscreen in the cache.        
 }
 
+// Optional
 public abstract void OnSentToRecycling()
 {
   // Called when the endcap has been returned to the pool
 }
 ```
-
-With a simple endcap, we will leave these empty. 
 
 Serialize the endcap prefab in Recyler. A new pool for the endcap will get created:
 
