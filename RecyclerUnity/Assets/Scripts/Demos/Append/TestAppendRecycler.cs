@@ -15,10 +15,19 @@ namespace RecyclerScrollRect
       private EmptyRecyclerScrollRect _appendRecycler = null;
 
       private const int InitEntries = 30;
+      private const int NumPrependEntries = 10;
 
       private void Start()
       {
          _appendRecycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(InitEntries));
+      }
+
+      private void Update()
+      {
+         if (Input.GetKeyDown(KeyCode.A))
+         {
+            _appendRecycler.PrependEntries(EmptyRecyclerData.GenerateEmptyData(NumPrependEntries));
+         }
       }
    }
 }
