@@ -45,7 +45,6 @@ namespace RecyclerScrollRect
     ///
     /// See full documentation at: https://github.com/surmwill/recycler_unity
     /// </summary>
-    [RequireComponent(typeof(BoxCollider))]
     public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : ScrollRect, IPointerDownHandler where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         private const float DefaultScrollSpeedViewportsPerSecond = 0.5f;
