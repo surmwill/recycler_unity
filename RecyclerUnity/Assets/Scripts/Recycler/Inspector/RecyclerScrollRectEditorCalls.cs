@@ -272,7 +272,7 @@ namespace RecyclerScrollRect
                     return;
                 }
                 
-                // Entries that are above the viewport should be reported as in the cache
+                // Entries that are above the viewport should be reported as in the start/end cache, depending on orientation
                 if (IsAboveViewport(entry.RectTransform))
                 {
                     if (StartCachePosition == RecyclerPosition.Top && !indicesInStartCache.Remove(entry.Index))
@@ -289,7 +289,7 @@ namespace RecyclerScrollRect
                         return;
                     }
                 }
-                // Entries that are below the viewport should be reported as in the cache
+                // Entries that are below the viewport should be reported as in the start/end cache, depending on orientation
                 else
                 {
                     if (StartCachePosition == RecyclerPosition.Bot && !indicesInStartCache.Remove(entry.Index))
@@ -524,38 +524,56 @@ namespace RecyclerScrollRect
             // Check that the state contained within all the entries matches what the recycler reports its state is
             foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in ActiveEntries.Values.Concat(_recycledEntries.Entries.Values).Concat(_unboundEntries))
             {
-                RecyclerScrollRectContentState recyclerReportedState = GetStateOfEntryWithIndex(entry.Index);
-                if (recyclerReportedState != entry.State)
+                RecyclerScrollRectContentState recyclerReportedEntryState = GetStateOfEntryWithIndex(entry.Index);
+                if (recyclerReportedEntryState != entry.State)
                 {
-                    Debug.LogError($"Mismatch between the state contained in entry {entry.Index} \"{entry.State}\" and the recycler's view on its state \"{recyclerReportedState}\".");
+                    Debug.LogError($"Mismatch between the state contained in entry {entry.Index} \"{entry.State}\" and the recycler's view on its state \"{recyclerReportedEntryState}\".");
                     Debug.Break();
                     return;
                 }   
             }
-
-            // Check that the state of the endcap reflects its actual position in the lsit
+            
             if (_endcap != null)
             {
-                if (_endcap.State == RecyclerScrollRectContentState.ActiveVisible)
+                // Check that the state of the endcap reflects its actual position in the list
+                if (_endcap.State == RecyclerScrollRectContentState.ActiveVisible && !IsInViewport(_endcap.RectTransform))
                 {
-                    if (!IsInViewport(_endcap.RectTransform))
-                    {
-                        Debug.LogError("The endcap's state says it's visible but its position in the list does not reflect this.");
-                        Debug.Break();
-                        return;
-                    }
-                }
-                else if (_endcap.State == RecyclerScrollRectContentState.ActiveInEndCache)
-                {
-                    if (EndCachePosition == RecyclerPosition.Top && !IsAboveViewport(_endcap.RectTransform) ||
-                        End)
-                    {
-                        Debug.LogError("The endcap's state says it's visible but its position in the list does not reflect this.");
-                        Debug.Break();
-                        return;
-                    }
+                    Debug.LogError("The endcap's state says it's visible but its position in the list does not reflect this.");
+                    Debug.Break();
+                    return;
                 }
                 
+                if (_endcap.State == RecyclerScrollRectContentState.ActiveInEndCache &&
+                   (EndCachePosition == RecyclerPosition.Top && !IsAboveViewport(_endcap.RectTransform) || 
+                    EndCachePosition == RecyclerPosition.Top && !IsBelowViewport(_endcap.RectTransform)))
+                {
+                    Debug.LogError("The endcap's state says it's in the end cache but its position in the list does not reflect this.");
+                    Debug.Break();
+                    return;
+                }
+
+                if (_endcap.State == RecyclerScrollRectContentState.ActiveInStartCache)
+                {
+                    Debug.LogError("The endcap should never be in the start cache.");
+                    Debug.Break();
+                    return;
+                }
+
+                if (_endcap.State == RecyclerScrollRectContentState.InactiveInPool && _endcap.gameObject.activeSelf)
+                {
+                    Debug.LogWarning("The endcap should not be active while in the pool");
+                    Debug.Break();
+                    return;
+                }
+                
+                // Check that the state contained within all the endcap matches what the recycler reports its state is
+                RecyclerScrollRectContentState recyclerReportedEndcapState = GetStateOfEndcap();
+                if (_endcap.State != recyclerReportedEndcapState)
+                {
+                    Debug.LogError($"Mismatch between the state contained in endcap \"{_endcap.State}\" and the recycler's view on its state \"{recyclerReportedEndcapState}\".");
+                    Debug.Break();
+                    return;
+                }
             }
         }
 
