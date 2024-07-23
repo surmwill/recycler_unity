@@ -526,6 +526,13 @@ public TEntryData Data { get; }
 
 The data this entry is currently bound to.
 
+### State
+```
+public RecyclerScrollRectContentState State { get; }
+```
+
+The current state of the entry: visible, cached, or in the recycling pool. Valid post-binding/rebinding.
+
 ### Recyler
 ```
 public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; }
@@ -554,21 +561,21 @@ Lifecycle method called when the entry is retrieved from recycling and gets boun
 protected virtual void OnRebindExistingData()
 ```
 
-Lifecycle method called instead of [`OnBindNewData`](https://github.com/surmwill/recycler_unity/blob/master/README.md#onbindnewdata) when the entry is retrieved from recycling and bound. Here, the only difference is the data being bound is the same data that the entry had before (and still currently contains). We might, for example, resume a paused async operation here instead of starting it all over again. By default, nothing gets reset when an entry gets sent to recycling; hence we can pick up from the state right where we left off, just before it got recycled.
+Optional lifecycle method called instead of [`OnBindNewData`](https://github.com/surmwill/recycler_unity/blob/master/README.md#onbindnewdata) when the entry is retrieved from recycling and bound. Here, the only difference is the data being bound is the same data that the entry had before (and still currently contains). We might, for example, resume a paused async operation here instead of starting it all over again. By default, nothing gets reset when an entry gets sent to recycling; hence we can pick up from the state right where we left off, just before it got recycled.
 
 ### OnSentToRecycling
 ```
 protected virtual void OnSentToRecyling()
 ```
 
-Lifecycle method called when the entry gets sent back to the recycling pool.
+Optional lifecycle method called when the entry gets sent back to the recycling pool.
 
 ### OnStateChanged
 ```
 protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
 ```
 
-Called when the state of the entry changes. The entry can be in the following states:
+Optional lifecycle method called when the state of the entry changes. The entry can be in the following states:
 1. InactiveInPool
 2. ActiveVisible
 3. ActiveInStartCache
@@ -576,11 +583,13 @@ Called when the state of the entry changes. The entry can be in the following st
 
 The entry starts in 1.
 
-The process of binding moves the entry from 1 -> 2, 3, or 4.
+The process of binding/rebinding moves the entry from 1 -> 2, 3, or 4.
 
-While active the entry fluctuates between states 2, 3, and 4.
+While active, the entry fluctuates between states 2, 3, and 4.
 
-Once the entry moves too far offscreen it will move from state 3 or 4 -> 1.
+Once the entry moves too far offscreen, it will move from state 3 or 4 -> 1.
+
+The cycle repeats.
 
 ### RecalculateDimensions
 ```
@@ -619,6 +628,11 @@ Called by the Recycler to reset the entry to its default unbound index.
 `public void SetIndex(int index)`
 
 Called by the Recycler to set the the entry's index.
+
+### SetState
+`public void SetState(RecyclerScrollRectContentState newState)`
+
+Called by the Recycler to set the entry's state.
 
 ## RecyclerScrollRectEndcap
 
