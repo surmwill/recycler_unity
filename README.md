@@ -237,16 +237,16 @@ We can optionally implement these two lifecycle methods, but they are not needed
 
 ```
 // Optional
-public abstract void OnFetchedFromRecycling()
+public virtual void OnFetchedFromPool()
 {
-  // Called when the endcap has been fetched from the pool and become active.
+  // Called when the endcap has been fetched from its pool and become active.
   // It is either visible on screen or waiting just offscreen in the cache.        
 }
 
 // Optional
-public abstract void OnSentToRecycling()
+public virtual void OnReturnedToPool()
 {
-  // Called when the endcap has been returned to the pool
+  // Called when the endcap has been returned to its pool
 }
 ```
 
