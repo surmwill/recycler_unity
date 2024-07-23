@@ -29,8 +29,8 @@ namespace RecyclerScrollRect
         public TEntryData Data { get; private set; }
         
         /// <summary>
-        /// The state of the bound entry: visible, cached, or in the pool.
-        /// Valid post-fetching.
+        /// The state of the entry: visible, cached, or in the recycling pool.
+        /// Valid post-binding/rebinding.
         /// </summary>
         public RecyclerScrollRectContentState State { get; private set; }
 

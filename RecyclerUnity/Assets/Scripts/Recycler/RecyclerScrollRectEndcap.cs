@@ -15,7 +15,7 @@ namespace RecyclerScrollRect
         
         /// <summary>
         /// The state of the endcap: visible, cached, or in the pool.
-        /// Valid post-binding/rebinding.
+        /// Valid post-fetching.
         /// </summary>
         public RecyclerScrollRectContentState State { get; private set; }
 
@@ -44,17 +44,17 @@ namespace RecyclerScrollRect
         #region CALLED_BY_PARENT_RECYCLER
 
         /// <summary>
-        /// Called when the endcap becomes active
+        /// Called when the endcap is fetched from its pool and becomes active
         /// </summary>
-        public virtual void OnFetchedFromRecycling()
+        public virtual void OnFetchedFromPool()
         {
             // Empty   
         }
 
         /// <summary>
-        /// Called when the end-cap gets recycled
+        /// Called when the end-cap gets returned to its pool
         /// </summary>
-        public virtual void OnSentToRecycling()
+        public virtual void OnReturnedToPool()
         {
             // Empty
         }

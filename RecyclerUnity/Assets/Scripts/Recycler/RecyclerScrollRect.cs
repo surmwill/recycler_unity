@@ -667,7 +667,7 @@ namespace RecyclerScrollRect
             {
                 _endcap.transform.SetParent(content, false);
                 _endcap.gameObject.SetActive(true);
-                _endcap.OnFetchedFromRecycling();
+                _endcap.OnFetchedFromPool();
 
                 AddToContent(
                     _endcap.RectTransform,
@@ -679,7 +679,7 @@ namespace RecyclerScrollRect
         private void RecycleEndcap()
         {
             RemoveFromContent(_endcap.RectTransform, EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above).SetParent(_endcapParent, false);
-            _endcap.OnSentToRecycling();
+            _endcap.OnReturnedToPool();
         }
 
         private void CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
