@@ -740,7 +740,7 @@ Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <
   |- Entry 3 (normal <strong>RectTransform</strong> with static values)
 </pre>
 
-Note that editor checks will ensure _controlChildWidth/Height_ is never accidentally checked on the root of the entries. In fact, this root `VerticalLayoutGroup` should never be touched, neither any of its sibling components.
+Note that editor checks will ensure _controlChildWidth/Height_ is never accidentally checked on the root of the entries.
 
 _Long Explanation:_
 
