@@ -10,7 +10,7 @@ namespace RecyclerScrollRect
     /// </summary>
     public class InspectorEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
     {
-        protected override void OnBindNewData(EmptyRecyclerData entryData, RecyclerScrollRectContentState startActiveState)
+        protected override void OnBindNewData(EmptyRecyclerData entryData)
         {
         }
     }

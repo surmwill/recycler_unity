@@ -30,6 +30,7 @@ namespace RecyclerScrollRect
         
         /// <summary>
         /// The state of the bound entry: visible, cached, or in the pool.
+        /// Valid post-fetching.
         /// </summary>
         public RecyclerScrollRectContentState State { get; private set; }
 
@@ -50,12 +51,12 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Binds the entry to a new set of data
         /// </summary>
-        protected abstract void OnBindNewData(TEntryData entryData, RecyclerScrollRectContentState startActiveState);
+        protected abstract void OnBindNewData(TEntryData entryData);
 
         /// <summary>
         /// Rebinds this entry to its existing held data, possibly allowing a resumption of operations instead of a fresh restart
         /// </summary>
-        protected virtual void OnRebindExistingData(RecyclerScrollRectContentState startActiveState)
+        protected virtual void OnRebindExistingData()
         {
             // Empty
         }
@@ -70,9 +71,9 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Called when the active state of the entry changes, that is, when it moves from: cached -> visible or visible -> cached.
+        /// Called when the state of the entry changes.
         /// </summary>
-        protected virtual void OnActiveStateChanged(RecyclerScrollRectContentState prevActiveState, RecyclerScrollRectContentState newActiveState)
+        protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
         {
             // Empty
         }
@@ -88,7 +89,7 @@ namespace RecyclerScrollRect
         {
             Data = entryData;
             SetIndex(index);
-            OnBindNewData(entryData, State);
+            OnBindNewData(entryData);
         }
 
         /// <summary>
@@ -96,7 +97,7 @@ namespace RecyclerScrollRect
         /// </summary>
         public void RebindExistingData()
         {
-            OnRebindExistingData(State);
+            OnRebindExistingData();
         }
 
         /// <summary>
@@ -133,11 +134,9 @@ namespace RecyclerScrollRect
             RecyclerScrollRectContentState lastState = State;
             State = newState;
             
-            if (lastState != RecyclerScrollRectContentState.InactiveInPool && 
-                newState != RecyclerScrollRectContentState.InactiveInPool &&  
-                newState != lastState)
+            if (newState != lastState)
             {
-                OnActiveStateChanged(lastState, newState);   
+                OnStateChanged(lastState, newState);   
             }
         }
 

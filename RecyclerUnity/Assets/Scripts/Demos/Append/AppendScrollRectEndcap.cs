@@ -27,19 +27,14 @@ namespace RecyclerScrollRect
 
         private Coroutine _fetchWhenOnScreen;
 
-        protected override void OnFetchedFromRecycling(RecyclerScrollRectContentState startActiveState)
-        {
-            OnActiveStateChanged(RecyclerScrollRectContentState.InactiveInPool, startActiveState);
-        }
-
         public override void OnSentToRecycling()
         {
             Reset();
         }
 
-        protected override void OnActiveStateChanged(RecyclerScrollRectContentState prevActiveState, RecyclerScrollRectContentState newActiveState)
+        protected override void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
         {
-            if (newActiveState == RecyclerScrollRectContentState.ActiveVisible)
+            if (newState == RecyclerScrollRectContentState.ActiveVisible)
             {
                 _fetchWhenOnScreen = StartCoroutine(FetchWhenOnScreen());
             }

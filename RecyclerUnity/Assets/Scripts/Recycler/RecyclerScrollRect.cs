@@ -219,17 +219,17 @@ namespace RecyclerScrollRect
             }
 
             // Create the entry
-            if (this.IsScrollable() && _activeEntriesWindow.IsInStartCache(index))
+            if (_activeEntriesWindow.IsInStartCache(index))
             {
-                CreateAndAddEntry(index, siblingIndex, RecyclerScrollRectContentState.ActiveInStartCache, StartCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
+                CreateAndAddEntry(index, siblingIndex, StartCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
-            else if (this.IsScrollable() && _activeEntriesWindow.IsInEndCache(index))
+            else if (_activeEntriesWindow.IsInEndCache(index))
             {
-                CreateAndAddEntry(index, siblingIndex, RecyclerScrollRectContentState.ActiveInEndCache, EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
+                CreateAndAddEntry(index, siblingIndex, EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
             else
             {
-                CreateAndAddEntry(index, siblingIndex, RecyclerScrollRectContentState.ActiveVisible, fixEntries);
+                CreateAndAddEntry(index, siblingIndex, fixEntries);
             }
 
             // Adding the entry shifted things around, possibly pushing things offscreen. Recalculate what entries are active
@@ -552,7 +552,6 @@ namespace RecyclerScrollRect
                     _newCachedStartEntries.RemoveFirst();
                     CreateAndAddEntry(current.Value,
                         isStartCacheAtTop ? siblingIndexOffset : content.childCount - siblingIndexOffset,
-                        this.IsScrollable() ? RecyclerScrollRectContentState.ActiveInStartCache : RecyclerScrollRectContentState.ActiveVisible,
                         isStartCacheAtTop ? FixEntries.Below : FixEntries.Above);
                     current = _newCachedStartEntries.First;
                 }
@@ -567,7 +566,6 @@ namespace RecyclerScrollRect
                     _newCachedEndEntries.RemoveFirst();
                     CreateAndAddEntry(current.Value,
                         isEndCacheAtTop ? siblingIndexOffset : content.childCount - siblingIndexOffset,
-                        this.IsScrollable() ? RecyclerScrollRectContentState.ActiveInEndCache : RecyclerScrollRectContentState.ActiveVisible,
                         isEndCacheAtTop ? FixEntries.Below : FixEntries.Above);
                     current = _newCachedEndEntries.First;
                 }
@@ -662,7 +660,6 @@ namespace RecyclerScrollRect
             // Endcap currently exists, but it shouldn't
             if (!shouldEndcapExist)
             {
-                _endcap.SetState(RecyclerScrollRectContentState.InactiveInPool);
                 RecycleEndcap();
             }
             // Endcap doesn't currently exist, but it should
@@ -670,9 +667,7 @@ namespace RecyclerScrollRect
             {
                 _endcap.transform.SetParent(content, false);
                 _endcap.gameObject.SetActive(true);
-                
-                _endcap.SetState(this.IsScrollable() ? RecyclerScrollRectContentState.ActiveInEndCache : RecyclerScrollRectContentState.ActiveVisible);
-                _endcap.FetchFromRecycling();
+                _endcap.OnFetchedFromRecycling();
 
                 AddToContent(
                     _endcap.RectTransform,
@@ -687,14 +682,13 @@ namespace RecyclerScrollRect
             _endcap.OnSentToRecycling();
         }
 
-        private void CreateAndAddEntry(int dataIndex, int siblingIndex, RecyclerScrollRectContentState state, FixEntries fixEntries = FixEntries.Below)
+        private void CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
         {
             if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
             {
                 entry = Instantiate(_recyclerEntryPrefab, content);
             }
             
-            entry.SetState(state);
             if (entry.Index != dataIndex)
             {
                 entry.BindNewData(dataIndex, _dataForEntries[dataIndex]);
@@ -810,7 +804,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Returns the state of the entry at the given index: visible, in the start cache, in the end cache, or in the recycling pool
+        /// Returns the state of the entry at the given index: visible, in the start cache, in the end cache, or in the recycling pool.
         /// </summary>
         public RecyclerScrollRectContentState GetStateOfEntryWithCurrentIndex(int index)
         {

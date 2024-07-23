@@ -15,6 +15,7 @@ namespace RecyclerScrollRect
         
         /// <summary>
         /// The state of the endcap: visible, cached, or in the pool.
+        /// Valid post-binding/rebinding.
         /// </summary>
         public RecyclerScrollRectContentState State { get; private set; }
 
@@ -28,15 +29,7 @@ namespace RecyclerScrollRect
             RectTransform = (RectTransform) transform;
             Recycler = GetComponentInParent<RecyclerScrollRect<TEntryData, TKeyEntryData>>();
         }
-        
-        /// <summary>
-        /// Called when the endcap becomes active
-        /// </summary>
-        protected virtual void OnFetchedFromRecycling(RecyclerScrollRectContentState startActiveState)
-        {
-            // Empty   
-        }
-        
+
         /// <summary>
         /// Recalculates the endcap's dimensions.
         /// 
@@ -53,9 +46,9 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Called when the endcap becomes active
         /// </summary>
-        public void FetchFromRecycling()
+        public virtual void OnFetchedFromRecycling()
         {
-            OnFetchedFromRecycling(State);
+            // Empty   
         }
 
         /// <summary>
@@ -74,18 +67,16 @@ namespace RecyclerScrollRect
             RecyclerScrollRectContentState lastState = State;
             State = newState;
             
-            if (lastState != RecyclerScrollRectContentState.InactiveInPool && 
-                newState != RecyclerScrollRectContentState.InactiveInPool &&  
-                newState != lastState)
+            if (newState != lastState)
             {
-                OnActiveStateChanged(lastState, newState);   
+                OnStateChanged(lastState, newState);   
             }
         }
         
         /// <summary>
         /// Called when the active state of the endcap changes, that is, when it moves from: cached -> visible or visible -> cached.
         /// </summary>
-        protected virtual void OnActiveStateChanged(RecyclerScrollRectContentState prevActiveState, RecyclerScrollRectContentState newActiveState)
+        protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
         {
             // Empty
         }

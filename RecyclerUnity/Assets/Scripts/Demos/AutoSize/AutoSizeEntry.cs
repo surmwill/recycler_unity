@@ -15,7 +15,7 @@ namespace RecyclerScrollRect
         [SerializeField]
         private Text _linesText = null;
 
-        protected override void OnBindNewData(AutoSizeData entryData, RecyclerScrollRectContentState startActiveState)
+        protected override void OnBindNewData(AutoSizeData entryData)
         {
             _titleText.text = $"Randomly Generated <color=red>{entryData.NumLines}</color> Line(s)";
 
