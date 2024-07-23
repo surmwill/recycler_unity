@@ -643,6 +643,13 @@ public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; }
 
 A reference to the Recyler containing this endcap.
 
+### State
+```
+public RecyclerScrollRectContentState State { get; }
+```
+
+The state of the endcap: visible, cached, or in its pool. Valid post-fetching from its pool.
+
 ### RectTransform
 ```
 public RectTransform { get; } 
@@ -650,19 +657,39 @@ public RectTransform { get; }
 
 A saved reference to the endcaps's RectTransform for quick access.
 
-### OnFetchedFromRecycling
+### OnFetchedFromPool
 ```
-public abstract void OnFetchedFromRecycling()
-```
-
-Lifecycle method called when the endcap is retrieved from recycling.
-
-### OnSentToRecycling
-```
-public abstract void OnSentToRecyling()
+public virtual void OnFetchedFromPool()
 ```
 
-Lifecycle method called when the endcap gets sent back to recycling.
+Optional lifecycle method called when the endcap is retrieved from its pool and becomes active.
+
+### OnSentToPool
+```
+public virtual void OnReturnedToPool()
+```
+
+Optional lifecycle method called when the endcap gets returned to its pool
+
+### OnStateChanged
+```
+protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+```
+
+Optional lifecycle method called when the state of the endcap changes. The endcap can be in the following states:
+1. InactiveInPool
+2. ActiveVisible
+3. ActiveInEndCache
+
+The endcap starts in 1.
+
+The process of fetching from its pool moves the entry from 1 -> 2 or 3.
+
+While active, the endcap fluctuates between states 2 and 3.
+
+Once the entry moves too far offscreen, it will move from 3 -> 1.
+
+The cycle repeats.
 
 ### RecalculateDimensions
 ```
