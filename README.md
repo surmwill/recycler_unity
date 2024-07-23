@@ -758,7 +758,7 @@ Importantly, we still allow things to be auto-sized by enabling these components
 
 The root transform of each entry will be force expanded to the width of the recycler. Should you want a different width, a child transform with the desired width can be created and the root left empty.
 
-(See the long explanation on [The Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) for more. Since the we cannot control the entries' width, we cannot force expand its width via the root layout group, which is assumed to be the desired behaviour most of the time. Thus we implement it another way.)
+(See the long explanation on [The Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) for more. Since the we cannot control the entries' width, we cannot force expand its width via the root layout group - which is assumed to be the desired behaviour most of the time. Thus we implement it another way.)
 
 ### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots is `LayoutGroups` and `ContentSizeFitters`.
 
