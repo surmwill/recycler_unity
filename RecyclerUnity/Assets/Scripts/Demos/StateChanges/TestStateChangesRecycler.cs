@@ -19,7 +19,7 @@ namespace RecyclerScrollRect
         // Output state changes for the entry with this index
         public const int DebugPrintStateChangesForEntryIndex = 15;
 
-        private const int InitNumEntries = 30;
+        private const int InitNumEntries = 50;
 
         private void Start()
         {
