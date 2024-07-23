@@ -591,6 +591,9 @@ Once the entry moves too far offscreen, it will move from state 3 or 4 -> 1.
 
 The cycle repeats.
 
+- `prevState:` the previous state the entry was in
+- `newState:` the new state the entry is currently in
+
 ### RecalculateDimensions
 ```
 protected void RecalculateDimensions(FixEntries fixEntries)
@@ -690,6 +693,9 @@ While active, the endcap fluctuates between states 2 and 3.
 Once the entry moves too far offscreen, it will move from 3 -> 1.
 
 The cycle repeats.
+
+- `prevState:` the previous state the endcap was in
+- `newState:` the new state the endcap is currently in
 
 ### RecalculateDimensions
 ```
