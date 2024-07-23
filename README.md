@@ -709,7 +709,7 @@ Unless specified, being at the _end_, a null value will fix all the entries that
 
 # Nuances
 
-### The Recycler cannot control entries' widths or heights
+### The Recycler cannot control entries' widths or heights.
 
 Entries must control their own width and height. If the root `VerticalLayoutGroup` of all the entries controls their widths or heights, we will get disappearing entries (0 width and 0 height) as a side effect of necessary performance concessions (see the long explanation below). If your content is not auto-sized, this is not an issue.
 
@@ -754,13 +754,13 @@ Importantly, we still allow things to be auto-sized by enabling these components
 
 (Note: upon further thought, we may be temped to check _ControlChildSize Width_ and _ChildForceExpand Width_. If we're force expanding the width, this does not care about any disabled components reporting 0 values as we don't care what they report: we simply set it to the maximum width. However, merely checking _ControlChildSize_ incurs a performance cost, including `GetComponent` calls. It is easier just to not _ControlChildSize_. Additionally, behind the scenes, entries are default expanded to the Recycler's width without checking this fields - see [Entries are default expanded to the Recycler's width](https://github.com/surmwill/recycler_unity/blob/master/README.md#entries-are-default-expanded-to-the-recyclers-width).) 
 
-### Entries are default expanded to the Recycler's width
+### Entries are default expanded to the Recycler's width.
 
 The root transform of each entry will be force expanded to the width of the recycler. Should you want a different width, a child transform with the desired width can be created and the root left empty.
 
 (See the long explanation on [The Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) for more. Since the we cannot control the entries' width, we cannot force expand its width via the root layout group, which is assumed to be the desired behaviour most of the time. Thus we implement it another way.)
 
-### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots is `LayoutGroups` and `ContentSizeFitters`
+### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots is `LayoutGroups` and `ContentSizeFitters`.
 
 Except during explicitly defined times all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root for performance reasons.
 This includes things such as `Images`, which should go under a child transform instead. 
@@ -768,7 +768,7 @@ This includes things such as `Images`, which should go under a child transform i
 
 (See the long explanation on [The Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) for more.)
 
-### The Recycler must be manually informed of an entry's dimension changes 
+### The Recycler must be manually informed of an entry's dimension changes.
 
 Every dimension change of an entry, except during binding/rebinding, must be followed by a call [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions) to alert the Recycler of it.
 
