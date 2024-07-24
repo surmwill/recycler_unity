@@ -16,13 +16,18 @@ The changing numbers is exactly the process of recycling: re-using an old entry 
 
 ### Why choose this Recycler?
 Transforming Unity's ScrollRect into a Recycler is already difficult, and other packages can be found implementing a Recycler, but none offer the functionality given here.
-Other Recylers assume:
-- entries with static dimensions (a text message would be unable to resize and show an asynchronously loaded preview image)
-- entries all with the same dimensions (each text message would be required to take up the same amount of room in the conversation, leaving lots of empty space)
-- the list stays static: no inserting or removing entries without recreating the entire list (no inserting or deleting text messages)
-- no endcaps: sometimes you want one slightly different entry from the rest at the bottom of the list as it serves a different purpose (for example, a loading indicator that fetches and appends the next page of text messages from a database)
-- no scrolling to an entry: unless you calculate it's (x,y) or normalized scroll position yourself (which is usually unintuitive)
-- no auto-calculated layout entries: making entries that need to deal with dynamically sized content difficult (for example, an entry with text that changes length based on the localized language) 
+**Other Recylers assume:**
+- **Entries have static dimensions.**
+  <br>(A text message would be unable to resize after creation to show an asynchronously loaded link preview.)
+- **Entries all have the same dimensions.**
+  <br>(Each text message would be required to take up the same amount of room in the conversation, leaving lots of empty space.)
+- **The data stays static:** no inserting or removing entries without recreating the entire list.
+  <br>(No inserting or deleting text messages.)
+- **No endcaps**: sometimes you want one slightly different entry from the rest at the bottom of the list, as it serves a different purpose.
+  <br>(A loading indicator that fetches and appends the next page of text messages from a database.)
+- **No scrolling to an entry:** unless you calculate it's (x,y) or normalized scroll position yourself, which is usually unintuitive.
+- **No auto-calculated layouts** you must know the size of your entries before creating them.
+  <br>(You would manually have to calculate the size of each encompassing chat bubble for every message.) 
 
 Here, all those cases are covered with the following features: 
 - Appending
