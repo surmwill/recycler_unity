@@ -60,7 +60,7 @@ The two core classes - the Recycler and its entries - can be found under:
 
 ### Appending/Prepending/Endcap
 - Equivalent behaviour is available for prepending.
-- Similar to insertion (insertion can accomplish the exact same thing), but more efficient as we know we are appending to the ends only and won't be pushing around any currently visible entries.
+- Similar to insertion but more efficient.
   
 ![](README_Images/recycler_appending_and_endcap.gif)
 
@@ -74,7 +74,6 @@ The two core classes - the Recycler and its entries - can be found under:
 
 ### Auto-sized entries
 - Here each entry generates a random number of lines of text. The entry is auto-sized to fit the text using a `VerticalLayoutGroup` and a `ContentSizeFitter`.
-- (Note: precautions have been taken to prevent inefficent spam layout calculations. See [Nuances](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights).)
 
 ![](README_Images/recycler_autosize.gif)
 
