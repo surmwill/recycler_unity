@@ -7,7 +7,7 @@ namespace RecyclerScrollRect
     /// <summary>
     /// Endcap to demo appending to a recycler
     /// </summary>
-    public class AppendScrollRectEndcap : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
+    public class AppendPrependScrollRectEndcap : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
     {
         [SerializeField]
         private Text _titleText = null;

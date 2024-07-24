@@ -110,7 +110,7 @@ GameObject:
   - component: {fileID: 2359427220134714762}
   - component: {fileID: 6976447056764869076}
   m_Layer: 0
-  m_Name: AppendEndcap
+  m_Name: AppendPrependEndcap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

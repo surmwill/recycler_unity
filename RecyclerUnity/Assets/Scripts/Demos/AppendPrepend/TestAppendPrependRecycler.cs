@@ -9,7 +9,7 @@ namespace RecyclerScrollRect
    /// <summary>
    /// Demos appending entries to a Recycler. (The endcap will fetch and append more entries once we scroll to it)
    /// </summary>
-   public class TestAppendRecycler : MonoBehaviour
+   public class TestAppendPrependRecycler : MonoBehaviour
    {
       [SerializeField]
       private EmptyRecyclerScrollRect _appendRecycler = null;
