@@ -36,7 +36,7 @@ Here, all those cases are covered with the following features:
 - Scrolling to any index (including those off screen)
 - State changes (know when an entry is cached, visible, or in the recycling pool)
 - Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases ("World Space" is untested).
-- 7 (optional) editor checks running every frame, ensuring valid behaviour. 9 Demos isolating and testing each individual piece of functionality.
+- 7 (optional) editor checks running every frame, ensuring valid behaviour. 10 Demos isolating and testing each individual piece of functionality.
 - Only uses native Unity UI elements
 - Fully commented and documented
 
