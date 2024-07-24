@@ -54,7 +54,7 @@ namespace RecyclerScrollRect
             // If we fetched the entry from the pool then this is its starting color
             if (prevState == RecyclerScrollRectContentState.InactiveInPool)
             {
-                _colorTween.Complete();
+                _colorTween?.Complete();
             }
         }
     }
