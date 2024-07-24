@@ -784,7 +784,7 @@ RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowTimeSecon
 (See the long explanation on [The Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) for more. The child controls its own size and is therefore responsible for telling the Recycler of when it changes.)
 
 # Code
-The code can be found under:
+Scripts can be found under:
 - [RecyclerUnity/Assets/Scripts/Recycler/](RecyclerUnity/Assets/Scripts/Recycler/)
 
 The two core classes - the Recycler and its entries - can be found under: 
