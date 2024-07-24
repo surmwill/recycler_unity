@@ -79,7 +79,7 @@ The two core classes - the Recycler and its entries - can be found under:
 ![](README_Images/recycler_autosize.gif)
 
 ### State changes
-- Know when an entry moves from being cached to visible.
+- know when an entry is cached, visible, or in the recycling pool.
 - Here entries become yellow when visible, blue when in the start cache, and green when in the end cache.
 
 ![](README_Images/recycler_state_change.gif)
