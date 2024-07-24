@@ -736,6 +736,7 @@ The root transform of each entry will be force expanded to the width of the recy
 
 Except during explicitly defined times all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root for performance reasons. 
 This includes things such as `Images`, which should go under a child transform instead. 
+
 `LayoutGroups` and `ContentSizeFitters` can still go on the root as they are needed for auto-size calculations.
 
 ### The Recycler must be manually informed of an entry's dimension changes.
