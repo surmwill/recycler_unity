@@ -233,7 +233,7 @@ private void Start()
 
 It might be useful to have a different entry at the end of the list than the others. 
 For example, this entry could have a button to fetch the next page of entries, or do so automatically upon becoming visible for a set amount of time.
-(Note: while we have no problem displaying a large amount of entries, fetching all the data to make them from a database could be costly - literally. Hence paging is still a useful concept.) 
+(Note: while we have no problem displaying a large amount of entries, fetching all the data to make them from a database could be costly (literally $). Hence paging is still a useful concept.) 
 
 The process is similar to creating a normal entry. Construct your prefab, then to make it operable with the Recycler include a `RecyclerScrollRectEndcap<TEntryData, TEntryDataKey>` component at the root, filled in
 with your corresponding key and data types. Again, as generic classes cannot be components we must create an instance of the generic class ourselves, and use that: `public class DemoEndcap : RecyclerScrollRectEndcap<DemoRecyclerData, string>`.
