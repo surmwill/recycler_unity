@@ -29,7 +29,7 @@ Transforming Unity's ScrollRect into a Recycler is already difficult, and other 
 - **No auto-calculated layouts** you must know the size of your entries before creating them.
   <br>(You would manually have to calculate the size of each encompassing chat bubble for every message.) 
 
-Here, all those cases are covered with the following features: 
+Here, **all those cases are covered with the following features:** 
 - Appending
 - Prepending
 - Insertion
@@ -44,14 +44,6 @@ Here, all those cases are covered with the following features:
 - 7 (optional) editor checks running every frame, ensuring valid behaviour. 10 Demos isolating and testing each individual piece of functionality.
 - Only uses native Unity UI elements
 - Fully commented and documented
-
-### Code
-The code is currently in a state of being finalized and documented. It can be found under:
-- [RecyclerUnity/Assets/Scripts/Recycler/](RecyclerUnity/Assets/Scripts/Recycler/)
-
-The two core classes - the Recycler and its entries - can be found under: 
-- [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs)
-- [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs) 
 
 # Feature Videos
 ### Basic Functionality
@@ -790,3 +782,11 @@ RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowTimeSecon
 ```
 
 (See the long explanation on [The Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) for more. The child controls its own size and is therefore responsible for telling the Recycler of when it changes.)
+
+# Code
+The code can be found under:
+- [RecyclerUnity/Assets/Scripts/Recycler/](RecyclerUnity/Assets/Scripts/Recycler/)
+
+The two core classes - the Recycler and its entries - can be found under: 
+- [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs)
+- [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs) 
