@@ -173,10 +173,6 @@ protected override void OnBindNewData(DemoRecyclerData entryData)
 }
 ```
 
-Note that if this entry gets rebound to the same data, (for our case) no action is needed and `OnRebindExistingData` can be left empty. 
-The entry will already have the text and background color set up from its initial `OnBindNewData` call.
-By default, nothing gets reset when it gets sent to recycling - the appearance holds steady.
-
 ### The Recycler
 
 Similar to creating the entry, we have a base `class RecyclerScrollRect<TEntryData, TKeyEntryData>`, but must create an instance of this generic class (working with our data and its key) to be used as a component.
