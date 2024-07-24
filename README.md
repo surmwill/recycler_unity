@@ -34,6 +34,7 @@ Here, all those cases are covered with the following features:
 - Resizing (auto-calculation supported)
 - Endcaps
 - Scrolling to any index (including those off screen)
+- State changes (know when an entry is cached, visible, or in the recycling pool)
 - Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases ("World Space" is untested).
 - 7 (optional) editor checks running every frame, ensuring valid behaviour. 9 Demos isolating and testing each individual piece of functionality.
 - Only uses native Unity UI elements
@@ -76,6 +77,12 @@ The two core classes - the Recycler and its entries - can be found under:
 - (Note: precautions have been taken to prevent inefficent spam layout calculations. See [Nuances](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights).)
 
 ![](README_Images/recycler_autosize.gif)
+
+### State changes
+- Know when an entry moves from being cached to visible.
+- Here entries become yellow when visible, blue when in the start cache, and green when in the end cache.
+
+![](README_Images/recycler_state_change.gif)
 
 # Getting Started
 
