@@ -713,7 +713,7 @@ Unless specified, being at the _end_, a null value will fix all the entries that
 
 ### The Recycler cannot control entries' widths or heights.
 
-Entries must control their own width and height. If the root `VerticalLayoutGroup` of all the entries controls their widths or heights, we will get disappearing entries (0 width and 0 height) as a side effect of necessary performance concessions (see the long explanation below). If your content is not auto-sized, this is not an issue.
+Entries must control their own width and height as a side effect of necessary performance concessions (see the long explanation below). If your content is not auto-sized, this is not an issue. Editor checks will ensure this.
 
 Instead of what is typically done:
 
@@ -727,7 +727,7 @@ Entries (root <strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i
 We need:
 
 <pre>
-Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <strong>ContentSizeFitter</strong>) - baked into Recycler, cannot modify
+Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <strong>ContentSizeFitter</strong>) - baked into Recycler, cannot modify.
   |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
   |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
   |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
@@ -736,39 +736,21 @@ Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <
 Again, if your entries are not auto-sized this is not an issue. This is perfectly valid:
 
 <pre>
-Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <strong>ContentSizeFitter</strong>) - baked into Recycler, cannot modify
-  |- Entry 1 (normal <strong>RectTransform</strong> with no additional components)
-  |- Entry 2 (normal <strong>RectTransform</strong> with no additional components)
-  |- Entry 3 (normal <strong>RectTransform</strong> with no additional components)
+Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <strong>ContentSizeFitter</strong>) - baked into Recycler, cannot modify.
+  |- Entry 1 (<strong>RectTransform</strong> with no additional layout components)
+  |- Entry 2 (<strong>RectTransform</strong> with no additional layout components)
+  |- Entry 3 (<strong>RectTransform</strong> with no additional layout components)
 </pre>
-
-Note that editor checks will ensure _controlChildWidth/Height_ is never accidentally checked on the root of the entries.
-
-_Long Explanation:_
-
-The root of all of entries is a `VerticalLayoutGroup` with a `ContentSizeFitter`. Every time an entry is added, removed, or resized we need to trigger a recalculation of the size of the entire list. This beckons problems.
-
-1.) Performance problems: `VerticalLayoutGroup` size recalculations propagate. If a child entry also has a `VerticalLayoutGroup` (or more specificially, an `ILayoutElement` or `ILayoutController`) then it recalculates its size (going down its subtree) and reports that back to the root. Likely our entries don't change size that often and this is wasted recalculation. Instead, except during explicitly defined times (binding, manual size recalculation calls), we disable all `LayoutGroups` of all the children. This cuts the propagation.
-
-Importantly, we still allow things to be auto-sized by enabling these components during binding and manual size recalculation calls: we enable any `LayoutGroups` and `ContentSizeFitters` on the child during this time, trigger a layout recalculation of just that child which sets its `RectTransform` values accordingly, then disable those components and treat the child like any other plain `RectTransform`.
-
-2.) Because of the above, `LayoutGroups` and `ContentSizeFitters` are disabled on children almost all of the time. If the root of all entries has _ControlsChildSize Width/Height_ checked, then we will get entries with 0 height and 0 width: with the components disabled, this is dimensions they report. Enabling them during size recalculation re-introduces the original problem. Thus the root of all entries cannot have _ControlChildSize Width/Height_ checked.
-
-(Note: upon further thought, we may be temped to check _ControlChildSize Width_ and _ChildForceExpand Width_. If we're force expanding the width, this does not care about any disabled components reporting 0 values as we don't care what they report: we simply set it to the maximum width. However, merely checking _ControlChildSize_ incurs a performance cost, including `GetComponent` calls. It is easier just to not _ControlChildSize_. Additionally, behind the scenes, entries are default expanded to the Recycler's width without checking this fields - see [Entries are default expanded to the Recycler's width](https://github.com/surmwill/recycler_unity/blob/master/README.md#entries-are-default-expanded-to-the-recyclers-width).) 
 
 ### Entries are default expanded to the Recycler's width.
 
 The root transform of each entry will be force expanded to the width of the recycler. Should you want a different width, a child transform with the desired width can be created and the root left empty.
 
-(See the long explanation on [The Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) for more. Since the we cannot control the entries' width, we cannot force expand its width via the root layout group - which is assumed to be the desired behaviour most of the time. Thus we implement it another way.)
-
 ### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots is `LayoutGroups` and `ContentSizeFitters`.
 
-Except during explicitly defined times all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root for performance reasons.
+Except during explicitly defined times all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root for performance reasons. 
 This includes things such as `Images`, which should go under a child transform instead. 
 `LayoutGroups` and `ContentSizeFitters` can still go on the root as they are needed for auto-size calculations.
-
-(See the long explanation on [The Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) for more.)
 
 ### The Recycler must be manually informed of an entry's dimension changes.
 
@@ -780,8 +762,6 @@ For example, to animate an entry growing using DoTween, the below code is used t
 RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowTimeSeconds)
             .OnUpdate(() => RecalculateDimensions());
 ```
-
-(See the long explanation on [The Recycler cannot control entries' widths or heights](https://github.com/surmwill/recycler_unity/blob/master/README.md#the-recycler-cannot-control-entries-widths-or-heights) for more. The child controls its own size and is therefore responsible for telling the Recycler of when it changes.)
 
 # Code
 Scripts can be found under:
