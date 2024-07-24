@@ -713,7 +713,7 @@ Unless specified, being at the _end_, a null value will fix all the entries that
 
 ### The Recycler cannot control entries' widths or heights.
 
-Entries must control their own width and height as a side effect of necessary performance concessions (see the long explanation below). If your content is not auto-sized, this is not an issue. Editor checks will ensure this.
+Entries must control their own width and height as a side effect of necessary performance concessions (editor checks will ensure this). If your content is not auto-sized, this is not an issue.
 
 Instead of what is typically done:
 
