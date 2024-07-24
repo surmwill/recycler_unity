@@ -268,7 +268,7 @@ And our end result looks like:
 ```
 public void InsertAtIndex(int index, TEntryData entryData, FixEntries fixEntries)
 ```
-Inserts an entry at the given index. Existing entries will be shifted - equivalent behaviour to inserting into a list.
+Inserts an entry at the given index. Existing entries' indices will be shifted - equivalent behaviour to inserting into a list.
 - `index:` the index to insert the entry at
 - `entryData:` the data representing the entry
 - `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved.
@@ -277,7 +277,7 @@ Inserts an entry at the given index. Existing entries will be shifted - equivale
 ```
 public void InsertAtKey(TKeyEntryData insertAtKey, TEntryData entryData, FixEntries fixEntries)
 ```
-Inserts an entry at the given key. Existing entries will be shifted - equivalent behaviour to inserting into a list.
+Inserts an entry at the given key. Existing entries' indices will be shifted - equivalent behaviour to inserting into a list.
 - `insertAtKey:` the key to insert the entry at
 - `entryData:` the data representing the entry
 - `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved.
@@ -286,7 +286,7 @@ Inserts an entry at the given key. Existing entries will be shifted - equivalent
 ```
 public void InsertRangeAtIndex(int index, IEnumerable<TEntryData> entryData, FixEntries fixEntries)
 ```
-Inserts a range of entries at the given index. Existing entries will be shifted - equivalent behaviour to inserting into a list.
+Inserts a range of entries at the given index. Existing entries' indices will be shifted - equivalent behaviour to inserting into a list.
 - `index:` the index to insert the entries at
 - `entryData:` the data for the entries
 - `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved.
@@ -295,7 +295,7 @@ Inserts a range of entries at the given index. Existing entries will be shifted 
 ```
 public void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> entryData, FixEntries fixEntries)
 ```
-Inserts a range of entries at the given key. Existing entries will be shifted - equivalent behaviour to inserting into a list.
+Inserts a range of entries at the given key. Existing entries' indices will be shifted - equivalent behaviour to inserting into a list.
 - `insertAtKey:` the index to insert the entries at
 - `entryData:` the data for the entries
 - `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved.
@@ -304,7 +304,7 @@ Inserts a range of entries at the given key. Existing entries will be shifted - 
 ```
 public void RemoveAtIndex(int index, FixEntries fixEntries)
 ```
-Removes an entry at the given index. Existing entries will be shifted - equivalent behaviour to removing from a list.
+Removes an entry at the given index. Existing entries' indices will be shifted - equivalent behaviour to removing from a list.
 - `index:` the index of the entry to remove
 - `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
 
@@ -312,7 +312,7 @@ Removes an entry at the given index. Existing entries will be shifted - equivale
 ```
 public void RemoveAtIndex(TKeyEntryData removeAtKey, FixEntries fixEntries)
 ```
-Removes an entry at the given key. Existing entries will be shifted - equivalent behaviour to removing from a list.
+Removes an entry at the given key. Existing entries' indices will be shifted - equivalent behaviour to removing from a list.
 - `removeAtKey:` the key of the entry to remove
 - `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
 
@@ -320,7 +320,7 @@ Removes an entry at the given key. Existing entries will be shifted - equivalent
 ```
 public void RemoveRangeAtIndex(int index, int count, FixEntries fixEntries)
 ```
-Removes a range of entries starting from the given index. Existing entries will be shifted - equivalent behavior to removing from a list.
+Removes a range of entries starting from the given index. Existing entries' indices will be shifted - equivalent behavior to removing from a list.
 - `index:` the index to start removal at
 - `count:` the number of entries to remove
 - `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
@@ -329,7 +329,7 @@ Removes a range of entries starting from the given index. Existing entries will 
 ```
 public void RemoveRangeAtKey(TKeyEntryData removeAtKey, int count, FixEntries fixEntries)
 ```
-Removes a range of entries starting from the given key. Existing entries will be shifted - equivalent behavior to removing from a list.
+Removes a range of entries starting from the given key. Existing entries' indices will be shifted - equivalent behavior to removing from a list.
 - `removeAtKey:` the key of the entry to start removal at
 - `count:` the number of entries to remove
 - `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
@@ -340,7 +340,7 @@ public void AppendEntries(IEnumerable<TEntryData> entries)
 ```
 Appends a range of entries to the end of the existing list of data. 
 
-Functionally equivalent to insertion - but more efficent - as we know we are tacking things on to the end, not inserting into the middle and pushing things on/off screen unpredictably. 
+Functionally equivalent to insertion, but more efficent. Prefer to use this when feasible.
 
 - `entries:` the data for the entries
 
@@ -348,9 +348,7 @@ Functionally equivalent to insertion - but more efficent - as we know we are tac
 ```
 public void PrependEntries(IEnumerable<TEntryData> entries)
 ```
-Prepends a range of entries to the beginning of the existing list of data. 
-
-Functionally equivalent to insertion - but more efficent - as we know we are tacking things on to the beginning, not inserting into the middle and pushing things on/off screen unpredictably. Appending is even more preferrable, as we still need to shift the underlying list containing the data (and prepending will cause the most shifts).
+Prepends a range of entries to the beginning of the existing list of data. Existing entries' indices will be shifted - equivalent behavior to removing from a list.
 
 - `entries:` the data for the entries
 
@@ -358,15 +356,13 @@ Functionally equivalent to insertion - but more efficent - as we know we are tac
 ```
 public void Clear()
 ```
-Clears the Recycler of all entries and their underlying data. A fresh start.
+Clears the Recycler of all entries and their underlying data.
 
 ### ResetToBeginning
 ```
 public void ResetToBeginning()
 ```
-Resets the Recycler to its very beginning elements. 
-
-Note that this is more efficent than a [`ScrollToIndex`](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex) call with an index of 0 and `isImmediate = true` (i.e. an immediate scroll to index 0, our first element). The immediate scroll still actually scrolls through all the elements - just in one frame. Here we take advantage of knowing we want to return the very beginning of the Recycler by clearing it and then recreating it with the same data. This gives us our initial window of entries without all the intermediate scrolling. 
+Resets the Recycler to its very beginning elements.
 
 ### ScrollToIndex
 ```
@@ -443,15 +439,14 @@ public RecyclerScrollRectContentState GetStateOfEndcap()
 ```
 Returns the state of the endcap. Either:
 1. ActiveVisible: active and visible on screen
-3. ActiveInEndCache: active, but waiting just off screen in the end cache, ready to scroll to (note that an _end_ cap will never be in the _start_ cache)
+3. ActiveInEndCache: active, but waiting just off screen in the end cache, ready to scroll to
 4. InactiveInPool: inactive and waiting in the recycling pool
 
 ### RecalculateEntrySize
 ```
-public void RecalculateContentEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries)
+public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
 ```
-Called by entries to alert the Recyler of their size change. See [`RecyclerScrollRectEntry.RecalculateDimensions`](https://github.com/surmwill/recycler_unity/blob/master/README.md#recalculatedimensions).
-This should never need to be called directly.
+Called by entries to alert the Recyler of their size change. This should never need to be called directly, but instead though the entry's [`RecyclerScrollRectEntry.RecalculateDimensions`](https://github.com/surmwill/recycler_unity/blob/master/README.md#recalculatedimensions).
 
 - `entry:` the entry with an updated size
 - `fixEntries:` as the RectTransform grows or shrinks other entries will get pushed away, or pulled in to the empty space. This defines how and what entries will move.
@@ -460,7 +455,7 @@ This should never need to be called directly.
 ```
 public void RecalculateEndcapSize()
 ```
-Called by the endcap to alert the Recycler of its size change. See [`RecyclerScrollRectEndcap.RecalculateDimensions`](https://github.com/surmwill/recycler_unity/blob/master/README.md#recalculatedimensions-1). This should never need to be called directly.
+Called by the endcap to alert the Recycler of its size change. This should never need to be called directly, but through the endcap's [`RecyclerScrollRectEndcap.RecalculateDimensions`](https://github.com/surmwill/recycler_unity/blob/master/README.md#recalculatedimensions-1).
 
 ### DataForEntries
 ```
