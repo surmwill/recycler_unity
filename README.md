@@ -1,5 +1,5 @@
 # Intro
-A Recycler View for Unity, as a native one is not provided.
+A UI Recycler View for Unity, as a native one is not provided.
 
 ### Why do I need a Recycler?
 Lists of things to display often take up more space than what is available on screen (think of endlessly scrolling through emails or text messages).
