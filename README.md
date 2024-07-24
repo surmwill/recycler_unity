@@ -455,7 +455,7 @@ Called by entries to alert the Recyler of their size change. This should never n
 ```
 public void RecalculateEndcapSize()
 ```
-Called by the endcap to alert the Recycler of its size change. This should never need to be called directly, but through the endcap's [`RecyclerScrollRectEndcap.RecalculateDimensions`](https://github.com/surmwill/recycler_unity/blob/master/README.md#recalculatedimensions-1).
+Called by the endcap to alert the Recycler of its size change. This should never need to be called directly, but instead through the endcap's [`RecyclerScrollRectEndcap.RecalculateDimensions`](https://github.com/surmwill/recycler_unity/blob/master/README.md#recalculatedimensions-1).
 
 ### DataForEntries
 ```
@@ -558,7 +558,7 @@ Lifecycle method called when the entry is retrieved from recycling and gets boun
 protected virtual void OnRebindExistingData()
 ```
 
-Optional lifecycle method called instead of [`OnBindNewData`](https://github.com/surmwill/recycler_unity/blob/master/README.md#onbindnewdata) when the entry is retrieved from recycling and bound. Here, the only difference is the data being bound is the same data that the entry had before (and still currently contains). We might, for example, resume a paused async operation here instead of starting it all over again. By default, nothing gets reset when an entry gets sent to recycling; hence we can pick up from the state right where we left off, just before it got recycled.
+Optional lifecycle method called instead of [`OnBindNewData`](https://github.com/surmwill/recycler_unity/blob/master/README.md#onbindnewdata) when the entry is retrieved from recycling and bound. Here, the only difference is the data being bound is the same data that the entry had before, and still currently contains. We might, for example, resume a paused async operation here instead of starting it all over again. By default, nothing gets reset when an entry gets sent to recycling; hence we can pick up from the state right where we left off, just before it got recycled.
 
 ### OnSentToRecycling
 ```
@@ -596,7 +596,7 @@ The cycle repeats.
 protected void RecalculateDimensions(FixEntries fixEntries)
 ```
 
-After modifying the dimensions of the entry, call this to alert the Recycler to its size change and to re-align its content. (Note: this also triggers a LayoutRebuild, re-calculating any auto-sized content).
+After modifying the dimensions of the entry, call this to alert the Recycler to its size change and to re-align its content. Note that a layout rebuild is triggered before alerting the Recycler, re-calculating any auto-sized content.
 
 - `fixEntries:` resizing an entry will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
 
@@ -699,10 +699,9 @@ The cycle repeats.
 protected void RecalculateDimensions(FixEntries? fixEntries)
 ```
 
-After modifying the dimensions of the endcap, call this to alert the Recycler to its size change and to re-align its content.
+After modifying the dimensions of the endcap, call this to alert the Recycler to its size change and to re-align its content. Note that a layout rebuild is triggered before alerting the Recycler, re-calculating any auto-sized content.
 
-- `fixEntries:` resizing an entry will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
-Unless specified, being at the _end_, a null value will fix all the entries that came before it (i.e. the endcap grows downwards if it's configured to be at the bottom or upwards if it's configured to be at the top). 
+- `fixEntries:` resizing the endcap will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
 
 # Nuances
 
