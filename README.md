@@ -711,14 +711,14 @@ Unless specified, being at the _end_, a null value will fix all the entries that
 
 # Nuances
 
-### The Recycler cannot control entries' widths or heights.
+### Entries set their own auto-size.
 
-Entries must control their own width and height as a side effect of necessary performance concessions (editor checks will ensure this). If your content is not auto-sized, this is not an issue.
+If your content is not auto-sized, this is not an issue. Otherwise, entries must control their own width and height as a side effect of necessary performance concessions (editor checks will ensure this).
 
-Instead of what is typically done:
+Instead of what is typically done, with having the root (Entries) controlling sizes:
 
 <pre>
-Entries (root <strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>) - baked into Recycler, cannot modify. Here with wrong values for demonstration.
+Entries
   |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked)
   |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked)
   |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked)
@@ -727,19 +727,10 @@ Entries (root <strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i
 We need:
 
 <pre>
-Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <strong>ContentSizeFitter</strong>) - baked into Recycler, cannot modify.
+Entries
   |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
   |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
   |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
-</pre>
-
-Again, if your entries are not auto-sized this is not an issue. This is perfectly valid:
-
-<pre>
-Entries (root <strong>VerticalLayoutGroup</strong> with nothing checked, and a <strong>ContentSizeFitter</strong>) - baked into Recycler, cannot modify.
-  |- Entry 1 (<strong>RectTransform</strong> with no additional layout components)
-  |- Entry 2 (<strong>RectTransform</strong> with no additional layout components)
-  |- Entry 3 (<strong>RectTransform</strong> with no additional layout components)
 </pre>
 
 ### Entries are default expanded to the Recycler's width.
