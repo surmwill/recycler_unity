@@ -2394,7 +2394,7 @@ MonoBehaviour:
   _endcapParent: {fileID: 497006705}
   _endcap: {fileID: 1158663785}
   _setTargetFrameRateTo60: 1
-  _debugPerformEditorChecks: 1
+  _performDebugChecks: 1
 --- !u!65 &2059316597
 BoxCollider:
   m_ObjectHideFlags: 0
