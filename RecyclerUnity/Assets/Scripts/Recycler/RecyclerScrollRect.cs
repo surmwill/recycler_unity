@@ -91,9 +91,9 @@ namespace RecyclerScrollRect
         [SerializeField]
         private bool _setTargetFrameRateTo60 = true;
 
-        [Tooltip("Used for debugging. Performs sanity checks in the editor, ensuring for example, that we aren't skipping indices.")]
+        [Tooltip("Perform debug checks in the editor and development builds, ensuring, for example, that we aren't skipping indices.")]
         [SerializeField]
-        private bool _debugPerformEditorChecks = true;
+        private bool _performDebugChecks = true;
 
         /// <summary>
         /// Called after the Recycler's scroll has been handled in LateUpdate and we have a final set of entries on-screen for this frame.
@@ -453,9 +453,9 @@ namespace RecyclerScrollRect
             OnRecyclerUpdated?.Invoke();
 
             // Sanity checks
-            #if UNITY_EDITOR
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
 
-            if (_debugPerformEditorChecks)
+            if (_performDebugChecks)
             {
                 DebugCheckWindow();
                 DebugCheckWindowAlignment();

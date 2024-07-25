@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +13,8 @@ namespace RecyclerScrollRect
     /// </summary>
     public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
     {
+        #if UNITY_EDITOR
+
         private const string ContentName = "Entries";
         private const string PoolParentName = "Pool";
         private const string EndcapParentName = "Endcap";
@@ -226,7 +227,27 @@ namespace RecyclerScrollRect
 
             csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
+        
+        private bool IsInstanceOfEntryPrefab(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
+        {
+            return IsInstanceOfPrefab(entry, _recyclerEntryPrefab);
+        }
 
+        private bool IsInstanceOfEndcapPrefab(RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap)
+        {
+            return IsInstanceOfPrefab(endcap, _endcapPrefab);
+        }
+
+        private bool IsInstanceOfPrefab(Object instanceComponentOrGameObject, Object prefabAsset)
+        {
+            return PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(instanceComponentOrGameObject) ==
+                   AssetDatabase.GetAssetPath(prefabAsset);
+        }
+        
+        #endif
+
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
+        
         /// <summary>
         /// Check that the indices we report as visible, in the start cache, and in the end cache, correspond to actual
         /// entries that are visible, in the start cache, and in the end cache
@@ -622,22 +643,6 @@ namespace RecyclerScrollRect
             }
         }
 
-        private bool IsInstanceOfEntryPrefab(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
-        {
-            return IsInstanceOfPrefab(entry, _recyclerEntryPrefab);
-        }
-
-        private bool IsInstanceOfEndcapPrefab(RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap)
-        {
-            return IsInstanceOfPrefab(endcap, _endcapPrefab);
-        }
-
-        private bool IsInstanceOfPrefab(Object instanceComponentOrGameObject, Object prefabAsset)
-        {
-            return PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(instanceComponentOrGameObject) ==
-                   AssetDatabase.GetAssetPath(prefabAsset);
-        }
+        #endif
     }
 }
-
-#endif
