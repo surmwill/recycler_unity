@@ -559,7 +559,7 @@ namespace RecyclerScrollRect
                 }   
             }
 
-            if (_endcap != null)
+            if (_endcap == null)
             {
                 return;
             }
