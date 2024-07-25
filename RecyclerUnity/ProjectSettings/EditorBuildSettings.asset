@@ -6,11 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Demos/AppendPrepend/Demo_AppendPrepend.unity
-    guid: 6d68678f6b0b8de478b7384095d9517b
-  - enabled: 1
     path: Assets/Scenes/Demos/Creation/Demo_Creation.unity
     guid: 8fed2ed043c792442b2990b9f9c739a7
+  - enabled: 1
+    path: Assets/Scenes/Demos/AppendPrepend/Demo_AppendPrepend.unity
+    guid: 6d68678f6b0b8de478b7384095d9517b
   - enabled: 1
     path: Assets/Scenes/Demos/AutoSize/Demo_AutoSize.unity
     guid: 15868f8f8fe80484aa64e3c5001afc1d
