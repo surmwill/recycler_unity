@@ -480,18 +480,15 @@ namespace RecyclerScrollRect
         {
             // Check which entries are visible, which are not, and what entries need to be in the start/end caches
             UpdateVisibility();
-            
-            // If the range of active entries (visible and cached) has not changed, there is nothing more to do
-            if (!_activeEntriesWindow.IsDirty)
-            {
-                return;
-            }
-            
+
             // Otherwise we'll need to recycle old entries and add new ones
             LinkedListNode<int> current;
+
+            bool didActiveEntriesChange = false;
             while (_activeEntriesWindow.IsDirty)
             {
                 _activeEntriesWindow.SetNonDirty();
+                didActiveEntriesChange = true;
                 
                 _toRecycleEntries.Clear();
                 _newCachedEndEntries.Clear();
@@ -582,17 +579,20 @@ namespace RecyclerScrollRect
             UpdateEndcap();
             
             // Update the state of the entries
-            _updateStateOfEntries = new LinkedList<int>(ActiveEntriesWindow);
-            
-            current = _updateStateOfEntries.First;
-            while (current != null)
+            if (didActiveEntriesChange)
             {
-                _updateStateOfEntries.RemoveFirst();
-                int entryIndex = current.Value;
-                _activeEntries[entryIndex].SetState(GetStateOfEntryWithIndex(entryIndex));
-                current = _updateStateOfEntries.First;
-            }
+                _updateStateOfEntries = new LinkedList<int>(ActiveEntriesWindow);
             
+                current = _updateStateOfEntries.First;
+                while (current != null)
+                {
+                    _updateStateOfEntries.RemoveFirst();
+                    int entryIndex = current.Value;
+                    _activeEntries[entryIndex].SetState(GetStateOfEntryWithIndex(entryIndex));
+                    current = _updateStateOfEntries.First;
+                }   
+            }
+
             // Update the state of the endcap
             if (_endcap != null)
             {
@@ -1109,6 +1109,7 @@ namespace RecyclerScrollRect
         public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
         {
             RecalculateContentChildSize(entry.RectTransform, fixEntries);
+            RecalculateActiveEntries();
         }
 
         /// <summary>
@@ -1117,6 +1118,7 @@ namespace RecyclerScrollRect
         public void RecalculateEndcapSize(FixEntries? fixEntries = null)
         {
             RecalculateContentChildSize(_endcap.RectTransform, fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
+            RecalculateActiveEntries();
         }
 
         /// <summary>

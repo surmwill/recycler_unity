@@ -23,7 +23,7 @@ namespace RecyclerScrollRect
         private void Update()
         {
             // One additional test resizing the endcap, as it is a small test and doesn't justify belonging on its own
-            if (Input.GetKeyDown(KeyCode.A))
+            if (Input.GetKeyDown(KeyCode.A) && _recycler.GetStateOfEndcap() == RecyclerScrollRectContentState.ActiveVisible)
             {
                 ((EndcapResizeEndcap) _recycler.Endcap).Resize();
             }
