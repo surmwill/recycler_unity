@@ -756,11 +756,12 @@ The package is self-contained under the directory:
 Its scripts can be found under:
 - [RecyclerUnity/Assets/Recycler/Scripts/](RecyclerUnity/Assets/Recycler/Scripts/)
 
-Demo Scenes used for isolating and testing behaviour (not included in the package) can be found under:
-- [RecyclerUnity/Assets/Scenes/Demos/](RecyclerUnity/Assets/Scenes/Demos/)
-
-The code used for the 
-
 The two core classes - the Recycler and its entries - can be found under: 
 - [RecyclerUnity/Assets/Recycler/Scripts/RecyclerScrollRect.cs](RecyclerUnity/Assets/Recycler/Scripts/RecyclerScrollRect.cs)
 - [RecyclerUnity/Assets/Recycler/Scripts/RecyclerScrollRectEntry.cs](RecyclerUnity/Assets/Recycler/Scripts/RecyclerScrollRectEntry.cs) 
+
+Demo Scenes used for isolating and testing behaviour can be found under:
+- [RecyclerUnity/Assets/NonPackage/Scenes/Demos/](RecyclerUnity/Assets/NonPackage/Scenes/Demos/)
+
+The code used in the demos can be found under:
+- [RecyclerUnity/Assets/NonPackage/Scripts/Demos/](RecyclerUnity/Assets/NonPackage/Scripts/Demos/)
