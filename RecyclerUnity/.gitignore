@@ -76,3 +76,6 @@ crashlytics-build.properties
 
 # DOTween
 /[Aa]ssets/DOTween
+
+# Resources
+/[Aa]ssets/Resources
