@@ -45,7 +45,7 @@ namespace RecyclerScrollRect
     ///
     /// See full documentation at: https://github.com/surmwill/recycler_unity
     /// </summary>
-    public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : ScrollRect, IPointerDownHandler where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
+    public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : ScrollRectWithDragSensitivity, IPointerDownHandler where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         private const float DefaultScrollSpeedViewportsPerSecond = 0.5f;
         private const RecyclerPosition DefaultAppendTo = RecyclerPosition.Bot;

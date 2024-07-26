@@ -1321,6 +1321,7 @@ MonoBehaviour:
   m_Inertia: 1
   m_DecelerationRate: 0.135
   m_ScrollSensitivity: 1
+  m_DragSensitivity: 2
   m_Viewport: {fileID: 975597926}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 0}
@@ -1340,7 +1341,7 @@ MonoBehaviour:
   _endcapParent: {fileID: 841759471}
   _endcap: {fileID: 770293012}
   _setTargetFrameRateTo60: 1
-  _debugPerformEditorChecks: 1
+  _performDebugChecks: 1
 --- !u!114 &975597929
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -4,14 +4,14 @@ using UnityEngine.UI;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Extension methods for ScrollRects
+    /// Extension methods for ScrollRectWithDragSensitivities
     /// </summary>
-    public static class ScrollRectExtensions
+    public static class ScrollRectWithDragSensitivityExtensions
     {
         /// <summary>
         /// Returns the normalized scroll position of one of the children that make up the ScrollRect's content
         /// </summary>
-        public static float GetNormalizedVerticalPositionOfChild(this ScrollRect scrollRect, RectTransform childContent,
+        public static float GetNormalizedVerticalPositionOfChild(this ScrollRectWithDragSensitivity scrollRect, RectTransform childContent,
             float normalizedPositionInChild)
         {
             (RectTransform content, RectTransform viewport) = (scrollRect.content, scrollRect.viewport);
@@ -60,7 +60,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Returns true if the ScrollRect has sufficient size to be scrollable
         /// </summary>
-        public static bool IsScrollable(this ScrollRect scrollRect)
+        public static bool IsScrollable(this ScrollRectWithDragSensitivity scrollRect)
         {
             Rect contentRect = scrollRect.content.rect;
             Rect viewportRect = scrollRect.viewport.rect;
@@ -81,7 +81,7 @@ namespace RecyclerScrollRect
         /// actually in that special case where we're very close to 0 - and setting it directly to 0 won't help. To cover this case we
         /// also check if setting the normalized position to 0 results in the same normalized position as before (i.e. we are in that tiny threshold).
         /// </summary>
-        public static bool IsAtNormalizedPosition(this ScrollRect scrollRect, Vector2 targetNormalizedPosition)
+        public static bool IsAtNormalizedPosition(this ScrollRectWithDragSensitivity scrollRect, Vector2 targetNormalizedPosition)
         {
             if (scrollRect.normalizedPosition == targetNormalizedPosition)
             {

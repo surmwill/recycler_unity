@@ -8,7 +8,7 @@ namespace RecyclerScrollRect
     /// Override Unity's default ScrollRectEditor so we can see our custom fields too
     /// </summary>
     [CustomEditor(typeof(RecyclerScrollRect<,>), true)]
-    public class RecyclerScrollRectEditor : ScrollRectEditor
+    public class RecyclerScrollRectEditor : ScrollRectWithDragSensitivityEditor
     {
         // General
         private SerializedProperty _recyclerEntryPrefab = null;
@@ -26,7 +26,7 @@ namespace RecyclerScrollRect
 
         // Extra
         private SerializedProperty _setTargetFrameRateTo60 = null;
-        private SerializedProperty _debugPerformEditorChecks = null;
+        private SerializedProperty _performDebugChecks = null;
 
         protected override void OnEnable()
         {
@@ -48,7 +48,7 @@ namespace RecyclerScrollRect
 
             // Extra
             _setTargetFrameRateTo60 = serializedObject.FindProperty(nameof(_setTargetFrameRateTo60));
-            _debugPerformEditorChecks = serializedObject.FindProperty(nameof(_debugPerformEditorChecks));
+            _performDebugChecks = serializedObject.FindProperty(nameof(_performDebugChecks));
         }
 
         // Draw GUI
@@ -72,7 +72,7 @@ namespace RecyclerScrollRect
 
             // Extra
             EditorGUILayout.PropertyField(_setTargetFrameRateTo60);
-            EditorGUILayout.PropertyField(_debugPerformEditorChecks);
+            EditorGUILayout.PropertyField(_performDebugChecks);
 
             serializedObject.ApplyModifiedProperties();
         }
