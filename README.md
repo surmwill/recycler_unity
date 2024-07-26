@@ -751,8 +751,8 @@ RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowTimeSecon
 
 # Code
 Scripts can be found under:
-- [RecyclerUnity/Assets/Scripts/Recycler/](RecyclerUnity/Assets/Scripts/Recycler/)
+- [RecyclerUnity/Assets/Recycler/Scripts/](RecyclerUnity/Assets/Recycler/Scripts/)
 
 The two core classes - the Recycler and its entries - can be found under: 
-- [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRect.cs)
-- [RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs](RecyclerUnity/Assets/Scripts/Recycler/RecyclerScrollRectEntry.cs) 
+- [RecyclerUnity/Assets/Recycler/Scripts/RecyclerScrollRect.cs](RecyclerUnity/Assets/Recycler/Scripts/RecyclerScrollRect.cs)
+- [RecyclerUnity/Assets/Recycler/Scripts/RecyclerScrollRectEntry.cs](RecyclerUnity/Assets/Recycler/Scripts/RecyclerScrollRectEntry.cs) 
