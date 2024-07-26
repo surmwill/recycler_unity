@@ -749,9 +749,17 @@ RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowTimeSecon
             .OnUpdate(() => RecalculateDimensions());
 ```
 
-# Code
-Scripts can be found under:
+# Repo Organization
+The package is self-contained under the directory:
+- [RecyclerUnity/Assets/Recycler/](RecyclerUnity/Assets/Recycler/)
+
+Its scripts can be found under:
 - [RecyclerUnity/Assets/Recycler/Scripts/](RecyclerUnity/Assets/Recycler/Scripts/)
+
+Demo Scenes used for isolating and testing behaviour (not included in the package) can be found under:
+- [RecyclerUnity/Assets/Scenes/Demos/](RecyclerUnity/Assets/Scenes/Demos/)
+
+The code used for the 
 
 The two core classes - the Recycler and its entries - can be found under: 
 - [RecyclerUnity/Assets/Recycler/Scripts/RecyclerScrollRect.cs](RecyclerUnity/Assets/Recycler/Scripts/RecyclerScrollRect.cs)
