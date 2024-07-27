@@ -18,10 +18,20 @@ namespace RecyclerScrollRect
         private const int ScrollToIndex = 45;
 
         private static readonly int[] EnlargeEntryIndices = { 41, 42 };
+        
+        private RecyclerValidityChecker<ScrollToIndexData, string> _validityChecker;
 
         private void Start()
         {
+            _validityChecker = new RecyclerValidityChecker<ScrollToIndexData, string>(_recycler);
+            _validityChecker.Bind();
+            
             _recycler.AppendEntries(CreateEntryData(InitNumEntries, EnlargeEntryIndices));
+        }
+
+        private void OnDestroy()
+        {
+            _validityChecker.Unbind();
         }
 
         private void Update()
@@ -68,7 +78,14 @@ namespace RecyclerScrollRect
             return Enumerable.Repeat((ScrollToIndexData) null, numEntries)
                 .Select((_, i) => new ScrollToIndexData(enlarge.Contains(i)))
                 .ToArray();
+        }
 
+        private void OnValidate()
+        {
+            if (_recycler == null)
+            {
+                _recycler = GetComponent<ScrollToIndexRecyclerScrollRect>();
+            }
         }
     }
 }

@@ -32,6 +32,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
     /// </summary>
     public void Bind()
     {
+        Debug.Log("Starting recycler validity checking.");
         _recycler.OnRecyclerUpdated += CheckValidity;
     }
 
@@ -40,6 +41,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
     /// </summary>
     public void Unbind()
     {
+        Debug.Log("Stopping recycler validity checking.");
         _recycler.OnRecyclerUpdated -= CheckValidity;
     }
 

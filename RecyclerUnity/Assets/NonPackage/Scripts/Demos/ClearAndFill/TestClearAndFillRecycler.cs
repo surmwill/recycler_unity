@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Reflection;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace RecyclerScrollRect
@@ -16,6 +14,19 @@ namespace RecyclerScrollRect
     {
         [SerializeField]
         private EmptyRecyclerScrollRect _recycler = null;
+        
+        private RecyclerValidityChecker<EmptyRecyclerData, string> _validityChecker;
+
+        private void Start()
+        {
+            _validityChecker = new RecyclerValidityChecker<EmptyRecyclerData, string>(_recycler);
+            _validityChecker.Bind();
+        }
+
+        private void OnDestroy()
+        {
+            _validityChecker.Unbind();
+        }
 
         private void Update()
         {
@@ -119,6 +130,14 @@ namespace RecyclerScrollRect
         private TFieldValue GetRecyclerPrivateFieldValue<TFieldValue>(string fieldName)
         {
             return RecyclerScrollRectReflectionHelpers.GetPrivateFieldValue<TFieldValue, EmptyRecyclerData, string>(_recycler, fieldName);
+        }
+
+        private void OnValidate()
+        {
+            if (_recycler == null)
+            {
+                _recycler = GetComponent<EmptyRecyclerScrollRect>();
+            }
         }
     }
 }

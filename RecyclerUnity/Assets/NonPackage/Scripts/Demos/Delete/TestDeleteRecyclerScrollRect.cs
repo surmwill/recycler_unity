@@ -16,10 +16,20 @@ namespace RecyclerScrollRect
 
         private const int StartIndex = 15;
         private static readonly int[] IndicesToRemove = { StartIndex, StartIndex + 2, StartIndex + 3 };
+        
+        private RecyclerValidityChecker<EmptyRecyclerData, string> _validityChecker;
 
         private void Start()
         {
+            _validityChecker = new RecyclerValidityChecker<EmptyRecyclerData, string>(_deleteRecyclerScrollRect);
+            _validityChecker.Bind();
+            
             _deleteRecyclerScrollRect.AppendEntries(EmptyRecyclerData.GenerateEmptyData(NumEntries));
+        }
+
+        private void OnDestroy()
+        {
+            _validityChecker.Unbind();
         }
 
         private void Update()
@@ -32,6 +42,14 @@ namespace RecyclerScrollRect
                 {
                     ((DeleteRecyclerEntry) activeEntries[index]).Delete();
                 }
+            }
+        }
+
+        private void OnValidate()
+        {
+            if (_deleteRecyclerScrollRect == null)
+            {
+                _deleteRecyclerScrollRect = GetComponent<DeleteRecyclerScrollRect>();
             }
         }
     }

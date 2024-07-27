@@ -15,9 +15,19 @@ namespace RecyclerScrollRect
 
         private const int NumEntries = 30;
 
+        private RecyclerValidityChecker<EmptyRecyclerData, string> _validityChecker;
+        
         private void Start()
         {
+            _validityChecker = new RecyclerValidityChecker<EmptyRecyclerData, string>(_recycler);
+            _validityChecker.Bind();
+            
             _recycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(NumEntries));
+        }
+
+        private void OnDestroy()
+        {
+            _validityChecker.Unbind();
         }
 
         private void Update()
@@ -26,6 +36,14 @@ namespace RecyclerScrollRect
             if (Input.GetKeyDown(KeyCode.A) && _recycler.GetStateOfEndcap() == RecyclerScrollRectContentState.ActiveVisible)
             {
                 ((EndcapResizeEndcap) _recycler.Endcap).Resize();
+            }
+        }
+
+        private void OnValidate()
+        {
+            if (_recycler == null)
+            {
+                _recycler = GetComponent<EmptyRecyclerScrollRect>();
             }
         }
     }

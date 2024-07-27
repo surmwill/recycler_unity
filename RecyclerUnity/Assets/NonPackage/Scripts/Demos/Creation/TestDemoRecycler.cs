@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -10,6 +11,8 @@ namespace RecyclerScrollRect
     {
         [SerializeField]
         private DemoRecycler _recycler = null;
+        
+        private RecyclerValidityChecker<DemoRecyclerData, string> _validityChecker;
 
         private static readonly string[] Words =
         {
@@ -25,6 +28,9 @@ namespace RecyclerScrollRect
 
         private void Start()
         {
+            _validityChecker = new RecyclerValidityChecker<DemoRecyclerData, string>(_recycler);
+            _validityChecker.Bind();
+            
             // Create data containing the words from the array, each with a random background color
             DemoRecyclerData[] entryData = new DemoRecyclerData[Words.Length];
             for (int i = 0; i < Words.Length; i++)
@@ -33,6 +39,19 @@ namespace RecyclerScrollRect
             }
 
             _recycler.AppendEntries(entryData);
+        }
+
+        private void OnDestroy()
+        {
+            _validityChecker.Unbind();
+        }
+
+        private void OnValidate()
+        {
+            if (_recycler == null)
+            {
+                _recycler = GetComponent<DemoRecycler>();
+            }
         }
     }
 }

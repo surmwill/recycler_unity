@@ -20,10 +20,28 @@ namespace RecyclerScrollRect
         public const int DebugPrintStateChangesForEntryIndex = 15;
 
         private const int InitNumEntries = 50;
+        
+        private RecyclerValidityChecker<EmptyRecyclerData, string> _validityChecker;
 
         private void Start()
         {
+            _validityChecker = new RecyclerValidityChecker<EmptyRecyclerData, string>(_recycler);
+            _validityChecker.Bind();
+            
             _recycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(InitNumEntries));
+        }
+
+        private void OnDestroy()
+        {
+            _validityChecker.Unbind();
+        }
+
+        private void OnValidate()
+        {
+            if (_recycler == null)
+            {
+                _recycler = GetComponent<EmptyRecyclerScrollRect>();
+            }
         }
     }
 }
