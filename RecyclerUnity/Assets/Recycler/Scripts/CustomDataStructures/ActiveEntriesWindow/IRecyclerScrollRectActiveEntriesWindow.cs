@@ -12,26 +12,31 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Returns true if the window exists, that is, we've added some underlying data to have a window over in the first place
         /// </summary>
-        public bool Exists { get; }
+        bool Exists { get; }
 
         /// <summary>
         /// The range of entry indices that are visible. Null if the range is empty.
         /// </summary>
-        public (int Start, int End)? VisibleIndexRange { get; }
+        (int Start, int End)? VisibleIndexRange { get; }
 
         /// <summary>
         /// The range of entry indices contained in the start cache. Null if the range is empty.
         /// </summary>
-        public (int Start, int End)? StartCacheIndexRange { get; }
+        (int Start, int End)? StartCacheIndexRange { get; }
 
         /// <summary>
         /// The range of entry indices contained in the end cache. Null if the range is empty.
         /// </summary>
-        public (int Start, int End)? EndCacheIndexRange { get; }
+        (int Start, int End)? EndCacheIndexRange { get; }
 
         /// <summary>
         /// The range of active entries: both visible and cached. Null if the range is empty.
         /// </summary>
-        public (int Start, int End)? ActiveEntriesRange { get; }
+        (int Start, int End)? ActiveEntriesRange { get; }
+
+        /// <summary>
+        /// Returns information about the current ranges of entries
+        /// </summary>
+        string PrintRanges();
     }
 }

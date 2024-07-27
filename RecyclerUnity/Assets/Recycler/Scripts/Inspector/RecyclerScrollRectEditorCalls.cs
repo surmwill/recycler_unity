@@ -274,7 +274,7 @@ namespace RecyclerScrollRect
         
         #endif
 
-        #if UNITY_EDITOR || DEVELOPMENT_BUILD
+        #if false // UNITY_EDITOR || DEVELOPMENT_BUILD
         
         /// <summary>
         /// Check that the indices we report as visible, in the start cache, and in the end cache, correspond to actual

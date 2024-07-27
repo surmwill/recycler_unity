@@ -187,7 +187,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Returns information about the current window of active entries
+        /// Returns information about the current ranges of entries
         /// </summary>
         public string PrintRanges()
         {

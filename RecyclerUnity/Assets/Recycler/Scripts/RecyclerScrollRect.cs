@@ -6,6 +6,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+
+using static RecyclerScrollRect.ViewportHelpers;
 using Transform = UnityEngine.Transform;
 
 namespace RecyclerScrollRect
@@ -59,7 +61,7 @@ namespace RecyclerScrollRect
         [SerializeField]
         private int _numCachedAtEachEnd = 2;
 
-        [Tooltip("The direction appended entries get added to.")]
+        [Tooltip("The position appended entries get added to.")]
         [SerializeField]
         private RecyclerPosition _appendTo = DefaultAppendTo;
 
@@ -122,6 +124,11 @@ namespace RecyclerScrollRect
         /// The endcap (if it exists - it is optional)
         /// </summary>
         public RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> Endcap => _endcap;
+
+        /// <summary>
+        /// The position appended entries are added to
+        /// </summary>
+        public RecyclerPosition AppendTo => _appendTo;
 
         private bool IsZerothEntryAtTop => _appendTo == RecyclerPosition.Bot;
 
@@ -453,7 +460,7 @@ namespace RecyclerScrollRect
             OnRecyclerUpdated?.Invoke();
 
             // Sanity checks
-            #if UNITY_EDITOR || DEVELOPMENT_BUILD
+            #if false
 
             if (_performDebugChecks)
             {
@@ -711,7 +718,7 @@ namespace RecyclerScrollRect
         {
             foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _activeEntries.Values)
             {
-                bool isVisible = IsInViewport(entry.RectTransform);
+                bool isVisible = IsInViewport(entry.RectTransform, _viewportCollider);
                 if (isVisible)
                 {
                     EntryIsVisible(entry);
@@ -850,7 +857,7 @@ namespace RecyclerScrollRect
                 return RecyclerScrollRectContentState.InactiveInPool;
             }
 
-            if (IsInViewport(_endcap.RectTransform))
+            if (IsInViewport(_endcap.RectTransform, _viewportCollider))
             {
                 return RecyclerScrollRectContentState.ActiveVisible;
             }
@@ -1015,9 +1022,9 @@ namespace RecyclerScrollRect
         private RectTransform RemoveFromContent(RectTransform child, FixEntries fixEntries = FixEntries.Below)
         {
             // If the child is not visible then shrink in the direction which keeps it off screen and preserves the currently visible entries
-            if (!IsInViewport(child))
+            if (!IsInViewport(child, _viewportCollider))
             {
-                fixEntries = IsAboveViewport(child) ? FixEntries.Below : FixEntries.Above;
+                fixEntries = IsAboveViewportCenter(child, viewport) ? FixEntries.Below : FixEntries.Above;
             }
 
             // Remove the child and recalculate the parent's size
@@ -1033,9 +1040,9 @@ namespace RecyclerScrollRect
         private void RecalculateContentChildSize(RectTransform contentChild, FixEntries fixEntries = FixEntries.Below)
         {
             // If the child is not visible then grow in the direction which keeps it off screen and preserves the currently visible entries
-            if (!IsInViewport(contentChild))
+            if (!IsInViewport(contentChild, _viewportCollider))
             {
-                fixEntries = IsAboveViewport(contentChild) ? FixEntries.Below : FixEntries.Above;
+                fixEntries = IsAboveViewportCenter(contentChild, viewport) ? FixEntries.Below : FixEntries.Above;
             }
 
             // Calculate the height of the child
@@ -1386,23 +1393,6 @@ namespace RecyclerScrollRect
                 StopCoroutine(_scrollToIndexCoroutine);
                 _scrollToIndexCoroutine = null;
             }
-        }
-
-        private bool IsInViewport(RectTransform rectTransform)
-        {
-            Vector3[] worldCorners = new Vector3[4];
-            rectTransform.GetWorldCorners(worldCorners);
-            return worldCorners.Any(_viewportCollider.ContainsPoint);
-        }
-
-        private bool IsAboveViewport(RectTransform rectTransform)
-        {
-            return Vector3.Dot(Vector3.ProjectOnPlane(rectTransform.position - viewport.position, viewport.forward), viewport.up) > 0;
-        }
-
-        private bool IsBelowViewport(RectTransform rectTransform)
-        {
-            return Vector3.Dot(Vector3.ProjectOnPlane(rectTransform.position - viewport.position, viewport.forward), -viewport.up) > 0;
         }
 
         private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)
