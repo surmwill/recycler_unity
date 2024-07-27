@@ -869,12 +869,6 @@ namespace RecyclerScrollRect
             // Stop auto-scrolling to an index
             StopScrollToIndexCoroutine();
 
-            // Upon clearing, all entries should return to the pool unbound. We expect (and will check for) this amount of unbound entries
-            #if UNITY_EDITOR
-            int numTotalBoundEntries = _activeEntries.Count + _recycledEntries.Entries.Count;
-            int numTargetUnboundEntries = numTotalBoundEntries + _unboundEntries.Count;
-            #endif
-
             // Recycle all the entries
             foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _activeEntries.Values.ToList())
             {
@@ -890,7 +884,7 @@ namespace RecyclerScrollRect
             }
 
             // Recycle the end-cap if it exists
-            if (_endcap != null)
+            if (_endcap != null && _endcap.gameObject.activeSelf)
             {
                 RecycleEndcap();
             }
@@ -906,52 +900,6 @@ namespace RecyclerScrollRect
 
             // Reset our pivot to whatever its initial value was
             content.pivot = _nonFilledScrollRectPivot;
-
-            // Check that we have returned to the initial state
-            #if UNITY_EDITOR
-
-            if (_dataForEntries.Any())
-            {
-                throw new DataException("The data is supposed to cleared, but there is still some present.");
-            }
-
-            if (_entryKeyToCurrentIndex.Any())
-            {
-                throw new DataException("The data has been cleared. There should be no keys either.");
-            }
-
-            if (_activeEntries.Any())
-            {
-                throw new DataException($"The data has been cleared. We should not have any active entries.");
-            }
-
-            if (_activeEntriesWindow.Exists || _activeEntriesWindow.IsDirty || _activeEntriesWindow.ActiveEntriesRange.HasValue)
-            {
-                throw new DataException($"The data has been cleared and the window should not exist. There's no underlying data to have a window over.");
-            }
-
-            if (_recycledEntries.Entries.Any())
-            {
-                throw new DataException($"After clearing, all entries should return to the pool unbound. There are still {_recycledEntries.Entries.Count} entries in the pool bound.");
-            }
-
-            int numMissingUnboundEntries = numTargetUnboundEntries - _unboundEntries.Count;
-            if (numMissingUnboundEntries != 0)
-            {
-                throw new DataException($"After clearing, all entries should return to the pool unbound. Missing {numMissingUnboundEntries} entries.");
-            }
-
-            if (_endcap != null && _endcap.gameObject.activeSelf)
-            {
-                throw new DataException("The data has been cleared. We expect an empty window and therefore the endcap should not be active.");
-            }
-
-            if (_currScrollingToIndex.HasValue || _scrollToIndexCoroutine != null)
-            {
-                throw new DataException("The data has been cleared. We should not be auto-scrolling to an index.");
-            }
-
-            #endif
         }
 
         private void StopMovementAndDrag()

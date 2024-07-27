@@ -37,31 +37,24 @@ namespace RecyclerScrollRect
         {
             // Private fields in the RecyclerScrollRect that we'd like access here for testing purposes, matching their name 1-to-1
             RecycledEntries<EmptyRecyclerData, string> _recycledEntries = null;
-            _recycledEntries = GetRecyclerPrivateFieldValue<RecycledEntries<EmptyRecyclerData, string>>(nameof(_recycledEntries));
-            Debug.Log(_recycledEntries != null);
-            
-            /*
-            // Private fields in the RecyclerScrollRect that we'd like access here for testing purposes, matching their name 1-to-1
-            RecycledEntries<EmptyRecyclerData, string> _recycledEntries = null;
-            _recycledEntries = ReflectionHelpers.GetPrivateFieldValue<RecycledEntries<EmptyRecyclerData, string>>((RecyclerScrollRect<EmptyRecyclerData, string>)_recycler, nameof(_recycledEntries));
-
             Queue<RecyclerScrollRectEntry<EmptyRecyclerData, string>> _unboundEntries = null;
-            _unboundEntries = ReflectionHelpers.GetPrivateFieldValue<Queue<RecyclerScrollRectEntry<EmptyRecyclerData, string>>>(_recycler, nameof(_unboundEntries));
-
+            
             Dictionary<string, int> _entryKeyToCurrentIndex = null;
-            _entryKeyToCurrentIndex = ReflectionHelpers.GetPrivateFieldValue<Dictionary<string, int>>(_recycler, nameof(_entryKeyToCurrentIndex));
-
             RecyclerScrollRectActiveEntriesWindow _activeEntriesWindow = null;
-            _activeEntriesWindow = ReflectionHelpers.GetPrivateFieldValue<RecyclerScrollRectActiveEntriesWindow>(_recycler, nameof(_activeEntriesWindow));
-
+            
             int? _currScrollingToIndex = null;
-            _currScrollingToIndex = ReflectionHelpers.GetPrivateFieldValue<int?>(_recycler, nameof(_currScrollingToIndex));
-
             Coroutine _scrollToIndexCoroutine = null;
-            _scrollToIndexCoroutine = ReflectionHelpers.GetPrivateFieldValue<Coroutine>(_recycler, nameof(_scrollToIndexCoroutine));
-
             Vector2 _nonFilledScrollRectPivot = default;
-            _nonFilledScrollRectPivot = ReflectionHelpers.GetPrivateFieldValue<Vector2>(_recycler, nameof(_nonFilledScrollRectPivot));
+            
+            _recycledEntries = GetRecyclerPrivateFieldValue<RecycledEntries<EmptyRecyclerData, string>>(nameof(_recycledEntries));
+            _unboundEntries = GetRecyclerPrivateFieldValue<Queue<RecyclerScrollRectEntry<EmptyRecyclerData, string>>>(nameof(_unboundEntries));
+            
+            _entryKeyToCurrentIndex = GetRecyclerPrivateFieldValue<Dictionary<string, int>>(nameof(_entryKeyToCurrentIndex));
+            _activeEntriesWindow = GetRecyclerPrivateFieldValue<RecyclerScrollRectActiveEntriesWindow>(nameof(_activeEntriesWindow));
+            
+            _currScrollingToIndex = GetRecyclerPrivateFieldValue<int?>(nameof(_currScrollingToIndex));
+            _scrollToIndexCoroutine = GetRecyclerPrivateFieldValue<Coroutine>(nameof(_scrollToIndexCoroutine));
+            _nonFilledScrollRectPivot = GetRecyclerPrivateFieldValue<Vector2>(nameof(_nonFilledScrollRectPivot));
 
             // Upon clearing, all entries should return to the pool unbound. We expect (and will check for) this amount of unbound entries
             int numTotalBoundEntries = _recycler.ActiveEntries.Count + _recycledEntries.Entries.Count;
@@ -121,7 +114,6 @@ namespace RecyclerScrollRect
             {
                 throw new DataException("After clearing, the pivot should be reset to whatever it was on initialization.");
             }
-            */
         }
 
         private TFieldValue GetRecyclerPrivateFieldValue<TFieldValue>(string fieldName)
