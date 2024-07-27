@@ -24,6 +24,8 @@ namespace RecyclerScrollRect
         private RecyclerPosition _lastAppendTo = DefaultAppendTo == RecyclerPosition.Bot ? RecyclerPosition.Top : RecyclerPosition.Bot;
 
         private RectTransform _lastContent;
+        private (bool, bool)? _lastOrientation;
+        private MovementType? _lastMovementType;
 
         protected override void OnValidate()
         {
@@ -38,15 +40,25 @@ namespace RecyclerScrollRect
             // Vertical only (for now)
             if (!vertical || horizontal)
             {
-                Debug.LogWarning("Only vertical RecyclerScrollRects are currently supported.");
+                if (_lastOrientation.HasValue)
+                {
+                    Debug.LogWarning("Only vertical RecyclerScrollRects are currently supported. Setting appropriately.");   
+                }
+                
                 (vertical, horizontal) = (true, false);
+                _lastOrientation = (vertical, horizontal);
             }
 
             // Clamped only
             if (movementType != MovementType.Clamped)
             {
-                Debug.LogWarning("Only clamped movement is supported.");
+                if (_lastMovementType.HasValue)
+                {
+                    Debug.LogWarning("Only clamped movement is supported. Setting appropriately.");   
+                }
+                
                 movementType = MovementType.Clamped;
+                _lastMovementType = movementType;
             }
 
             // Create a default viewport
@@ -183,7 +195,7 @@ namespace RecyclerScrollRect
 
             if (bc.size != viewportSize || bc.center != Vector3.zero)
             {
-                Debug.LogWarning("Viewport collider must equal the dimensions of the viewport.");
+                Debug.LogWarning("Viewport collider must equal the dimensions of the viewport. Setting appropriately.");
                 bc.size = viewportSize;
                 bc.center = Vector3.zero;
             }
@@ -218,14 +230,15 @@ namespace RecyclerScrollRect
                 v = content.gameObject.AddComponent<VerticalLayoutGroup>();
             }
 
-            if (v.childControlWidth || v.childControlHeight)
+            if (v.childControlWidth || v.childControlHeight || v.childForceExpandWidth || v.childForceExpandHeight)
             {
                 Debug.LogWarning(
-                    $"The {nameof(VerticalLayoutGroup)} on the entries' root cannot have {nameof(v.childControlWidth)} or {nameof(v.childControlHeight)} checked for performance reasons.\n" +
+                    $"The {nameof(VerticalLayoutGroup)} on the entries' root cannot have {nameof(v.childControlWidth)} or {nameof(v.childControlHeight)} checked for performance reasons. Setting appropriately.\n" +
                     $"Entries can still be auto-sized by controlling their own width and height through their own {nameof(ContentSizeFitter)}.\n" +
                     $"See Documentation for more.");
 
                 (v.childControlWidth, v.childControlHeight) = (false, false);
+                (v.childForceExpandWidth, v.childForceExpandHeight) = (false, false);
             }
 
             // Ensure the content resizes along with the total size of the entries
@@ -238,7 +251,7 @@ namespace RecyclerScrollRect
 
             if (csf.verticalFit != ContentSizeFitter.FitMode.PreferredSize)
             {
-                Debug.LogWarning($"The {nameof(ContentSizeFitter)} on the entries' root must have a vertical fit of {nameof(ContentSizeFitter.FitMode.PreferredSize)} to match the size of the list of entries.");
+                Debug.LogWarning($"The {nameof(ContentSizeFitter)} on the entries' root must have a vertical fit of {nameof(ContentSizeFitter.FitMode.PreferredSize)} to match the size of the list of entries. Setting appropriately.");
                 csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;   
             }
         }
