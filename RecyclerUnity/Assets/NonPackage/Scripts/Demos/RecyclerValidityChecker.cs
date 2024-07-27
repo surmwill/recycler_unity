@@ -431,7 +431,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
             case RecyclerScrollRectContentState.ActiveInEndCache:
             {
                 if (EndCachePosition == RecyclerPosition.Top && !IsAboveViewportCenter(endcap.RectTransform, _recyclerViewport) || 
-                    EndCachePosition == RecyclerPosition.Top && !IsBelowViewportCenter(endcap.RectTransform, _recyclerViewport))
+                    EndCachePosition == RecyclerPosition.Bot && !IsBelowViewportCenter(endcap.RectTransform, _recyclerViewport))
                 {
                     Debug.LogError("The endcap's state says it's in the end cache but its position in the list does not reflect this.");
                     Debug.Break();

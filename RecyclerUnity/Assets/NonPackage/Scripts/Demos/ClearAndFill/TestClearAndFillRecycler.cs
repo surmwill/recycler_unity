@@ -42,6 +42,10 @@ namespace RecyclerScrollRect
             {
                 _recycler.ResetToBeginning();
             }
+            else if (Input.GetKeyDown(KeyCode.D))
+            {
+                _recycler.RemoveAtIndex(0);
+            }
         }
 
         private void ClearAndCheck()

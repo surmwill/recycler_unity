@@ -13,6 +13,7 @@ namespace RecyclerScrollRect
 
         protected override void OnBindNewData(EmptyRecyclerData entryData)
         {
+            _indexText.text = Index.ToString();
         }
 
         private void Update()
