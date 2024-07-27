@@ -6,30 +6,30 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Demos/Creation/Demo_Creation.unity
+    path: Assets/NonPackage/Scenes/Demos/Creation/Demo_Creation.unity
     guid: 8fed2ed043c792442b2990b9f9c739a7
   - enabled: 1
-    path: Assets/Scenes/Demos/AppendPrepend/Demo_AppendPrepend.unity
+    path: Assets/NonPackage/Scenes/Demos/AppendPrepend/Demo_AppendPrepend.unity
     guid: 6d68678f6b0b8de478b7384095d9517b
   - enabled: 1
-    path: Assets/Scenes/Demos/AutoSize/Demo_AutoSize.unity
+    path: Assets/NonPackage/Scenes/Demos/AutoSize/Demo_AutoSize.unity
     guid: 15868f8f8fe80484aa64e3c5001afc1d
   - enabled: 1
-    path: Assets/Scenes/Demos/ClearAndFill/Demo_ClearAndFill.unity
+    path: Assets/NonPackage/Scenes/Demos/ClearAndFill/Demo_ClearAndFill.unity
     guid: 739c5a041c80e5344ad23deef91cd147
   - enabled: 1
-    path: Assets/Scenes/Demos/Delete/Demo_Delete.unity
+    path: Assets/NonPackage/Scenes/Demos/Delete/Demo_Delete.unity
     guid: f5b4c45da92f34241a6afdca89de9122
   - enabled: 1
-    path: Assets/Scenes/Demos/EndcapResize/Demo_EndcapResize.unity
+    path: Assets/NonPackage/Scenes/Demos/EndcapResize/Demo_EndcapResize.unity
     guid: 1a21ff43385eadc44963daa6454adb1c
   - enabled: 1
-    path: Assets/Scenes/Demos/InsertAndResize/Demo_InsertAndResize.unity
+    path: Assets/NonPackage/Scenes/Demos/InsertAndResize/Demo_InsertAndResize.unity
     guid: 544136af31d368c4f99e9aca3e0bd120
   - enabled: 1
-    path: Assets/Scenes/Demos/ScrollToIndex/Demo_ScrollToIndex.unity
+    path: Assets/NonPackage/Scenes/Demos/ScrollToIndex/Demo_ScrollToIndex.unity
     guid: eb297d1def224454a8c2375dff4ad83e
   - enabled: 1
-    path: Assets/Scenes/Demos/StateChanges/Demo_StateChanges.unity
+    path: Assets/NonPackage/Scenes/Demos/StateChanges/Demo_StateChanges.unity
     guid: 860a5fd358f314a45b67f26b17fead46
   m_configObjects: {}
