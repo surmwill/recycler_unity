@@ -58,15 +58,18 @@ namespace RecyclerScrollRect
             // Create default content (the root of the list of entries)
             if (content == null)
             {
-                RectTransform entriesParent = (RectTransform) new GameObject(ContentName,
-                    typeof(RectTransform),
-                    typeof(VerticalLayoutGroup), typeof(ContentSizeFitter),
-                    typeof(Canvas), typeof(GraphicRaycaster)).transform;
-
+                RectTransform entriesParent = (RectTransform) new GameObject(ContentName, typeof(RectTransform)).transform;
                 entriesParent.SetParent(transform);
                 content = entriesParent;
+                
                 (content.localPosition, content.localRotation, content.localScale) = (Vector3.zero, Quaternion.identity, Vector3.one);
                 (content.offsetMin, content.offsetMax) = (Vector2.zero, Vector2.zero);
+                
+                EditorCheckRootEntriesComponents();
+                
+                // Default have the entries under their own canvas as they're constantly moving and dirtying themselves, but the user can change this
+                content.gameObject.AddComponent<Canvas>();
+                content.gameObject.AddComponent<GraphicRaycaster>();
             }
 
             // When appending downwards by default we start at the top, and vice-versa 
@@ -168,13 +171,22 @@ namespace RecyclerScrollRect
                 return;
             }
 
+            Vector3 viewportSize = new Vector3(viewport.rect.width, viewport.rect.height, 1f);
+            
             BoxCollider bc = viewport.GetComponent<BoxCollider>();
             if (bc == null)
             {
                 bc = viewport.gameObject.AddComponent<BoxCollider>();
+                bc.size = viewportSize;
+                bc.isTrigger = true;
             }
 
-            bc.size = new Vector3(viewport.rect.width, viewport.rect.height, 1f);
+            if (bc.size != viewportSize || bc.center != Vector3.zero)
+            {
+                Debug.LogWarning("Viewport collider must equal the dimensions of the viewport.");
+                bc.size = viewportSize;
+                bc.center = Vector3.zero;
+            }
         }
 
         /// <summary>
@@ -188,14 +200,14 @@ namespace RecyclerScrollRect
             }
 
             // Ensure the root of all entries has the proper anchor values.
-            // Importantly, the anchored position will treated differently if the y's don't match (though the value we choose doesn't matter)
+            // Importantly, the anchored position will treated differently if the y's don't match (although the value we choose isn't important)
             if (content != _lastContent)
             {
                 _tracker.Clear();
                 _lastContent = content;
             }
 
-            //_tracker.Add(this, content, DrivenTransformProperties.AnchorMin | DrivenTransformProperties.AnchorMax);
+            _tracker.Add(this, content, DrivenTransformProperties.AnchorMin | DrivenTransformProperties.AnchorMax);
             content.anchorMin = new Vector2(0f, 0.5f);
             content.anchorMax = new Vector2(1f, 0.5f);
 
@@ -209,23 +221,26 @@ namespace RecyclerScrollRect
             if (v.childControlWidth || v.childControlHeight)
             {
                 Debug.LogWarning(
-                    $"The {nameof(VerticalLayoutGroup)} on the entries' root cannot have {nameof(v.childControlWidth)} or {nameof(v.childControlHeight)} checked for performance reasons; unchecking them.\n" +
-                    $"Entries can still be auto-sized by controlling their own width and height with their own {nameof(ContentSizeFitter)}.\n" +
-                    $"Please see documentation for more.");
+                    $"The {nameof(VerticalLayoutGroup)} on the entries' root cannot have {nameof(v.childControlWidth)} or {nameof(v.childControlHeight)} checked for performance reasons.\n" +
+                    $"Entries can still be auto-sized by controlling their own width and height through their own {nameof(ContentSizeFitter)}.\n" +
+                    $"See Documentation for more.");
 
                 (v.childControlWidth, v.childControlHeight) = (false, false);
             }
-
-            (v.childForceExpandWidth, v.childForceExpandHeight) = (false, false);
 
             // Ensure the content resizes along with the total size of the entries
             ContentSizeFitter csf = content.GetComponent<ContentSizeFitter>();
             if (csf == null)
             {
                 csf = content.gameObject.AddComponent<ContentSizeFitter>();
+                csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             }
 
-            csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            if (csf.verticalFit != ContentSizeFitter.FitMode.PreferredSize)
+            {
+                Debug.LogWarning($"The {nameof(ContentSizeFitter)} on the entries' root must have a vertical fit of {nameof(ContentSizeFitter.FitMode.PreferredSize)} to match the size of the list of entries.");
+                csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;   
+            }
         }
         
         private bool IsInstanceOfEntryPrefab(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
