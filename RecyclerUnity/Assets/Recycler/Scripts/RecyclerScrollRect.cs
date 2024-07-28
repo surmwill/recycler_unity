@@ -146,6 +146,7 @@ namespace RecyclerScrollRect
 
         private Coroutine _scrollToIndexCoroutine;
         private int? _currScrollingToIndex;
+        private int _initFrameRate;
 
         private BoxCollider _viewportCollider;
         
@@ -168,6 +169,7 @@ namespace RecyclerScrollRect
             // higher frame rate will result in smoother scrolling.
             if (_setTargetFrameRateTo60)
             {
+                _initFrameRate = Application.targetFrameRate;
                 Application.targetFrameRate = 60;
             }
 
@@ -1343,6 +1345,11 @@ namespace RecyclerScrollRect
         {
             base.OnDestroy();
             _tracker.Clear();
+
+            if (_setTargetFrameRateTo60)
+            {
+                Application.targetFrameRate = _initFrameRate;
+            }
         }
 
         /// <summary>

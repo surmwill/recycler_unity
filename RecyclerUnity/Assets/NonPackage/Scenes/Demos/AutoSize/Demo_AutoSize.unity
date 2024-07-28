@@ -2244,7 +2244,6 @@ MonoBehaviour:
   _endcapParent: {fileID: 0}
   _endcap: {fileID: 0}
   _setTargetFrameRateTo60: 1
-  _performDebugChecks: 1
 --- !u!114 &2023473215
 MonoBehaviour:
   m_ObjectHideFlags: 0

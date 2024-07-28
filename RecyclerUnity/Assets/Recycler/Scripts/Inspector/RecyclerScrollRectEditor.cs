@@ -26,7 +26,6 @@ namespace RecyclerScrollRect
 
         // Extra
         private SerializedProperty _setTargetFrameRateTo60 = null;
-        private SerializedProperty _performDebugChecks = null;
 
         protected override void OnEnable()
         {
@@ -48,7 +47,6 @@ namespace RecyclerScrollRect
 
             // Extra
             _setTargetFrameRateTo60 = serializedObject.FindProperty(nameof(_setTargetFrameRateTo60));
-            _performDebugChecks = serializedObject.FindProperty(nameof(_performDebugChecks));
         }
 
         // Draw GUI
@@ -72,7 +70,6 @@ namespace RecyclerScrollRect
 
             // Extra
             EditorGUILayout.PropertyField(_setTargetFrameRateTo60);
-            EditorGUILayout.PropertyField(_performDebugChecks);
 
             serializedObject.ApplyModifiedProperties();
         }
