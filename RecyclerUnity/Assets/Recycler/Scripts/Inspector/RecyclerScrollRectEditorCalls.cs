@@ -19,8 +19,6 @@ namespace RecyclerScrollRect
         private const string PoolParentName = "Pool";
         private const string EndcapParentName = "Endcap";
 
-        private DrivenRectTransformTracker _tracker;
-        
         private RectTransform _lastContent;
         private RecyclerPosition? _lastAppendTo;
         private (bool, bool)? _lastOrientation;
@@ -218,11 +216,8 @@ namespace RecyclerScrollRect
                 _tracker.Clear();
                 _lastContent = content;
             }
-
-            _tracker.Add(this, content, DrivenTransformProperties.AnchorMin | DrivenTransformProperties.AnchorMax);
-            content.anchorMin = new Vector2(0f, 0.5f);
-            content.anchorMax = new Vector2(1f, 0.5f);
-
+            SetContentTracker();
+            
             // Ensure the entries' root is not controlling the entries' widths or heights
             VerticalLayoutGroup v = content.GetComponent<VerticalLayoutGroup>();
             if (v == null)
@@ -230,7 +225,7 @@ namespace RecyclerScrollRect
                 v = content.gameObject.AddComponent<VerticalLayoutGroup>();
             }
 
-            if (v.childControlWidth || v.childControlHeight || v.childForceExpandWidth || v.childForceExpandHeight)
+            if (v.childControlWidth || v.childControlHeight)
             {
                 Debug.LogWarning(
                     $"The {nameof(VerticalLayoutGroup)} on the entries' root cannot have {nameof(v.childControlWidth)} or {nameof(v.childControlHeight)} checked for performance reasons. Setting appropriately.\n" +
@@ -238,7 +233,6 @@ namespace RecyclerScrollRect
                     $"See Documentation for more.");
 
                 (v.childControlWidth, v.childControlHeight) = (false, false);
-                (v.childForceExpandWidth, v.childForceExpandHeight) = (false, false);
             }
 
             // Ensure the content resizes along with the total size of the entries

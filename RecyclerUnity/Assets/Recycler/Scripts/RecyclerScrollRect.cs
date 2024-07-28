@@ -145,6 +145,7 @@ namespace RecyclerScrollRect
 
         private RecyclerScrollRectActiveEntriesWindow _activeEntriesWindow;
 
+        private DrivenRectTransformTracker _tracker;
         private Vector2 _nonFilledScrollRectPivot;
 
         private Coroutine _scrollToIndexCoroutine;
@@ -190,6 +191,11 @@ namespace RecyclerScrollRect
             // Collider to detect what is on/offscreen
             _viewportCollider = viewport.GetComponent<BoxCollider>();
 
+            _tracker.Add(this, content, DrivenTransformProperties.AnchorMin | DrivenTransformProperties.AnchorMax);
+            content.anchorMin = new Vector2(0f, 0.5f);
+            content.anchorMax = new Vector2(1f, 0.5f);
+            
+            Debug.Log(content.anchorMin + " " + content.anchorMax);
         }
 
         /// <summary>
@@ -1150,7 +1156,8 @@ namespace RecyclerScrollRect
             Vector2 initPivot = content.pivot;
             float initY = content.anchoredPosition.y;
             bool preResizeIsScrollable = this.IsScrollable();
-            (content.anchorMin, content.anchorMax) = (new Vector2(0f, 0.5f), new Vector2(1f, 0.5f));
+            Debug.Log(content.anchorMin + " " + content.anchorMax);
+            // (content.anchorMin, content.anchorMax) = (new Vector2(0f, 0.5f), new Vector2(1f, 0.5f));
             
             // Define how the size change will come off the RectTransform, then incorporate the size change
             if (preResizeIsScrollable)
@@ -1169,12 +1176,15 @@ namespace RecyclerScrollRect
             // ScrollRects act differently if there's not enough content to scroll through in the first place
             if (!postResizeIsScrollable)
             {
+                Debug.Log("is scrollable");
+                
                 // With < fullscreen worth of content, the pivot controls where in the viewport the content is centered. Reset it to whatever it was on initialization
                 content.pivot = _nonFilledScrollRectPivot;
                 
                 (Vector2 offsetMin, Vector2 offsetMax) = (content.offsetMin, content.offsetMax);
                 normalizedPosition = normalizedPosition.WithY(0f);
                 (content.offsetMin, content.offsetMax) = (content.offsetMin.WithX(offsetMin.x), content.offsetMax.WithX(offsetMax.x));
+                //(content.anchorMin, content.anchorMax) = (new Vector2(0f, 0.5f), new Vector2(1f, 0.5f));
 
                 // If we haven't filled up the viewport yet, there's no need to preserve a current scroll (preventing jumps) because we can't scroll in the first place
                 return;
@@ -1182,9 +1192,12 @@ namespace RecyclerScrollRect
 
             if (postResizeIsScrollable && !preResizeIsScrollable)
             {
+                Debug.Log("non scrollable");
+                
                 (Vector2 offsetMin, Vector2 offsetMax) = (content.offsetMin, content.offsetMax);
                 normalizedPosition = normalizedPosition.WithY(IsZerothEntryAtTop ? 1f : 0f);
                 (content.offsetMin, content.offsetMax) = (content.offsetMin.WithX(offsetMin.x), content.offsetMax.WithX(offsetMax.x));
+                //(content.anchorMin, content.anchorMax) = (new Vector2(0f, 0.5f), new Vector2(1f, 0.5f));
                 return;
             }
 
@@ -1428,10 +1441,7 @@ namespace RecyclerScrollRect
         protected override void OnDestroy()
         {
             base.OnDestroy();
-
-            #if UNITY_EDITOR
             _tracker.Clear();
-            #endif
         }
 
         /// <summary>
@@ -1470,6 +1480,13 @@ namespace RecyclerScrollRect
                 StopCoroutine(_scrollToIndexCoroutine);
                 _scrollToIndexCoroutine = null;
             }
+        }
+
+        private void SetContentTracker()
+        {
+            _tracker.Add(this, content, DrivenTransformProperties.AnchorMin | DrivenTransformProperties.AnchorMax);
+            content.anchorMin = new Vector2(0f, 0.5f);
+            content.anchorMax = new Vector2(1f, 0.5f);
         }
 
         private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)
