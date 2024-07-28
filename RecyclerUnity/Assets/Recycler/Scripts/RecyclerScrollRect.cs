@@ -1114,7 +1114,8 @@ namespace RecyclerScrollRect
         }
 
         private bool _stopAdding;
-
+        private int _scrollEntriesCreated;
+        
         /// <summary>
         /// Recalculates the size of the ScrollRect's content, reflecting any size changes of its elements.
         /// 
@@ -1149,6 +1150,7 @@ namespace RecyclerScrollRect
             Vector2 initPivot = content.pivot;
             float initY = content.anchoredPosition.y;
             bool preResizeIsScrollable = this.IsScrollable();
+            (content.anchorMin, content.anchorMax) = (new Vector2(0f, 0.5f), new Vector2(1f, 0.5f));
             
             // Define how the size change will come off the RectTransform, then incorporate the size change
             if (preResizeIsScrollable)
@@ -1156,16 +1158,12 @@ namespace RecyclerScrollRect
                 Debug.Log(fixEntries);
                 content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f : fixEntries == FixEntries.Above ? 1f : 0.5f));
                 LayoutRebuilder.ForceRebuildLayoutImmediate(content);
-                
-                _stopAdding = true;
-                Debug.Break();
-                return;
             }
             else
             {
                 LayoutRebuilder.ForceRebuildLayoutImmediate(content);   
             }
-
+            
             bool postResizeIsScrollable = this.IsScrollable();
            
             // ScrollRects act differently if there's not enough content to scroll through in the first place
@@ -1194,6 +1192,15 @@ namespace RecyclerScrollRect
             content.SetPivotWithoutMoving(initPivot);
             float diffY = content.anchoredPosition.y - initY;
             content.SetPivotWithoutMoving(content.pivot + Vector2.up * -diffY / content.rect.height);
+            
+            if (_scrollEntriesCreated == 100)
+            {
+                _stopAdding = true;
+                Debug.Break();
+                return;   
+            }
+
+            _scrollEntriesCreated++;
             
             return;
         }
