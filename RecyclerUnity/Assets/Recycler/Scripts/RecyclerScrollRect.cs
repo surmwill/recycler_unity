@@ -91,11 +91,7 @@ namespace RecyclerScrollRect
         [Header("Extra")]
         [Tooltip("On mobile, the target frame rate is often lower than technically possible to preserve battery, but a higher frame rate will result in smoother scrolling.")]
         [SerializeField]
-        private bool _setTargetFrameRateTo60 = true;
-
-        [Tooltip("Perform debug checks in the editor and development builds, ensuring, for example, that we aren't skipping indices.")]
-        [SerializeField]
-        private bool _performDebugChecks = true;
+        private bool _setTargetFrameRateTo60 = false;
 
         /// <summary>
         /// Called after the Recycler's scroll has been handled in LateUpdate and we have a final set of entries on-screen for this frame.
@@ -444,15 +440,15 @@ namespace RecyclerScrollRect
             // Handles scrolling
             base.LateUpdate();
 
-            // Ensure our hierarchy with its components are set up properly
-            #if UNITY_EDITOR
-            EditorSetViewportColliderDimensions();
-            EditorCheckRootEntriesComponents();
-            #endif
-
             // The base ScrollRect has [ExecuteAlways] but the recycler does not work as such
             if (!Application.isPlaying)
             {
+                // Ensure our hierarchy with its components are set up properly
+                #if UNITY_EDITOR
+                InspectorSetViewportColliderDimensions();
+                InspectorCheckRootEntriesComponents();
+                #endif
+                
                 return;
             }
 
@@ -462,25 +458,6 @@ namespace RecyclerScrollRect
             // We now have the final set of entries in their correct positions for this frame.
             // Give the user the opportunity to query/operate on them knowing they won't shift.
             OnRecyclerUpdated?.Invoke();
-
-            // Sanity checks
-            #if false
-
-            if (_performDebugChecks)
-            {
-                DebugCheckWindow();
-                DebugCheckWindowAlignment();
-
-                DebugCheckDuplicates();
-                DebugCheckOrdering();
-
-                DebugCheckIndexToKeyMapping();
-                DebugCheckKeyToIndexMapping();
-                
-                DebugCheckStates();
-            }
-
-            #endif
         }
 
         /// <summary>
