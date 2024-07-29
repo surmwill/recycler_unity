@@ -493,6 +493,13 @@ public RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> Endcap { get; }
 
 Returns a reference to the endcap (if it exists - it is optional).
 
+### AppendTo
+```
+public RecyclerPosition AppendTo { get; }
+```
+
+The position in the recycler that appended entries are added to.
+
 ### OnRecyclerUpdated
 ```
 public event Action OnRecyclerUpdated
