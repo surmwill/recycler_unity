@@ -1047,6 +1047,7 @@ namespace RecyclerScrollRect
         public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
         {
             RecalculateContentChildSize(entry.RectTransform, fixEntries);
+            RecalculateActiveEntries();
         }
 
         /// <summary>
@@ -1055,6 +1056,7 @@ namespace RecyclerScrollRect
         public void RecalculateEndcapSize(FixEntries? fixEntries = null)
         {
             RecalculateContentChildSize(_endcap.RectTransform, fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
+            RecalculateActiveEntries();
         }
 
         /// <summary>

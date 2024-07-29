@@ -72,6 +72,7 @@ namespace RecyclerScrollRect
 
         /// <summary>
         /// Called when the state of the entry changes.
+        /// Note that if prevState is in the pool, then the newState is the initial state of the entry after binding.
         /// </summary>
         protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
         {

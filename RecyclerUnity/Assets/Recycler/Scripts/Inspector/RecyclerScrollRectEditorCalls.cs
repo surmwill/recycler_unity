@@ -178,7 +178,9 @@ namespace RecyclerScrollRect
                 return;
             }
 
-            Vector3 viewportSize = new Vector3(viewport.rect.width, viewport.rect.height, 1f);
+            // Set the collider to the size of the viewport with a minor buffer
+            float viewportHeight = viewport.rect.height;
+            Vector3 viewportSize = new Vector3(viewport.rect.width, viewportHeight + (viewportHeight * 0.01f), 1f);
             
             BoxCollider bc = viewport.GetComponent<BoxCollider>();
             if (bc == null)

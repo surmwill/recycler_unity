@@ -35,7 +35,7 @@ namespace RecyclerScrollRect
                 .Append(RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(0f), DeleteTime)
                     .SetEase(Ease.OutBounce)
                     .OnUpdate(() => RecalculateDimensions(FixEntries.Mid)))
-                .OnComplete(() =>
+                .OnKill(() =>
                 {
                     Recycler.RemoveAtIndex(Index, FixEntries.Above);
                     _deleteSequence = null;
