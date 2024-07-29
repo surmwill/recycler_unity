@@ -34,10 +34,6 @@ namespace RecyclerScrollRect
             RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(entryData.AnimateIn ? 0f : Height);
         }
 
-        protected override void OnSentToRecycling()
-        {
-        }
-
         private void AnimateIn()
         {
             _sequence = DOTween.Sequence()
