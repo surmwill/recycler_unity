@@ -390,6 +390,35 @@ namespace RecyclerScrollRect
         {
             RemoveRangeAtIndex(GetCurrentIndexForKey(removeAtKey), count, fixEntries);
         }
+        
+        /// <summary>
+        /// Appends entries to the end of the recycler. Appended entries will always preserve the currently visible window of entries.
+        /// Similar to an insertion at the end of the list, but more efficient.
+        /// </summary>
+        /// <param name="dataForEntries"> The data for the entries. </param>
+        public void AppendEntries(IEnumerable<TEntryData> dataForEntries)
+        {
+            if (dataForEntries?.Any() ?? false)
+            {
+                InsertDataForEntriesAt(_dataForEntries.Count, new List<TEntryData>(dataForEntries));
+                RecalculateActiveEntries();
+            }
+        }
+
+       
+        /// <summary>
+        /// Prepends entries to the start of the recycler. Prepended entries will always preserve the currently visible window of entries.
+        /// Existing entries' indices will be shifted like a list insertion.
+        /// </summary>
+        /// <param name="dataForEntries"> The data for the entries. </param>
+        public void PrependEntries(IEnumerable<TEntryData> dataForEntries)
+        {
+            if (dataForEntries?.Any() ?? false)
+            {
+                InsertDataForEntriesAt(0, new List<TEntryData>(dataForEntries.Reverse()));
+                RecalculateActiveEntries();
+            }
+        }
 
         /// <summary>
         /// Each piece of entry data is referenced by its index.
@@ -442,30 +471,6 @@ namespace RecyclerScrollRect
                     current.Value += current.Value >= startIndex ? shiftAmount : 0;
                     current = current.Next;
                 }
-            }
-        }
-
-        /// <summary>
-        /// Appends entries to the end of the recycler.
-        /// </summary>
-        public void AppendEntries(IEnumerable<TEntryData> entries)
-        {
-            if (entries?.Any() ?? false)
-            {
-                InsertDataForEntriesAt(_dataForEntries.Count, new List<TEntryData>(entries));
-                RecalculateActiveEntries();
-            }
-        }
-
-        /// <summary>
-        /// Prepends entries to the start of the recycler. Existing entries' indices will be shifted like a list insertion.
-        /// </summary>
-        public void PrependEntries(IEnumerable<TEntryData> entries)
-        {
-            if (entries?.Any() ?? false)
-            {
-                InsertDataForEntriesAt(0, new List<TEntryData>(entries.Reverse()));
-                RecalculateActiveEntries();
             }
         }
 
