@@ -13,12 +13,12 @@ namespace RecyclerScrollRect
     public class RecyclerScrollRectActiveEntriesWindow : IRecyclerScrollRectActiveEntriesWindow
     {
         /// <summary>
-        /// Returns true if the window exists, that is, we've added some underlying data to have a window over in the first place
+        /// Returns true if the window exists, that is, we have some underlying recycler data to have a window over in the first place.
         /// </summary>
         public bool Exists => _virContainer.CurrentDataSize > 0;
 
         /// <summary>
-        /// The range of indices of entries currently visible. Null if the range is empty.
+        /// The range of entry indices that are visible. Null if the range is empty.
         /// </summary>
         public (int Start, int End)? VisibleIndexRange
         {
@@ -41,7 +41,7 @@ namespace RecyclerScrollRect
             (VisibleIndexRange?.End + 1 ?? 0, Mathf.Min(VisibleIndexRange.HasValue ? VisibleIndexRange.Value.End + _numCached : _numCached - 1, _virContainer.CurrentDataSize - 1));
 
         /// <summary>
-        /// The range of active entries: both visible and cached. Null if the range is empty.
+        /// The range of indices of active entries: both visible and cached. Null if the range is empty.
         /// </summary>
         public (int Start, int End)? ActiveEntriesRange => !Exists ?
             null :
@@ -187,7 +187,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Returns information about the current ranges of entries
+        /// Returns information about the current ranges of entry indices
         /// </summary>
         public string PrintRanges()
         {
