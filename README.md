@@ -49,11 +49,12 @@ Here, **all those cases are covered with the following features:**
 ### Basic Functionality
 ![](README_Images/recycler_basic_functionality.gif)
 
-### Insertion/Resizing
-![](README_Images/recycler_insertion_resize.gif)
+### Insertion and deletion
+Adding and deleting from the end.
+![](README_Images/recycler_pretty_insert_and_delete_end.gif)
 
-### Deletion (15, 17, 18)
-![](README_Images/recycler_deletion.gif)
+Adding and deleting from the middle.
+![](README_Images/recycler_pretty_insert_and_delete_middle.gif)
 
 ### Appending/Prepending/Endcap
 - Equivalent behaviour is available for prepending.
