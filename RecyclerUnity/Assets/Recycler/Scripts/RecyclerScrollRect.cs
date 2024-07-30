@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -94,9 +93,9 @@ namespace RecyclerScrollRect
         private bool _setTargetFrameRateTo60 = false;
 
         /// <summary>
-        /// Called after the Recycler's scroll has been handled in LateUpdate and we have a final set of entries on-screen for this frame.
-        /// Unless the user performs a manual operation (append/prepend/insert/delete) after this, the entries will remain where they are
-        /// and can queried under this assumption (see ActiveEntries and ActiveEntriesWindow)
+        /// Invoked at the end of LateUpdate once scrolling has been handled. 
+        /// Here, the current viewport of entries is not expected to change for the remainder of the frame except through manual user calls.
+        /// The state of the entries can be queried here without worry of them changing.
         /// </summary>
         public event Action OnRecyclerUpdated;
 
@@ -106,23 +105,26 @@ namespace RecyclerScrollRect
         public IReadOnlyList<TEntryData> DataForEntries => _dataForEntries;
 
         /// <summary>
-        /// The currently active entries, visible and cached. The key is their index. 
+        /// The currently active entries: visible and cached. The key is their index. 
         /// </summary>
         public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> ActiveEntries => _activeEntries;
 
         /// <summary>
-        /// Contains information about the ranges of indices that are currently visible or cached.
-        /// You can use the index information here to know what keys are in ActiveEntries without iterating through the entire dictionary. 
+        /// Contains information about the current index ranges of active entries. Queryable is:
+        /// 1. The range of indices of visible entries.
+        /// 2. The range of indices of entries in the start cache.
+        /// 3. The range of indices of entries in the end cache.
+        /// 4. The total range of active indices.
         /// </summary>
         public IRecyclerScrollRectActiveEntriesWindow ActiveEntriesWindow => _activeEntriesWindow;
 
         /// <summary>
-        /// The endcap (if it exists - it is optional)
+        /// A reference to the endcap - if it exists.
         /// </summary>
         public RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> Endcap => _endcap;
 
         /// <summary>
-        /// The position appended entries are added to
+        /// The position in the recycler that appended entries are added to.
         /// </summary>
         public RecyclerPosition AppendTo => _appendTo;
 
