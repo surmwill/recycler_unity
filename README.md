@@ -311,6 +311,8 @@ Inserts a range of entries at the given index. Existing entries' indices will be
 ```
 public void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> dataForEntries, FixEntries fixEntries)
 ```
+
+<ins>Parameters</ins>
 Inserts a range of entries at the given key. Existing entries' indices will be shifted - equivalent behaviour to inserting into a list.
 - `insertAtKey:` the index to insert the entries at
 - `dataForEntries:` the data for the entries
@@ -320,9 +322,14 @@ Inserts a range of entries at the given key. Existing entries' indices will be s
 ```
 public void RemoveAtIndex(int index, FixEntries fixEntries)
 ```
-Removes an entry at the given index. Existing entries' indices will be shifted - equivalent behaviour to removing from a list.
+Removes an element at the given index. Existing entries' indices will be shifted like a list removal.
+
+<ins>Parameters</ins>
 - `index:` the index of the entry to remove
-- `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
+- `fixEntries:` if we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy. This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving our view of what's on-screen.
+
+<ins>Exceptions</ins>
+- `ArgumentException:` thrown when trying to remove an invalid index 
 
 ### RemoveAtKey
 ```
