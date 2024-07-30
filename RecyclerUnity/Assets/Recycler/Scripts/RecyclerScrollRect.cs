@@ -201,7 +201,7 @@ namespace RecyclerScrollRect
         /// <param name="fixEntries">
         /// If we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside.
         /// This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter
-        /// will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
+        /// will be overriden with whatever value only pushes other offscreen entries, preserving the view of what's on-screen.
         /// </param>
         /// <exception cref="ArgumentException"> Thrown when trying to insert at an invalid index. </exception>
         public void InsertAtIndex(int index, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
@@ -257,7 +257,7 @@ namespace RecyclerScrollRect
         /// <param name="fixEntries">
         /// If we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside.
         /// This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter
-        /// will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
+        /// will be overriden with whatever value only pushes other offscreen entries, preserving the view of what's on-screen.
         /// </param>
         public void InsertAtKey(TKeyEntryData insertAtKey, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
         {
@@ -272,7 +272,7 @@ namespace RecyclerScrollRect
         /// <param name="fixEntries">
         /// If we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside.
         /// This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter
-        /// will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
+        /// will be overriden with whatever value only pushes other offscreen entries, preserving the view of what's on-screen.
         /// </param>
         public void InsertRangeAtIndex(int index, IEnumerable<TEntryData> dataForEntries, FixEntries fixEntries = FixEntries.Below)
         {
@@ -290,7 +290,7 @@ namespace RecyclerScrollRect
         /// <param name="fixEntries">
         /// If we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside.
         /// This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter
-        /// will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
+        /// will be overriden with whatever value only pushes other offscreen entries, preserving the view of what's on-screen.
         /// </param>
         public void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> dataForEntries, FixEntries fixEntries = FixEntries.Below)
         {
@@ -304,7 +304,7 @@ namespace RecyclerScrollRect
         /// <param name="fixEntries">
         /// If we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy.
         /// This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored,
-        /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving our view of what's on-screen.
+        /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
         /// <exception cref="ArgumentException"> Thrown when trying to remove an invalid index </exception>
         public void RemoveAtIndex(int index, FixEntries fixEntries = FixEntries.Below)
@@ -351,7 +351,7 @@ namespace RecyclerScrollRect
         /// <param name="fixEntries">
         /// If we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy.
         /// This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored,
-        /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving our view of what's on-screen.
+        /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
         public void RemoveAtKey(TKeyEntryData removeAtKey, FixEntries fixEntries = FixEntries.Below)
         {
@@ -366,7 +366,7 @@ namespace RecyclerScrollRect
         /// <param name="fixEntries">
         /// If we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy.
         /// This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored,
-        /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving our view of what's on-screen.
+        /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
         public void RemoveRangeAtIndex(int index, int count, FixEntries fixEntries = FixEntries.Below)
         {
@@ -384,7 +384,7 @@ namespace RecyclerScrollRect
         /// <param name="fixEntries">
         /// If we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy.
         /// This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored,
-        /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving our view of what's on-screen.
+        /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
         public void RemoveRangeAtKey(TKeyEntryData removeAtKey, int count, FixEntries fixEntries = FixEntries.Below)
         {
@@ -822,7 +822,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Resets our position to the beginning of the list of entries
+        /// Resets the Recycler to its very beginning elements.
         /// </summary>
         public void ResetToBeginning()
         {
@@ -832,8 +832,10 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Returns the state of the entry at the given index: visible, in the start cache, in the end cache, or in the recycling pool.
+        /// Returns the state of the entry at the given index.
         /// </summary>
+        /// <param name="index"> The index of the entry. </param>
+        /// <returns> The state of the entry at the given index. </returns>
         public RecyclerScrollRectContentState GetStateOfEntryWithIndex(int index)
         {
             if (index != RecyclerScrollRectEntry<TEntryData, TKeyEntryData>.UnboundIndex && (index < 0 || index >= _dataForEntries.Count))
@@ -860,16 +862,19 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Returns the state of the entry with a given key: visible, in the start cache, in the end cache, or in the recycling pool
+        /// Returns the state of the entry with a given key.
         /// </summary>
+        /// <param name="key"> The key of the entry to check the state of. </param>
+        /// <returns> The state of the entry with the given key </returns>
         public RecyclerScrollRectContentState GetStateOfEntryWithKey(TKeyEntryData key)
         {
             return GetStateOfEntryWithIndex(GetCurrentIndexForKey(key));
         }
 
         /// <summary>
-        /// Returns the state of the endcap: visible, in the end cache, or waiting in the pool
+        /// Returns the state of the endcap.
         /// </summary>
+        /// <returns> The state of the endcap </returns>
         public RecyclerScrollRectContentState GetStateOfEndcap()
         {
             if (!_endcap.gameObject.activeSelf)
@@ -886,7 +891,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Resets the Recycler to its initial state: no active entries, no active endcap, and no data.
+        /// Clears the Recycler of all entries and their underlying data.
         /// </summary>
         public void Clear()
         {
@@ -1076,11 +1081,16 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Called when an entry has updated its dimensions, and needs to alert the parent Recycler of its new size.
-        ///
-        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
-        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
+        /// Called when an entry updates its dimensions and needs to alert the recycler of its new size.
+        /// This should never need to be called directly, instead using RecyclerScrollRectEntry.RecalculateDimensions.
+        /// Note that this triggers a layout rebuild of the entry, incorporating any changes in its auto-calculated size.
         /// </summary>
+        /// <param name="entry"> The entry with updated dimensions </param>
+        /// <param name="fixEntries">
+        /// If we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
+        /// This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will
+        /// be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
+        /// </param>
         public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
         {
             RecalculateContentChildSize(entry.RectTransform, fixEntries);
@@ -1088,8 +1098,15 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Called when the endcap has updated its dimensions, and needs to alert the parent Recycler of its new size
+        /// Called when an endcap has updates its dimensions and needs to alert the recycler of its new size.
+        /// This should never need to be called directly, instead using RecyclerScrollRectEndcap.RecalculateDimensions.
+        /// Note that this triggers a layout rebuild of the endcap, incorporating any changes in its auto-calculated size.
         /// </summary>
+        /// <param name="fixEntries">
+        /// if we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy.
+        /// This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored, and the parameter will
+        /// be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
+        /// </param>
         public void RecalculateEndcapSize(FixEntries? fixEntries = null)
         {
             RecalculateContentChildSize(_endcap.RectTransform, fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
@@ -1161,8 +1178,14 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Scrolls to a given index
+        /// Scrolls to an entry at a given index. The entry doesn't need to be on screen at the time of the call.
         /// </summary>
+        /// <param name="index"> The index of the entry to scroll to. </param>
+        /// <param name="scrollToAlignment"> The position within the entry to center on. </param>
+        /// <param name="onScrollComplete"> Callback invoked once we've successfully scrolled to the entry. </param>
+        /// <param name="scrollSpeedViewportsPerSecond"> The speed of the scroll. </param>
+        /// <param name="isImmediate"> Whether the scroll should complete immediately. (Warning: large jumps can be inefficient). </param>
+        /// <exception cref="ArgumentException"> Thrown when attempting to scroll to an invalid index. </exception>
         public void ScrollToIndex(
             int index,
             ScrollToAlignment scrollToAlignment = ScrollToAlignment.EntryMiddle,
@@ -1185,8 +1208,13 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Scrolls to a given key
+        /// Scrolls to an entry with a given key. The entry doesn't need to be on screen at the time of the call.
         /// </summary>
+        /// <param name="key"> The key of the entry to scroll to </param>
+        /// <param name="scrollToAlignment"> The position within the entry to center on. </param>
+        /// <param name="onScrollComplete"> Callback invoked once we've successfully scrolled to the entry. </param>
+        /// <param name="scrollSpeedViewportsPerSecond"> The speed of the scroll. </param>
+        /// <param name="isImmediate"> Whether the scroll should complete immediately. (Warning: large jumps can be inefficient). </param>
         public void ScrollToKey(
             TKeyEntryData key,
             ScrollToAlignment scrollToAlignment = ScrollToAlignment.EntryMiddle,
@@ -1370,7 +1398,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Handles what happens when the user taps on the Recycler
+        /// Stop any ScrollTo call when the user taps on the Recycler
         /// </summary>
         public void OnPointerDown(PointerEventData eventData)
         {
@@ -1392,7 +1420,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Stops scrolling to an index
+        /// Cancels the current ScrollToIndex/Key call
         /// </summary>
         public void CancelScrollTo()
         {
@@ -1403,16 +1431,20 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Returns the current index of an entry with a given key
+        /// Returns the current index of the entry with a given key.
         /// </summary>
+        /// <param name="key"> The key of the entry to get the current index of </param>
+        /// <returns> The current index of the entry with the given key </returns>
         public int GetCurrentIndexForKey(TKeyEntryData key)
         {
             return _entryKeyToCurrentIndex[key];
         }
 
         /// <summary>
-        /// Returns the key of an entry at the given current index
+        /// Returns the key of the entry at the given index.
         /// </summary>
+        /// <param name="index"> The index of the entry to get the key of. </param>
+        /// <returns> The key of the entry at the given index </returns>
         public TKeyEntryData GetKeyForCurrentIndex(int index)
         {
             return _dataForEntries[index].Key;
