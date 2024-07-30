@@ -51,9 +51,11 @@ Here, **all those cases are covered with the following features:**
 
 ### Insertion and deletion
 Adding and deleting from the end.
+
 ![](README_Images/recycler_pretty_insert_and_delete_end.gif)
 
 Adding and deleting from the middle.
+
 ![](README_Images/recycler_pretty_insert_and_delete_middle.gif)
 
 ### Appending/Prepending/Endcap
