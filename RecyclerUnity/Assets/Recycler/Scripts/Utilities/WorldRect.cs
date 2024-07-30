@@ -3,7 +3,7 @@ using UnityEngine;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Represents a rectangle in world space
+    /// Represents the 4 corners of a RectTransform in world space.
     /// </summary>
     public struct WorldRect
     {
@@ -54,8 +54,9 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// String representation
+        /// String representation of the WorldRect.
         /// </summary>
+        /// <returns> A string representation of the WorldRect. </returns>
         public override string ToString()
         {
             return $"Bot Left {BotLeftCorner.PrecisePrint()}\n" +
