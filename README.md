@@ -64,7 +64,8 @@ Adding and deleting from the middle.
   
 ![](README_Images/recycler_appending_and_endcap.gif)
 
-### Scrolling to index (45)
+### Scrolling to index
+- Here we are scrolling to index 45.
 - Includes indices that are not currently active in the recycler.
 - Works with dynamically sized entries.
 - Center on different part of the entry: middle, top edge, bottom edge.
