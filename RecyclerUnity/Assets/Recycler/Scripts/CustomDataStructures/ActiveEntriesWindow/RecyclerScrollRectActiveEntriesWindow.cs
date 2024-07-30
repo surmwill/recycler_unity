@@ -2,13 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Represents a sliding range of entries currently active in the Recycler: either visible on screen, or just offscreen in the cache, ready to become visible 
+    /// Represents a sliding range of entry indices currently active in the recycler: visible or cached. 
     /// </summary>
     public class RecyclerScrollRectActiveEntriesWindow : IRecyclerScrollRectActiveEntriesWindow
     {
@@ -48,24 +47,22 @@ namespace RecyclerScrollRect
             (StartCacheIndexRange?.Start ?? VisibleIndexRange?.Start ?? 0, EndCacheIndexRange?.End ?? VisibleIndexRange.Value.End);
 
         /// <summary>
-        /// Whether the window of active entries has changed
+        /// Whether the window of active entries has changed.
         /// </summary>
         public bool IsDirty { get; private set; }
 
         private readonly int _numCached;
         private readonly VisibleIndexRangeContainer _virContainer;
-
+        
         /// <summary>
-        /// Inserts new entries into the window. These entries are considered non-visible until they tell us otherwise, unless
-        /// they fall in-between the current visible range.
+        /// Inserts new entries into the window.
+        /// By default, the visible state of entries is preserved: what was visible stays visible and vice-versa.
+        /// New entries are not considered visible (the range does change) if they fall outside of it.
         /// </summary>
+        /// <param name="index"> The index to insert the new entries at. </param>
+        /// <param name="num"> The number of entries to insert. </param>
         public void InsertRange(int index, int num)
         {
-            if (index > _virContainer.CurrentDataSize)
-            {
-                throw new ArgumentException($"index must \"{index}\" be non-negative and <= the window size \"{_virContainer.CurrentDataSize}\"");
-            }
-
             // Increase the size of the window
             _virContainer.CurrentDataSize += num;
 
@@ -74,14 +71,14 @@ namespace RecyclerScrollRect
                 return;
             }
 
-            // Shift the current window to accomodate the new entries
+            // Shift the currently visible window to accomodate the added entries
             (int Start, int End) shiftedVisibleIndices = VisibleIndexRange.Value;
-
+            
             if (index <= VisibleIndexRange.Value.End)
             {
                 shiftedVisibleIndices.End += num;
             }
-
+            
             if (index <= VisibleIndexRange.Value.Start)
             {
                 shiftedVisibleIndices.Start += num;
@@ -89,17 +86,15 @@ namespace RecyclerScrollRect
 
             VisibleIndexRange = shiftedVisibleIndices;
         }
-
+        
         /// <summary>
-        /// Removes an entry from the window
+        /// Removes an entry from the window.
+        /// By default, the visible state of entries is preserved: what was visible stays visible and vice-versa.
+        /// No new entries become visible (the range does not change) from removal.
         /// </summary>
+        /// <param name="index"> The index of the entry to remove. </param>
         public void Remove(int index)
         {
-            if (index < 0 || index >= _virContainer.CurrentDataSize)
-            {
-                throw new ArgumentException($"index must \"{index}\" be non-negative and < the window size \"{_virContainer.CurrentDataSize}\"");
-            }
-
             // Decrease the size of the window
             _virContainer.CurrentDataSize--;
 
@@ -115,7 +110,7 @@ namespace RecyclerScrollRect
                 return;
             }
 
-            // Shift the current window to accomodate the removed entries
+            // Shift the current window to accomodate the removed entry
             (int Start, int End) shiftedVisibleIndices = VisibleIndexRange.Value;
 
             if (index <= VisibleIndexRange.Value.End)
@@ -145,33 +140,41 @@ namespace RecyclerScrollRect
             IsDirty = false;
         }
 
-        /// <summary>
-        /// Returns true if the given index is visible
-        /// </summary>
+       /// <summary>
+       /// Returns true if the given index is visible.
+       /// </summary>
+       /// <param name="index"> The index to test if it is visible. </param>
+       /// <returns> True if the index is visible. </returns>
         public bool IsVisible(int index)
         {
             return VisibleIndexRange.HasValue && index >= VisibleIndexRange.Value.Start && index <= VisibleIndexRange.Value.End;
         }
 
         /// <summary>
-        /// Returns true if the given index is in the start cache (just outside the visible entries, ready to become visible) 
+        /// Returns true if the given index is in the start cache.
         /// </summary>
+        /// <param name="index"> The index to test if it is in the start cache. </param>
+        /// <returns> True if the index is in the start cache. </returns>
         public bool IsInStartCache(int index)
         {
             return StartCacheIndexRange.HasValue && index >= StartCacheIndexRange.Value.Start && index <= StartCacheIndexRange.Value.End;
         }
 
         /// <summary>
-        /// Returns true if the given index is in the end cache (just outside the visible entries, ready to become visible)
+        /// Returns true if the given index is in the end cache.
         /// </summary>
+        /// <param name="index"> The index to test if it is in the end cache </param>
+        /// <returns> True if the index is in the end cache. </returns>
         public bool IsInEndCache(int index)
         {
             return EndCacheIndexRange.HasValue && index >= EndCacheIndexRange.Value.Start && index <= EndCacheIndexRange.Value.End;
         }
 
         /// <summary>
-        /// Returns true if the index is part of the active entries on screen: either visible on-screen, or just offscreen in the cache, ready to become visible 
+        /// Returns true if the given index is an active entry, either visible or cached. 
         /// </summary>
+        /// <param name="index"> The index to test if it is an active entry. </param>
+        /// <returns> True if the index is of an active entry. </returns>
         public bool Contains(int index)
         {
             return IsVisible(index) || IsInStartCache(index) || IsInEndCache(index);
@@ -179,7 +182,7 @@ namespace RecyclerScrollRect
 
         /// <summary>
         /// Relays that we have checked the current range of active entries, done any work we need to,
-        /// and are now waiting on the window to become dirty again (the range of active entries changes)
+        /// and are now waiting on the window to become dirty again (the range of active entries changes).
         /// </summary>
         public void SetNonDirty()
         {
@@ -187,7 +190,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Returns information about the current ranges of entry indices
+        /// Returns information about the current ranges of entry indices.
         /// </summary>
         public string PrintRanges()
         {
@@ -198,7 +201,7 @@ namespace RecyclerScrollRect
         }
         
         /// <summary>
-        /// Returns the indices of all the active entries in an increasing order
+        /// Returns the indices of all the active entries in increasing order.
         /// </summary>
         public IEnumerator<int> GetEnumerator()
         {
@@ -212,7 +215,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Returns the indices of all the active entries in an increasing order
+        /// Returns the indices of all the active entries in an increasing order.
         /// </summary>
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -227,7 +230,7 @@ namespace RecyclerScrollRect
 
         /// <summary>
         /// This class encapsulates a set of properties that could technically live in the outer class just fine.
-        /// Its purpose is to ensure the backing fields are never modified directly, but only through the property setters
+        /// Its purpose is to ensure the backing fields are never modified directly, but only through the property setters.
         /// </summary>
         private class VisibleIndexRangeContainer
         {
@@ -237,7 +240,7 @@ namespace RecyclerScrollRect
             private int _currentDataSize;
 
             /// <summary>
-            /// The range of indices of entries currently visible
+            /// The range of entry indices that are visible. Null if the range is empty.
             /// </summary>
             public (int Start, int End)? VisibleIndexRange
             {
@@ -263,7 +266,7 @@ namespace RecyclerScrollRect
             }
 
             /// <summary>
-            /// The current size of the window
+            /// The current size of the underlying data that the window moves over.
             /// </summary>
             public int CurrentDataSize
             {
