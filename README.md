@@ -490,6 +490,12 @@ public void RecalculateEndcapSize()
 ```
 Called by the endcap to alert the Recycler of its size change. This should never need to be called directly, but instead through the endcap's [`RecyclerScrollRectEndcap.RecalculateDimensions`](https://github.com/surmwill/recycler_unity/blob/master/README.md#recalculatedimensions-1).
 
+### OnPointerDown
+```
+public void OnPointerDown(PointerEventData eventData)
+```
+Unity input event for when the user taps on the recycler. Stops any `ScrollToIndex/Key` calls.
+
 ### DataForEntries
 ```
 public IReadOnlyList<TEntryData> DataForEntries { get; }
@@ -669,7 +675,7 @@ Called by the Recycler to reset the entry to its default unbound index.
 
 Called by the Recycler to set the the entry's index.
 
-### SetState
+#### SetState
 `public void SetState(RecyclerScrollRectContentState newState)`
 
 Called by the Recycler to set the entry's state.
