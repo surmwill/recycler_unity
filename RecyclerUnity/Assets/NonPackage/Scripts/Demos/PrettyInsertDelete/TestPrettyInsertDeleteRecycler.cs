@@ -28,10 +28,28 @@ namespace RecyclerScrollRect
 
         private void Update()
         {
+            int dataLength = _recycler.DataForEntries.Count;
+            IRecyclerScrollRectActiveEntriesWindow activeEntriesWindow = _recycler.ActiveEntriesWindow;
+            
+            // Append entry at bottom
             if (Input.GetKeyDown(KeyCode.A))
             {
-                _recycler.StopMovement();
-                _recycler.InsertAtIndex(_recycler.DataForEntries.Count, new PrettyInsertDeleteData(true), FixEntries.Below);
+                _recycler.InsertAtIndex(dataLength, new PrettyInsertDeleteData(true), FixEntries.Below);
+            }
+            // Delete entry at bottom
+            else if (Input.GetKeyDown(KeyCode.D))
+            {
+                for (int i = activeEntriesWindow.VisibleIndexRange.Value.End;
+                     i >= activeEntriesWindow.VisibleIndexRange.Value.Start;
+                     i--)
+                {
+                    PrettyInsertDeleteEntry entry = (PrettyInsertDeleteEntry) _recycler.ActiveEntries[i];
+                    if (!entry.IsDeleteing)
+                    {
+                        entry.AnimateOutAndDelete();
+                        break;
+                    }
+                }
             }
         }
 
