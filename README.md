@@ -744,6 +744,30 @@ After modifying the dimensions of the endcap, call this to alert the Recycler to
 
 - `fixEntries:` resizing the endcap will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
 
+## RecyclerScrollRectContentState
+
+An enum describing the states that recycler entries or the endcap can be in.
+
+<ins>Values</ins>
+- `InactiveInPool:` the object is inactive in its pool, waiting to become active.
+- `ActiveVisible:` the object is active and visible on-screen.
+- `ActiveInStartCache:` the object is active, waiting just offscreen to be scrolled to.
+- `ActiveInEndCache:`  the object is active, waiting just offscreen to be scrolled to.
+
+Objects start as `InactiveInPool`, move to a `ActiveInStartCache` or `ActiveInEndCache` as we begin to scoll closer toward them, 
+become `ActiveVisible` upon entering the viewport, move to `ActiveInStartCache` or `ActiveInEndCache` as we begin to scroll away from them,
+and return to `InActiveInPool` once we have scrolled far enough away.
+
+If the scroll is particularly large, objects can move from `InactiveInPool` to `ActiveVisible` immediately.
+
+## RecyclerPosition
+
+An enum defining two important locations of the recycler list: the top and bottom.
+
+<ins>Values</ins>
+- `Top:` the top of the recycler list.
+- `Bot:` the bottom of the recycler list.
+
 # Nuances
 
 ### Entries set their own auto-size.
