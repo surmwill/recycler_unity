@@ -271,6 +271,8 @@ And our end result looks like:
 ```
 public void InsertAtIndex(int index, TEntryData entryData, FixEntries fixEntries)
 ```
+
+<u>Parameters</u>
 Inserts an entry at the given index. Existing entries' indices will be shifted - equivalent behaviour to inserting into a list.
 - `index:` the index to insert the entry at
 - `entryData:` the data representing the entry
