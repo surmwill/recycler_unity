@@ -192,13 +192,18 @@ namespace RecyclerScrollRect
             // Ensure content's RectTransform is set up correctly
             SetContentTracker();
         }
-
+        
         /// <summary>
         /// Inserts an entry at the given index. Existing entries' indices will be shifted like a list insertion.
-        /// 
-        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
-        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
+        /// <param name="index"> The index to insert the entry at. </param>
+        /// <param name="entryData"> The data representing the entry. </param>
+        /// <param name="fixEntries">
+        /// If we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside.
+        /// This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter
+        /// will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
+        /// </param>
+        /// <exception cref="ArgumentException"> Thrown when trying to insert at an invalid index. </exception>
         public void InsertAtIndex(int index, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
         {
             if (index < 0 || index > _dataForEntries.Count)
@@ -246,10 +251,14 @@ namespace RecyclerScrollRect
 
         /// <summary>
         /// Inserts an element at the index corresponding to the given key. Existing entries' indices will be shifted like a list insertion.
-        ///
-        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
-        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of wwhatever's on-screen. 
         /// </summary>
+        /// <param name="insertAtKey"> The key to insert the entry at. </param>
+        /// <param name="entryData"> The data representing the entry. </param>
+        /// <param name="fixEntries">
+        /// If we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside.
+        /// This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter
+        /// will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
+        /// </param>
         public void InsertAtKey(TKeyEntryData insertAtKey, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
         {
             InsertAtIndex(GetCurrentIndexForKey(insertAtKey), entryData, fixEntries);
@@ -257,13 +266,17 @@ namespace RecyclerScrollRect
 
         /// <summary>
         /// Inserts elements at the given index. Existing entries' indices will be shifted like a list insertion.
-        ///
-        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
-        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
-        public void InsertRangeAtIndex(int index, IEnumerable<TEntryData> entryData, FixEntries fixEntries = FixEntries.Below)
+        /// <param name="index"> The index to insert the entries at. </param>
+        /// <param name="dataForEntries"> The data for the entries. </param>
+        /// <param name="fixEntries">
+        /// If we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside.
+        /// This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter
+        /// will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
+        /// </param>
+        public void InsertRangeAtIndex(int index, IEnumerable<TEntryData> dataForEntries, FixEntries fixEntries = FixEntries.Below)
         {
-            foreach ((TEntryData entry, int i) in entryData.ZipWithIndex())
+            foreach ((TEntryData entry, int i) in dataForEntries.ZipWithIndex())
             {
                 InsertAtIndex(index + i, entry, fixEntries);
             }
@@ -271,21 +284,29 @@ namespace RecyclerScrollRect
 
         /// <summary>
         /// Inserts elements at the index corresponding to the given key. Existing entries' indices will be shifted like a list insertion.
-        ///
-        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
-        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
-        public void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> entryData, FixEntries fixEntries = FixEntries.Below)
+        /// <param name="insertAtKey"> The key to insert the entries at. </param>
+        /// <param name="dataForEntries"> The data for the entries. </param>
+        /// <param name="fixEntries">
+        /// If we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside.
+        /// This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter
+        /// will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
+        /// </param>
+        public void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> dataForEntries, FixEntries fixEntries = FixEntries.Below)
         {
-            InsertRangeAtIndex(GetCurrentIndexForKey(insertAtKey), entryData, fixEntries);
+            InsertRangeAtIndex(GetCurrentIndexForKey(insertAtKey), dataForEntries, fixEntries);
         }
 
         /// <summary>
         /// Removes an element at the given index. Existing entries' indices will be shifted like a list removal.
-        ///
-        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
-        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
+        /// <param name="index"> The index of the entry to remove. </param>
+        /// <param name="fixEntries">
+        /// If we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy.
+        /// This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored,
+        /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving our view of what's on-screen.
+        /// </param>
+        /// <exception cref="ArgumentException"> Thrown when trying to remove an invalid index </exception>
         public void RemoveAtIndex(int index, FixEntries fixEntries = FixEntries.Below)
         {
             if (index < 0 || index >= _dataForEntries.Count)
@@ -325,10 +346,13 @@ namespace RecyclerScrollRect
 
         /// <summary>
         /// Removes an element with the given key. Existing entries' indices will be shifted like a list removal.
-        ///
-        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
-        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
+        /// <param name="removeAtKey"> The key of the entry to remove. </param>
+        /// <param name="fixEntries">
+        /// If we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy.
+        /// This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored,
+        /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving our view of what's on-screen.
+        /// </param>
         public void RemoveAtKey(TKeyEntryData removeAtKey, FixEntries fixEntries = FixEntries.Below)
         {
             RemoveAtIndex(GetCurrentIndexForKey(removeAtKey), fixEntries);
@@ -336,10 +360,14 @@ namespace RecyclerScrollRect
 
         /// <summary>
         /// Removes elements at the given index. Existing entries' indices will be shifted like a list removal.
-        ///
-        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
-        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
+        /// <param name="index"> The index to start removal at. </param>
+        /// <param name="count"> The number of entries to remove. </param>
+        /// <param name="fixEntries">
+        /// If we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy.
+        /// This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored,
+        /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving our view of what's on-screen.
+        /// </param>
         public void RemoveRangeAtIndex(int index, int count, FixEntries fixEntries = FixEntries.Below)
         {
             for (int i = index + count - 1; i >= index; i--)
@@ -350,10 +378,14 @@ namespace RecyclerScrollRect
 
         /// <summary>
         /// Removes elements at the index corresponding to the given key. Existing entries' indices will be shifted like a list removal.
-        ///
-        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
-        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
         /// </summary>
+        /// <param name="removeAtKey"> The key of the entry to start removal at. </param>
+        /// <param name="count"> The number of entries to remove. </param>
+        /// <param name="fixEntries">
+        /// If we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy.
+        /// This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored,
+        /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving our view of what's on-screen.
+        /// </param>
         public void RemoveRangeAtKey(TKeyEntryData removeAtKey, int count, FixEntries fixEntries = FixEntries.Below)
         {
             RemoveRangeAtIndex(GetCurrentIndexForKey(removeAtKey), count, fixEntries);
