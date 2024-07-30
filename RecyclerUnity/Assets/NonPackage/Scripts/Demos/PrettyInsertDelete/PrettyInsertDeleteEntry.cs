@@ -57,7 +57,7 @@ namespace RecyclerScrollRect
             _animateInSequence = DOTween.Sequence()
                 .Append(RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(Height), AnimateInOutTime))
                 .Join(_backgroundGlow.DOFillAmount(0f, AnimateInOutTime))
-                .OnUpdate(() => RecalculateDimensions(FixEntries.Below))
+                .OnUpdate(() => RecalculateDimensions(Data.AnimateInFixEntries))
                 .OnKill(() =>
                 {
                     RecalculateDimensions(FixEntries.Below);
@@ -65,7 +65,10 @@ namespace RecyclerScrollRect
                 });
         }
 
-        public void AnimateOutAndDelete()
+        /// <summary>
+        /// Shrinks the entry and then deletes it
+        /// </summary>
+        public void AnimateOutAndDelete(FixEntries fixEntries)
         {
             if (_animateOutSequence?.IsActive() ?? false)
             {
@@ -78,10 +81,10 @@ namespace RecyclerScrollRect
             _animateOutSequence = DOTween.Sequence()
                 .Append(RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(0f), AnimateInOutTime))
                 .Join(_backgroundGlow.DOFillAmount(1f, AnimateInOutTime))
-                .OnUpdate(() => RecalculateDimensions(FixEntries.Below))
+                .OnUpdate(() => RecalculateDimensions(fixEntries))
                 .OnKill(() =>
                 {
-                    RecalculateDimensions(FixEntries.Below);
+                    RecalculateDimensions(fixEntries);
                     Recycler.RemoveAtIndex(Index);
                 });
         }

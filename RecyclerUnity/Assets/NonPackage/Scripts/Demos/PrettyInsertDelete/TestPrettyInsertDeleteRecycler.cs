@@ -15,6 +15,8 @@ namespace RecyclerScrollRect
         private PrettyInsertDeleteRecycler _recycler = null;
         
         private const int InitNumEntries = 30;
+        private const int NumEntriesInsertedAtMiddle = 3;
+        private const int NumEntriesInsertedAEitherSideOfMiddle = 1;
 
         private RecyclerValidityChecker<PrettyInsertDeleteData, string> _validityChecker;
 
@@ -23,30 +25,49 @@ namespace RecyclerScrollRect
             _validityChecker = new RecyclerValidityChecker<PrettyInsertDeleteData, string>(_recycler);
             _validityChecker.Bind();
             
-            _recycler.AppendEntries(Enumerable.Repeat<object>(null, InitNumEntries).Select(_ => new PrettyInsertDeleteData(false)));
+            _recycler.AppendEntries(PrettyInsertDeleteData.GenerateData(InitNumEntries, false));
         }
 
         private void Update()
         {
             int dataLength = _recycler.DataForEntries.Count;
-            IRecyclerScrollRectActiveEntriesWindow activeEntriesWindow = _recycler.ActiveEntriesWindow;
+            (int visibleStartIndex, int visibleEndIndex) = _recycler.ActiveEntriesWindow.VisibleIndexRange.Value;
+            int middleEntryIndex = visibleStartIndex + (visibleEndIndex - visibleStartIndex + 1) / 2;
             
-            // Append entry at bottom
-            if (Input.GetKeyDown(KeyCode.A))
+            if (Input.GetKey(KeyCode.M))
             {
-                _recycler.InsertAtIndex(dataLength, new PrettyInsertDeleteData(true), FixEntries.Below);
+                // Add entries at middle
+                if (Input.GetKeyDown(KeyCode.A))
+                {
+                    _recycler.InsertRangeAtIndex(middleEntryIndex, PrettyInsertDeleteData.GenerateData(NumEntriesInsertedAtMiddle, true, FixEntries.Mid));  
+                }
+                // Delete entries at middle
+                if (Input.GetKeyDown(KeyCode.D))
+                {
+                    int startDeleteIndex = middleEntryIndex - NumEntriesInsertedAEitherSideOfMiddle;
+                    int endDeleteIndex = middleEntryIndex + NumEntriesInsertedAEitherSideOfMiddle;
+                    
+                    for (int i = startDeleteIndex; i <= endDeleteIndex; i++)
+                    {
+                        PrettyInsertDeleteEntry entry = (PrettyInsertDeleteEntry) _recycler.ActiveEntries[i];
+                        entry.AnimateOutAndDelete(FixEntries.Mid);
+                    }
+                }
+            }
+            // Add entry at bottom
+            else if (Input.GetKeyDown(KeyCode.A))
+            {
+                _recycler.InsertAtIndex(dataLength, new PrettyInsertDeleteData(true, FixEntries.Below));
             }
             // Delete entry at bottom
             else if (Input.GetKeyDown(KeyCode.D))
             {
-                for (int i = activeEntriesWindow.VisibleIndexRange.Value.End;
-                     i >= activeEntriesWindow.VisibleIndexRange.Value.Start;
-                     i--)
+                for (int i = visibleEndIndex; i >= visibleStartIndex; i--)
                 {
                     PrettyInsertDeleteEntry entry = (PrettyInsertDeleteEntry) _recycler.ActiveEntries[i];
                     if (!entry.IsDeleteing)
                     {
-                        entry.AnimateOutAndDelete();
+                        entry.AnimateOutAndDelete(FixEntries.Below);
                         break;
                     }
                 }
