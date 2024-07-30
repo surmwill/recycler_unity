@@ -798,6 +798,25 @@ public IEnumerator<int> GetEnumerator()
 
 Returns the indices of all the active entries in increasing order.
 
+## FixEntries
+
+If we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
+This enum specifies how and what entries will get moved.
+
+<ins>Values</ins>
+- `Below:` all entries below the one modified will stay unmoved. 
+- `Above:` all entries above the one modified will stay unmoved. 
+- `Mid:` all entries above and below the one modified will be moved equally.
+
+## ScrollToAlignment
+
+Enum defining the position within an entry to center on when we scroll to it.
+
+<ins>Values</ins>
+- `EntryMiddle:` center on the middle of the entry.
+- `EntryBottom:` center on the bottom edge of the entry.
+- `EntryTop:` center on the top edge of the entry.
+
 ## RecyclerScrollRectContentState
 
 An enum describing the states that recycler entries or the endcap can be in.
