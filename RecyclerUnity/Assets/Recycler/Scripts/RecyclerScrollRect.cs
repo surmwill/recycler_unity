@@ -867,7 +867,7 @@ namespace RecyclerScrollRect
         /// Returns the state of the entry with a given key.
         /// </summary>
         /// <param name="key"> The key of the entry to check the state of. </param>
-        /// <returns> The state of the entry with the given key </returns>
+        /// <returns> The state of the entry with the given key. </returns>
         public RecyclerScrollRectContentState GetStateOfEntryWithKey(TKeyEntryData key)
         {
             return GetStateOfEntryWithIndex(GetCurrentIndexForKey(key));
@@ -876,7 +876,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Returns the state of the endcap.
         /// </summary>
-        /// <returns> The state of the endcap </returns>
+        /// <returns> The state of the endcap. </returns>
         public RecyclerScrollRectContentState GetStateOfEndcap()
         {
             if (!_endcap.gameObject.activeSelf)
@@ -1400,7 +1400,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Stop any ScrollTo call when the user taps on the Recycler
+        /// Stop any ScrollTo call when the user taps on the Recycler.
         /// </summary>
         public void OnPointerDown(PointerEventData eventData)
         {
@@ -1422,7 +1422,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Cancels the current ScrollToIndex/Key call
+        /// Cancels the current ScrollToIndex/Key call.
         /// </summary>
         public void CancelScrollTo()
         {
@@ -1435,8 +1435,8 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Returns the current index of the entry with a given key.
         /// </summary>
-        /// <param name="key"> The key of the entry to get the current index of </param>
-        /// <returns> The current index of the entry with the given key </returns>
+        /// <param name="key"> The key of the entry to get the current index of. </param>
+        /// <returns> The current index of the entry with the given key. </returns>
         public int GetCurrentIndexForKey(TKeyEntryData key)
         {
             return _entryKeyToCurrentIndex[key];
@@ -1446,7 +1446,7 @@ namespace RecyclerScrollRect
         /// Returns the key of the entry at the given index.
         /// </summary>
         /// <param name="index"> The index of the entry to get the key of. </param>
-        /// <returns> The key of the entry at the given index </returns>
+        /// <returns> The key of the entry at the given index. </returns>
         public TKeyEntryData GetKeyForCurrentIndex(int index)
         {
             return _dataForEntries[index].Key;
