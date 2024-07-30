@@ -295,23 +295,26 @@ Inserts an entry at the given key. Existing entries' indices will be shifted lik
 
 ### InsertRangeAtIndex
 ```
-public void InsertRangeAtIndex(int index, IEnumerable<TEntryData> entryData, FixEntries fixEntries)
+public void InsertRangeAtIndex(int index, IEnumerable<TEntryData> dataForEntries, FixEntries fixEntries)
 ```
 Inserts a range of entries at the given index. Existing entries' indices will be shifted like a list insertion.
 
 <ins>Parameters</ins>
 - `index:` the index to insert the entries at
-- `entryData:` the data for the entries
-- `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved.
+- `dataForEntries:` the data for the entries
+- `fixEntries:` if we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
+
+<ins>Exceptions</ins>
+- `ArgumentException:` thrown when trying to insert at an invalid index 
 
 ### InsertRangeAtKey
 ```
-public void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> entryData, FixEntries fixEntries)
+public void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> dataForEntries, FixEntries fixEntries)
 ```
 Inserts a range of entries at the given key. Existing entries' indices will be shifted - equivalent behaviour to inserting into a list.
 - `insertAtKey:` the index to insert the entries at
-- `entryData:` the data for the entries
-- `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved.
+- `dataForEntries:` the data for the entries
+- `fixEntries:` if we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
 
 ### RemoveAtIndex
 ```
