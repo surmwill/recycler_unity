@@ -15,8 +15,10 @@ namespace RecyclerScrollRect
         private PrettyInsertDeleteRecycler _recycler = null;
         
         private const int InitNumEntries = 30;
-        private const int NumEntriesInsertedAtMiddle = 3;
-        private const int NumEntriesInsertedAEitherSideOfMiddle = 1;
+        private const int NumEntriesInsertedAtMiddle = 4;
+        
+        private const int NumEntriesDeletedBeforeMiddle = 2;
+        private const int NumEntriesDeletedAfterMiddle = 1;
 
         private RecyclerValidityChecker<PrettyInsertDeleteData, string> _validityChecker;
 
@@ -44,8 +46,8 @@ namespace RecyclerScrollRect
                 // Delete entries at middle
                 if (Input.GetKeyDown(KeyCode.D))
                 {
-                    int startDeleteIndex = middleEntryIndex - NumEntriesInsertedAEitherSideOfMiddle;
-                    int endDeleteIndex = middleEntryIndex + NumEntriesInsertedAEitherSideOfMiddle;
+                    int startDeleteIndex = middleEntryIndex - NumEntriesDeletedBeforeMiddle;
+                    int endDeleteIndex = middleEntryIndex + NumEntriesDeletedAfterMiddle;
                     
                     for (int i = startDeleteIndex; i <= endDeleteIndex; i++)
                     {
