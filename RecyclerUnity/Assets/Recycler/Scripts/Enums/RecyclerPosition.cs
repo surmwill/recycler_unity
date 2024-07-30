@@ -1,15 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Defines two important locations of the Recycler list, the top and bottom
+    /// Defines two important locations of the recycler list: the top and bottom.
     /// </summary>
     public enum RecyclerPosition
     {
-        Top = 0,
-        Bot = 1,
+        Top = 0,    // The top of the recycler list.
+        Bot = 1,    // The bottom of the recycler list.
     }
 }
