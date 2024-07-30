@@ -819,7 +819,7 @@ An enum defining two important locations of the recycler list: the top and botto
 
 ### Entries set their own auto-size.
 
-If your content is not auto-sized, this is not an issue. Otherwise, entries must control their own width and height as a side effect of necessary performance concessions (editor checks will ensure this).
+If your content is auto-sized, then entries must control their own width and height as a side effect of necessary performance concessions (editor checks will ensure this).
 
 Instead of what is typically done, with having the root (Entries) controlling sizes:
 
