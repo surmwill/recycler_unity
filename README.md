@@ -362,21 +362,23 @@ Removes a range of entries starting from the given key. Existing entries' indice
 
 ### AppendEntries
 ```
-public void AppendEntries(IEnumerable<TEntryData> entries)
+public void AppendEntries(IEnumerable<TEntryData> dataForEntries)
 ```
-Appends a range of entries to the end of the existing list of data. 
+Appends entries to the end of the recycler. Appended entries will always preserve the currently visible window of entries.
+Similar to an insertion at the end of the list, but more efficient.
 
-Functionally equivalent to insertion, but more efficent. Prefer to use this when feasible.
-
-- `entries:` the data for the entries
+<ins>Parameters</ins>
+- `dataForEntries:` the data for the entries
 
 ### PrependEntries
 ```
 public void PrependEntries(IEnumerable<TEntryData> entries)
 ```
-Prepends a range of entries to the beginning of the existing list of data. Existing entries' indices will be shifted - equivalent behavior to removing from a list.
+Prepends entries to the start of the recycler. Prepended entries will always preserve the currently visible window of entries.
+Existing entries' indices will be shifted like a list insertion.
 
-- `entries:` the data for the entries
+<ins>Parameters</ins>
+- `dataForEntries:` the data for the entries
 
 ### Clear
 ```
