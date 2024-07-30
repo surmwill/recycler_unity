@@ -1,16 +1,14 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Interface for the user to query the indices of active entries in the Recycler
+    /// Interface for the user to query the various index ranges of active entries in the recycler.
     /// </summary>
     public interface IRecyclerScrollRectActiveEntriesWindow : IEnumerable<int>
     {
         /// <summary>
-        /// Returns true if the window exists, that is, we've added some underlying data to have a window over in the first place
+        /// Returns true if the window exists, that is, we have some underlying recycler data to have a window over in the first place.
         /// </summary>
         bool Exists { get; }
 
@@ -30,12 +28,12 @@ namespace RecyclerScrollRect
         (int Start, int End)? EndCacheIndexRange { get; }
 
         /// <summary>
-        /// The range of active entries: both visible and cached. Null if the range is empty.
+        /// The range of indices of active entries: both visible and cached. Null if the range is empty.
         /// </summary>
         (int Start, int End)? ActiveEntriesRange { get; }
 
         /// <summary>
-        /// Returns information about the current ranges of entries
+        /// Returns information about the current ranges of entry indices
         /// </summary>
         string PrintRanges();
     }
