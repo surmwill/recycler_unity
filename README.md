@@ -516,11 +516,7 @@ Returns the currently active entries: visible and cached. The key is their index
 public IRecyclerScrollRectActiveEntriesWindow ActiveEntriesWindow { get; }
 ```
 
-Returns information about the current index ranges of active entries. Queryable is:
-1. The range of indices of visible entries
-2. The range of indices of entries in the start cache
-3. The range of indices of entries in the end cache
-4. The total range of active entries (start cache, visible, and end cache)
+Returns information about the current index ranges of active entries.
 
 ### Endcap
 ```
