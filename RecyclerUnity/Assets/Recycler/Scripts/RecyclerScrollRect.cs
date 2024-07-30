@@ -951,7 +951,7 @@ namespace RecyclerScrollRect
                 throw new InvalidOperationException("We should not have two copies of the same entry in recycling; we only need one.");
             }
 
-            _recycledEntries.Add(entry.Index, entry);
+            _recycledEntries.Add(entry);
 
             // Bookkeeping
             _activeEntries.Remove(entry.Index);
@@ -979,9 +979,9 @@ namespace RecyclerScrollRect
             // Then try and use the bound entry in recycling that's been there the longest
             else if (_recycledEntries.Entries.Any())
             {
-                (int firstIndex, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> firstEntry) = _recycledEntries.GetOldestEntry();
+                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> firstEntry = _recycledEntries.GetOldestEntry();
                 entry = firstEntry;
-                _recycledEntries.Remove(firstIndex);
+                _recycledEntries.Remove(firstEntry.Index);
             }
             // If all else fails, we'll have to instantiate something new
             else
