@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Helpful editor functions
+    /// Helpful editor functions.
     /// </summary>
     public static class EditorUtils
     {
@@ -13,9 +13,10 @@ namespace RecyclerScrollRect
         /// Destroy is only allowed during runtime and the alternative, DestroyImmediate, is not allowed in OnValidate.
         /// If we wish to destroy something during OnValidate we'll need to move the actual destruction outside of the call.
         /// </summary>
+        /// <param name="obj"> The object to destroy </param>
         public static void OnValidateDestroy(Object obj)
         {
-            EditorApplication.delayCall += () => { Object.DestroyImmediate(obj); };
+            EditorApplication.delayCall += () => Object.DestroyImmediate(obj);
         }
     }
 }

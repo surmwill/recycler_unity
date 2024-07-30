@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Draws a readonly property in the inspector
+    /// Draws a readonly property in the inspector.
     /// </summary>
     [CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
     public class ReadOnlyProperyDrawer : PropertyDrawer

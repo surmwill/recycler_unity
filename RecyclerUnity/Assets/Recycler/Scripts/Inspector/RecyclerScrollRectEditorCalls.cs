@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Contains editor and debugging calls for our recycler scroll rect
+    /// Contains editor calls for the RecyclerScrollRect.
     /// </summary>
     public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
     {
