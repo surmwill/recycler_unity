@@ -508,7 +508,7 @@ Returns the list of data being bound to the entries.
 public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> ActiveEntries { get; }
 ```
 
-Returns the currently active entries (both visible on-screen and cached just off-screen), which can be looked up by their index. Note that `GetStateOfEntry` can be called on any entry here for a more fine-grained state, and, for example, to decipher which entries are in the cache and which are visible.
+Returns the currently active entries: visible and cached. The key is their index.
 
 ### ActiveEntriesWindow
 ```
@@ -521,16 +521,12 @@ Returns information about the current index ranges of active entries. Queryable 
 3. The range of indices of entries in the end cache
 4. The total range of active entries (start cache, visible, and end cache)
 
-The indices returned can be combined with [`GetKeyForCurrentIndex`](https://github.com/surmwill/recycler_unity/blob/master/README.md#getkeyforcurrentindex) to get ranges of keys. 
-
-These ranges also provide additional information about the entries returned in [`ActiveEntries`](https://github.com/surmwill/recycler_unity/blob/master/README.md#activeentries) without needing to go through the entire dictionary.
-
 ### Endcap
 ```
 public RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> Endcap { get; }
 ```
 
-Returns a reference to the endcap (if it exists - it is optional).
+Returns a reference to the endcap - if it exists.
 
 ### AppendTo
 ```
@@ -544,7 +540,9 @@ The position in the recycler that appended entries are added to.
 public event Action OnRecyclerUpdated
 ```
 
-Invoked at the end of LateUpdate once scrolling has been handled, and the current viewport of entries is not expected to change (this frame) except through manual user calls (Insert, Delete, etc...). The state of the entries can be queried here without worry of them changing.
+Invoked at the end of LateUpdate once scrolling has been handled. 
+Here, the current viewport of entries is not expected to change for the remainder of the frame except through manual user calls. 
+The state of the entries can be queried here without worry of them changing.
 
 ## RecyclerScrollRectEntry
 
