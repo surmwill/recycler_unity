@@ -744,6 +744,53 @@ After modifying the dimensions of the endcap, call this to alert the Recycler to
 
 - `fixEntries:` resizing the endcap will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
 
+## IRecyclerScrollRectActiveEntriesWindow
+
+Interface for the user to query the various index ranges of active entries in the recycler. 
+Can be combined with the `RecyclerScrollRect.ActiveEntries` dictionary.
+
+### Exists
+```
+public bool Exists { get; }
+```
+
+Returns true if the window exists, that is, we have some underlying recycler data to have a window over in the first place.
+
+### VisibleIndexRange
+```
+public (int Start, int End)? VisibleIndexRange { get; }
+```
+
+The range of entry indices that are visible. Null if the range is empty.
+
+### StartCacheIndexRange
+```
+public (int Start, int End)? StartCacheIndexRange { get; }
+```
+
+The range of entry indices contained in the start cache. Null if the range is empty.
+
+### EndCacheIndexRange
+```
+public (int Start, int End)? EndCacheIndexRange { get; }
+```
+
+The range of entry indices contained in the end cache. Null if the range is empty.
+
+### ActiveEntriesRange
+```
+public (int Start, int End)? ActiveEntriesRange { get; }
+```
+
+The range of indices of active entries: both visible and cached. Null if the range is empty.
+
+### PrintRanges
+```
+public string PrintRanges();
+```
+
+Returns information about the current ranges of entry indices.
+
 ## RecyclerScrollRectContentState
 
 An enum describing the states that recycler entries or the endcap can be in.
