@@ -272,8 +272,7 @@ And our end result looks like:
 public void InsertAtIndex(int index, TEntryData entryData, FixEntries fixEntries)
 ```
 
-<u>Parameters</u>
-Inserts an entry at the given index. Existing entries' indices will be shifted - equivalent behaviour to inserting into a list.
+Inserts <u>an</u> entry at the given index. Existing entries' indices will be shifted - equivalent behaviour to inserting into a list.
 - `index:` the index to insert the entry at
 - `entryData:` the data representing the entry
 - `fixEntries:` if we are inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved.
