@@ -304,16 +304,13 @@ Inserts a range of entries at the given index. Existing entries' indices will be
 - `dataForEntries:` the data for the entries
 - `fixEntries:` if we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
 
-<ins>Exceptions</ins>
-- `ArgumentException:` thrown when trying to insert at an invalid index 
-
 ### InsertRangeAtKey
 ```
 public void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> dataForEntries, FixEntries fixEntries)
 ```
+Inserts a range of entries at the given key. Existing entries' indices will be shifted - equivalent behaviour to inserting into a list.
 
 <ins>Parameters</ins>
-Inserts a range of entries at the given key. Existing entries' indices will be shifted - equivalent behaviour to inserting into a list.
 - `insertAtKey:` the index to insert the entries at
 - `dataForEntries:` the data for the entries
 - `fixEntries:` if we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
@@ -333,26 +330,32 @@ Removes an element at the given index. Existing entries' indices will be shifted
 
 ### RemoveAtKey
 ```
-public void RemoveAtIndex(TKeyEntryData removeAtKey, FixEntries fixEntries)
+public void RemoveAtKey(TKeyEntryData removeAtKey, FixEntries fixEntries)
 ```
 Removes an entry at the given key. Existing entries' indices will be shifted - equivalent behaviour to removing from a list.
+
+<ins>Parameters</ins>
 - `removeAtKey:` the key of the entry to remove
-- `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
+- `fixEntries:` if we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy. This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving our view of what's on-screen.
 
 ### RemoveRangeAtIndex
 ```
 public void RemoveRangeAtIndex(int index, int count, FixEntries fixEntries)
 ```
-Removes a range of entries starting from the given index. Existing entries' indices will be shifted - equivalent behavior to removing from a list.
+Removes a range of entries starting from the given index. Existing entries' indices will be shifted like a list removal.
+
+<ins>Parameters</ins>
 - `index:` the index to start removal at
 - `count:` the number of entries to remove
-- `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
+- `fixEntries:` if we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy. This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving our view of what's on-screen.
 
 ### RemoveRangeAtKey
 ```
 public void RemoveRangeAtKey(TKeyEntryData removeAtKey, int count, FixEntries fixEntries)
 ```
-Removes a range of entries starting from the given key. Existing entries' indices will be shifted - equivalent behavior to removing from a list.
+Removes a range of entries starting from the given key. Existing entries' indices will be shifted like a list removal.
+
+<ins>Parameters</ins>
 - `removeAtKey:` the key of the entry to start removal at
 - `count:` the number of entries to remove
 - `fixEntries:` if we are removing from the visible window of entries, then extra room will be created, pulling entries in. This defines how and what entries will move to fill up the new space.
