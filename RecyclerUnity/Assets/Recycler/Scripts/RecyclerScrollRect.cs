@@ -110,11 +110,7 @@ namespace RecyclerScrollRect
         public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> ActiveEntries => _activeEntries;
 
         /// <summary>
-        /// Contains information about the current index ranges of active entries. Queryable is:
-        /// 1. The range of indices of visible entries.
-        /// 2. The range of indices of entries in the start cache.
-        /// 3. The range of indices of entries in the end cache.
-        /// 4. The total range of active indices.
+        /// Contains information about the current index ranges of active entries.
         /// </summary>
         public IRecyclerScrollRectActiveEntriesWindow ActiveEntriesWindow => _activeEntriesWindow;
 
