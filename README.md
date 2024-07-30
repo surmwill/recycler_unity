@@ -396,25 +396,30 @@ Resets the Recycler to its very beginning elements.
 ```
 public void ScrollToIndex(int index, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeedViewportsPerSecond, bool isImmediate)
 ```
-Scrolls to an entry at a given index. The entry doesn't need to be on screen at the time of the call.
+Scrolls to an entry at a given index. The entry doesn't need to be on-screen at the time of the call.
 
+<ins>Parameters</ins>
 - `index:` the index of the entry to scroll to
-- `scrollToAlignment:` the position within the entry we want to center on (ex: the middle, the top edge, the bottom edge)
+- `scrollToAlignment:` the position within the entry we want to center on
 - `onScrollComplete:` callback invoked once we've successfully scrolled to the entry
-- `scrollSpeedViewportsPerSecond:` the speed of the scroll, defined in viewports per second (ex: a value of 1 means we'll scroll past 1 full screen of entries every second)
-- `isImmediate:` whether the scroll should complete immediately. Warning: the scroll still occurs - just in one frame - meaning large jumps are costly.
+- `scrollSpeedViewportsPerSecond:` the speed of the scroll
+- `isImmediate:` whether the scroll should complete immediately. (Warning: large jumps can be inefficient)
+
+<ins>Exceptions</ins>
+- `ArgumentException:` thrown when attempting to scroll to an invalid index
 
 ### ScrollToKey
 ```
 public void ScrollToKey(TKeyEntryData key, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeedViewportsPerSecond, bool isImmediate)
 ```
-Scrolls to an entry with the given key. The entry doesn't need to be on screen at the time of the call.
+Scrolls to an entry with the given key. The entry doesn't need to be on-screen at the time of the call.
 
+<ins>Parameters</ins>
 - `key:` the key of the entry to scroll to
-- `scrollToAlignment:` the position within the entry we want to center on (ex: the middle, the top edge, the bottom edge)
+- `scrollToAlignment:` the position within the entry we want to center on
 - `onScrollComplete:` callback invoked once we've successfully scrolled to the entry
-- `scrollSpeedViewportsPerSecond:` the speed of the scroll, defined in viewports per second (ex: a value of 1 means we'll scroll past 1 full screen of entries every second)
-- `isImmediate:` whether the scroll should complete immediately. Warning: the scroll still occurs - just in one frame - meaning large jumps are costly.
+- `scrollSpeedViewportsPerSecond:` the speed of the scroll
+- `isImmediate:` whether the scroll should complete immediately. (Warning: large jumps can be inefficient)
 
 ### CancelScrollTo
 ```
