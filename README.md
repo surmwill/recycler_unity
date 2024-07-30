@@ -791,6 +791,13 @@ public string PrintRanges();
 
 Returns information about the current ranges of entry indices.
 
+### GetEnumerator()
+```
+public IEnumerator<int> GetEnumerator()
+```
+
+Returns the indices of all the active entries in increasing order.
+
 ## RecyclerScrollRectContentState
 
 An enum describing the states that recycler entries or the endcap can be in.
