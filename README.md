@@ -277,7 +277,7 @@ Inserts an entry at the given index. Existing entries' indices will be shifted l
 <ins>Parameters</ins>
 - `index:` the index to insert the entry at
 - `entryData:` the data representing the entry
-- `fixEntries:` if we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
+- `fixEntries:` if we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter will be overriden with whatever value only pushes other offscreen entries, preserving the view of what's on-screen.
 
 <ins>Exceptions</ins>
 - `ArgumentException:` thrown when trying to insert at an invalid index 
@@ -291,7 +291,7 @@ Inserts an entry at the given key. Existing entries' indices will be shifted lik
 <ins>Parameters</ins>
 - `insertAtKey:` the key to insert the entry at
 - `entryData:` the data representing the entry
-- `fixEntries:` if we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
+- `fixEntries:` if we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter will be overriden with whatever value only pushes other offscreen entries, preserving the view of what's on-screen.
 
 ### InsertRangeAtIndex
 ```
@@ -302,7 +302,7 @@ Inserts a range of entries at the given index. Existing entries' indices will be
 <ins>Parameters</ins>
 - `index:` the index to insert the entries at
 - `dataForEntries:` the data for the entries
-- `fixEntries:` if we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
+- `fixEntries:` if we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter will be overriden with whatever value only pushes other offscreen entries, preserving the view of what's on-screen.
 
 ### InsertRangeAtKey
 ```
@@ -313,7 +313,7 @@ Inserts a range of entries at the given key. Existing entries' indices will be s
 <ins>Parameters</ins>
 - `insertAtKey:` the index to insert the entries at
 - `dataForEntries:` the data for the entries
-- `fixEntries:` if we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter will be overriden with whatever value only pushes other offscreen entries, preserving our view of what's on-screen.
+- `fixEntries:` if we're inserting into the visible window of entries, then we'll need to make some room by pushing some existing entries aside. This defines how and what entries will get moved. If we're not inserting into the visible window, this is ignored, and the parameter will be overriden with whatever value only pushes other offscreen entries, preserving the view of what's on-screen.
 
 ### RemoveAtIndex
 ```
@@ -323,7 +323,7 @@ Removes an element at the given index. Existing entries' indices will be shifted
 
 <ins>Parameters</ins>
 - `index:` the index of the entry to remove
-- `fixEntries:` if we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy. This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving our view of what's on-screen.
+- `fixEntries:` if we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy. This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
 <ins>Exceptions</ins>
 - `ArgumentException:` thrown when trying to remove an invalid index 
@@ -336,7 +336,7 @@ Removes an entry at the given key. Existing entries' indices will be shifted - e
 
 <ins>Parameters</ins>
 - `removeAtKey:` the key of the entry to remove
-- `fixEntries:` if we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy. This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving our view of what's on-screen.
+- `fixEntries:` if we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy. This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
 ### RemoveRangeAtIndex
 ```
@@ -347,7 +347,7 @@ Removes a range of entries starting from the given index. Existing entries' indi
 <ins>Parameters</ins>
 - `index:` the index to start removal at
 - `count:` the number of entries to remove
-- `fixEntries:` if we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy. This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving our view of what's on-screen.
+- `fixEntries:` if we're removing from the visible window of entries, then we'll be creating some extra space for existing entries to occupy. This defines how and what entries will get moved to occupy that space. If we're not removing from the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
 ### RemoveRangeAtKey
 ```
@@ -425,7 +425,7 @@ Scrolls to an entry with the given key. The entry doesn't need to be on-screen a
 ```
 public void CancelScrollTo()
 ```
-Cancels the current [`ScrollToIndex`](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex)/[`ScrollToKey`](https://github.com/surmwill/recycler_unity/blob/master/README.md#scrolltoindex) animation.
+Cancels the current `ScrollToIndex/Key` call.
 
 ### GetCurrentIndexForKey
 ```
@@ -433,62 +433,62 @@ public int GetCurrentIndexForKey(TKeyEntryData key)
 ```
 Returns the current index of the entry with a given key.
 
+<ins>Parameters</ins>
 - `key:` the key of the entry to get the current index of
 
 ### GetKeyForCurrentIndex
 ```
 public TKeyEntryData GetKeyForCurrentIndex(int index)
 ```
+Returns the key of the entry at the give index.
 
+<ins>Parameters</ins>
 - `index:` the index of entry to get the key of
 
-### GetStateOfEntryWithCurrentIndex
+### GetStateOfEntryWithIndex
 ```
-public RecyclerScrollRectContentState GetStateOfEntryWithCurrentIndex(int index)
+public RecyclerScrollRectContentState GetStateOfEntryWithIndex(int index)
 ```
-Returns the state of the entry with a given index. Either:
-1. ActiveVisible: active and visible on screen
-2. ActiveInStartCache: active, but waiting just off screen in the start cache, ready to scroll to
-3. ActiveInEndCache: active, but waiting just off screen in the end cache, ready to scroll to
-4. InactiveInPool: inactive and waiting in the recycling pool to be bound/re-bound
+Returns the state of the entry with a given index.
 
+<ins>Parameters</ins>
 - `index:` the index of the entry to check the state of
 
 ### GetStateOfEntryWithKey
 ```
 public RecyclerScrollRectContentState GetStateOfEntryWithCurrentIndex(TKeyEntryData key)
 ```
-Returns the state of the entry with the given key. Either:
-1. ActiveVisible: active and visible on screen
-2. ActiveInStartCache: active, but waiting just off screen in the start cache, ready to scroll to
-3. ActiveInEndCache: active, but waiting just off screen in the end cache, ready to scroll to
-4. InactiveInPool: inactive and waiting in the recycling pool to be bound/re-bound
+Returns the state of the entry with the given key.
 
+<ins>Parameters</ins>
 - `key:` the key of the entry to check the state of
 
 ### GetStateOfEndcap
 ```
 public RecyclerScrollRectContentState GetStateOfEndcap()
 ```
-Returns the state of the endcap. Either:
-1. ActiveVisible: active and visible on screen
-3. ActiveInEndCache: active, but waiting just off screen in the end cache, ready to scroll to
-4. InactiveInPool: inactive and waiting in the recycling pool
+Returns the state of the endcap.
 
 ### RecalculateEntrySize
 ```
-public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
+public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries)
 ```
-Called by entries to alert the Recyler of their size change. This should never need to be called directly, but instead though the entry's [`RecyclerScrollRectEntry.RecalculateDimensions`](https://github.com/surmwill/recycler_unity/blob/master/README.md#recalculatedimensions).
+Called when an entry updates its dimensions and needs to alert the recycler of its new size. This should never need to be called directly, instead using `RecyclerScrollRectEntry.RecalculateDimensions`.
+Note that this triggers a layout rebuild of the entry, incorporating any changes in its auto-calculated size.
 
-- `entry:` the entry with an updated size
-- `fixEntries:` as the RectTransform grows or shrinks other entries will get pushed away, or pulled in to the empty space. This defines how and what entries will move.
+<ins>Parameters</ins>
+- `entry:` the entry with an updated dimensions
+- `fixEntries:` if we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy. This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
 ### RecalculateEndcapSize
 ```
-public void RecalculateEndcapSize()
+public void RecalculateEndcapSize(FixEntries fixEntries)
 ```
-Called by the endcap to alert the Recycler of its size change. This should never need to be called directly, but instead through the endcap's [`RecyclerScrollRectEndcap.RecalculateDimensions`](https://github.com/surmwill/recycler_unity/blob/master/README.md#recalculatedimensions-1).
+Called when an endcap has updates its dimensions and needs to alert the recycler of its new size. This should never need to be called directly, instead using `RecyclerScrollRectEndcap.RecalculateDimensions`.
+Note that this triggers a layout rebuild of the endcap, incorporating any changes in its auto-calculated size.
+
+<ins>Parameters</ins>
+- `fixEntries:` if we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy. This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
 ### OnPointerDown
 ```
