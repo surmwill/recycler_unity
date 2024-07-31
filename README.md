@@ -556,7 +556,7 @@ The index corresponding to an unbound entry.
 public int Index { get; }
 ```
 
-The current index of the entry (note that indices can shift as things are added/removed).
+The current index of the entry (note that indices can shift as things are added and removed).
 
 ### Data
 ```
@@ -570,21 +570,28 @@ The data this entry is currently bound to.
 public RecyclerScrollRectContentState State { get; }
 ```
 
-The current state of the entry: visible, cached, or in the recycling pool. Valid post-binding/rebinding.
+The current state of the entry, valid post-binding/rebinding.
 
 ### Recyler
 ```
 public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; }
 ```
 
-A reference to the Recyler containing this entry.
+The recycler this entry is a part of.
 
 ### RectTransform
 ```
 public RectTransform { get; } 
 ```
 
-A saved reference to the entry's RectTransform for quick access.
+The entry's RectTransform.
+
+### UIDGameObject
+```
+public int UidGameObject { get; private set; }
+```
+
+A unique id representing the GameObject this entry lives on.
 
 ### OnBindNewData
 ```
