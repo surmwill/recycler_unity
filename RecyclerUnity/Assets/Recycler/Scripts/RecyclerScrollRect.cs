@@ -725,6 +725,12 @@ namespace RecyclerScrollRect
                 entry = Instantiate(_recyclerEntryPrefab, content);
             }
             
+            if (!_entryGameObjectLayoutBehaviours.TryGetValue(entry.UidGameObject, out Behaviour[] layoutBehaviors))
+            {
+                layoutBehaviors = LayoutUtilities.GetLayoutBehaviours(entry.gameObject, true);
+                _entryGameObjectLayoutBehaviours[entry.UidGameObject] = layoutBehaviors;
+            }
+            
             if (entry.Index != dataIndex)
             {
                 entry.BindNewData(dataIndex, _dataForEntries[dataIndex]);
@@ -732,12 +738,6 @@ namespace RecyclerScrollRect
             else
             {
                 entry.RebindExistingData();
-            }
-            
-            if (!_entryGameObjectLayoutBehaviours.TryGetValue(entry.UidGameObject, out Behaviour[] layoutBehaviors))
-            {
-                layoutBehaviors = LayoutUtilities.GetLayoutBehaviours(entry.gameObject, true);
-                _entryGameObjectLayoutBehaviours[entry.UidGameObject] = layoutBehaviors;
             }
 
             AddToContent(entry.RectTransform, layoutBehaviors, siblingIndex, fixEntries);
@@ -1078,7 +1078,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Called when a child has updated its dimensions, and needs to alert the parent Recycler of its new size
         /// </summary>
-        private void RecalculateContentChildSize(RectTransform contentChild, FixEntries fixEntries = FixEntries.Below)
+        private void RecalculateContentChildSize(RectTransform contentChild, Behaviour[] layoutBehaviours, FixEntries fixEntries = FixEntries.Below)
         {
             // If the child is not visible then grow in the direction which keeps it off screen and preserves the currently visible entries
             if (!IsInViewport(contentChild, _viewportCollider))
@@ -1087,10 +1087,12 @@ namespace RecyclerScrollRect
             }
 
             // Calculate the height of the child
-            Behaviour[] layoutBehaviours = LayoutUtilities.GetLayoutBehaviours(contentChild.gameObject, true);
-            SetBehavioursEnabled(layoutBehaviours, true);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(contentChild);
-            SetBehavioursEnabled(layoutBehaviours, false);
+            if (layoutBehaviours != null && layoutBehaviours.Length > 0)
+            {
+                SetBehavioursEnabled(layoutBehaviours, true);
+                LayoutRebuilder.ForceRebuildLayoutImmediate(contentChild);
+                SetBehavioursEnabled(layoutBehaviours, false);   
+            }
 
             // Calculate the change in parent size given the change in the child's size
             RecalculateContentSize(fixEntries);
@@ -1109,7 +1111,7 @@ namespace RecyclerScrollRect
         /// </param>
         public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
         {
-            RecalculateContentChildSize(entry.RectTransform, fixEntries);
+            RecalculateContentChildSize(entry.RectTransform, _entryGameObjectLayoutBehaviours[entry.UidGameObject], fixEntries);
             RecalculateActiveEntries();
         }
 
@@ -1125,7 +1127,7 @@ namespace RecyclerScrollRect
         /// </param>
         public void RecalculateEndcapSize(FixEntries? fixEntries = null)
         {
-            RecalculateContentChildSize(_endcap.RectTransform, fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
+            RecalculateContentChildSize(_endcap.RectTransform, _endcapLayoutBehaviours, fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
             RecalculateActiveEntries();
         }
 
