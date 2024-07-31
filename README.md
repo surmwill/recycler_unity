@@ -40,10 +40,11 @@ Here, **all those cases are covered with the following features:**
 - Endcaps
 - Scrolling to any index (including those off screen)
 - State changes (know when an entry is cached, visible, or in the recycling pool)
-- Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases ("World Space" is untested).
-- 7 (optional) editor checks running every frame, ensuring valid behaviour. 10 Demos isolating and testing each individual piece of functionality.
+- Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases ("World Space" is untested)
+- Fully tested: 10+ demos isolating and testing individual pieces of functionality, 7 debug checks running every frame ensuring a valid recycler. (Note: all tests run outside of the package as per Unity Asset Store guidlines.) 
 - Only uses native Unity UI elements
 - Fully commented and documented
+- Easy set up: simply add the Recycler to a RectTransform.
 
 # Feature Videos
 ### Basic Functionality
