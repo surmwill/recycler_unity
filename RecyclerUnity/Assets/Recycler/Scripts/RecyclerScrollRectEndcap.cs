@@ -9,18 +9,17 @@ namespace RecyclerScrollRect
     public abstract class RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> : MonoBehaviour where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         /// <summary>
-        /// The endcap's RectTransform
+        /// The endcap's RectTransform.
         /// </summary>
         public RectTransform RectTransform { get; private set; }
         
         /// <summary>
-        /// The state of the endcap: visible, cached, or in the pool.
-        /// Valid post-fetching.
+        /// The current state of the entry, valid post-fetching from the pool.
         /// </summary>
         public RecyclerScrollRectContentState State { get; private set; }
 
         /// <summary>
-        /// The Recycler this endcap is a part of
+        /// The Recycler this endcap is a part of.
         /// </summary>
         protected RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; private set; }
 
@@ -31,19 +30,27 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Recalculates the endcap's dimensions.
-        /// 
-        /// Unless specified, with the endcap coming at the very end if the list, we fix all entries that come before it, preserving the current view of things.
-        /// (I.e. if the endcap is at the bottom we grow downwards, and if the endcap is a the top we grow upwards).
+        /// Called when the endcap updates its dimensions and needs to alert the recycler of its new size.
+        /// Note that this triggers a layout rebuild of the endcap, incorporating any changes in its auto-calculated size.
         /// </summary>
+        /// <param name="fixEntries">
+        /// If we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy.
+        /// This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored,
+        /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
+        ///
+        /// Being positioned at the end of the list, the default null value will fix all the entries that come before it.
+        /// That value depends on the orientation of the recycler.
+        /// </param>
         protected void RecalculateDimensions(FixEntries? fixEntries = null)
         {
             Recycler.RecalculateEndcapSize(fixEntries);
         }
         
         /// <summary>
-        /// Called when the active state of the endcap changes, that is, when it moves from: cached -> visible or visible -> cached.
+        /// Lifecycle method called when the state of the endcap changes.
         /// </summary>
+        /// <param name="prevState"> The previous state of the endcap. </param>
+        /// <param name="newState"> The current state of the endcap. </param>
         protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
         {
             // Empty
@@ -52,7 +59,7 @@ namespace RecyclerScrollRect
         #region CALLED_BY_PARENT_RECYCLER
 
         /// <summary>
-        /// Called when the endcap is fetched from its pool and becomes active
+        /// Called when the endcap becomes active, being fetched from its pool.
         /// </summary>
         [CalledByRecycler]
         public virtual void OnFetchedFromPool()
@@ -61,7 +68,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Called when the end-cap gets returned to its pool
+        /// Called when the end-cap gets returned to its pool.
         /// </summary>
         [CalledByRecycler]
         public virtual void OnReturnedToPool()

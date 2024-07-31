@@ -70,7 +70,7 @@ namespace RecyclerScrollRect
         #region LIFECYCLE_METHODS
 
         /// <summary>
-        /// Lifecycle method called when the entry gets bound a new piece of data.
+        /// Lifecycle method called when the entry becomes active and bound to a new piece of data.
         /// </summary>
         /// <param name="entryData"> The data the entry is being bound to. </param>
         protected abstract void OnBindNewData(TEntryData entryData);
