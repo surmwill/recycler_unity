@@ -598,90 +598,83 @@ A unique id representing the GameObject this entry lives on.
 protected abstract void OnBindNewData(TEntryData entryData)
 ```
 
-Lifecycle method called when the entry is retrieved from recycling and gets bound to a new piece of data. Use the data to adjust the appearance and state of the entry.
+Lifecycle method called when the entry gets bound to a new piece of data.
 
-- `entryData:` the new data that the entry is being bound to
+<ins>Parameters</ins>
+- `entryData:` the data the entry is being bound to.
 
 ### OnRebindExistingData
 ```
 protected virtual void OnRebindExistingData()
 ```
 
-Optional lifecycle method called instead of [`OnBindNewData`](https://github.com/surmwill/recycler_unity/blob/master/README.md#onbindnewdata) when the entry is retrieved from recycling and bound. Here, the only difference is the data being bound is the same data that the entry had before, and still currently contains. We might, for example, resume a paused async operation here instead of starting it all over again. By default, nothing gets reset when an entry gets sent to recycling; hence we can pick up from the state right where we left off, just before it got recycled.
+Lifecycle method called instead of `OnBindNewData` when the data to be bound to is the same data that's already bound. 
+(Note that entries maintain their state when recycled, only losing it when being bound to new data).
 
 ### OnSentToRecycling
 ```
 protected virtual void OnSentToRecyling()
 ```
 
-Optional lifecycle method called when the entry gets sent back to the recycling pool.
+Lifecycle method called when the entry gets sent back to the recycling pool.
 
 ### OnStateChanged
 ```
 protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
 ```
 
-Optional lifecycle method called when the state of the entry changes. The entry can be in the following states:
-1. InactiveInPool
-2. ActiveVisible
-3. ActiveInStartCache
-4. ActiveInEndCache
+Lifecycle method called when the state of the entry changes.
+Note that if entry's previous state was in the pool, the new state is the initial state of the entry post-binding/rebinding.
 
-The entry starts in 1.
-
-The process of binding/rebinding moves the entry from 1 -> 2, 3, or 4.
-
-While active, the entry fluctuates between states 2, 3, and 4.
-
-Once the entry moves too far offscreen, it will move from state 3 or 4 -> 1.
-
-The cycle repeats.
-
-- `prevState:` the previous state the entry was in.
-- `newState:` the new state the entry is currently in.
+<ins>Parameters</ins>
+- `prevState:` the previous state of the entry
+- `newState:` the current state of the entry
 
 ### RecalculateDimensions
 ```
 protected void RecalculateDimensions(FixEntries fixEntries)
 ```
 
-After modifying the dimensions of the entry, call this to alert the Recycler to its size change and to re-align its content. Note that a layout rebuild is triggered before alerting the Recycler, re-calculating any auto-sized content.
+Called when an entry updates its dimensions and needs to alert the recycler of its new size.
+Note that this triggers a layout rebuild of the entry, incorporating any changes in its auto-calculated size.
 
-- `fixEntries:` resizing an entry will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
+<ins>Parameters</ins>
+- `fixEntries:` if we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
+This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
 ### Other
 
-Below are public functions that are called on the entries by the Recycler. That is, they are intended for interaction between the Recycler and the entry,  _not users_. They are listed here for the sake of completeness.
+Below are public functions called on the entries by the recycler to manage their state and lifecycle. **They are intended for the user to call.** They are listed here for the sake of completeness.
 
 #### BindNewData
 `public void BindNewData(int index, TEntryData entryData)`
 
-Called by the Recycler to bind the entry to a new set of data.
+Called by the recycler to bind the entry to a new set of data.
 
 #### RebindExisingData
 `public void RebindExistingData()`
 
-Called by the Recycler to bind to rebind the entry to its current set of data.
+Called by the recycler to rebind the entry to its currently bound data.
 
 #### OnRecycled
 `public void OnRecycled()`
 
-Called by the Recycler when the entry gets recycled.
+Called by the recycler when the entry gets recycled.
 
 #### UnbindIndex
 `public void UnbindIndex()`
 
-Called by the Recycler to reset the entry to its default unbound index.
+Called by the recycler to reset the entry to its default unbound index.
 
 #### SetIndex
 `public void SetIndex(int index)`
 
-Called by the Recycler to set the the entry's index.
+Called by the recycler to set the the entry's index.
 
 #### SetState
 `public void SetState(RecyclerScrollRectContentState newState)`
 
-Called by the Recycler to set the entry's state.
+Called by the recycler to set the current state of the entry.
 
 ## RecyclerScrollRectEndcap
 
