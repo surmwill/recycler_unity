@@ -3,7 +3,7 @@ using UnityEngine;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Base class for all entries displayed in the Recycler (excluding the optional endcap)
+    /// Base class for all entries displayed in the recycler. Contains overridable lifecycle methods to customize their behaviour.
     /// </summary>
     [RequireComponent(typeof(RectTransform))]
     public abstract class RecyclerScrollRectEntry<TEntryData, TKeyEntryData> : MonoBehaviour where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
@@ -11,33 +11,32 @@ namespace RecyclerScrollRect
         private static int UidGameObjectCounter = 0;
         
         /// <summary>
-        /// Index for an entry that is not bound to any data
+        /// Index for an entry that is not bound to any data.
         /// </summary>
         public const int UnboundIndex = -1;
 
         /// <summary>
-        /// This entry's index
+        /// This current index of the entry (note that indices can shift as things are added and removed).
         /// </summary>
         public int Index { get; private set; } = UnboundIndex;
 
         /// <summary>
-        /// This entry's RectTransform
+        /// The entry's RectTransform.
         /// </summary>
         public RectTransform RectTransform { get; private set; }
 
         /// <summary>
-        /// The current data bound to this entry
+        /// The data this entry is currently bound to.
         /// </summary>
         public TEntryData Data { get; private set; }
         
         /// <summary>
-        /// The state of the entry: visible, cached, or in the recycling pool.
-        /// Valid post-binding/rebinding.
+        /// The current state of the entry, valid post-binding/rebinding.
         /// </summary>
         public RecyclerScrollRectContentState State { get; private set; }
 
         /// <summary>
-        /// The recycler this is entry is a part of
+        /// The recycler this is entry is a part of.
         /// </summary>
         public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; private set; }
         
