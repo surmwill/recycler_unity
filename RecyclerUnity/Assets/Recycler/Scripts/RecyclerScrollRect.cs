@@ -136,6 +136,9 @@ namespace RecyclerScrollRect
         private Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _activeEntries = new();
         private readonly RecycledEntries<TEntryData, TKeyEntryData> _recycledEntries = new();
         private readonly Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _unboundEntries = new();
+        
+        private readonly Dictionary<int, Behaviour[]> _entryGameObjectLayoutBehaviours = new();
+        private Behaviour[] _endcapLayoutBehaviours;
 
         private RecyclerScrollRectActiveEntriesWindow _activeEntriesWindow;
 
@@ -189,6 +192,12 @@ namespace RecyclerScrollRect
 
             // Ensure content's RectTransform is set up correctly
             SetContentTracker();
+
+            // Cache the endcap's layout behaviours if there are any. These will be disabled when not in use for performance reasons.
+            if (_endcap != null)
+            {
+                _endcapLayoutBehaviours = LayoutUtilities.GetLayoutBehaviours(_endcap.gameObject, true);
+            }
         }
         
         /// <summary>
@@ -697,6 +706,7 @@ namespace RecyclerScrollRect
 
                 AddToContent(
                     _endcap.RectTransform,
+                    _endcapLayoutBehaviours,
                     IsZerothEntryAtTop ? content.childCount : 0,
                     EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
@@ -723,8 +733,14 @@ namespace RecyclerScrollRect
             {
                 entry.RebindExistingData();
             }
+            
+            if (!_entryGameObjectLayoutBehaviours.TryGetValue(entry.UidGameObject, out Behaviour[] layoutBehaviors))
+            {
+                layoutBehaviors = LayoutUtilities.GetLayoutBehaviours(entry.gameObject, true);
+                _entryGameObjectLayoutBehaviours[entry.UidGameObject] = layoutBehaviors;
+            }
 
-            AddToContent(entry.RectTransform, siblingIndex, fixEntries);
+            AddToContent(entry.RectTransform, layoutBehaviors, siblingIndex, fixEntries);
             _activeEntries[dataIndex] = entry;
         }
 
@@ -1021,7 +1037,7 @@ namespace RecyclerScrollRect
         /// does not care about any disabled components reporting 0 values as we don't care what they report; we simply set it to the maximum width. However,
         /// merely checking ControlChildSize incurs a performance cost, including GetComponent calls. It is easier just to not ControlChildSize.) 
         /// </summary>
-        private void AddToContent(RectTransform child, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
+        private void AddToContent(RectTransform child, Behaviour[] layoutBehaviours, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
         {
             // Ensure proper hierarchy
             child.SetParent(content, false);
@@ -1032,11 +1048,13 @@ namespace RecyclerScrollRect
             (child.anchorMin, child.anchorMax) = (Vector2.one * 0.5f, Vector2.one * 0.5f);
             child.sizeDelta = child.sizeDelta.WithX(viewport.rect.width);
 
-            // Calculate the height of the child
-            Behaviour[] layoutBehaviours = LayoutUtilities.GetLayoutBehaviours(child.gameObject, true);
-            SetBehavioursEnabled(layoutBehaviours, true);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(child);
-            SetBehavioursEnabled(layoutBehaviours, false);
+            // Calculate the auto-sized height of the child
+            if (layoutBehaviours != null && layoutBehaviours.Length > 0)
+            {
+                SetBehavioursEnabled(layoutBehaviours, true);
+                LayoutRebuilder.ForceRebuildLayoutImmediate(child);
+                SetBehavioursEnabled(layoutBehaviours, false);
+            }
 
             // Calculate the change in parent size given the child's size
             RecalculateContentSize(fixEntries);

@@ -8,6 +8,8 @@ namespace RecyclerScrollRect
     [RequireComponent(typeof(RectTransform))]
     public abstract class RecyclerScrollRectEntry<TEntryData, TKeyEntryData> : MonoBehaviour where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
+        private static int UidGameObjectCounter = 0;
+        
         /// <summary>
         /// Index for an entry that is not bound to any data
         /// </summary>
@@ -38,9 +40,15 @@ namespace RecyclerScrollRect
         /// The recycler this is entry is a part of
         /// </summary>
         public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; private set; }
+        
+        /// <summary>
+        /// A unique id representing the GameObject this entry lives on.
+        /// </summary>
+        public int UidGameObject { get; private set; }
 
         protected virtual void Awake()
         {
+            UidGameObject = UidGameObjectCounter++;
             RectTransform = (RectTransform) transform;
             Recycler = GetComponentInParent<RecyclerScrollRect<TEntryData, TKeyEntryData>>();
             UnbindIndex();
