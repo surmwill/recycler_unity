@@ -690,7 +690,7 @@ The Recycler this endcap is a part of.
 public RecyclerScrollRectContentState State { get; }
 ```
 
-The current state of the entry, valid post-fetching from the pool.
+The current state of the endcap, valid post-fetching from the pool.
 
 ### RectTransform
 ```
@@ -704,14 +704,14 @@ The endcap's RectTransform.
 public virtual void OnFetchedFromPool()
 ```
 
-Lifecycle method called when the endcap becomes active, being fetched from its pool.
+Lifecycle method called by the recycler when the endcap becomes active, being fetched from its pool.
 
 ### OnSentToPool
 ```
 public virtual void OnReturnedToPool()
 ```
 
-Lifecycle method called when the end-cap gets returned to its pool.
+Lifecycle method called by the recycler when the end-cap gets returned to its pool.
 
 ### OnStateChanged
 ```
