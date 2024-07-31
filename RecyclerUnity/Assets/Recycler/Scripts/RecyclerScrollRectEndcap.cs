@@ -40,12 +40,21 @@ namespace RecyclerScrollRect
         {
             Recycler.RecalculateEndcapSize(fixEntries);
         }
+        
+        /// <summary>
+        /// Called when the active state of the endcap changes, that is, when it moves from: cached -> visible or visible -> cached.
+        /// </summary>
+        protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+        {
+            // Empty
+        }
 
         #region CALLED_BY_PARENT_RECYCLER
 
         /// <summary>
         /// Called when the endcap is fetched from its pool and becomes active
         /// </summary>
+        [CalledByRecycler]
         public virtual void OnFetchedFromPool()
         {
             // Empty   
@@ -54,6 +63,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Called when the end-cap gets returned to its pool
         /// </summary>
+        [CalledByRecycler]
         public virtual void OnReturnedToPool()
         {
             // Empty
@@ -62,6 +72,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Sets the state of the entry
         /// </summary>
+        [CalledByRecycler]
         public void SetState(RecyclerScrollRectContentState newState)
         {
             RecyclerScrollRectContentState lastState = State;
@@ -71,14 +82,6 @@ namespace RecyclerScrollRect
             {
                 OnStateChanged(lastState, newState);   
             }
-        }
-        
-        /// <summary>
-        /// Called when the active state of the endcap changes, that is, when it moves from: cached -> visible or visible -> cached.
-        /// </summary>
-        protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
-        {
-            // Empty
         }
         
         #endregion

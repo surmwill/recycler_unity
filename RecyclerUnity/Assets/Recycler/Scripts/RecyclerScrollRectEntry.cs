@@ -53,6 +53,18 @@ namespace RecyclerScrollRect
             Recycler = GetComponentInParent<RecyclerScrollRect<TEntryData, TKeyEntryData>>();
             UnbindIndex();
         }
+        
+        /// <summary>
+        /// Alerts the Recycler of size changes, allowing the Recycler to properly display it.
+        /// If the entry is auto-sized, this also triggers a auto-size recalculation prior to alerting the Recycler.
+        ///
+        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
+        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
+        /// </summary>
+        protected void RecalculateDimensions(FixEntries fixEntries = FixEntries.Mid)
+        {
+            Recycler.RecalculateEntrySize(this, fixEntries);
+        }
 
         #region LIFECYCLE_METHODS
 
@@ -94,6 +106,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Binds the entry to a new set of data
         /// </summary>
+        [CalledByRecycler]
         public void BindNewData(int index, TEntryData entryData)
         {
             Data = entryData;
@@ -104,6 +117,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Rebinds this entry to its existing held data, possibly allowing a resumption of operations instead of a fresh restart
         /// </summary>
+        [CalledByRecycler]
         public void RebindExistingData()
         {
             OnRebindExistingData();
@@ -113,6 +127,7 @@ namespace RecyclerScrollRect
         /// Called when the entry gets sent to recycling.
         /// Its data will not be unbound until we know we need to be bind it to different data.
         /// </summary>
+        [CalledByRecycler]
         public void OnRecycled()
         {
             OnSentToRecycling();
@@ -121,6 +136,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Unbinds the entry
         /// </summary>
+        [CalledByRecycler]
         public void UnbindIndex()
         {
             SetIndex(UnboundIndex);
@@ -129,6 +145,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Sets the index.
         /// </summary>
+        [CalledByRecycler]
         public void SetIndex(int index)
         {
             Index = index;
@@ -138,6 +155,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Sets the state of the entry
         /// </summary>
+        [CalledByRecycler]
         public void SetState(RecyclerScrollRectContentState newState)
         {
             RecyclerScrollRectContentState lastState = State;
@@ -150,17 +168,5 @@ namespace RecyclerScrollRect
         }
 
         #endregion
-
-        /// <summary>
-        /// Alerts the Recycler of size changes, allowing the Recycler to properly display it.
-        /// If the entry is auto-sized, this also triggers a auto-size recalculation prior to alerting the Recycler.
-        ///
-        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
-        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
-        /// </summary>
-        protected void RecalculateDimensions(FixEntries fixEntries = FixEntries.Mid)
-        {
-            Recycler.RecalculateEntrySize(this, fixEntries);
-        }
     }
 }
