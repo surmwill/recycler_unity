@@ -598,7 +598,7 @@ A unique id representing the GameObject this entry lives on.
 protected abstract void OnBindNewData(TEntryData entryData)
 ```
 
-Lifecycle method called when the entry gets bound to a new piece of data.
+Lifecycle method called when the entry becomes active and bound to a new piece of data.
 
 <ins>Parameters</ins>
 - `entryData:` the data the entry is being bound to.
@@ -683,56 +683,44 @@ Called by the recycler to set the current state of the entry.
 public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; }
 ```
 
-A reference to the Recyler containing this endcap.
+The Recycler this endcap is a part of.
 
 ### State
 ```
 public RecyclerScrollRectContentState State { get; }
 ```
 
-The state of the endcap: visible, cached, or in its pool. Valid post-fetching from its pool.
+The current state of the entry, valid post-fetching from the pool.
 
 ### RectTransform
 ```
 public RectTransform { get; } 
 ```
 
-A saved reference to the endcaps's RectTransform for quick access.
+The endcap's RectTransform.
 
 ### OnFetchedFromPool
 ```
 public virtual void OnFetchedFromPool()
 ```
 
-Optional lifecycle method called when the endcap is retrieved from its pool and becomes active.
+Lifecycle method called when the endcap becomes active, being fetched from its pool.
 
 ### OnSentToPool
 ```
 public virtual void OnReturnedToPool()
 ```
 
-Optional lifecycle method called when the endcap gets returned to its pool
+Lifecycle method called when the end-cap gets returned to its pool.
 
 ### OnStateChanged
 ```
 protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
 ```
 
-Optional lifecycle method called when the state of the endcap changes. The endcap can be in the following states:
-1. InactiveInPool
-2. ActiveVisible
-3. ActiveInEndCache
+Lifecycle method called when the state of the endcap changes.
 
-The endcap starts in 1.
-
-The process of fetching from its pool moves the entry from 1 -> 2 or 3.
-
-While active, the endcap fluctuates between states 2 and 3.
-
-Once the entry moves too far offscreen, it will move from 3 -> 1.
-
-The cycle repeats.
-
+<ins>Parameters</ins>
 - `prevState:` the previous state the endcap was in.
 - `newState:` the new state the endcap is currently in.
 
@@ -741,9 +729,19 @@ The cycle repeats.
 protected void RecalculateDimensions(FixEntries? fixEntries)
 ```
 
-After modifying the dimensions of the endcap, call this to alert the Recycler to its size change and to re-align its content. Note that a layout rebuild is triggered before alerting the Recycler, re-calculating any auto-sized content.
+Called when the endcap updates its dimensions and needs to alert the recycler of its new size.
+Note that this triggers a layout rebuild of the endcap, incorporating any changes in its auto-calculated size.
 
-- `fixEntries:` resizing the endcap will cause the entire list of entries to shift based on the new/removed space. This defines how and what entries will get moved.
+<ins>Parameters</ins>
+- `fixEntries:` if we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy.
+This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
+
+### Other (SetState)
+```
+public void SetState(RecyclerScrollRectContentState newState)
+```
+
+This method is intended to be called by the recycler **and not the user** to update the endcap's state. It is listed here for the sake of completeness.
 
 ## IRecyclerScrollRectActiveEntriesWindow
 
