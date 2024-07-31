@@ -54,12 +54,14 @@ namespace RecyclerScrollRect
         }
         
         /// <summary>
-        /// Alerts the Recycler of size changes, allowing the Recycler to properly display it.
-        /// If the entry is auto-sized, this also triggers a auto-size recalculation prior to alerting the Recycler.
-        ///
-        /// Note that if the entry is not on-screen then FixEntries will be ignored; we will automatically choose
-        /// the value of FixEntries that only pushes other off-screen entries, preserving the view of whatever's on-screen. 
+        /// Called when an entry updates its dimensions and needs to alert the recycler of its new size.
+        /// Note that this triggers a layout rebuild of the entry, incorporating any changes in its auto-calculated size.
         /// </summary>
+        /// <param name="fixEntries">
+        /// If we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
+        /// This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored,
+        /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
+        /// </param>
         protected void RecalculateDimensions(FixEntries fixEntries = FixEntries.Mid)
         {
             Recycler.RecalculateEntrySize(this, fixEntries);
@@ -68,12 +70,14 @@ namespace RecyclerScrollRect
         #region LIFECYCLE_METHODS
 
         /// <summary>
-        /// Binds the entry to a new set of data
+        /// Lifecycle method called when the entry gets bound a new piece of data.
         /// </summary>
+        /// <param name="entryData"> The data the entry is being bound to. </param>
         protected abstract void OnBindNewData(TEntryData entryData);
 
         /// <summary>
-        /// Rebinds this entry to its existing held data, possibly allowing a resumption of operations instead of a fresh restart
+        /// Lifecycle method called instead of OnBindNewData when the data to be bound to is the same data that's already bound.
+        /// (Note that entries maintain their state when recycled, only losing it when being bound to new data).
         /// </summary>
         protected virtual void OnRebindExistingData()
         {
@@ -81,18 +85,19 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Called when the entry gets sent to recycling.
-        /// Its data will not be unbound until we know we need to be bind it to different data.
+        /// Lifecycle method called when the entry gets sent back to the recycling pool.
         /// </summary>
         protected virtual void OnSentToRecycling()
         {
             // Empty
         }
-
+        
         /// <summary>
-        /// Called when the state of the entry changes.
-        /// Note that if prevState is in the pool, then the newState is the initial state of the entry after binding.
+        /// Lifecycle method called when the state of the entry changes.
+        /// Note that if entry's previous state was in the pool, the new state is the initial state of the entry post-binding/rebinding.
         /// </summary>
+        /// <param name="prevState"> The previous state of the entry. </param>
+        /// <param name="newState"> The current state of the entry. </param>
         protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
         {
             // Empty
@@ -103,8 +108,10 @@ namespace RecyclerScrollRect
         #region CALLED_BY_PARENT_RECYCLER
 
         /// <summary>
-        /// Binds the entry to a new set of data
+        /// Called by the recycler to bind the entry to a new set of data.
         /// </summary>
+        /// <param name="index"> The index of the entry. </param>
+        /// <param name="entryData"> The data for the entry. </param>
         [CalledByRecycler]
         public void BindNewData(int index, TEntryData entryData)
         {
@@ -114,7 +121,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Rebinds this entry to its existing held data, possibly allowing a resumption of operations instead of a fresh restart
+        /// Called by the recycler to rebind the entry to its currently bound data.
         /// </summary>
         [CalledByRecycler]
         public void RebindExistingData()
@@ -123,8 +130,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Called when the entry gets sent to recycling.
-        /// Its data will not be unbound until we know we need to be bind it to different data.
+        /// Called by the recycler when the entry gets recycled.
         /// </summary>
         [CalledByRecycler]
         public void OnRecycled()
@@ -133,7 +139,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Unbinds the entry
+        /// Called by the recycler to reset the entry to its default unbound index.
         /// </summary>
         [CalledByRecycler]
         public void UnbindIndex()
@@ -142,7 +148,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Sets the index.
+        /// Called by the recycler to set the the entry's index.
         /// </summary>
         [CalledByRecycler]
         public void SetIndex(int index)
@@ -152,8 +158,9 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Sets the state of the entry
+        /// Called by the recycler to set the current state of the entry.
         /// </summary>
+        /// <param name="newState"> The current state of the entry. </param>
         [CalledByRecycler]
         public void SetState(RecyclerScrollRectContentState newState)
         {
