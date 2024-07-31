@@ -13,7 +13,7 @@ namespace RecyclerScrollRect
         public RectTransform RectTransform { get; private set; }
         
         /// <summary>
-        /// The current state of the entry, valid post-fetching from the pool.
+        /// The current state of the endcap, valid post-fetching from the pool.
         /// </summary>
         public RecyclerScrollRectContentState State { get; private set; }
 
@@ -58,7 +58,7 @@ namespace RecyclerScrollRect
         #region CALLED_BY_PARENT_RECYCLER
 
         /// <summary>
-        /// Called when the endcap becomes active, being fetched from its pool.
+        /// Lifecycle method called by the recycler when the endcap becomes active, being fetched from its pool.
         /// </summary>
         [CalledByRecycler]
         public virtual void OnFetchedFromPool()
@@ -67,7 +67,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Called when the end-cap gets returned to its pool.
+        /// Lifecycle method called by the recycler when the endcap gets returned to its pool.
         /// </summary>
         [CalledByRecycler]
         public virtual void OnReturnedToPool()
@@ -75,9 +75,11 @@ namespace RecyclerScrollRect
             // Empty
         }
 
+       
         /// <summary>
-        /// Sets the state of the entry
+        /// Called by the recycler to set the current state of the endcap.
         /// </summary>
+        /// <param name="newState"> The current state of the endcap. </param>
         [CalledByRecycler]
         public void SetState(RecyclerScrollRectContentState newState)
         {
