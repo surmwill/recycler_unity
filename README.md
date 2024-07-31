@@ -44,7 +44,7 @@ Here, **all those cases are covered with the following features:**
 - Fully tested: 10+ demos isolating and testing individual pieces of functionality, 7 debug checks running every frame ensuring a valid recycler. (Note: all tests run outside of the package as per Unity Asset Store guidlines.) 
 - Only uses native Unity UI elements
 - Fully commented and documented
-- Easy GameObject set up: simply add your Recycler component to a RectTransform.
+- Easy GameObject set up: simply add your recycler component to a RectTransform.
 
 # Feature Videos
 ### Basic Functionality
