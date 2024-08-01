@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace RecyclerScrollRect
@@ -36,6 +37,7 @@ namespace RecyclerScrollRect
         
         private void Awake()
         {
+            HideHelpMenu();
             SetToolbarPosition(ToolbarPosition.BotLeft);
         }
 
@@ -52,7 +54,7 @@ namespace RecyclerScrollRect
         /// </summary>
         public void SetHelpMenuDemoDescription(string description)
         {
-            _demoTitle.text = description;
+            _demoDescription.text = description;
         }
 
         /// <summary>
@@ -66,6 +68,15 @@ namespace RecyclerScrollRect
             {
                 _buttonDesciptions.text += $"{i}: {buttonDescriptions[i]}\n";
             }
+        }
+
+        /// <summary>
+        /// Returns to the menu screen, where we can navigate to different demos
+        /// </summary>
+        public void ReturnToDemoMenu()
+        {
+            // Assume the menu screen is the first screen in our build index
+            SceneManager.LoadScene(0);
         }
 
         /// <summary>
