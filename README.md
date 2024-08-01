@@ -743,6 +743,17 @@ public void SetState(RecyclerScrollRectContentState newState)
 
 This method is intended to be called by the recycler **and not the user** to update the endcap's state. It is listed here for the sake of completeness.
 
+## IRecyclerScrollRectData
+
+Interface for the data sent to the recycler and bound to entries. Each piece of data must provide a unique key relative to the full list of data.
+
+### Key
+```
+TEntryKey Key { get; }
+```
+
+A unique key identifying the piece of data.
+
 ## IRecyclerScrollRectActiveEntriesWindow
 
 Interface for the user to query the various index ranges of active entries in the recycler. 
