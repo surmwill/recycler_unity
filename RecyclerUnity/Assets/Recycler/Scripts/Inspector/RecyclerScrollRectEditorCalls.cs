@@ -192,7 +192,7 @@ namespace RecyclerScrollRect
 
             if (bc.size != viewportSize || bc.center != Vector3.zero)
             {
-                Debug.LogWarning("Viewport collider must equal the dimensions of the viewport. Setting appropriately.");
+                Debug.LogWarning("Viewport collider must equal the dimensions of the viewport (plus buffer). Setting appropriately.");
                 bc.size = viewportSize;
                 bc.center = Vector3.zero;
             }

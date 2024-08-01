@@ -1,14 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using RecyclerScrollRect;
-using UnityEngine;
+
 
 namespace RecyclerScrollRect
 {
     /// <summary>
     /// Data representing the name of a demo scene to navigate to.
     /// </summary>
-    public class DemoMenuData : MonoBehaviour, IRecyclerScrollRectData<string>
+    public class DemoMenuData : IRecyclerScrollRectData<string>
     {
         /// <summary>
         /// The unique key 
