@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace RecyclerScrollRect
 {
@@ -15,6 +16,15 @@ namespace RecyclerScrollRect
 
         [SerializeField]
         private GameObject _helpMenu = null;
+
+        [SerializeField]
+        private Text _demoTitle = null;
+
+        [SerializeField]
+        private Text _demoDescription = null;
+
+        [SerializeField]
+        private Text _buttonDesciptions = null;
         
         private static readonly Vector2 BotLeftRectValues = new(0f, 0f);
         private static readonly Vector2 TopLeftRectValues = new(0f, 1f);
@@ -27,6 +37,35 @@ namespace RecyclerScrollRect
         private void Awake()
         {
             SetToolbarPosition(ToolbarPosition.BotLeft);
+        }
+
+        /// <summary>
+        /// Within the help menu, sets the demo title
+        /// </summary>
+        public void SetHelpMenuDemoTitle(string title)
+        {
+            _demoTitle.text = title;
+        }
+
+        /// <summary>
+        /// Within the help menu, sets the demo description
+        /// </summary>
+        public void SetHelpMenuDemoDescription(string description)
+        {
+            _demoTitle.text = description;
+        }
+
+        /// <summary>
+        /// Within the help menu, sets the descriptions for the numbered buttons in the toolbar,
+        /// the index corresponding to the number on the button.
+        /// </summary>
+        public void SetHelpMenuDemoButtonDescriptions(string[] buttonDescriptions)
+        {
+            _buttonDesciptions.text = string.Empty;
+            for (int i = 0; i < buttonDescriptions.Length; i++)
+            {
+                _buttonDesciptions.text += $"{i}: {buttonDescriptions[i]}\n";
+            }
         }
 
         /// <summary>
