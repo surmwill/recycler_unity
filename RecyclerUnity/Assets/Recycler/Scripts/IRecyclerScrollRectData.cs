@@ -1,16 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Interface for data sent to the RecyclerScrollRect. Each piece of data must provide a unique key relative to the full list of data
+    /// Interface for the data bound to entries in the RecyclerScrollRect.
+    /// Each piece of data must provide a unique key relative to the full list of data.
     /// </summary>
-    public interface IRecyclerScrollRectData<TEntryDataKey>
+    public interface IRecyclerScrollRectData<out TEntryDataKey>
     {
         /// <summary>
-        /// A unique key identifying this piece of data
+        /// A unique key identifying the piece of data.
         /// </summary>
         TEntryDataKey Key { get; }
     }
