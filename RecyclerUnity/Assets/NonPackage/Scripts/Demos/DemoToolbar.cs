@@ -14,9 +14,6 @@ namespace RecyclerScrollRect
         private RectTransform _toolbarRootRectTransform = null;
 
         [SerializeField]
-        private GameObject[] _enableSecondRow = null;
-
-        [SerializeField]
         private GameObject _helpMenu = null;
 
         [SerializeField]
@@ -27,9 +24,6 @@ namespace RecyclerScrollRect
 
         [SerializeField]
         private Text _buttonDesciptions = null;
-
-        [SerializeField]
-        private bool _shouldEnableSecondRow = false;
 
         [SerializeField]
         private ButtonWithPointerDown[] _buttons = null;
@@ -200,17 +194,6 @@ namespace RecyclerScrollRect
                 (_toolbarRootRectTransform.anchorMin, _toolbarRootRectTransform.anchorMax) = (values, values);
                 _toolbarRootRectTransform.pivot = values;
             }
-        }
-
-        private void OnValidate()
-        {
-            Array.ForEach(_enableSecondRow ?? Array.Empty<GameObject>(), go =>
-            {
-                if (go != null)
-                {
-                    go.SetActive(_shouldEnableSecondRow);   
-                }
-            });
         }
 
         private enum ToolbarPosition

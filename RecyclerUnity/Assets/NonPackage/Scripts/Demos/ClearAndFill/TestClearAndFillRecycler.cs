@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -10,41 +8,42 @@ namespace RecyclerScrollRect
     /// <summary>
     /// Tests clearing and adding entries to a recycler, one-by-one
     /// </summary>
-    public class TestClearAndFillRecycler : MonoBehaviour
+    public class TestClearAndFillRecycler : TestRecycler<EmptyRecyclerData, string>
     {
         [SerializeField]
         private EmptyRecyclerScrollRect _recycler = null;
-        
-        private RecyclerValidityChecker<EmptyRecyclerData, string> _validityChecker;
 
-        private void Start()
-        {
-            _validityChecker = new RecyclerValidityChecker<EmptyRecyclerData, string>(_recycler);
-            _validityChecker.Bind();
-        }
+        protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _recycler;
 
-        private void OnDestroy()
+        protected override string DemoTitle => "Clear and fill demo";
+
+        protected override string DemoDescription => "Tests clearing entries and inserting them one-by-one.";
+
+        protected override string[] DemoButtonDescriptions => new[]
         {
-            _validityChecker.Unbind();
-        }
+            "0: Appends a new entry.",
+            "1: Deletes the first entry",
+            "2: Clears the entries",
+            "3: Resets the list to the beginning entries."
+        };
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.A))
+            if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
             {
                 _recycler.AppendEntries(new[] { new EmptyRecyclerData() });
             }
-            else if (Input.GetKeyDown(KeyCode.C))
+            else if ((Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(1)) && _recycler.DataForEntries.Count > 0)
+            {
+                _recycler.RemoveAtIndex(0);
+            }
+            else if (Input.GetKeyDown(KeyCode.C) || DemoToolbar.GetButtonDown(2))
             {
                 ClearAndCheck();
             }
-            else if (Input.GetKeyDown(KeyCode.R))
+            else if (Input.GetKeyDown(KeyCode.R) || DemoToolbar.GetButtonDown(3))
             {
                 _recycler.ResetToBeginning();
-            }
-            else if (Input.GetKeyDown(KeyCode.D))
-            {
-                _recycler.RemoveAtIndex(0);
             }
         }
 
