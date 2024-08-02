@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -15,8 +14,8 @@ namespace RecyclerScrollRect
         private RectTransform _toolbarRootRectTransform = null;
 
         [SerializeField]
-        private GameObject _toolbarSecondRow = null;
-        
+        private GameObject[] _enableSecondRow = null;
+
         [SerializeField]
         private GameObject _helpMenu = null;
 
@@ -30,10 +29,10 @@ namespace RecyclerScrollRect
         private Text _buttonDesciptions = null;
 
         [SerializeField]
-        private bool _enableSecondRowOfButtons = false;
+        private bool _shouldEnableSecondRow = false;
 
         [SerializeField]
-        private Button[] _buttons = null;
+        private ButtonWithPointerDown[] _buttons = null;
 
         private bool[] _isButtonDown = null;
 
@@ -57,7 +56,7 @@ namespace RecyclerScrollRect
             for (int i = 0; i < _buttons.Length; i++)
             {
                 int buttonIndex = i;
-                _buttons[i].onClick.AddListener(() => SetButtonDown(buttonIndex, true));
+                _buttons[i].OnPointerDownEvent.AddListener(() => SetButtonDown(buttonIndex, true));
             }
         }
 
@@ -71,7 +70,7 @@ namespace RecyclerScrollRect
 
         private void OnDestroy()
         {
-            Array.ForEach(_buttons, b => b.onClick.RemoveAllListeners());
+            Array.ForEach(_buttons, b => b.OnPointerDownEvent.RemoveAllListeners());
         }
 
         private void SetButtonDown(int buttonIndex, bool isDown)
@@ -205,7 +204,13 @@ namespace RecyclerScrollRect
 
         private void OnValidate()
         {
-            _toolbarSecondRow.SetActive(_enableSecondRowOfButtons);
+            Array.ForEach(_enableSecondRow ?? Array.Empty<GameObject>(), go =>
+            {
+                if (go != null)
+                {
+                    go.SetActive(_shouldEnableSecondRow);   
+                }
+            });
         }
 
         private enum ToolbarPosition
