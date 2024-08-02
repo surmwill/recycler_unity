@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace RecyclerScrollRect
@@ -9,7 +5,7 @@ namespace RecyclerScrollRect
    /// <summary>
    /// Demos appending entries to a Recycler. (The endcap will fetch and append more entries once we scroll to it)
    /// </summary>
-   public class TestAppendPrependRecycler : MonoBehaviour
+   public class TestAppendPrependRecycler : TestRecycler<EmptyRecyclerData, string>
    {
       [SerializeField]
       private EmptyRecyclerScrollRect _appendRecycler = null;
@@ -17,19 +13,18 @@ namespace RecyclerScrollRect
       private const int InitEntries = 30;
       private const int NumPrependEntries = 10;
 
-      private RecyclerValidityChecker<EmptyRecyclerData, string> _validityChecker;
+      protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _appendRecycler;
+      
+      protected override string DemoTitle { get; }
+      
+      protected override string DemoDescription { get; }
+      
+      protected override string[] DemoButtonDescriptions { get; }
 
-      private void Start()
+      protected override void Start()
       {
-         _validityChecker = new RecyclerValidityChecker<EmptyRecyclerData, string>(_appendRecycler);
-         _validityChecker.Bind();
-         
+         base.Start();
          _appendRecycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(InitEntries));
-      }
-
-      private void OnDestroy()
-      {
-         _validityChecker.Unbind();
       }
 
       private void Update()

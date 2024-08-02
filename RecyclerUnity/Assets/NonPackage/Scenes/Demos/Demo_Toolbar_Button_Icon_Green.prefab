@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2475492291012923773}
   - component: {fileID: 7019149829573609754}
   m_Layer: 0
-  m_Name: Demo_Toolbar_Button_Green
+  m_Name: Demo_Toolbar_Button_Icon_Green
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -186,7 +186,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 15e8268e39727a547a2deb92f7172c99, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 40f725a4dc40b7a42bfa5119ff79f1c1, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

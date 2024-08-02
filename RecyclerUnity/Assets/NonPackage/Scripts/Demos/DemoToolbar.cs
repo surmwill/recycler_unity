@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -13,8 +11,11 @@ namespace RecyclerScrollRect
     public class DemoToolbar : MonoBehaviour
     {
         [SerializeField]
-        private RectTransform _toolbarRectTransform = null;
+        private RectTransform _toolbarRootRectTransform = null;
 
+        [SerializeField]
+        private GameObject _toolbarSecondRow = null;
+        
         [SerializeField]
         private GameObject _helpMenu = null;
 
@@ -26,7 +27,15 @@ namespace RecyclerScrollRect
 
         [SerializeField]
         private Text _buttonDesciptions = null;
-        
+
+        [SerializeField]
+        private bool _enableSecondRowOfButtons = false;
+
+        [SerializeField]
+        private Button[] _buttons = null;
+
+        private bool[] _isButtonDown = null;
+
         private static readonly Vector2 BotLeftRectValues = new(0f, 0f);
         private static readonly Vector2 TopLeftRectValues = new(0f, 1f);
         private static readonly Vector2 TopRightRectValues = new(1f, 1f);
@@ -37,8 +46,44 @@ namespace RecyclerScrollRect
         
         private void Awake()
         {
+            _isButtonDown = new bool[_buttons.Length];
             HideHelpMenu();
             SetToolbarPosition(ToolbarPosition.BotLeft);
+        }
+
+        private void Start()
+        {
+            for (int i = 0; i < _buttons.Length; i++)
+            {
+                int buttonIndex = i;
+                _buttons[i].onClick.AddListener(() => SetButtonDown(buttonIndex, true));
+            }
+        }
+
+        private void LateUpdate()
+        {
+            for (int i = 0; i < _isButtonDown.Length; i++)
+            {
+                SetButtonDown(i, false);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            Array.ForEach(_buttons, b => b.onClick.RemoveAllListeners());
+        }
+
+        private void SetButtonDown(int buttonIndex, bool isDown)
+        {
+            _isButtonDown[buttonIndex] = isDown;
+        }
+
+        /// <summary>
+        /// Returns true if the button with the given number was pressed down this frame, similar to Input.GetKeyDown.
+        /// </summary>
+        public bool GetButtonDown(int buttonNum)
+        {
+            return _isButtonDown[buttonNum];
         }
 
         /// <summary>
@@ -152,9 +197,14 @@ namespace RecyclerScrollRect
 
             void SetRectTransformValues(Vector2 values)
             {
-                (_toolbarRectTransform.anchorMin, _toolbarRectTransform.anchorMax) = (values, values);
-                _toolbarRectTransform.pivot = values;
+                (_toolbarRootRectTransform.anchorMin, _toolbarRootRectTransform.anchorMax) = (values, values);
+                _toolbarRootRectTransform.pivot = values;
             }
+        }
+
+        private void OnValidate()
+        {
+            _toolbarSecondRow.SetActive(_enableSecondRowOfButtons);
         }
 
         private enum ToolbarPosition
