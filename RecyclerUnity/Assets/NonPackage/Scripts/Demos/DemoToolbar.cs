@@ -109,7 +109,7 @@ namespace RecyclerScrollRect
         public void SetHelpMenuDemoButtonDescriptions(string[] buttonDescriptions)
         {
             _buttonDesciptions.text = string.Empty;
-            for (int i = 0; i < buttonDescriptions.Length; i++)
+            for (int i = 0; i < buttonDescriptions?.Length; i++)
             {
                 _buttonDesciptions.text += $"{buttonDescriptions[i]}\n";
             }

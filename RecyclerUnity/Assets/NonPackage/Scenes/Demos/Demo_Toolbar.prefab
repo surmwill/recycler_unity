@@ -1483,6 +1483,34 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rotate
       objectReference: {fileID: 0}
+    - target: {fileID: 8407879430647987745, guid: 92acb18ce1ba9f04f954dd3780951407, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407879430647987745, guid: 92acb18ce1ba9f04f954dd3780951407, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407879430647987745, guid: 92acb18ce1ba9f04f954dd3780951407, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 8590098935800207591}
+    - target: {fileID: 8407879430647987745, guid: 92acb18ce1ba9f04f954dd3780951407, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407879430647987745, guid: 92acb18ce1ba9f04f954dd3780951407, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: RotateToolbarPositionClockwise
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407879430647987745, guid: 92acb18ce1ba9f04f954dd3780951407, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: RecyclerScrollRect.DemoToolbar, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8407879430647987745, guid: 92acb18ce1ba9f04f954dd3780951407, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1921,6 +1949,34 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 65e79ddca996d244f9d5ea7c1a120b47, type: 3}
+    - target: {fileID: 7192696973404871859, guid: bef3485b40175dd43b413bb33318787f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192696973404871859, guid: bef3485b40175dd43b413bb33318787f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192696973404871859, guid: bef3485b40175dd43b413bb33318787f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 8590098935800207591}
+    - target: {fileID: 7192696973404871859, guid: bef3485b40175dd43b413bb33318787f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192696973404871859, guid: bef3485b40175dd43b413bb33318787f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ShowHelpMenu
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192696973404871859, guid: bef3485b40175dd43b413bb33318787f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: RecyclerScrollRect.DemoToolbar, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192696973404871859, guid: bef3485b40175dd43b413bb33318787f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 8509087050203376520, guid: bef3485b40175dd43b413bb33318787f, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1

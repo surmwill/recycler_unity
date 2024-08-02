@@ -8,7 +8,7 @@ namespace RecyclerScrollRect
     /// <summary>
     /// Tests a recycler working with auto-sized entries
     /// </summary>
-    public class TestAutoSizeRecycler : MonoBehaviour
+    public class TestAutoSizeRecycler : TestRecycler<AutoSizeData, string>
     {
         [SerializeField]
         private AutoSizeRecycler _autoSizeRecycler = null;
@@ -18,20 +18,20 @@ namespace RecyclerScrollRect
         private const int MinNumLines = 1;
         private const int MaxNumLines = 6;
         
-        private RecyclerValidityChecker<AutoSizeData, string> _validityChecker;
+        protected override RecyclerScrollRect<AutoSizeData, string> ValidateRecycler => _autoSizeRecycler;
 
-        private void Start()
+        protected override string DemoTitle => "Auto-size Demo";
+
+        protected override string DemoDescription => "Tests auto-sized entries. Each entry is a different size.";
+
+        protected override string[] DemoButtonDescriptions => null;
+        
+
+        protected override void Start()
         {
-            _validityChecker = new RecyclerValidityChecker<AutoSizeData, string>(_autoSizeRecycler);
-            _validityChecker.Bind();
-            
+            base.Start();
             _autoSizeRecycler.AppendEntries(Enumerable.Range(0, NumEntries)
                 .Select(_ => new AutoSizeData(Random.Range(MinNumLines, MaxNumLines + 1))));
-        }
-
-        private void OnDestroy()
-        {
-            _validityChecker.Unbind();
         }
 
         private void OnValidate()

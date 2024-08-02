@@ -16,10 +16,10 @@ namespace RecyclerScrollRect
 
       protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _appendRecycler;
 
-      protected override string DemoTitle => "Append and Prepend demo";
+      protected override string DemoTitle => "Append and Prepend Demo";
       
-      protected override string DemoDescription => "Demos appending and prepending entries to a Recycler.\n" +
-                                                   "(The endcap will fetch and append more entries once we scroll to it.)";
+      protected override string DemoDescription => "Tests Appending and prepending entries to the Recycler.\n" +
+                                                   "The endcap appends more entries, whereas the button prepends.";
 
       protected override string[] DemoButtonDescriptions => new [] { "0: Prepends entries." };
 
