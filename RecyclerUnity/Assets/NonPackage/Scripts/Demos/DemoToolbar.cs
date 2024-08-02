@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -111,7 +112,7 @@ namespace RecyclerScrollRect
             _buttonDesciptions.text = string.Empty;
             for (int i = 0; i < buttonDescriptions.Length; i++)
             {
-                _buttonDesciptions.text += $"{i}: {buttonDescriptions[i]}\n";
+                _buttonDesciptions.text += $"{buttonDescriptions[i]}\n";
             }
         }
 

@@ -3,7 +3,8 @@ using UnityEngine;
 namespace RecyclerScrollRect
 {
    /// <summary>
-   /// Demos appending entries to a Recycler. (The endcap will fetch and append more entries once we scroll to it)
+   /// Demos appending and prepending entries to a Recycler.
+   /// (The endcap will fetch and append more entries once we scroll to it.)
    /// </summary>
    public class TestAppendPrependRecycler : TestRecycler<EmptyRecyclerData, string>
    {
@@ -14,12 +15,13 @@ namespace RecyclerScrollRect
       private const int NumPrependEntries = 10;
 
       protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _appendRecycler;
+
+      protected override string DemoTitle => "Append and Prepend demo";
       
-      protected override string DemoTitle { get; }
-      
-      protected override string DemoDescription { get; }
-      
-      protected override string[] DemoButtonDescriptions { get; }
+      protected override string DemoDescription => "Demos appending and prepending entries to a Recycler.\n" +
+                                                   "(The endcap will fetch and append more entries once we scroll to it.)";
+
+      protected override string[] DemoButtonDescriptions => new [] { "0: Prepends entries." };
 
       protected override void Start()
       {
@@ -29,7 +31,7 @@ namespace RecyclerScrollRect
 
       private void Update()
       {
-         if (Input.GetKeyDown(KeyCode.A))
+         if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
          {
             _appendRecycler.PrependEntries(EmptyRecyclerData.GenerateEmptyData(NumPrependEntries));
          }
