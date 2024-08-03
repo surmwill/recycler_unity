@@ -17,7 +17,6 @@ namespace RecyclerScrollRect
         private const string EndcapParentName = "Endcap";
 
         private RectTransform _lastContent;
-        private RecyclerPosition? _lastAppendTo;
         private (bool, bool)? _lastOrientation;
         private MovementType? _lastMovementType;
 
@@ -76,14 +75,6 @@ namespace RecyclerScrollRect
                 // Default have the entries under their own canvas as they're constantly moving and dirtying themselves, but the user can change this
                 content.gameObject.AddComponent<Canvas>();
                 content.gameObject.AddComponent<GraphicRaycaster>();
-            }
-
-            // When appending downwards by default we start at the top, and vice-versa
-            _lastAppendTo ??= _appendTo;
-            if (_lastAppendTo != _appendTo)
-            {
-                content.pivot = content.pivot.WithY(_appendTo == RecyclerPosition.Bot ? 1 : 0);
-                _lastAppendTo = _appendTo;
             }
 
             // Create a default pool

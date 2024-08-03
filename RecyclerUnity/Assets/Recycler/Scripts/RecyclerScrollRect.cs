@@ -143,7 +143,7 @@ namespace RecyclerScrollRect
         private RecyclerScrollRectActiveEntriesWindow _activeEntriesWindow;
 
         private DrivenRectTransformTracker _tracker;
-        private Vector2 _nonFilledScrollRectPivot;
+        private Vector2 _initPivot;
 
         private Coroutine _scrollToIndexCoroutine;
         private int? _currScrollingToIndex;
@@ -174,9 +174,6 @@ namespace RecyclerScrollRect
                 Application.targetFrameRate = 60;
             }
 
-            // While non-fullscreen, the pivot decides how the content gets aligned in the viewport
-            _nonFilledScrollRectPivot = content.pivot;
-
             // Keeps track of what indices are visible, and subsequently which indices are cached
             _activeEntriesWindow = new RecyclerScrollRectActiveEntriesWindow(_numCachedAtEachEnd);
 
@@ -192,6 +189,9 @@ namespace RecyclerScrollRect
 
             // Ensure content's RectTransform is set up correctly
             SetContentTracker();
+            
+            // Our pivot moves around once we have > full-screen's worth of content, but should be reset when we have <= 
+            _initPivot = content.pivot;
 
             // Cache the endcap's layout behaviours if there are any. These will be disabled when not in use for performance reasons.
             if (_endcap != null)
@@ -379,7 +379,6 @@ namespace RecyclerScrollRect
         {
             for (int i = index + count - 1; i >= index; i--)
             {
-                Debug.Log("REMOVING " + i);
                 RemoveAtIndex(i, fixEntries);
             }
         }
@@ -915,6 +914,12 @@ namespace RecyclerScrollRect
 
             // Stop auto-scrolling to an index
             StopScrollToIndexCoroutine();
+            
+            // Clear the data for the entries
+            _dataForEntries.Clear();
+
+            // Clear the keys for all the data
+            _entryKeyToCurrentIndex.Clear();
 
             // Recycle all the entries
             foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _activeEntries.Values.ToList())
@@ -936,17 +941,11 @@ namespace RecyclerScrollRect
                 RecycleEndcap();
             }
 
-            // Clear the data for the entries
-            _dataForEntries.Clear();
-
-            // Clear the keys for all the data
-            _entryKeyToCurrentIndex.Clear();
-
             // Reset our window back to one with no entries
             _activeEntriesWindow.Reset();
 
             // Reset our pivot to whatever its initial value was
-            content.pivot = _nonFilledScrollRectPivot;
+            content.pivot = _initPivot;
         }
 
         private void StopMovementAndDrag()
@@ -1160,41 +1159,50 @@ namespace RecyclerScrollRect
             // Initial state
             Vector2 initPivot = content.pivot;
             float initY = content.anchoredPosition.y;
-            bool preResizeIsScrollable = this.IsScrollable();
-
-            if (preResizeIsScrollable)
-            {
-                content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f : fixEntries == FixEntries.Above ? 1f : 0.5f));
-            }
+            content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f : fixEntries == FixEntries.Above ? 1f : 0.5f));
             LayoutRebuilder.ForceRebuildLayoutImmediate(content);
 
-            // Non-scrollable or scrollable -> non-scrollable: ScrollRects act differently if there's not enough content to scroll through in the first place
-            bool postResizeIsScrollable = this.IsScrollable();
-            if (!postResizeIsScrollable)
+            bool isScrollable = this.IsScrollable();
+            bool isEndcapActive = _endcap != null && _endcap.gameObject.activeSelf;
+            bool hasFullContent = content.childCount == DataForEntries.Count + (isEndcapActive ? 1 : 0);
+            
+            if (!isScrollable && hasFullContent)
             {
-                // With < fullscreen worth of content, the pivot controls where in the viewport the content is centered. Reset it to whatever it was on initialization
-                content.pivot = _nonFilledScrollRectPivot;
-                
-                // With < fullscreen worth of content to start with, the content centering is not immediate, but later in the lifecycle.
-                // Setting the normalized position makes it immediate.
-                normalizedPosition = normalizedPosition.WithY(0f);
-
-                // If we haven't filled up the viewport yet, there's no need to preserve a current scroll (preventing jumps) because we can't scroll in the first place
+                content.pivot = _initPivot;
+                normalizedPosition = normalizedPosition.WithY(1f);
                 return;
             }
 
-            // Non-scrollable -> scrollable: start scrolling from the first entry
-            if (postResizeIsScrollable && !preResizeIsScrollable)
+            bool hasFirstEntry = HasEntryWithIndex(0);
+            bool hasLastEntry = HasEntryWithIndex(DataForEntries.Count - 1) || isEndcapActive;
+            
+            if (!isScrollable)
             {
-                normalizedPosition = normalizedPosition.WithY(IsZerothEntryAtTop ? 1f : 0f);
-                return;
+                if (hasFirstEntry)
+                {
+                    normalizedPosition = normalizedPosition.WithY(IsZerothEntryAtTop ? 1f : 0f);
+                }
+                else if (hasLastEntry)
+                {
+                    normalizedPosition = normalizedPosition.WithY(IsZerothEntryAtTop ? 0f : 1f);
+                }
             }
 
             // Scrollable -> scrollable: maintain our current scroll, preventing jumps, by moving the anchor equal to the size change
-            content.SetPivotWithoutMoving(initPivot);
-            float diffY = content.anchoredPosition.y - initY;
-            content.SetPivotWithoutMoving(content.pivot + Vector2.up * -diffY / content.rect.height);
+            float contentHeight = content.rect.height;
+            if (contentHeight > 0)
+            {
+                content.SetPivotWithoutMoving(initPivot);
+                float diffY = content.anchoredPosition.y - initY;
+                content.SetPivotWithoutMoving(content.pivot + Vector2.up * -diffY / contentHeight);   
+            }
+
+            bool HasEntryWithIndex(int index)
+            {
+                return content.Children().Any(c => c.gameObject.name == index.ToString());
+            }
         }
+
 
         /// <summary>
         /// Scrolls to an entry at a given index. The entry doesn't need to be on screen at the time of the call.
@@ -1482,9 +1490,10 @@ namespace RecyclerScrollRect
 
         private void SetContentTracker()
         {
-            _tracker.Add(this, content, DrivenTransformProperties.AnchorMin | DrivenTransformProperties.AnchorMax);
-            content.anchorMin = new Vector2(0f, 0.5f);
-            content.anchorMax = new Vector2(1f, 0.5f);
+            _tracker.Add(this, content, DrivenTransformProperties.AnchorMin | DrivenTransformProperties.AnchorMax | DrivenTransformProperties.Pivot);
+            content.anchorMin = new Vector2(0f, IsZerothEntryAtTop ? 1f : 0f);
+            content.anchorMax = new Vector2(1f, IsZerothEntryAtTop ? 1f: 0f);
+            content.pivot = new Vector2(0.5f, IsZerothEntryAtTop ? 1f : 0f);
         }
 
         private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)

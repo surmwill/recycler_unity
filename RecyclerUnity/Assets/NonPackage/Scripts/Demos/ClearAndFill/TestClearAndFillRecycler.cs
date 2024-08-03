@@ -58,7 +58,7 @@ namespace RecyclerScrollRect
             
             int? _currScrollingToIndex = null;
             Coroutine _scrollToIndexCoroutine = null;
-            Vector2 _nonFilledScrollRectPivot = default;
+            Vector2 _initPivot = default;
             
             _recycledEntries = GetRecyclerPrivateFieldValue<RecycledEntries<EmptyRecyclerData, string>>(nameof(_recycledEntries));
             _unboundEntries = GetRecyclerPrivateFieldValue<Queue<RecyclerScrollRectEntry<EmptyRecyclerData, string>>>(nameof(_unboundEntries));
@@ -68,7 +68,7 @@ namespace RecyclerScrollRect
             
             _currScrollingToIndex = GetRecyclerPrivateFieldValue<int?>(nameof(_currScrollingToIndex));
             _scrollToIndexCoroutine = GetRecyclerPrivateFieldValue<Coroutine>(nameof(_scrollToIndexCoroutine));
-            _nonFilledScrollRectPivot = GetRecyclerPrivateFieldValue<Vector2>(nameof(_nonFilledScrollRectPivot));
+            _initPivot = GetRecyclerPrivateFieldValue<Vector2>(nameof(_initPivot));
 
             // Upon clearing, all entries should return to the pool unbound. We expect (and will check for) this amount of unbound entries
             int numTotalBoundEntries = _recycler.ActiveEntries.Count + _recycledEntries.Entries.Count;
@@ -124,7 +124,7 @@ namespace RecyclerScrollRect
                 throw new DataException("The data has been cleared. We should not be auto-scrolling to an index.");
             }
 
-            if (_recycler.content.pivot != _nonFilledScrollRectPivot)
+            if (_recycler.content.pivot != _initPivot)
             {
                 throw new DataException("After clearing, the pivot should be reset to whatever it was on initialization.");
             }
