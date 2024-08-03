@@ -379,7 +379,8 @@ namespace RecyclerScrollRect
         {
             for (int i = index + count - 1; i >= index; i--)
             {
-                RemoveAtIndex(index, fixEntries);
+                Debug.Log("REMOVING " + i);
+                RemoveAtIndex(i, fixEntries);
             }
         }
 

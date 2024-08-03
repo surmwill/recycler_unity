@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/NonPackage/Scenes/Demos/DemoMenu/DemoMenu.unity
+    path: Assets/NonPackage/Scenes/DemoMenu/DemoMenu.unity
     guid: 46cdddd8a89a02d479ab0cd5ae990f1a
   - enabled: 1
     path: Assets/NonPackage/Scenes/Demos/AutoSize/Demo_AutoSize.unity

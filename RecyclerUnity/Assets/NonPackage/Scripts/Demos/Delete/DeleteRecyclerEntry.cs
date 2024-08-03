@@ -20,9 +20,10 @@ namespace RecyclerScrollRect
         protected override void OnSentToRecycling()
         {
             _deleteSequence?.Kill(true);
+            
         }
 
-        public void Delete()
+        public void ShrinkAndDelete()
         {
             if (_deleteSequence != null)
             {

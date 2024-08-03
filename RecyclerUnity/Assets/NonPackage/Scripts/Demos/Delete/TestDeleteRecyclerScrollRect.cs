@@ -1,55 +1,72 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Demos deleting a couple entries in the recycler
+    /// Demos deleting a couple entries in the recycler.
     /// </summary>
-    public class TestDeleteRecyclerScrollRect : MonoBehaviour
+    public class TestDeleteRecyclerScrollRect : TestRecycler<EmptyRecyclerData, string>
     {
         [SerializeField]
-        private DeleteRecyclerScrollRect _deleteRecyclerScrollRect = null;
+        private DeleteRecyclerScrollRect _deleteRecycler = null;
 
-        private const int NumEntries = 50;
+        private const int InitNumEntries = 50;
 
-        private const int StartIndex = 15;
-        private static readonly int[] IndicesToRemove = { StartIndex, StartIndex + 2, StartIndex + 3 };
-        
-        private RecyclerValidityChecker<EmptyRecyclerData, string> _validityChecker;
+        private const int DeleteAtIndex = 15;
+        private const int NumEntriesToDelete = 2;
 
-        private void Start()
+        protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _deleteRecycler;
+
+        protected override string DemoTitle => "Deletion Demo";
+
+        protected override string DemoDescription => $"Tests deletion of entries.";
+
+        protected override string[] DemoButtonDescriptions => new[]
         {
-            _validityChecker = new RecyclerValidityChecker<EmptyRecyclerData, string>(_deleteRecyclerScrollRect);
-            _validityChecker.Bind();
-            
-            _deleteRecyclerScrollRect.AppendEntries(EmptyRecyclerData.GenerateEmptyData(NumEntries));
-        }
+            $"0: Shrinks and deletes {NumEntriesToDelete} starting at {DeleteAtIndex}.",
+            $"1: Batch deletes the last {NumEntriesToDelete} instantly."
+        };
 
-        private void OnDestroy()
+        protected override void Start()
         {
-            _validityChecker.Unbind();
+            base.Start();
+            _deleteRecycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(InitNumEntries));
         }
 
         private void Update()
         {
-            IReadOnlyDictionary<int, RecyclerScrollRectEntry<EmptyRecyclerData, string>> activeEntries = _deleteRecyclerScrollRect.ActiveEntries;
-
-            if (Input.GetKeyDown(KeyCode.A) && Array.TrueForAll(IndicesToRemove, index => activeEntries.ContainsKey(index)))
+            // Animate delete
+            if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
             {
-                foreach (int index in IndicesToRemove)
+                string[] deleteKeys = Enumerable.Range(DeleteAtIndex, NumEntriesToDelete).Select(i => _deleteRecycler.GetKeyForCurrentIndex(i)).ToArray();
+                foreach (string key in deleteKeys)
                 {
-                    ((DeleteRecyclerEntry) activeEntries[index]).Delete();
+                    if (_deleteRecycler.ActiveEntries.TryGetValue(_deleteRecycler.GetCurrentIndexForKey(key), out RecyclerScrollRectEntry<EmptyRecyclerData, string> entry))
+                    {
+                        ((DeleteRecyclerEntry) entry).ShrinkAndDelete();
+                    }
+                    else
+                    {
+                        _deleteRecycler.RemoveAtKey(key);
+                    }
                 }
+            }
+            // Immediate batch delete
+            else if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(1))
+            {
+                _deleteRecycler.RemoveRangeAtIndex(
+                    _deleteRecycler.DataForEntries.Count - NumEntriesToDelete, NumEntriesToDelete, FixEntries.Below);
             }
         }
 
         private void OnValidate()
         {
-            if (_deleteRecyclerScrollRect == null)
+            if (_deleteRecycler == null)
             {
-                _deleteRecyclerScrollRect = GetComponent<DeleteRecyclerScrollRect>();
+                _deleteRecycler = GetComponent<DeleteRecyclerScrollRect>();
             }
         }
     }
