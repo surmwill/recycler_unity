@@ -16,7 +16,7 @@ namespace RecyclerScrollRect
         private const int InitNumEntries = 50;
 
         private const int DeleteAtIndex = 15;
-        private const int NumEntriesToDelete = 2;
+        private const int NumEntriesToDelete = 3;
 
         protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _deleteRecycler;
 
