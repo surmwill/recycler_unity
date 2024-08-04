@@ -1434,7 +1434,7 @@ RectTransform:
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 0}
 --- !u!114 &1007922471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2230,7 +2230,6 @@ GameObject:
   - component: {fileID: 2044499315}
   - component: {fileID: 2044499316}
   - component: {fileID: 2044499318}
-  - component: {fileID: 2044499317}
   m_Layer: 0
   m_Name: DemoMenuRecycler
   m_TagString: Untagged
@@ -2274,7 +2273,6 @@ MonoBehaviour:
   _demoMenuRecycler: {fileID: 2044499318}
   _sceneNames:
   - Demo_AutoSize
-  - Demo_Creation
   - Demo_AppendPrepend
   - Demo_ClearAndFill
   - Demo_Delete
@@ -2282,27 +2280,6 @@ MonoBehaviour:
   - Demo_InsertAndResize
   - Demo_ScrollToIndex
   - Demo_StateChanges
---- !u!65 &2044499317
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2044499314}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1284, y: 2805.78, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2044499318
 MonoBehaviour:
   m_ObjectHideFlags: 0

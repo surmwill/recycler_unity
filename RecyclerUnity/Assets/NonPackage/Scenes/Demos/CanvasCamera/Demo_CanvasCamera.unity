@@ -2681,7 +2681,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2059316594}
-  - component: {fileID: 2059316596}
   - component: {fileID: 2059316595}
   - component: {fileID: 2059316597}
   m_Layer: 0
@@ -2753,27 +2752,6 @@ MonoBehaviour:
   _endcapParent: {fileID: 1721138673}
   _endcap: {fileID: 439450078}
   _setTargetFrameRateTo60: 1
---- !u!65 &2059316596
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2059316593}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1284, y: 2805.78, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2059316597
 MonoBehaviour:
   m_ObjectHideFlags: 0
