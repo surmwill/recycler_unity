@@ -58,6 +58,9 @@ namespace RecyclerScrollRect
             if (viewport == null)
             {
                 viewport = (RectTransform) transform;
+                
+                // A RectMask will only render things in the viewport, increasing performance, but the user can change this
+                viewport.gameObject.AddComponent<RectMask2D>();
             }
 
             // Create default content (the root of the list of entries)
