@@ -557,6 +557,7 @@ GameObject:
   - component: {fileID: 574308530}
   - component: {fileID: 574308531}
   - component: {fileID: 574308532}
+  - component: {fileID: 574308533}
   m_Layer: 0
   m_Name: ScrollToIndexRecycler
   m_TagString: Untagged
@@ -638,6 +639,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _recycler: {fileID: 574308531}
+--- !u!114 &574308533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 574308529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding: {x: 0, y: 0, z: 0, w: 0}
+  m_Softness: {x: 0, y: 0}
 --- !u!1001 &635094913
 PrefabInstance:
   m_ObjectHideFlags: 0

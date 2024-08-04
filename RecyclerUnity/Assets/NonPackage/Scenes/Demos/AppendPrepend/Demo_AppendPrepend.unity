@@ -2899,6 +2899,7 @@ GameObject:
   - component: {fileID: 2059316594}
   - component: {fileID: 2059316596}
   - component: {fileID: 2059316595}
+  - component: {fileID: 2059316597}
   m_Layer: 0
   m_Name: AppendPrependRecycler
   m_TagString: Untagged
@@ -2982,6 +2983,20 @@ MonoBehaviour:
   _endcapParent: {fileID: 497006705}
   _endcap: {fileID: 1158663785}
   _setTargetFrameRateTo60: 1
+--- !u!114 &2059316597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059316593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding: {x: 0, y: 0, z: 0, w: 0}
+  m_Softness: {x: 0, y: 0}
 --- !u!1 &2110532038
 GameObject:
   m_ObjectHideFlags: 0
