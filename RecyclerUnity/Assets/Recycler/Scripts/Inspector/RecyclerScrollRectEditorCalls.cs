@@ -160,36 +160,6 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Ensure we have a collider with the correct values to detect when things are on/offscreen
-        /// </summary>
-        private void InspectorSetViewportColliderDimensions()
-        {
-            if (viewport == null)
-            {
-                return;
-            }
-
-            // Set the collider to the size of the viewport with a minor buffer
-            float viewportHeight = viewport.rect.height;
-            Vector3 viewportSize = new Vector3(viewport.rect.width, viewportHeight + (viewportHeight * 0.01f), 1f);
-            
-            BoxCollider bc = viewport.GetComponent<BoxCollider>();
-            if (bc == null)
-            {
-                bc = viewport.gameObject.AddComponent<BoxCollider>();
-                bc.size = viewportSize;
-                bc.isTrigger = true;
-            }
-
-            if (bc.size != viewportSize || bc.center != Vector3.zero)
-            {
-                Debug.LogWarning("Viewport collider must equal the dimensions of the viewport (plus buffer). Setting appropriately.");
-                bc.size = viewportSize;
-                bc.center = Vector3.zero;
-            }
-        }
-
-        /// <summary>
         /// Ensure the root of all the entries has the necessary components with the necessary fields checked
         /// </summary>
         private void InspectorCheckRootEntriesComponents()

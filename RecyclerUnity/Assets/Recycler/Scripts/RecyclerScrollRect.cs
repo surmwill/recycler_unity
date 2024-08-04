@@ -150,8 +150,7 @@ namespace RecyclerScrollRect
         private Coroutine _scrollToIndexCoroutine;
         private int? _currScrollingToIndex;
         private int _initFrameRate;
-
-        private BoxCollider _viewportCollider;
+        
         private Canvas _rootCanvas;
         
         private readonly LinkedList<int> _toRecycleEntries = new();
@@ -194,9 +193,6 @@ namespace RecyclerScrollRect
             {
                 _unboundEntries.Enqueue(entry);
             }
-
-            // Collider to detect what is on/offscreen
-            _viewportCollider = viewport.GetComponent<BoxCollider>();
 
             // Ensure content's RectTransform is set up correctly
             SetContentTracker();
@@ -501,7 +497,6 @@ namespace RecyclerScrollRect
             {
                 // Ensure our hierarchy with its components are set up properly
                 #if UNITY_EDITOR
-                InspectorSetViewportColliderDimensions();
                 InspectorCheckRootEntriesComponents();
                 #endif
                 
