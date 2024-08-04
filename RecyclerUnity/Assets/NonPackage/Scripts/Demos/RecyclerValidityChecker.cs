@@ -98,7 +98,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
             }
 
             // Entries that are visible in the viewport should be reported as visible
-            if (IsInViewport(entry.RectTransform, _recyclerViewportCollider))
+            if (IsInViewport(entry.RectTransform, _recycler.viewport))
             {
                 if (!visibleIndices.Remove(entry.Index))
                 {
@@ -338,7 +338,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
                 // Visible
                 case RecyclerScrollRectContentState.ActiveVisible:
                 {
-                    if (!IsInViewport(entry.RectTransform, _recyclerViewportCollider))
+                    if (!IsInViewport(entry.RectTransform, _recycler.viewport))
                     {
                         Debug.LogError($"Entry {entry.Index} state says it's visible but its position in the list does not reflect this.");
                         Debug.Break();
@@ -418,7 +418,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
             // Visible
             case RecyclerScrollRectContentState.ActiveVisible:
             {
-                if (!IsInViewport(endcap.RectTransform, _recyclerViewportCollider))
+                if (!IsInViewport(endcap.RectTransform, _recycler.viewport))
                 {
                     Debug.LogError("The endcap's state says it's visible but its position in the list does not reflect this.");
                     Debug.Break();
@@ -462,7 +462,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
         }
         
         // Check that the state of the endcap reflects its actual position in the list
-        if (endcap.State == RecyclerScrollRectContentState.ActiveVisible && !IsInViewport(endcap.RectTransform, _recyclerViewportCollider))
+        if (endcap.State == RecyclerScrollRectContentState.ActiveVisible && !IsInViewport(endcap.RectTransform, _recycler.viewport))
         {
             Debug.LogError("The endcap's state says it's visible but its position in the list does not reflect this.");
             Debug.Break();

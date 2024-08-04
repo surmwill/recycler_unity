@@ -13,8 +13,20 @@ namespace RecyclerScrollRect
 
         private Sequence _deleteSequence;
 
+        private bool _resized = false;
+
         protected override void OnBindNewData(EmptyRecyclerData _)
         {
+            if (!_resized && Index == TestDeleteRecyclerScrollRect.DeleteAtIndex)
+            {
+                RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(3500f);
+                _resized = true;
+            }
+            else
+            {
+                RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(250f);
+            }
+            
         }
 
         protected override void OnSentToRecycling()

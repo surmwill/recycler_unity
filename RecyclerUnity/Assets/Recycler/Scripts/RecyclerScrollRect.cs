@@ -752,7 +752,7 @@ namespace RecyclerScrollRect
         {
             foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _activeEntries.Values)
             {
-                bool isVisible = IsInViewport(entry.RectTransform, _viewportCollider);
+                bool isVisible = IsInViewport(entry.RectTransform, viewport);
                 if (isVisible)
                 {
                     EntryIsVisible(entry);
@@ -896,7 +896,7 @@ namespace RecyclerScrollRect
                 return RecyclerScrollRectContentState.InactiveInPool;
             }
 
-            if (IsInViewport(_endcap.RectTransform, _viewportCollider))
+            if (IsInViewport(_endcap.RectTransform, viewport))
             {
                 return RecyclerScrollRectContentState.ActiveVisible;
             }
@@ -1063,7 +1063,7 @@ namespace RecyclerScrollRect
         private RectTransform RemoveFromContent(RectTransform child, FixEntries fixEntries = FixEntries.Below)
         {
             // If the child is not visible then shrink in the direction which keeps it off screen and preserves the currently visible entries
-            if (!IsInViewport(child, _viewportCollider))
+            if (!IsInViewport(child, viewport))
             {
                 fixEntries = IsAboveViewportCenter(child, viewport) ? FixEntries.Below : FixEntries.Above;
             }
@@ -1081,7 +1081,7 @@ namespace RecyclerScrollRect
         private void RecalculateContentChildSize(RectTransform contentChild, Behaviour[] layoutBehaviours, FixEntries fixEntries = FixEntries.Below)
         {
             // If the child is not visible then grow in the direction which keeps it off screen and preserves the currently visible entries
-            if (!IsInViewport(contentChild, _viewportCollider))
+            if (!IsInViewport(contentChild, viewport))
             {
                 fixEntries = IsAboveViewportCenter(contentChild, viewport) ? FixEntries.Below : FixEntries.Above;
             }
