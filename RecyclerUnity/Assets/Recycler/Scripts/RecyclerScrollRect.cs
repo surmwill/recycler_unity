@@ -126,6 +126,8 @@ namespace RecyclerScrollRect
 
         private bool IsZerothEntryAtTop => _appendTo == RecyclerPosition.Bot;
 
+        private bool IsEndcapActive => _endcap != null && _endcap.gameObject.activeSelf;
+
         private RecyclerPosition StartCachePosition => IsZerothEntryAtTop ? RecyclerPosition.Top : RecyclerPosition.Bot;
 
         private RecyclerPosition EndCachePosition => IsZerothEntryAtTop ? RecyclerPosition.Bot : RecyclerPosition.Top;
@@ -231,10 +233,9 @@ namespace RecyclerScrollRect
             int siblingIndex = IsZerothEntryAtTop ? 0 : content.childCount;
             foreach (Transform entryTransform in content)
             {
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry = entryTransform.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
-                if (activeEntry != null && activeEntry.Index == index - 1)
+                if (entryTransform.gameObject.name == (index - 1).ToString())
                 {
-                    siblingIndex = activeEntry.transform.GetSiblingIndex() + (IsZerothEntryAtTop ? 1 : 0);
+                    siblingIndex = entryTransform.GetSiblingIndex() + (IsZerothEntryAtTop ? 1 : 0);
                 }
             }
 
@@ -576,28 +577,26 @@ namespace RecyclerScrollRect
 
                 // Create new entries in the start cache
                 bool isStartCacheAtTop = StartCachePosition == RecyclerPosition.Top;
-                int siblingIndexOffset = GetNumConsecutiveNonEntries(isStartCacheAtTop);
 
                 current = _newCachedStartEntries.First;
                 while (current != null)
                 {
                     _newCachedStartEntries.RemoveFirst();
                     CreateAndAddEntry(current.Value,
-                        isStartCacheAtTop ? siblingIndexOffset : content.childCount - siblingIndexOffset,
+                        isStartCacheAtTop ? 0 : content.childCount,
                         isStartCacheAtTop ? FixEntries.Below : FixEntries.Above);
                     current = _newCachedStartEntries.First;
                 }
 
                 // Create new entries in the end cache
                 bool isEndCacheAtTop = EndCachePosition == RecyclerPosition.Top;
-                siblingIndexOffset = GetNumConsecutiveNonEntries(isEndCacheAtTop);
 
                 current = _newCachedEndEntries.First;
                 while (current != null)
                 {
                     _newCachedEndEntries.RemoveFirst();
                     CreateAndAddEntry(current.Value,
-                        isEndCacheAtTop ? siblingIndexOffset : content.childCount - siblingIndexOffset,
+                        isEndCacheAtTop ? 0 + Convert.ToInt32(IsEndcapActive) : content.childCount - Convert.ToInt32(IsEndcapActive),
                         isEndCacheAtTop ? FixEntries.Below : FixEntries.Above);
                     current = _newCachedEndEntries.First;
                 }
@@ -631,46 +630,6 @@ namespace RecyclerScrollRect
             if (_endcap != null)
             {
                 _endcap.SetState(GetStateOfEndcap());
-            }
-
-            // Returns the number of consecutive non-entries from the top or bottom of the entry list.
-            // Used to insert entries in their rightful sibling index, past any endcaps.
-            int GetNumConsecutiveNonEntries(bool fromTop)
-            {
-                int numConsecutiveNonEntries = 0;
-
-                // Find index of the first entry from the top
-                if (fromTop)
-                {
-                    for (int i = 0; i < content.childCount; i++)
-                    {
-                        if (content.GetChild(i).GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>() == null)
-                        {
-                            numConsecutiveNonEntries++;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-                // Find the index of the first entry from the bottom
-                else
-                {
-                    for (int i = content.childCount - 1; i >= 0; i--)
-                    {
-                        if (content.GetChild(i).GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>() == null)
-                        {
-                            numConsecutiveNonEntries++;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-
-                return numConsecutiveNonEntries;
             }
         }
 
@@ -936,7 +895,7 @@ namespace RecyclerScrollRect
             }
 
             // Recycle the end-cap if it exists
-            if (_endcap != null && _endcap.gameObject.activeSelf)
+            if (IsEndcapActive)
             {
                 RecycleEndcap();
             }
@@ -1164,8 +1123,7 @@ namespace RecyclerScrollRect
             content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f : fixEntries == FixEntries.Above ? 1f : 0.5f));
             LayoutRebuilder.ForceRebuildLayoutImmediate(content);
             
-            bool isEndcapActive = _endcap != null && _endcap.gameObject.activeSelf;
-            bool hasFullContent = content.childCount == DataForEntries.Count + (isEndcapActive ? 1 : 0);
+            bool hasFullContent = content.childCount == DataForEntries.Count + (IsEndcapActive ? 1 : 0);
             
             // When we have < fullscreen worth of content to show, the pivot controls where that content is centered in the viewport.
             // As the pivot moves around to preserve scrolls, reset it to what we started with (not that we can scroll anyway).
@@ -1177,7 +1135,7 @@ namespace RecyclerScrollRect
             }
             
             bool hasFirstEntry = HasEntryWithIndex(0);
-            bool hasLastEntry = HasEntryWithIndex(DataForEntries.Count - 1) || isEndcapActive;
+            bool hasLastEntry = HasEntryWithIndex(DataForEntries.Count - 1) || IsEndcapActive;
 
             // If we're reducing the size of the first or last entries, then we might be creating extra space at the top or bottom of the list
             // that can't be filled by future entries. Shift the list up or down to occupy this space.
