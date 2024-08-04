@@ -152,6 +152,7 @@ namespace RecyclerScrollRect
         private int _initFrameRate;
 
         private BoxCollider _viewportCollider;
+        private Canvas _rootCanvas;
         
         private readonly LinkedList<int> _toRecycleEntries = new();
         private readonly LinkedList<int> _newCachedStartEntries = new();
@@ -175,6 +176,14 @@ namespace RecyclerScrollRect
                 _initFrameRate = Application.targetFrameRate;
                 Application.targetFrameRate = 60;
             }
+            
+            // Root canvas
+            _rootCanvas = GetComponent<Canvas>();
+            if (_rootCanvas == null)
+            {
+                _rootCanvas = GetComponentInParent<Canvas>();
+            }
+            _rootCanvas = _rootCanvas.rootCanvas;
 
             // Keeps track of what indices are visible, and subsequently which indices are cached
             _activeEntriesWindow = new RecyclerScrollRectActiveEntriesWindow(_numCachedAtEachEnd);
@@ -711,7 +720,7 @@ namespace RecyclerScrollRect
         {
             foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _activeEntries.Values)
             {
-                bool isVisible = IsInViewport(entry.RectTransform, viewport);
+                bool isVisible = IsInViewport(entry.RectTransform, viewport, _rootCanvas.worldCamera);
                 if (isVisible)
                 {
                     EntryIsVisible(entry);
@@ -855,7 +864,7 @@ namespace RecyclerScrollRect
                 return RecyclerScrollRectContentState.InactiveInPool;
             }
 
-            if (IsInViewport(_endcap.RectTransform, viewport))
+            if (IsInViewport(_endcap.RectTransform, viewport, _rootCanvas.worldCamera))
             {
                 return RecyclerScrollRectContentState.ActiveVisible;
             }
@@ -1022,7 +1031,7 @@ namespace RecyclerScrollRect
         private RectTransform RemoveFromContent(RectTransform child, FixEntries fixEntries = FixEntries.Below)
         {
             // If the child is not visible then shrink in the direction which keeps it off screen and preserves the currently visible entries
-            if (!IsInViewport(child, viewport))
+            if (!IsInViewport(child, viewport, _rootCanvas.worldCamera))
             {
                 fixEntries = IsAboveViewportCenter(child, viewport) ? FixEntries.Below : FixEntries.Above;
             }
@@ -1040,7 +1049,7 @@ namespace RecyclerScrollRect
         private void RecalculateContentChildSize(RectTransform contentChild, Behaviour[] layoutBehaviours, FixEntries fixEntries = FixEntries.Below)
         {
             // If the child is not visible then grow in the direction which keeps it off screen and preserves the currently visible entries
-            if (!IsInViewport(contentChild, viewport))
+            if (!IsInViewport(contentChild, viewport, _rootCanvas.worldCamera))
             {
                 fixEntries = IsAboveViewportCenter(contentChild, viewport) ? FixEntries.Below : FixEntries.Above;
             }

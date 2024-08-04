@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using RecyclerScrollRect;
-using Unity.VisualScripting;
 using UnityEngine;
 
 using static RecyclerScrollRect.ViewportHelpers;
@@ -16,6 +14,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
     private readonly RecyclerScrollRect<TEntryData, TKeyEntryData> _recycler;
     private readonly RectTransform _recyclerViewport;
     private readonly BoxCollider _recyclerViewportCollider;
+    private readonly Canvas _rootCanvas;
 
     private RecyclerPosition StartCachePosition => EndCachePosition == RecyclerPosition.Bot ? RecyclerPosition.Top : RecyclerPosition.Bot;
     
@@ -25,7 +24,15 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
     {
         _recycler = recycler;
         _recyclerViewport = recycler.viewport;
+        
         _recyclerViewportCollider = recycler.viewport.GetComponent<BoxCollider>();
+        
+        _rootCanvas = recycler.GetComponent<Canvas>();
+        if (_rootCanvas == null)
+        {
+            _rootCanvas = recycler.GetComponentInParent<Canvas>();
+        }
+        _rootCanvas = _rootCanvas.rootCanvas;
     }
 
     /// <summary>
@@ -119,7 +126,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
             }
 
             // Entries that are visible in the viewport should be reported as visible
-            if (IsInViewport(entry.RectTransform, _recycler.viewport))
+            if (IsInViewport(entry.RectTransform, _recycler.viewport, _rootCanvas.worldCamera))
             {
                 if (!visibleIndices.Remove(entry.Index))
                 {
@@ -359,7 +366,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
                 // Visible
                 case RecyclerScrollRectContentState.ActiveVisible:
                 {
-                    if (!IsInViewport(entry.RectTransform, _recycler.viewport))
+                    if (!IsInViewport(entry.RectTransform, _recycler.viewport, _rootCanvas.worldCamera))
                     {
                         Debug.LogError($"Entry {entry.Index} state says it's visible but its position in the list does not reflect this.");
                         Debug.Break();
@@ -439,7 +446,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
             // Visible
             case RecyclerScrollRectContentState.ActiveVisible:
             {
-                if (!IsInViewport(endcap.RectTransform, _recycler.viewport))
+                if (!IsInViewport(endcap.RectTransform, _recycler.viewport, _rootCanvas.worldCamera))
                 {
                     Debug.LogError("The endcap's state says it's visible but its position in the list does not reflect this.");
                     Debug.Break();
@@ -483,7 +490,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
         }
         
         // Check that the state of the endcap reflects its actual position in the list
-        if (endcap.State == RecyclerScrollRectContentState.ActiveVisible && !IsInViewport(endcap.RectTransform, _recycler.viewport))
+        if (endcap.State == RecyclerScrollRectContentState.ActiveVisible && !IsInViewport(endcap.RectTransform, _recycler.viewport, _rootCanvas.worldCamera))
         {
             Debug.LogError("The endcap's state says it's visible but its position in the list does not reflect this.");
             Debug.Break();
