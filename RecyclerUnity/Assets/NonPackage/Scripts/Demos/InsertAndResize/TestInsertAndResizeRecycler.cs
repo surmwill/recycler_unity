@@ -1,40 +1,52 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace RecyclerScrollRect
 {
-    public class TestInsertAndResizeRecycler : MonoBehaviour
+    /// <summary>
+    /// Tests inserting entries into the recycler.
+    /// </summary>
+    public class TestInsertAndResizeRecycler : TestRecycler<InsertAndResizeData, string>
     {
         [SerializeField]
         private InsertAndResizeRecycler _recycler = null;
 
-        private const int InitNumEntries = 100;
+        private const int InitNumEntries = 30;
         private const int InsertionIndex = 15;
-        private const int NumInsertionEntries = 2;
-        
-        private RecyclerValidityChecker<InsertAndResizeData, string> _validityChecker;
+        private const int NumInsertionEntries = 3;
+        private const int MoreThanFullScreenNumEntries = 20;
 
-        private void Start()
+        protected override RecyclerScrollRect<InsertAndResizeData, string> ValidateRecycler => _recycler;
+
+        protected override string DemoTitle => "Insert and resize demo";
+
+        protected override string DemoDescription => "Tests inserting new entries into the recycler";
+        
+        protected override string[] DemoButtonDescriptions { get; }
+
+        protected override void Start()
         {
-            _validityChecker = new RecyclerValidityChecker<InsertAndResizeData, string>(_recycler);
-            _validityChecker.Bind();
-            
+            base.Start();
             _recycler.AppendEntries(CreateDataForEntries(InitNumEntries, false));
         }
-
-        private void OnDestroy()
-        {
-            _validityChecker.Unbind();
-        }
-
+        
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.A))
+            // Inserts and grows entries.
+            if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
             {
                 _recycler.InsertRangeAtIndex(InsertionIndex, CreateDataForEntries(NumInsertionEntries, true));
+            }
+            // Immediately inserts a batch of entries at the end
+            else if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(1))
+            {
+                _recycler.InsertRangeAtIndex(_recycler.DataForEntries.Count - 1, CreateDataForEntries(NumInsertionEntries, false), FixEntries.Above);
+            }
+            // Immediately inserts a full screen of entries at the end
+            else if (Input.GetKeyDown(KeyCode.C) || DemoToolbar.GetButtonDown(2))
+            {
+                _recycler.InsertRangeAtIndex(_recycler.DataForEntries.Count - 1, CreateDataForEntries(MoreThanFullScreenNumEntries, false), FixEntries.Above);
             }
         }
 

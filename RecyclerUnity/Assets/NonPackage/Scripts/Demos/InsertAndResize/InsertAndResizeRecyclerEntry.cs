@@ -18,38 +18,32 @@ namespace RecyclerScrollRect
         private const int NormalSize = 250;
         private const int GrowSize = 500;
 
-        private const float GrowTimeSeconds = 2f;
+        private const float GrowTimeSeconds = 1.5f;
         private const float FadeTimeSeconds = 0.4f;
 
         private Sequence _growSequence;
 
         protected override void OnBindNewData(InsertAndResizeData entryData)
         {
-            _displayNumber.alpha = 1f;
+            _numberText.text = Index.ToString();
+            RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(entryData.DidGrow ? GrowSize : NormalSize);
 
-            if (!entryData.ShouldGrow)
+            if (!entryData.ShouldGrow || entryData.DidGrow)
             {
-                RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(NormalSize);
+                return;
             }
-            else if (entryData.DidGrow)
-            {
-                RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(GrowSize);
-            }
-            else
-            {
-                entryData.DidGrow = true;
+            entryData.DidGrow = true;
+            
+            RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(0f);
+            _displayNumber.alpha = 0f;
 
-                RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(0f);
-                _displayNumber.alpha = 0f;
-
-                _growSequence = DOTween.Sequence()
-                    .Append(DOTween.To(
-                        () => RectTransform.sizeDelta.y,
-                        newHeight => RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(newHeight),
-                        GrowSize,
-                        GrowTimeSeconds).OnUpdate(() => RecalculateDimensions(FixEntries.Above)))
-                    .OnComplete(() => _displayNumber.DOFade(1f, FadeTimeSeconds));
-            }
+            _growSequence = DOTween.Sequence()
+                .Append(DOTween.To(
+                    () => RectTransform.sizeDelta.y,
+                    newHeight => RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(newHeight),
+                    GrowSize,
+                    GrowTimeSeconds).OnUpdate(() => RecalculateDimensions(FixEntries.Below)))
+                .Append(_displayNumber.DOFade(1f, FadeTimeSeconds));
         }
 
         protected override void OnSentToRecycling()
