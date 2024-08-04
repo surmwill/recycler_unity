@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using RecyclerScrollRect;
+using Unity.VisualScripting;
 using UnityEngine;
 
 using static RecyclerScrollRect.ViewportHelpers;
@@ -47,7 +48,8 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
 
     private void CheckValidity()
     {
-        DebugCheckWindow();
+        DebugCheckWindowIndices();
+        DebugCheckWindowStates();
         DebugCheckWindowAlignment();
 
         DebugCheckDuplicates();
@@ -58,12 +60,31 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
                 
         DebugCheckStates();
     }
-    
+
+    /// <summary>
+    /// Check that the start index of the visible indices is not > the end.
+    /// </summary>
+    private void DebugCheckWindowIndices()
+    {
+        (int Start, int End)? visibleIndexRange = _recycler.ActiveEntriesWindow.VisibleIndexRange;
+        if (!visibleIndexRange.HasValue)
+        {
+            return;
+        }
+
+        if (visibleIndexRange.Value.Start > visibleIndexRange.Value.End)
+        {
+            Debug.LogError($"The visible start index \"{visibleIndexRange.Value.Start}\" should not be greater than the end index \"{visibleIndexRange.Value.End}\"");
+            Debug.Break();
+            return;
+        }
+    }
+
     /// <summary>
     /// Check that the indices we report as visible, in the start cache, and in the end cache, correspond to actual
     /// entries that are visible, in the start cache, and in the end cache
     /// </summary>
-    private void DebugCheckWindow()
+    private void DebugCheckWindowStates()
     {
         HashSet<int> indicesInStartCache = new HashSet<int>();
         HashSet<int> indicesInEndCache = new HashSet<int>();

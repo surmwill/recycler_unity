@@ -252,14 +252,6 @@ namespace RecyclerScrollRect
                                              _visibleIndexRange?.Start != newVisibleIndices?.Start ||
                                              _visibleIndexRange?.End != newVisibleIndices?.End;
 
-                    #if UNITY_EDITOR
-                    if (newVisibleIndices.HasValue && newVisibleIndices.Value.Start > newVisibleIndices.Value.End)
-                    {
-                        Debug.LogError(
-                            $"The visible start index \"{newVisibleIndices.Value.Start}\" should not be greater than the end index \"{newVisibleIndices.Value.End}\"");
-                    }
-                    #endif
-
                     _visibleIndexRange = newVisibleIndices;
                 }
             }
