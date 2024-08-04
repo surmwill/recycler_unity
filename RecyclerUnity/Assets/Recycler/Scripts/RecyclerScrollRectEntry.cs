@@ -31,7 +31,8 @@ namespace RecyclerScrollRect
         public TEntryData Data { get; private set; }
         
         /// <summary>
-        /// The current state of the entry, valid post-binding/rebinding.
+        /// The current state of the entry.
+        /// Note that until binding/rebinding is complete, the state will report as in the pool.
         /// </summary>
         public RecyclerScrollRectContentState State { get; private set; }
 

@@ -1090,8 +1090,11 @@ namespace RecyclerScrollRect
         /// </param>
         public void RecalculateEndcapSize(FixEntries? fixEntries = null)
         {
-            RecalculateContentChildSize(_endcap.RectTransform, _endcapLayoutBehaviours, fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
-            RecalculateActiveEntries();
+            if (IsEndcapActive)
+            {
+                RecalculateContentChildSize(_endcap.RectTransform, _endcapLayoutBehaviours, fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
+                RecalculateActiveEntries();   
+            }
         }
 
         /// <summary>

@@ -13,7 +13,8 @@ namespace RecyclerScrollRect
         public RectTransform RectTransform { get; private set; }
         
         /// <summary>
-        /// The current state of the endcap, valid post-fetching from the pool.
+        /// The current state of the endcap.
+        /// Note that until fetching is complete, the state will report as in the pool.
         /// </summary>
         public RecyclerScrollRectContentState State { get; private set; }
 
