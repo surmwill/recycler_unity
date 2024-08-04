@@ -570,7 +570,9 @@ The data this entry is currently bound to.
 public RecyclerScrollRectContentState State { get; }
 ```
 
-The current state of the entry, valid post-binding/rebinding.
+The current state of the entry.
+
+Note that until binding/rebinding is complete, the state will report as in the pool.
 
 ### Recyler
 ```
@@ -690,7 +692,9 @@ The Recycler this endcap is a part of.
 public RecyclerScrollRectContentState State { get; }
 ```
 
-The current state of the endcap, valid post-fetching from the pool.
+The current state of the endcap.
+
+Note that until fetching is complete, the state will report as in the pool.
 
 ### RectTransform
 ```
