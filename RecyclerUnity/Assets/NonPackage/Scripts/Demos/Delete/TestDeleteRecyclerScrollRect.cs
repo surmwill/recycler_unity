@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -13,9 +11,9 @@ namespace RecyclerScrollRect
         [SerializeField]
         private DeleteRecyclerScrollRect _deleteRecycler = null;
 
-        private const int InitNumEntries = 30;
+        private const int InitNumEntries = 50;
 
-        public const int DeleteAtIndex = 29;
+        public const int DeleteAtIndex = 15;
         private const int NumEntriesToDelete = 3;
 
         protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _deleteRecycler;
@@ -56,12 +54,8 @@ namespace RecyclerScrollRect
             }
             // Immediate batch delete
             else if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(1))
-            {
-                
-                //_deleteRecycler.RemoveRangeAtIndex(
-                //    _deleteRecycler.DataForEntries.Count - NumEntriesToDelete, NumEntriesToDelete, FixEntries.Below);
-                
-                _deleteRecycler.RemoveAtIndex(DeleteAtIndex, FixEntries.Below);
+            { 
+                _deleteRecycler.RemoveRangeAtIndex(_deleteRecycler.DataForEntries.Count - NumEntriesToDelete, NumEntriesToDelete, FixEntries.Below);
             }
         }
 

@@ -1159,36 +1159,59 @@ namespace RecyclerScrollRect
             // Initial state
             Vector2 initPivot = content.pivot;
             float initY = content.anchoredPosition.y;
+            
+            // Recalculate the content layout and size
             content.SetPivotWithoutMoving(content.pivot.WithY(fixEntries == FixEntries.Below ? 0f : fixEntries == FixEntries.Above ? 1f : 0.5f));
             LayoutRebuilder.ForceRebuildLayoutImmediate(content);
-
-            bool isScrollable = this.IsScrollable();
+            
             bool isEndcapActive = _endcap != null && _endcap.gameObject.activeSelf;
             bool hasFullContent = content.childCount == DataForEntries.Count + (isEndcapActive ? 1 : 0);
             
-            if (!isScrollable && hasFullContent)
+            // When we have < fullscreen worth of content to show, the pivot controls where that content is centered in the viewport.
+            // As the pivot moves around to preserve scrolls, reset it to what we started with (not that we can scroll anyway).
+            if (!this.IsScrollable() && hasFullContent)
             {
                 content.pivot = _initPivot;
                 normalizedPosition = normalizedPosition.WithY(1f);
                 return;
             }
-
+            
             bool hasFirstEntry = HasEntryWithIndex(0);
             bool hasLastEntry = HasEntryWithIndex(DataForEntries.Count - 1) || isEndcapActive;
-            
-            if (!isScrollable)
+
+            // If we're reducing the size of the first or last entries, then we might be creating extra space at the top or bottom of the list
+            // that can't be filled by future entries. Shift the list up or down to occupy this space.
+            if (hasFirstEntry || hasLastEntry)
             {
-                if (hasFirstEntry)
+                (WorldRect viewportRect, WorldRect contentRect) = (viewport.GetWorldRect(), content.GetWorldRect());
+            
+                Vector3 viewportUp = viewport.up;
+                float viewportHeight = viewportRect.Height;
+                float sqrTolerance = Mathf.Pow(viewportHeight * 0.001f, 2);
+            
+                Vector2 contentTopToViewportTop = Vector3.Project(viewportRect.TopLeftCorner - contentRect.TopLeftCorner, viewportUp);
+                Vector2 contentBotToViewportBot = Vector3.Project(viewportRect.BotLeftCorner - contentRect.BotLeftCorner, viewportUp);
+
+                bool shiftViewportUp = Vector3.Dot(contentTopToViewportTop, viewportUp) > 0f &&
+                                       contentTopToViewportTop.sqrMagnitude > sqrTolerance;
+
+                bool shiftViewportDown = Vector3.Dot(contentBotToViewportBot, -viewportUp) > 0f &&
+                                         contentBotToViewportBot.sqrMagnitude > sqrTolerance;
+
+                // Note: if we need to shift the list both up and down then this implies we have < a full-screen's worth of content, which should have been handled earlier.
+                if (shiftViewportUp)
                 {
-                    normalizedPosition = normalizedPosition.WithY(IsZerothEntryAtTop ? 1f : 0f);
+                    content.SetPivotWithoutMoving(content.pivot.WithY(1f));
+                    normalizedPosition = normalizedPosition.WithY(1f);
                 }
-                else if (hasLastEntry)
+                else if (shiftViewportDown)
                 {
-                    normalizedPosition = normalizedPosition.WithY(IsZerothEntryAtTop ? 0f : 1f);
-                }
+                    content.SetPivotWithoutMoving(content.pivot.WithY(0f));
+                    normalizedPosition = normalizedPosition.WithY(0f);
+                }   
             }
 
-            // Scrollable -> scrollable: maintain our current scroll, preventing jumps, by moving the anchor equal to the size change
+            // Maintain our current scroll, preventing jumps, by moving the anchor equal to the size change
             float contentHeight = content.rect.height;
             if (contentHeight > 0)
             {

@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 namespace RecyclerScrollRect
 {
+    /// <summary>
+    /// Demo entry to test recycler deletion of entries
+    /// </summary>
     public class DeleteRecyclerEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
     {
         [SerializeField]
@@ -13,20 +16,9 @@ namespace RecyclerScrollRect
 
         private Sequence _deleteSequence;
 
-        private bool _resized = false;
-
         protected override void OnBindNewData(EmptyRecyclerData _)
         {
-            if (!_resized && Index == TestDeleteRecyclerScrollRect.DeleteAtIndex)
-            {
-                RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(3500f);
-                _resized = true;
-            }
-            else
-            {
-                RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(250f);
-            }
-            
+            _indexText.text = Index.ToString();
         }
 
         protected override void OnSentToRecycling()
