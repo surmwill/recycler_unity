@@ -40,6 +40,16 @@ namespace RecyclerScrollRect
             {
                 _recycler.ScrollToIndex(ScrollToMiddleIndex);
             }
+            // Scroll to top index
+            else if (Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.T))
+            {
+                _recycler.ScrollToIndex(0);
+            }
+            // Scroll to bot index
+            else if (Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.B))
+            {
+                _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1);
+            }
 
             // Scroll to top index
             

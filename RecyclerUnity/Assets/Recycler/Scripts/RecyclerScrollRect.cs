@@ -48,7 +48,7 @@ namespace RecyclerScrollRect
     /// </summary>
     public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : ScrollRectWithDragSensitivity, IPointerDownHandler where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
-        private const float DefaultScrollSpeedViewportsPerSecond = 0.5f;
+        private const float DefaultScrollSpeedViewportsPerSecond = 1f;
         private const RecyclerPosition DefaultAppendTo = RecyclerPosition.Bot;
 
         [Header("Recycler")]
@@ -1241,6 +1241,8 @@ namespace RecyclerScrollRect
             float scrollSpeedViewportsPerSecond,
             Action onScrollComplete)
         {
+            const float ToleranceViewportPct = 0.01f;
+            
             // Scrolling should not fight existing movement
             StopMovementAndDrag();
 
@@ -1298,7 +1300,7 @@ namespace RecyclerScrollRect
                 distanceLeftToTravelThisFrame -= NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
                 RecalculateActiveEntries();
                 
-                if (distanceLeftToTravelThisFrame < 0.01f * viewport.rect.height)
+                if (distanceLeftToTravelThisFrame < ToleranceViewportPct * viewport.rect.height)
                 {
                     yield return null;
                     distanceLeftToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
