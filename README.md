@@ -396,38 +396,59 @@ Resets the Recycler to its very beginning elements.
 
 ### ScrollToIndex
 ```
-public void ScrollToIndex(int index, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeedViewportsPerSecond, bool isImmediate)
+public void ScrollToIndex(int index, ScrollToAlignment scrollToAlignment, float scrollSpeedViewportsPerSecond, Action onScrollComplete)
 ```
-Scrolls to an entry at a given index. The entry doesn't need to be on-screen at the time of the call.
+Scrolls to the entry at a given index. The entry doesn't need to be on-screen at the time of the call.
 
 <ins>Parameters</ins>
 - `index:` the index of the entry to scroll to
 - `scrollToAlignment:` the position within the entry we want to center on
-- `onScrollComplete:` callback invoked once we've successfully scrolled to the entry
 - `scrollSpeedViewportsPerSecond:` the speed of the scroll
-- `isImmediate:` whether the scroll should complete immediately. (Warning: large jumps can be inefficient)
+- `onScrollComplete:` callback invoked once we've successfully scrolled to the entry
 
 <ins>Exceptions</ins>
 - `ArgumentException:` thrown when attempting to scroll to an invalid index
 
 ### ScrollToKey
 ```
-public void ScrollToKey(TKeyEntryData key, ScrollToAlignment scrollToAlignment, Action onScrollComplete, float scrollSpeedViewportsPerSecond, bool isImmediate)
+public void ScrollToKey(TKeyEntryData key, ScrollToAlignment scrollToAlignment, float scrollSpeedViewportsPerSecond, Action onScrollComplete)
 ```
-Scrolls to an entry with the given key. The entry doesn't need to be on-screen at the time of the call.
+Scrolls to the entry with the given key. The entry doesn't need to be on-screen at the time of the call.
 
 <ins>Parameters</ins>
 - `key:` the key of the entry to scroll to
 - `scrollToAlignment:` the position within the entry we want to center on
-- `onScrollComplete:` callback invoked once we've successfully scrolled to the entry
 - `scrollSpeedViewportsPerSecond:` the speed of the scroll
-- `isImmediate:` whether the scroll should complete immediately. (Warning: large jumps can be inefficient)
+- `onScrollComplete:` callback invoked once we've successfully scrolled to the entry
 
 ### CancelScrollTo
 ```
 public void CancelScrollTo()
 ```
 Cancels the current `ScrollToIndex/Key` call.
+
+### ScrollToIndexImmediate
+```
+public void ScrollToIndexImmediate(int index, ScrollToAlignment scrollToAlignment)
+```
+Immediately scrolls to the entry at a given index. The entry doesn't need to be on-screen at the time of the call.
+
+<ins>Parameters</ins>
+- `index:` the index of the entry to scroll to
+- `scrollToAlignment:` the position within the entry we want to center on
+
+<ins>Exceptions</ins>
+- `ArgumentException:` thrown when attempting to scroll to an invalid index
+
+### ScrollToKeyImmediate
+```
+public void ScrollToIndexImmediate(int index, ScrollToAlignment scrollToAlignment)
+```
+Immediately scrolls to the entry at the given key. The entry doesn't need to be on screen at the time of the call.
+
+<ins>Parameters</ins>
+- `index:` the key of the entry to scroll to.
+- `scrollToAlignment:` the position within the entry we want to center on
 
 ### GetCurrentIndexForKey
 ```
