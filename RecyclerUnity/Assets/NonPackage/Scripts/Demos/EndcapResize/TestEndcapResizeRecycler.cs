@@ -23,8 +23,8 @@ namespace RecyclerScrollRect
 
         protected override string[] DemoButtonDescriptions => new[]
         {
-            "1: Grows the endcap if it is visible.",
-            "2. Resets the endcap to its original size."
+            "0: Grows the endcap if it is visible.",
+            "1. Resets the endcap to its original size."
         };
 
         private EndcapResizeEndcap _endcap;

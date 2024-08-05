@@ -1,15 +1,12 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Tests the recycler for animating an entry in on insertion/deletion
+    /// Tests the recycler for animating an entry in on insertion/deletion.
+    /// While there are already demos for insertion and deletion, this one is more polished and suitable for videos.
     /// </summary>
-    public class TestPrettyInsertDeleteRecycler : MonoBehaviour
+    public class TestPrettyInsertDeleteRecycler : TestRecycler<PrettyInsertDeleteData, string>
     {
         [SerializeField]
         private PrettyInsertDeleteRecycler _recycler = null;
@@ -22,11 +19,25 @@ namespace RecyclerScrollRect
 
         private RecyclerValidityChecker<PrettyInsertDeleteData, string> _validityChecker;
 
-        private void Start()
+        protected override RecyclerScrollRect<PrettyInsertDeleteData, string> ValidateRecycler => _recycler;
+
+        protected override string DemoTitle => "Pretty insertion and deletion demo";
+
+        protected override string DemoDescription =>
+            "Tests animating in/out entries on insertion/delete. " +
+            "(While there are already demos for insertion and deletion, this one is more polished and suitable for videos.";
+
+        protected override string[] DemoButtonDescriptions => new[]
         {
-            _validityChecker = new RecyclerValidityChecker<PrettyInsertDeleteData, string>(_recycler);
-            _validityChecker.Bind();
-            
+            "0: Inserts an entry at the end.",
+            "1: Deletes the entry at the end.",
+            $"2: Adds {NumEntriesInsertedAtMiddle} entries to the middle of wherever we are in the list.",
+            $"3: Deletes {NumEntriesDeletedBeforeMiddle + 1 + NumEntriesDeletedAfterMiddle} entries from the middle of wherever we are in the list.",
+        };
+
+        protected override void Start()
+        {
+            base.Start();
             _recycler.AppendEntries(PrettyInsertDeleteData.GenerateData(InitNumEntries, false));
         }
 
@@ -36,33 +47,30 @@ namespace RecyclerScrollRect
             (int visibleStartIndex, int visibleEndIndex) = _recycler.ActiveEntriesWindow.VisibleIndexRange.Value;
             int middleEntryIndex = visibleStartIndex + (visibleEndIndex - visibleStartIndex + 1) / 2;
             
-            if (Input.GetKey(KeyCode.M))
+            // Add entries at middle
+            if ((Input.GetKey(KeyCode.M) && Input.GetKeyDown(KeyCode.A)) || DemoToolbar.GetButtonDown(2))
             {
-                // Add entries at middle
-                if (Input.GetKeyDown(KeyCode.A))
+                _recycler.InsertRangeAtIndex(middleEntryIndex, PrettyInsertDeleteData.GenerateData(NumEntriesInsertedAtMiddle, true, FixEntries.Mid));  
+            }
+            // Delete entries at middle
+            else if ((Input.GetKey(KeyCode.M) && Input.GetKeyDown(KeyCode.D)) || DemoToolbar.GetButtonDown(3))
+            {
+                int startDeleteIndex = middleEntryIndex - NumEntriesDeletedBeforeMiddle;
+                int endDeleteIndex = middleEntryIndex + NumEntriesDeletedAfterMiddle;
+                
+                for (int i = startDeleteIndex; i <= endDeleteIndex; i++)
                 {
-                    _recycler.InsertRangeAtIndex(middleEntryIndex, PrettyInsertDeleteData.GenerateData(NumEntriesInsertedAtMiddle, true, FixEntries.Mid));  
-                }
-                // Delete entries at middle
-                if (Input.GetKeyDown(KeyCode.D))
-                {
-                    int startDeleteIndex = middleEntryIndex - NumEntriesDeletedBeforeMiddle;
-                    int endDeleteIndex = middleEntryIndex + NumEntriesDeletedAfterMiddle;
-                    
-                    for (int i = startDeleteIndex; i <= endDeleteIndex; i++)
-                    {
-                        PrettyInsertDeleteEntry entry = (PrettyInsertDeleteEntry) _recycler.ActiveEntries[i];
-                        entry.AnimateOutAndDelete(FixEntries.Mid);
-                    }
+                    PrettyInsertDeleteEntry entry = (PrettyInsertDeleteEntry) _recycler.ActiveEntries[i];
+                    entry.AnimateOutAndDelete(FixEntries.Mid);
                 }
             }
             // Add entry at bottom
-            else if (Input.GetKeyDown(KeyCode.A))
+            else if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
             {
                 _recycler.InsertAtIndex(dataLength, new PrettyInsertDeleteData(true, FixEntries.Below));
             }
             // Delete entry at bottom
-            else if (Input.GetKeyDown(KeyCode.D))
+            else if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(1))
             {
                 for (int i = visibleEndIndex; i >= visibleStartIndex; i--)
                 {
@@ -74,11 +82,6 @@ namespace RecyclerScrollRect
                     }
                 }
             }
-        }
-
-        private void OnDestroy()
-        {
-            _validityChecker.Unbind();
         }
 
         private void OnValidate()

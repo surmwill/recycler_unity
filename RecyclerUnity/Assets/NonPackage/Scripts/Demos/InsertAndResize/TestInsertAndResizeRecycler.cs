@@ -25,9 +25,9 @@ namespace RecyclerScrollRect
 
         protected override string[] DemoButtonDescriptions => new[]
         {
-            $"1: Inserts and grows {NumInsertionEntries} entries at index {InsertionIndex}",
-            $"2: Batch inserts {NumInsertionEntries} to the end of the list.",
-            $"3: Batch inserts a fullscreen's worth of entries {MoreThanFullScreenNumEntries} to the end of the list.",
+            $"0: Inserts and grows {NumInsertionEntries} entries at index {InsertionIndex}",
+            $"1: Batch inserts {NumInsertionEntries} to the end of the list.",
+            $"2: Batch inserts a fullscreen's worth of entries {MoreThanFullScreenNumEntries} to the end of the list.",
         };
 
         protected override void Start()
