@@ -9,66 +9,50 @@ namespace RecyclerScrollRect
     /// <summary>
     /// Demos scrolling to an index in a recycler
     /// </summary>
-    public class TestScrollToIndexRecycler : MonoBehaviour
+    public class TestScrollToIndexRecycler : TestRecycler<ScrollToIndexData, string>
     {
         [SerializeField]
         private ScrollToIndexRecyclerScrollRect _recycler = null;
 
-        private const int InitNumEntries = 100;
+        private const int InitNumEntries = 50;
         private const int ScrollToIndex = 45;
 
         private static readonly int[] EnlargeEntryIndices = { 41, 42 };
+
+        protected override RecyclerScrollRect<ScrollToIndexData, string> ValidateRecycler => _recycler;
+
+        protected override string DemoTitle => "Scroll to index demo";
+
+        protected override string DemoDescription => "Tests scrolling behaviour.";
         
-        private RecyclerValidityChecker<ScrollToIndexData, string> _validityChecker;
+        protected override string[] DemoButtonDescriptions { get; }
 
-        private void Start()
+        protected override void Start()
         {
-            _validityChecker = new RecyclerValidityChecker<ScrollToIndexData, string>(_recycler);
-            _validityChecker.Bind();
-            
+            base.Start();
             _recycler.AppendEntries(CreateEntryData(InitNumEntries, EnlargeEntryIndices));
-        }
-
-        private void OnDestroy()
-        {
-            _validityChecker.Unbind();
         }
 
         private void Update()
         {
+            // Scroll to middle index
+            
+            // Scroll to top index
+            
+            // Scroll to bottom index
+            
+            // Scroll to top slowly, and make entry above expand as rapidly as we scroll
+            
+            // Scroll to top slowly, and make entry above expand immediately, then decrease in size slowly 
+            
+            // Scroll immediate
+            
             // Test scrolling to index
+            
+            // Test cancel scroll to
             if (Input.GetKeyDown(KeyCode.A))
             {
-                Debug.Log($"scrolling to index: {ScrollToIndex}");
-                _recycler.ScrollToIndex(ScrollToIndex, scrollSpeedViewportsPerSecond: 1f);
-            }
-            // Test scrolling to key
-            else if (Input.GetKeyDown(KeyCode.Q))
-            {
-                string key = _recycler.GetKeyForCurrentIndex(ScrollToIndex);
-
-                Debug.Log($"scrolling to: {key}");
-                _recycler.ScrollToKey(key, scrollSpeedViewportsPerSecond: 1f);
-            }
-            // Test deletion while scrolling
-            else if (Input.GetKeyDown(KeyCode.D))
-            {
-                _recycler.RemoveRangeAtIndex(10, 10, FixEntries.Above);
-            }
-            // Test insertion while scrolling
-            else if (Input.GetKeyDown(KeyCode.S))
-            {
-                _recycler.InsertRangeAtIndex(10, CreateEntryData(10), FixEntries.Above);
-            }
-            // Test immediate scrolling
-            else if (Input.GetKeyDown(KeyCode.X))
-            {
-                _recycler.ScrollToIndex(ScrollToIndex, isImmediate: true);
-            }
-            // Test cancelling scrolling
-            else if (Input.GetKeyDown(KeyCode.Z))
-            {
-                _recycler.CancelScrollTo();
+                _recycler.ScrollToImmediate(41);
             }
         }
 

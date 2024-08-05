@@ -517,6 +517,11 @@ namespace RecyclerScrollRect
         /// </summary>
         private void RecalculateActiveEntries()
         {
+            if (_dontAdd)
+            {
+                return;
+            }
+            
             // Check which entries are visible, which are not, and what entries need to be in the start/end caches
             UpdateVisibility();
 
@@ -915,6 +920,29 @@ namespace RecyclerScrollRect
         {
             OnEndDrag(new PointerEventData(EventSystem.current));
             StopMovement();
+        }
+
+
+        private bool _dontAdd;
+        public void ScrollToImmediate(int scrollToIndex)
+        {
+            foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in ActiveEntries.Values.ToList())
+            {
+                SendToRecycling(entry);
+            }
+
+            _activeEntriesWindow.VisibleIndexRange = null;
+
+            content.pivot = content.pivot.WithY(0.5f);
+            normalizedPosition = normalizedPosition.WithY(0f);
+
+            CreateAndAddEntry(scrollToIndex, 0, FixEntries.Above);
+            
+            
+            
+            RecalculateActiveEntries();
+            ScrollToIndex(scrollToIndex, isImmediate:true);
+
         }
 
         private void SendToRecycling(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
