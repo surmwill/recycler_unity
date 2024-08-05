@@ -15,7 +15,7 @@ namespace RecyclerScrollRect
         private ScrollToIndexRecyclerScrollRect _recycler = null;
 
         private const int InitNumEntries = 50;
-        private const int ScrollToIndex = 45;
+        private const int ScrollToMiddleIndex = 25;
 
         private static readonly int[] EnlargeEntryIndices = { 41, 42 };
 
@@ -36,7 +36,11 @@ namespace RecyclerScrollRect
         private void Update()
         {
             // Scroll to middle index
-            
+            if (Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.M))
+            {
+                _recycler.ScrollToIndex(ScrollToMiddleIndex);
+            }
+
             // Scroll to top index
             
             // Scroll to bottom index
@@ -52,16 +56,14 @@ namespace RecyclerScrollRect
             // Scroll immediate bottom
             
             // Scroll immediate middle (top edge)
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex);
+            }
             
             // Scroll immediate middle (bot edge)
 
             // Test cancel scroll to
-            
-            
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                _recycler.ScrollToIndexImmediate(41);
-            }
         }
 
         private ScrollToIndexData[] CreateEntryData(int numEntries, IEnumerable<int> enlargeIndices = null)

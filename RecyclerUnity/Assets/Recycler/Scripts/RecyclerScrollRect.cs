@@ -1248,14 +1248,13 @@ namespace RecyclerScrollRect
             float normalizedPositionWithinChild = ScrollAlignmentToNormalizedPosition(scrollToAlignment);
             
             float distanceLeftToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
-            while (this.IsScrollable())
+            for (;;)
             {
                 int index = _currScrollingToIndex.Value;
 
                 float normalizedScrollDistanceLeftToTravelThisFrame = DistanceToNormalizedScrollDistance(distanceLeftToTravelThisFrame);
                 float currNormalizedY = normalizedPosition.y;
                 float newNormalizedY = 0f;
-                float distanceTravelledInIteration = 0f;
 
                 // Scroll through entries until the entry we want is active; then we'll know the exact position to center on
                 if (!_activeEntriesWindow.Contains(index))
@@ -1270,12 +1269,8 @@ namespace RecyclerScrollRect
                     {
                         newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 0 : 1, normalizedScrollDistanceLeftToTravelThisFrame);
                     }
-
-                    distanceTravelledInIteration = NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
+                    
                     normalizedPosition = normalizedPosition.WithY(newNormalizedY);
-
-                    RecalculateActiveEntries();
-                    yield return null;
                 }
 
                 // Find and scroll to the exact position of the now active entry
@@ -1289,10 +1284,8 @@ namespace RecyclerScrollRect
                         break;
                     }
                     
-                    newNormalizedY = Mathf.MoveTowards(currNormalizedY, Mathf.Clamp01(entryNormalizedY), normalizedScrollDistanceLeftToTravelThisFrame);
-                    distanceTravelledInIteration = NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
-                    
                     float prevNormalizedPosY = normalizedPosition.y;
+                    newNormalizedY = Mathf.MoveTowards(currNormalizedY, Mathf.Clamp01(entryNormalizedY), normalizedScrollDistanceLeftToTravelThisFrame);
                     normalizedPosition = normalizedPosition.WithY(newNormalizedY);
 
                     // If we can't scroll any more (we've hit the very end of the list), then we're done scrolling
@@ -1300,20 +1293,15 @@ namespace RecyclerScrollRect
                     {
                         break;
                     }
-                    
-                    RecalculateActiveEntries();
                 }
                 
-                // If we didn't make any progress in our current iteration then we must have travelled the full frame distance
-                if (Mathf.Approximately(distanceTravelledInIteration, 0f))
+                distanceLeftToTravelThisFrame -= NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
+                RecalculateActiveEntries();
+                
+                if (distanceLeftToTravelThisFrame < 0.01f * viewport.rect.height)
                 {
                     yield return null;
                     distanceLeftToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
-                }
-                // Otherwise there is still distance left to scroll
-                else
-                {
-                    distanceLeftToTravelThisFrame -= distanceTravelledInIteration;
                 }
             }
 
@@ -1327,7 +1315,7 @@ namespace RecyclerScrollRect
                 return scrollSpeedViewportsPerSecond * viewport.rect.height * Time.deltaTime;
             }
 
-            // Returns the normalized scroll distance corresponding to a certain non-normalized distance
+            // Returns the normalized scroll distance corresponding to a certain non-normalized distance.
             float DistanceToNormalizedScrollDistance(float distance)
             {
                 return Mathf.InverseLerp(0, content.rect.height - viewport.rect.height, distance);

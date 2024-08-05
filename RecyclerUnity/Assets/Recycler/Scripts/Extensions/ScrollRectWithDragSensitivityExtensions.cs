@@ -45,7 +45,7 @@ namespace RecyclerScrollRect
             Vector3 viewportBotmostToChildPosition = childViewportPosition - viewportBotmostPosition;
             Vector3 viewportTopmostToChildPosition = childViewportPosition - viewportTopmostPosition;
 
-            // Below where the viewport where the viewport can center on 
+            // Below where the viewport can center on 
             if (Vector3.Dot(viewportBotmostToChildPosition, -viewportPositionsBotToTop) > 0)
             {
                 return -viewportBotmostToChildPosition.magnitude / viewportPositionsBotToTop.magnitude;
