@@ -421,12 +421,6 @@ Scrolls to the entry with the given key. The entry doesn't need to be on-screen 
 - `scrollSpeedViewportsPerSecond:` the speed of the scroll
 - `onScrollComplete:` callback invoked once we've successfully scrolled to the entry
 
-### CancelScrollTo
-```
-public void CancelScrollTo()
-```
-Cancels the current `ScrollToIndex/Key` call.
-
 ### ScrollToIndexImmediate
 ```
 public void ScrollToIndexImmediate(int index, ScrollToAlignment scrollToAlignment)
@@ -449,6 +443,12 @@ Immediately scrolls to the entry at the given key. The entry doesn't need to be 
 <ins>Parameters</ins>
 - `index:` the key of the entry to scroll to.
 - `scrollToAlignment:` the position within the entry we want to center on
+
+### CancelScrollTo
+```
+public void CancelScrollTo()
+```
+Cancels the current `ScrollToIndex/Key` call.
 
 ### GetCurrentIndexForKey
 ```
