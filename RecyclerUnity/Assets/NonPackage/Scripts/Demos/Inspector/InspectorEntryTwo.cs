@@ -5,10 +5,10 @@ using UnityEngine;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Entry to test inspector options
-    /// (ex: increasing/decreasing the pool size and having the corresponding amount of GameObjects)
+    /// Entry to test inspector options.
+    /// (Swapping entry prefab and ensuring pool is regenerated.)
     /// </summary>
-    public class InspectorEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
+    public class InspectorEntryTwo : RecyclerScrollRectEntry<EmptyRecyclerData, string>
     {
         protected override void OnBindNewData(EmptyRecyclerData entryData)
         {

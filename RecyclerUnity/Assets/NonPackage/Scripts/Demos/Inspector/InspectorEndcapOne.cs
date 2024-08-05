@@ -5,8 +5,8 @@ using UnityEngine;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Endcap to test inspector options
-    /// (ex: switching endcaps and ensuring the old one gets replaced with the new one)
+    /// Endcap to test inspector options.
+    /// (Swapping endcap prefab and ensuring endcap is switching.)
     /// </summary>
     public class InspectorEndcapOne : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
     {
