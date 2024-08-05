@@ -45,11 +45,19 @@ namespace RecyclerScrollRect
             
             // Scroll to top slowly, and make entry above expand immediately, then decrease in size slowly 
             
-            // Scroll immediate
+            // Scroll immediate top
             
-            // Test scrolling to index
+            // Scroll immediate middle
             
+            // Scroll immediate bottom
+            
+            // Scroll immediate middle (top edge)
+            
+            // Scroll immediate middle (bot edge)
+
             // Test cancel scroll to
+            
+            
             if (Input.GetKeyDown(KeyCode.A))
             {
                 _recycler.ScrollToIndexImmediate(41);

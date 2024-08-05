@@ -1221,7 +1221,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Scrolls to an entry with a given key. The entry doesn't need to be on screen at the time of the call.
+        /// Scrolls to the entry with a given key. The entry doesn't need to be on screen at the time of the call.
         /// </summary>
         /// <param name="key"> The key of the entry to scroll to. </param>
         /// <param name="scrollToAlignment"> The position within the entry to center on. </param>
@@ -1328,7 +1328,7 @@ namespace RecyclerScrollRect
         }
         
         /// <summary>
-        /// Immediately scrolls to an entry at a given index. The entry doesn't need to be on screen at the time of the call.
+        /// Immediately scrolls to the entry at a given index. The entry doesn't need to be on screen at the time of the call.
         /// </summary>
         /// <param name="index"> The index of the entry to scroll to. </param>
         /// <param name="scrollToAlignment"> The position within the entry to center on. </param>
@@ -1360,7 +1360,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Immediately scrolls to an entry at a given index. The entry doesn't need to be on screen at the time of the call.
+        /// Immediately scrolls to the entry at the given key. The entry doesn't need to be on screen at the time of the call.
         /// </summary>
         /// <param name="key"> The key of the entry to scroll to. </param>
         /// <param name="scrollToAlignment"> The position within the entry to center on. </param>
