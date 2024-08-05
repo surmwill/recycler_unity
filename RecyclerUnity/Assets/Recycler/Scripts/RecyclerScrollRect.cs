@@ -1255,6 +1255,7 @@ namespace RecyclerScrollRect
                 float normalizedScrollDistanceLeftToTravelThisFrame = DistanceToNormalizedScrollDistance(distanceLeftToTravelThisFrame);
                 float currNormalizedY = normalizedPosition.y;
                 float newNormalizedY = 0f;
+                float distanceTravelledInIteration = 0f;
 
                 // Scroll through entries until the entry we want is active; then we'll know the exact position to center on
                 if (!_activeEntriesWindow.Contains(index))
@@ -1270,37 +1271,49 @@ namespace RecyclerScrollRect
                         newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 0 : 1, normalizedScrollDistanceLeftToTravelThisFrame);
                     }
 
+                    distanceTravelledInIteration = NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
                     normalizedPosition = normalizedPosition.WithY(newNormalizedY);
+
+                    RecalculateActiveEntries();
+                    yield return null;
                 }
 
                 // Find and scroll to the exact position of the now active entry
                 else
                 {
                     float entryNormalizedY = this.GetNormalizedVerticalPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild);
-
-                    newNormalizedY = Mathf.MoveTowards(currNormalizedY, entryNormalizedY, normalizedScrollDistanceLeftToTravelThisFrame);
-                    normalizedPosition = normalizedPosition.WithY(newNormalizedY);
-
+                    
+                    // If we're centered on the position, then we're done scrolling
                     if (this.IsAtNormalizedPosition(normalizedPosition.WithY(entryNormalizedY)))
                     {
                         break;
                     }
+                    
+                    newNormalizedY = Mathf.MoveTowards(currNormalizedY, Mathf.Clamp01(entryNormalizedY), normalizedScrollDistanceLeftToTravelThisFrame);
+                    distanceTravelledInIteration = NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
+                    
+                    float prevNormalizedPosY = normalizedPosition.y;
+                    normalizedPosition = normalizedPosition.WithY(newNormalizedY);
+
+                    // If we can't scroll any more (we've hit the very end of the list), then we're done scrolling
+                    if (Mathf.Approximately(prevNormalizedPosY, normalizedPosition.y))
+                    {
+                        break;
+                    }
+                    
+                    RecalculateActiveEntries();
                 }
-
-                // We may not have travelled the full desired distance in this iteration as we might need to spawn the next set of active entries (and scroll past them)
-                float distanceTravelledInIteration = NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
-
-                // If we didn't make any progress in our current iteration we must have travelled the full frame distance (or hit the very end of the list)
+                
+                // If we didn't make any progress in our current iteration then we must have travelled the full frame distance
                 if (Mathf.Approximately(distanceTravelledInIteration, 0f))
                 {
                     yield return null;
                     distanceLeftToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
                 }
-                // Otherwise there is still distance left to scroll. Spawn the next set of active entries to scroll past
+                // Otherwise there is still distance left to scroll
                 else
                 {
                     distanceLeftToTravelThisFrame -= distanceTravelledInIteration;
-                    RecalculateActiveEntries();
                 }
             }
 

@@ -30,7 +30,7 @@ namespace RecyclerScrollRect
             Vector3 contentBotToTop = contentTopPosition - contentBotPosition;
             Vector3 contentBotToTopNormalized = contentBotToTop.normalized;
 
-            // The viewport can only travel in these positions along the content line without one if its edges hitting the end of the content.
+            // The viewport's center can only travel in these positions along the content line without one if its edges hitting the end of the content.
             float viewportHeight = viewportWorldRect.Height;
             Vector3 viewportTopmostPosition = contentTopPosition - (contentBotToTopNormalized * viewportHeight / 2f);
             Vector3 viewportBotmostPosition = contentBotPosition + (contentBotToTopNormalized * viewportHeight / 2f);
@@ -45,19 +45,19 @@ namespace RecyclerScrollRect
             Vector3 viewportBotmostToChildPosition = childViewportPosition - viewportBotmostPosition;
             Vector3 viewportTopmostToChildPosition = childViewportPosition - viewportTopmostPosition;
 
-            // If it's below the viewport line, we can still see it in the lower half of the viewport when it's at its bottom, we just can't center on it. 
-            if (Vector3.Dot(viewportBotmostToChildPosition, viewportPositionsBotToTop) < 0)
+            // Below where the viewport where the viewport can center on 
+            if (Vector3.Dot(viewportBotmostToChildPosition, -viewportPositionsBotToTop) > 0)
             {
-                return 0f;
+                return -viewportBotmostToChildPosition.magnitude / viewportPositionsBotToTop.magnitude;
             }
 
-            // If it's above the viewport line, we can still see it in the upper half of the viewport when it's at its top, we just can't center on it. 
-            if (Vector3.Dot(viewportTopmostToChildPosition, -viewportPositionsBotToTop) < 0)
+            // Above where the viewport can center on
+            if (Vector3.Dot(viewportTopmostToChildPosition, viewportPositionsBotToTop) > 0)
             {
-                return 1f;
+                return 1f + viewportTopmostToChildPosition.magnitude / viewportPositionsBotToTop.magnitude;
             }
 
-            // If it's on the viewport line, we can center the viewport on it.
+            // In range of where the viewport can center on
             float normalizedPositionInViewportBotToTop = viewportBotmostToChildPosition.magnitude / viewportPositionsBotToTop.magnitude;
             return normalizedPositionInViewportBotToTop;
         }
