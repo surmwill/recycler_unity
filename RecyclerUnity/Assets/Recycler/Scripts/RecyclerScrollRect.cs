@@ -517,11 +517,6 @@ namespace RecyclerScrollRect
         /// </summary>
         private void RecalculateActiveEntries()
         {
-            if (_dontAdd)
-            {
-                return;
-            }
-            
             // Check which entries are visible, which are not, and what entries need to be in the start/end caches
             UpdateVisibility();
 
@@ -922,29 +917,6 @@ namespace RecyclerScrollRect
             StopMovement();
         }
 
-
-        private bool _dontAdd;
-        public void ScrollToImmediate(int scrollToIndex)
-        {
-            foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in ActiveEntries.Values.ToList())
-            {
-                SendToRecycling(entry);
-            }
-
-            _activeEntriesWindow.VisibleIndexRange = null;
-
-            content.pivot = content.pivot.WithY(0.5f);
-            normalizedPosition = normalizedPosition.WithY(0f);
-
-            CreateAndAddEntry(scrollToIndex, 0, FixEntries.Above);
-            
-            
-            
-            RecalculateActiveEntries();
-            ScrollToIndex(scrollToIndex, isImmediate:true);
-
-        }
-
         private void SendToRecycling(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
         {
             // Handle the GameObject
@@ -1221,20 +1193,18 @@ namespace RecyclerScrollRect
 
 
         /// <summary>
-        /// Scrolls to an entry at a given index. The entry doesn't need to be on screen at the time of the call.
+        /// Scrolls to the entry at a given index. The entry doesn't need to be on screen at the time of the call.
         /// </summary>
         /// <param name="index"> The index of the entry to scroll to. </param>
         /// <param name="scrollToAlignment"> The position within the entry to center on. </param>
-        /// <param name="onScrollComplete"> Callback invoked once we've successfully scrolled to the entry. </param>
         /// <param name="scrollSpeedViewportsPerSecond"> The speed of the scroll. </param>
-        /// <param name="isImmediate"> Whether the scroll should complete immediately. (Warning: large jumps can be inefficient). </param>
+        /// <param name="onScrollComplete"> Callback invoked once we've successfully scrolled to the entry. </param>
         /// <exception cref="ArgumentException"> Thrown when attempting to scroll to an invalid index. </exception>
         public void ScrollToIndex(
             int index,
             ScrollToAlignment scrollToAlignment = ScrollToAlignment.EntryMiddle,
-            Action onScrollComplete = null,
             float scrollSpeedViewportsPerSecond = DefaultScrollSpeedViewportsPerSecond,
-            bool isImmediate = false)
+            Action onScrollComplete = null)
         {
             if (index < 0 || index >= _dataForEntries.Count)
             {
@@ -1247,53 +1217,36 @@ namespace RecyclerScrollRect
             }
 
             _currScrollingToIndex = index;
-            _scrollToIndexCoroutine = StartCoroutine(ScrollToIndexInner(scrollToAlignment, onScrollComplete, scrollSpeedViewportsPerSecond, isImmediate));
+            _scrollToIndexCoroutine = StartCoroutine(ScrollToIndexInner(scrollToAlignment, scrollSpeedViewportsPerSecond, onScrollComplete));
         }
 
         /// <summary>
         /// Scrolls to an entry with a given key. The entry doesn't need to be on screen at the time of the call.
         /// </summary>
-        /// <param name="key"> The key of the entry to scroll to </param>
+        /// <param name="key"> The key of the entry to scroll to. </param>
         /// <param name="scrollToAlignment"> The position within the entry to center on. </param>
-        /// <param name="onScrollComplete"> Callback invoked once we've successfully scrolled to the entry. </param>
         /// <param name="scrollSpeedViewportsPerSecond"> The speed of the scroll. </param>
-        /// <param name="isImmediate"> Whether the scroll should complete immediately. (Warning: large jumps can be inefficient). </param>
+        /// <param name="onScrollComplete"> Callback invoked once we've successfully scrolled to the entry. </param>
         public void ScrollToKey(
             TKeyEntryData key,
             ScrollToAlignment scrollToAlignment = ScrollToAlignment.EntryMiddle,
-            Action onScrollComplete = null,
             float scrollSpeedViewportsPerSecond = DefaultScrollSpeedViewportsPerSecond,
-            bool isImmediate = false)
+            Action onScrollComplete = null)
         {
-            ScrollToIndex(GetCurrentIndexForKey(key), scrollToAlignment, onScrollComplete, scrollSpeedViewportsPerSecond, isImmediate);
+            ScrollToIndex(GetCurrentIndexForKey(key), scrollToAlignment, scrollSpeedViewportsPerSecond, onScrollComplete);
         }
 
         private IEnumerator ScrollToIndexInner(
             ScrollToAlignment scrollToAlignment, 
-            Action onScrollComplete,
-            float scrollSpeedViewportsPerSecond, 
-            bool isImmediate)
+            float scrollSpeedViewportsPerSecond,
+            Action onScrollComplete)
         {
             // Scrolling should not fight existing movement
             StopMovementAndDrag();
 
             // The position within the child the scroll will center on (ex: middle, top edge, bottom edge)
-            float normalizedPositionWithinChild = 0f;
-            switch (scrollToAlignment)
-            {
-                case ScrollToAlignment.EntryMiddle:
-                    normalizedPositionWithinChild = 0.5f;
-                    break;
-
-                case ScrollToAlignment.EntryTop:
-                    normalizedPositionWithinChild = 1f;
-                    break;
-
-                case ScrollToAlignment.EntryBottom:
-                    normalizedPositionWithinChild = 0f;
-                    break;
-            }
-
+            float normalizedPositionWithinChild = ScrollAlignmentToNormalizedPosition(scrollToAlignment);
+            
             float distanceLeftToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
             while (this.IsScrollable())
             {
@@ -1340,11 +1293,7 @@ namespace RecyclerScrollRect
                 // If we didn't make any progress in our current iteration we must have travelled the full frame distance (or hit the very end of the list)
                 if (Mathf.Approximately(distanceTravelledInIteration, 0f))
                 {
-                    if (!isImmediate)
-                    {
-                        yield return null;
-                    }
-
+                    yield return null;
                     distanceLeftToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
                 }
                 // Otherwise there is still distance left to scroll. Spawn the next set of active entries to scroll past
@@ -1375,6 +1324,70 @@ namespace RecyclerScrollRect
             float NormalizedScrollDistanceToDistance(float normalizedScrollDistance)
             {
                 return normalizedScrollDistance * (content.rect.height - viewport.rect.height);
+            }
+        }
+        
+        /// <summary>
+        /// Immediately scrolls to an entry at a given index. The entry doesn't need to be on screen at the time of the call.
+        /// </summary>
+        /// <param name="index"> The index of the entry to scroll to. </param>
+        /// <param name="scrollToAlignment"> The position within the entry to center on. </param>
+        /// <exception cref="ArgumentException"> Thrown when attempting to scroll to an invalid index. </exception>
+        public void ScrollToIndexImmediate(int index, ScrollToAlignment scrollToAlignment = ScrollToAlignment.EntryMiddle)
+        {
+            if (index < 0 || index >= _dataForEntries.Count)
+            {
+                throw new ArgumentException($"index \"{index}\" must be >= 0 and < the length of data \"{_dataForEntries.Count}\"");
+            }
+            
+            foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry in _activeEntries.Values.ToList())
+            {
+                SendToRecycling(activeEntry);
+            }
+            _activeEntriesWindow.VisibleIndexRange = null;
+
+            content.pivot = content.pivot.WithY(0.5f);
+            normalizedPosition = normalizedPosition.WithY(0f);
+            
+            CreateAndAddEntry(index, 0, FixEntries.Above);
+            RecalculateActiveEntries();
+
+            if (_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
+            {
+                normalizedPosition = normalizedPosition.WithY(
+                    this.GetNormalizedVerticalPositionOfChild(entry.RectTransform, ScrollAlignmentToNormalizedPosition(scrollToAlignment)));
+            }
+        }
+
+        /// <summary>
+        /// Immediately scrolls to an entry at a given index. The entry doesn't need to be on screen at the time of the call.
+        /// </summary>
+        /// <param name="key"> The key of the entry to scroll to. </param>
+        /// <param name="scrollToAlignment"> The position within the entry to center on. </param>
+        public void ScrollToKeyImmediate(TKeyEntryData key, ScrollToAlignment scrollToAlignment = ScrollToAlignment.EntryMiddle)
+        {
+            ScrollToIndexImmediate(GetCurrentIndexForKey(key), scrollToAlignment);
+        }
+
+        /// <summary>
+        /// Maps a scroll alignment to its corresponding normalized position within a RectTransform.
+        /// </summary>
+        private float ScrollAlignmentToNormalizedPosition(ScrollToAlignment scrollToAlignment)
+        {
+            switch (scrollToAlignment)
+            {
+                // Top edge
+                case ScrollToAlignment.EntryTop:
+                    return 1f;
+                
+                // Bottom edge
+                case ScrollToAlignment.EntryBottom:
+                    return 0f;
+                
+                // Center
+                case ScrollToAlignment.EntryMiddle:
+                    default:
+                    return 0.5f;
             }
         }
 

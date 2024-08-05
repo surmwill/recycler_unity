@@ -52,7 +52,7 @@ namespace RecyclerScrollRect
             // Test cancel scroll to
             if (Input.GetKeyDown(KeyCode.A))
             {
-                _recycler.ScrollToImmediate(41);
+                _recycler.ScrollToIndexImmediate(41);
             }
         }
 
