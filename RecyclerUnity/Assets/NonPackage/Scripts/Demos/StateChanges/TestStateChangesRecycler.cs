@@ -1,14 +1,11 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Tests clearing and adding entries to a recycler, one-by-one
+    /// Tests changing entries' colours as they move states from cached to visible.
     /// </summary>
-    public class TestStateChangesRecycler : MonoBehaviour
+    public class TestStateChangesRecycler : TestRecycler<EmptyRecyclerData, string>
     {
         [SerializeField]
         private EmptyRecyclerScrollRect _recycler = null;
@@ -20,20 +17,20 @@ namespace RecyclerScrollRect
         public const int DebugPrintStateChangesForEntryIndex = 15;
 
         private const int InitNumEntries = 50;
-        
-        private RecyclerValidityChecker<EmptyRecyclerData, string> _validityChecker;
 
-        private void Start()
+        protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _recycler;
+
+        protected override string DemoTitle => "State change demo";
+
+        protected override string DemoDescription =>
+            "Tests changing an entries' colours as they move from the start cache, to visible, to the end cache";
+
+        protected override string[] DemoButtonDescriptions => null;
+
+        protected override void Start()
         {
-            _validityChecker = new RecyclerValidityChecker<EmptyRecyclerData, string>(_recycler);
-            _validityChecker.Bind();
-            
+            base.Start();
             _recycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(InitNumEntries));
-        }
-
-        private void OnDestroy()
-        {
-            _validityChecker.Unbind();
         }
 
         private void OnValidate()
