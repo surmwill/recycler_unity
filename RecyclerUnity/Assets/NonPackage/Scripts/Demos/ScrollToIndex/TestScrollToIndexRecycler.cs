@@ -16,6 +16,7 @@ namespace RecyclerScrollRect
 
         private const int InitNumEntries = 50;
         private const int ScrollToMiddleIndex = 25;
+        private const float ScrollWhileGrowShrinkingSpeed = 0.5f;
 
         private static readonly int[] EnlargeEntryIndices = { 41, 42 };
 
@@ -27,10 +28,13 @@ namespace RecyclerScrollRect
         
         protected override string[] DemoButtonDescriptions { get; }
 
+        private IRecyclerScrollRectActiveEntriesWindow _window;
+
         protected override void Start()
         {
             base.Start();
             _recycler.AppendEntries(CreateEntryData(InitNumEntries, EnlargeEntryIndices));
+            _window = _recycler.ActiveEntriesWindow;
         }
 
         private void Update()
@@ -39,12 +43,12 @@ namespace RecyclerScrollRect
             // Scroll to middle index
             if (Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.M))
             {
-                _recycler.ScrollToIndex(ScrollToMiddleIndex, onScrollComplete:() => Debug.Log("Middle index scroll complete"));
+                _recycler.ScrollToIndex(ScrollToMiddleIndex, onScrollComplete:() => Debug.Log("Middle index scroll complete."));
             }
             // Scroll to top index
             else if (Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.T))
             {
-                _recycler.ScrollToIndex(0, onScrollComplete:() => Debug.Log("Top index scroll complete"));
+                _recycler.ScrollToIndex(0, onScrollComplete:() => Debug.Log("Top index scroll complete."));
             }
             // Scroll to bot index
             else if (Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.B))
@@ -53,10 +57,19 @@ namespace RecyclerScrollRect
             }
 
             /*** Fighting ***/
-            // Scroll to top slowly, and make entry above expand as rapidly as we scroll
-            
-            // Scroll to top slowly, and make entry above expand immediately, then decrease in size slowly 
-            
+            // Scroll to the middle while making the bottom visible entry grow, scrolling over the expanding entry
+            else if (Input.GetKey(KeyCode.F) && Input.GetKeyDown(KeyCode.G))
+            {
+                _recycler.ScrollToIndex(ScrollToMiddleIndex, scrollSpeedViewportsPerSecond:ScrollWhileGrowShrinkingSpeed);
+                ((ScrollToIndexRecyclerScrollRectEntry) _recycler.ActiveEntries[_window.VisibleIndexRange.Value.End]).Grow(FixEntries.Above);
+            }
+            // Scroll to the middle while making the bottom visible entry shrink, scrolling over the shrinking entry
+            else if (Input.GetKey(KeyCode.F) && Input.GetKeyDown(KeyCode.S))
+            {
+                _recycler.ScrollToIndex(ScrollToMiddleIndex, scrollSpeedViewportsPerSecond:ScrollWhileGrowShrinkingSpeed);
+                ((ScrollToIndexRecyclerScrollRectEntry) _recycler.ActiveEntries[_window.VisibleIndexRange.Value.End]).Shrink(FixEntries.Above);
+            }
+
             /*** Edges ***/
             // Scroll immediate top edge
             else if (Input.GetKey(KeyCode.E) && Input.GetKeyDown(KeyCode.T))

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,12 +12,45 @@ namespace RecyclerScrollRect
         [SerializeField]
         private Text _numberText = null;
 
-        private const int NormalSize = 250;
-        private const int GrowSize = 500;
+        private const float GrowShrinkTime = 2.5f;
+
+        private const int NormalSize = 1200;
+        private const int GrowSize = 2000;
+        private const int ShrinkSize = 400;
+
+        private Sequence _sequence;
 
         protected override void OnBindNewData(ScrollToIndexData entryData)
         {
-            RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(entryData.ShouldResize ? GrowSize : NormalSize);
+            _numberText.text = Index.ToString();
+        }
+
+        protected override void OnSentToRecycling()
+        {
+            _sequence?.Kill();
+            RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(NormalSize);
+        }
+
+        /// <summary>
+        /// Grows the entry.
+        /// </summary>
+        public void Grow(FixEntries fixEntries)
+        {
+            _sequence?.Kill();
+            _sequence = DOTween.Sequence()
+                .Append(RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowShrinkTime))
+                .OnUpdate(() => RecalculateDimensions(fixEntries));
+        }
+
+        /// <summary>
+        /// Shrinks the entry.
+        /// </summary>
+        public void Shrink(FixEntries fixEntries)
+        {
+            _sequence?.Kill();
+            _sequence = DOTween.Sequence()
+                .Append(RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(ShrinkSize), GrowShrinkTime))
+                .OnUpdate(() => RecalculateDimensions(fixEntries));
         }
 
         private void Update()
