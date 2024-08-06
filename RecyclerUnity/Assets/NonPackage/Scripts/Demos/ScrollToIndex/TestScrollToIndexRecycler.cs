@@ -38,17 +38,17 @@ namespace RecyclerScrollRect
             // Scroll to middle index
             if (Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.M))
             {
-                _recycler.ScrollToIndex(ScrollToMiddleIndex);
+                _recycler.ScrollToIndex(ScrollToMiddleIndex, onScrollComplete:() => Debug.Log("Middle index scroll complete"));
             }
             // Scroll to top index
             else if (Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.T))
             {
-                _recycler.ScrollToIndex(0);
+                _recycler.ScrollToIndex(0, onScrollComplete:() => Debug.Log("Top index scroll complete"));
             }
             // Scroll to bot index
             else if (Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.B))
             {
-                _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1);
+                _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, onScrollComplete:() => Debug.Log("Bottom index scroll complete."));
             }
 
             // Scroll to top index
@@ -66,7 +66,7 @@ namespace RecyclerScrollRect
             // Scroll immediate bottom
             
             // Scroll immediate middle (top edge)
-            if (Input.GetKeyDown(KeyCode.I))
+            if (Input.GetKey(KeyCode.I) && Input.GetKeyDown(KeyCode.M))
             {
                 _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex);
             }

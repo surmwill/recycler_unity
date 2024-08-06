@@ -1343,22 +1343,59 @@ namespace RecyclerScrollRect
                 throw new ArgumentException($"index \"{index}\" must be >= 0 and < the length of data \"{_dataForEntries.Count}\"");
             }
             
+            StopMovementAndDrag();
+            StopScrollToIndexCoroutine();
+            
+            // If the entry's already active, then scroll to it
+            if (_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
+            {
+               ScrollToActiveEntry(entry);
+               return;
+            }
+            
+            // Otherwise clear and fill up a new window beginning with the entry
             foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry in _activeEntries.Values.ToList())
             {
                 SendToRecycling(activeEntry);
             }
             _activeEntriesWindow.VisibleIndexRange = null;
-
-            content.pivot = content.pivot.WithY(0.5f);
-            normalizedPosition = normalizedPosition.WithY(0f);
             
-            CreateAndAddEntry(index, 0, FixEntries.Above);
+            CreateAndAddEntry(index, 0);
+            content.SetPivotWithoutMoving(content.pivot.WithY(0.5f));
+            normalizedPosition = normalizedPosition.WithY(0.5f);
+            
             RecalculateActiveEntries();
-
-            if (_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
+            
+            if (_activeEntries.TryGetValue(index, out entry))
             {
-                normalizedPosition = normalizedPosition.WithY(
-                    this.GetNormalizedVerticalPositionOfChild(entry.RectTransform, ScrollAlignmentToNormalizedPosition(scrollToAlignment)));
+                ScrollToActiveEntry(entry);
+            }
+
+            void ScrollToActiveEntry(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry)
+            {
+                for (;;)
+                {
+                    float entryNormalizedY = this.GetNormalizedVerticalPositionOfChild(
+                        activeEntry.RectTransform,
+                        ScrollAlignmentToNormalizedPosition(scrollToAlignment));
+
+                    // If we're already centered on the entry we're done scrolling
+                    if (this.IsAtNormalizedPosition(normalizedPosition.WithY(entryNormalizedY)))
+                    {
+                        return;
+                    }
+                    
+                    float prevNormalizedY = normalizedPosition.y;
+                    normalizedPosition = normalizedPosition.WithY(Mathf.Clamp01(entryNormalizedY));
+                    
+                    // If we can't scroll anymore we're done scrolling
+                    if (Mathf.Approximately(prevNormalizedY, normalizedPosition.y))
+                    {
+                        return;
+                    }
+                    
+                    RecalculateActiveEntries();
+                }
             }
         }
 
