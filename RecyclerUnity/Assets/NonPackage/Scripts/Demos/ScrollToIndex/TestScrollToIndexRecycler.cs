@@ -35,6 +35,7 @@ namespace RecyclerScrollRect
 
         private void Update()
         {
+            /*** Animate scroll ***/
             // Scroll to middle index
             if (Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.M))
             {
@@ -51,16 +52,24 @@ namespace RecyclerScrollRect
                 _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, onScrollComplete:() => Debug.Log("Bottom index scroll complete."));
             }
 
+            /*** Fighting ***/
             // Scroll to top slowly, and make entry above expand as rapidly as we scroll
             
             // Scroll to top slowly, and make entry above expand immediately, then decrease in size slowly 
             
+            /*** Edges ***/
             // Scroll immediate top edge
-            
-            // Scroll immediate middle edge
-            
+            else if (Input.GetKey(KeyCode.E) && Input.GetKeyDown(KeyCode.T))
+            {
+                _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex, ScrollToAlignment.EntryTop);
+            }
             // Scroll immediate bottom edge
+            else if (Input.GetKey(KeyCode.E) && Input.GetKeyDown(KeyCode.B))
+            {
+                _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex, ScrollToAlignment.EntryBottom);
+            }
             
+            /*** Immediate Scroll ***/
             // Scroll immediate to middle index
             else if (Input.GetKey(KeyCode.I) && Input.GetKeyDown(KeyCode.M))
             {
@@ -77,7 +86,12 @@ namespace RecyclerScrollRect
                 _recycler.ScrollToIndexImmediate(_recycler.DataForEntries.Count - 1);
             }
             
+            /*** Other ***/
             // Test cancel scroll to
+            else if (Input.GetKeyDown(KeyCode.C))
+            {
+                _recycler.CancelScrollTo();
+            }
         }
 
         private ScrollToIndexData[] CreateEntryData(int numEntries, IEnumerable<int> enlargeIndices = null)
