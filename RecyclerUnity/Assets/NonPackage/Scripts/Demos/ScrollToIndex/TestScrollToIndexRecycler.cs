@@ -51,28 +51,32 @@ namespace RecyclerScrollRect
                 _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, onScrollComplete:() => Debug.Log("Bottom index scroll complete."));
             }
 
-            // Scroll to top index
-            
-            // Scroll to bottom index
-            
             // Scroll to top slowly, and make entry above expand as rapidly as we scroll
             
             // Scroll to top slowly, and make entry above expand immediately, then decrease in size slowly 
             
-            // Scroll immediate top
+            // Scroll immediate top edge
             
-            // Scroll immediate middle
+            // Scroll immediate middle edge
             
-            // Scroll immediate bottom
+            // Scroll immediate bottom edge
             
-            // Scroll immediate middle (top edge)
-            if (Input.GetKey(KeyCode.I) && Input.GetKeyDown(KeyCode.M))
+            // Scroll immediate to middle index
+            else if (Input.GetKey(KeyCode.I) && Input.GetKeyDown(KeyCode.M))
             {
                 _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex);
             }
+            // Scroll immediate to top index
+            else if (Input.GetKey(KeyCode.I) && Input.GetKeyDown(KeyCode.T))
+            {
+                _recycler.ScrollToIndexImmediate(0);
+            }
+            // Scroll immediate to bot index
+            else if (Input.GetKey(KeyCode.I) && Input.GetKeyDown(KeyCode.B))
+            {
+                _recycler.ScrollToIndexImmediate(_recycler.DataForEntries.Count - 1);
+            }
             
-            // Scroll immediate middle (bot edge)
-
             // Test cancel scroll to
         }
 

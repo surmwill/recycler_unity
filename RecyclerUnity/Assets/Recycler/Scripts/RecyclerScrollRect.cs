@@ -803,9 +803,7 @@ namespace RecyclerScrollRect
         /// </summary>
         public void ResetToBeginning()
         {
-            List<TEntryData> entryData = _dataForEntries.ToList();
-            Clear();
-            AppendEntries(entryData);
+            ScrollToIndexImmediate(0, IsZerothEntryAtTop ? ScrollToAlignment.EntryTop : ScrollToAlignment.EntryBottom);
         }
 
         /// <summary>
@@ -1353,7 +1351,7 @@ namespace RecyclerScrollRect
                return;
             }
             
-            // Otherwise clear and fill up a new window beginning with the entry
+            // Otherwise clear and fill up a new window, centering on the entry
             foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry in _activeEntries.Values.ToList())
             {
                 SendToRecycling(activeEntry);
@@ -1365,11 +1363,7 @@ namespace RecyclerScrollRect
             normalizedPosition = normalizedPosition.WithY(0.5f);
             
             RecalculateActiveEntries();
-            
-            if (_activeEntries.TryGetValue(index, out entry))
-            {
-                ScrollToActiveEntry(entry);
-            }
+            ScrollToActiveEntry(_activeEntries[index]);
 
             void ScrollToActiveEntry(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry)
             {
