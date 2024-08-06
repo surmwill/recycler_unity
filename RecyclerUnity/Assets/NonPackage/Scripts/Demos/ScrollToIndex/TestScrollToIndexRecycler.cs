@@ -25,8 +25,25 @@ namespace RecyclerScrollRect
         protected override string DemoTitle => "Scroll to index demo";
 
         protected override string DemoDescription => "Tests scrolling behaviour.";
-        
-        protected override string[] DemoButtonDescriptions { get; }
+
+        protected override string[] DemoButtonDescriptions => new[]
+        {
+            $"0: Scrolls to the middle index {ScrollToMiddleIndex}.",
+            $"1: Scrolls to the top index 0.",
+            $"2: Scrolls to the bottom index {InitNumEntries - 1}.",
+
+            $"3: Scrolls to the middle index {ScrollToMiddleIndex} while making the bottom visible entry grow, scrolling over the expanding entry.",
+            $"4: Scrolls to the middle index {ScrollToMiddleIndex} while making the bottom visible entry shrink, scrolling over the shrinking entry.",
+            
+            $"5: Scrolls immediately to the middle index {ScrollToMiddleIndex}.",
+            $"6: Scrolls immediately to the top index 0.",
+            $"7: Scrolls immediately to the bottom index {InitNumEntries - 1}.",
+            
+            $"8: Scrolls immediately to the top edge of the middle index {ScrollToMiddleIndex}.",
+            $"9: Scrolls immediately to the bottom edge of the middle index {ScrollToMiddleIndex}.",
+
+            $"10: Cancels the current scroll call.",
+        };
 
         private IRecyclerScrollRectActiveEntriesWindow _window;
 
@@ -41,67 +58,67 @@ namespace RecyclerScrollRect
         {
             /*** Animate scroll ***/
             // Scroll to middle index
-            if (Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.M))
+            if ((Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.M)) || DemoToolbar.GetButtonDown(0))
             {
                 _recycler.ScrollToIndex(ScrollToMiddleIndex, onScrollComplete:() => Debug.Log("Middle index scroll complete."));
             }
             // Scroll to top index
-            else if (Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.T))
+            else if ((Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.T)) || DemoToolbar.GetButtonDown(1))
             {
                 _recycler.ScrollToIndex(0, onScrollComplete:() => Debug.Log("Top index scroll complete."));
             }
             // Scroll to bot index
-            else if (Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.B))
+            else if ((Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.B)) || DemoToolbar.GetButtonDown(2))
             {
                 _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, onScrollComplete:() => Debug.Log("Bottom index scroll complete."));
             }
 
             /*** Fighting ***/
             // Scroll to the middle while making the bottom visible entry grow, scrolling over the expanding entry
-            else if (Input.GetKey(KeyCode.F) && Input.GetKeyDown(KeyCode.G))
+            else if ((Input.GetKey(KeyCode.F) && Input.GetKeyDown(KeyCode.G)) || DemoToolbar.GetButtonDown(3))
             {
                 _recycler.ScrollToIndex(ScrollToMiddleIndex, scrollSpeedViewportsPerSecond:ScrollWhileGrowShrinkingSpeed);
                 ((ScrollToIndexRecyclerScrollRectEntry) _recycler.ActiveEntries[_window.VisibleIndexRange.Value.End]).Grow(FixEntries.Above);
             }
             // Scroll to the middle while making the bottom visible entry shrink, scrolling over the shrinking entry
-            else if (Input.GetKey(KeyCode.F) && Input.GetKeyDown(KeyCode.S))
+            else if ((Input.GetKey(KeyCode.F) && Input.GetKeyDown(KeyCode.S)) || DemoToolbar.GetButtonDown(4))
             {
                 _recycler.ScrollToIndex(ScrollToMiddleIndex, scrollSpeedViewportsPerSecond:ScrollWhileGrowShrinkingSpeed);
                 ((ScrollToIndexRecyclerScrollRectEntry) _recycler.ActiveEntries[_window.VisibleIndexRange.Value.End]).Shrink(FixEntries.Above);
             }
 
-            /*** Edges ***/
-            // Scroll immediate top edge
-            else if (Input.GetKey(KeyCode.E) && Input.GetKeyDown(KeyCode.T))
-            {
-                _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex, ScrollToAlignment.EntryTop);
-            }
-            // Scroll immediate bottom edge
-            else if (Input.GetKey(KeyCode.E) && Input.GetKeyDown(KeyCode.B))
-            {
-                _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex, ScrollToAlignment.EntryBottom);
-            }
-            
             /*** Immediate Scroll ***/
             // Scroll immediate to middle index
-            else if (Input.GetKey(KeyCode.I) && Input.GetKeyDown(KeyCode.M))
+            else if ((Input.GetKey(KeyCode.I) && Input.GetKeyDown(KeyCode.M)) || DemoToolbar.GetButtonDown(5))
             {
                 _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex);
             }
             // Scroll immediate to top index
-            else if (Input.GetKey(KeyCode.I) && Input.GetKeyDown(KeyCode.T))
+            else if ((Input.GetKey(KeyCode.I) && Input.GetKeyDown(KeyCode.T)) || DemoToolbar.GetButtonDown(6))
             {
                 _recycler.ScrollToIndexImmediate(0);
             }
             // Scroll immediate to bot index
-            else if (Input.GetKey(KeyCode.I) && Input.GetKeyDown(KeyCode.B))
+            else if ((Input.GetKey(KeyCode.I) && Input.GetKeyDown(KeyCode.B)) || DemoToolbar.GetButtonDown(7))
             {
                 _recycler.ScrollToIndexImmediate(_recycler.DataForEntries.Count - 1);
             }
             
+            /*** Edges ***/
+            // Scroll immediate top edge
+            else if ((Input.GetKey(KeyCode.E) && Input.GetKeyDown(KeyCode.T)) || DemoToolbar.GetButtonDown(8))
+            {
+                _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex, ScrollToAlignment.EntryTop);
+            }
+            // Scroll immediate bottom edge
+            else if ((Input.GetKey(KeyCode.E) && Input.GetKeyDown(KeyCode.B)) || DemoToolbar.GetButtonDown(9))
+            {
+                _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex, ScrollToAlignment.EntryBottom);
+            }
+            
             /*** Other ***/
             // Test cancel scroll to
-            else if (Input.GetKeyDown(KeyCode.C))
+            else if (Input.GetKeyDown(KeyCode.C) || DemoToolbar.GetButtonDown(10))
             {
                 _recycler.CancelScrollTo();
             }
