@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,6 +12,9 @@ namespace RecyclerScrollRect
     {
         [SerializeField]
         private ScrollToIndexRecyclerScrollRect _recycler = null;
+
+        [SerializeField]
+        private GameObject _middleIndicator = null;
 
         private const int InitNumEntries = 50;
         private const int ScrollToMiddleIndex = 25;
@@ -43,6 +45,7 @@ namespace RecyclerScrollRect
             $"9: Scrolls immediately to the bottom edge of the middle index {ScrollToMiddleIndex}.",
 
             $"10: Cancels the current scroll call.",
+            $"11: Toggles the middle indicator on/off to know if we've properly centered on an index."
         };
 
         private IRecyclerScrollRectActiveEntriesWindow _window;
@@ -121,6 +124,11 @@ namespace RecyclerScrollRect
             else if (Input.GetKeyDown(KeyCode.C) || DemoToolbar.GetButtonDown(10))
             {
                 _recycler.CancelScrollTo();
+            }
+            // Toggle the middle indicator
+            else if (Input.GetKeyDown(KeyCode.V) || DemoToolbar.GetButtonDown(11))
+            {
+                _middleIndicator.SetActive(!_middleIndicator.activeSelf);
             }
         }
 
