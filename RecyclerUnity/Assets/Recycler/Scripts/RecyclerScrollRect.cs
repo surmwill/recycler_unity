@@ -736,7 +736,8 @@ namespace RecyclerScrollRect
 
                 if (!_activeEntriesWindow.VisibleIndexRange.HasValue)
                 {
-                    _activeEntriesWindow.SetVisibleRangeAndUpdateCaches((entryIndex, entryIndex));
+                    _activeEntriesWindow.VisibleIndexRange = (entryIndex, entryIndex);
+                    _activeEntriesWindow.UpdateCachesFromVisibleRange();
                     return;
                 }
 
@@ -752,7 +753,8 @@ namespace RecyclerScrollRect
                     newVisibleIndices.End = entryIndex;
                 }
 
-                _activeEntriesWindow.SetVisibleRangeAndUpdateCaches(newVisibleIndices);
+                _activeEntriesWindow.VisibleIndexRange = newVisibleIndices;
+                _activeEntriesWindow.UpdateCachesFromVisibleRange();
             }
 
             // Not visible
@@ -797,14 +799,15 @@ namespace RecyclerScrollRect
                     }
                 }
 
-                _activeEntriesWindow.SetVisibleRangeAndUpdateCaches(newVisibleIndices);
-                
+                _activeEntriesWindow.VisibleIndexRange = newVisibleIndices;
+                _activeEntriesWindow.UpdateCachesFromVisibleRange();
+
                 // Special case: we have a full screen endcap, meaning no visible indices, but indices in the start cache.
                 // The start cache can only get incremented to hold the final index by incrementing the visible range one past the final index.
                 // Therefore after updating the caches like normal we reset the visible range back to its proper value of nothing.
                 if (newVisibleIndices.Start == _dataForEntries.Count)
                 {
-                    _activeEntriesWindow.ClearVisibleRange();
+                    _activeEntriesWindow.VisibleIndexRange = null;
                 }
             }
         }
@@ -1367,7 +1370,9 @@ namespace RecyclerScrollRect
             {
                 SendToRecycling(activeEntry);
             }
-            _activeEntriesWindow.ClearVisibleRangeAndCaches();
+
+            _activeEntriesWindow.VisibleIndexRange = null;
+            _activeEntriesWindow.UpdateCachesFromVisibleRange();
             
             CreateAndAddEntry(index, 0);
             content.SetPivotWithoutMoving(content.pivot.WithY(0.5f));
