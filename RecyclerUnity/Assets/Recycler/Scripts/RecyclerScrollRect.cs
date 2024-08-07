@@ -527,9 +527,9 @@ namespace RecyclerScrollRect
             LinkedListNode<int> current;
 
             bool didActiveEntriesChange = false;
-            while (_activeEntriesWindow.IsDirty)
+            while (_activeEntriesWindow.AreVisibleEntriesDirty)
             {
-                _activeEntriesWindow.SetNonDirty();
+                _activeEntriesWindow.SetVisibleEntriesNonDirty();
                 didActiveEntriesChange = true;
                 
                 _toRecycleEntries.Clear();
@@ -686,6 +686,8 @@ namespace RecyclerScrollRect
 
         private void CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
         {
+            Debug.Log("CREATIOMG " + dataIndex);
+            
             if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
             {
                 entry = Instantiate(_recyclerEntryPrefab, content);
@@ -736,7 +738,7 @@ namespace RecyclerScrollRect
 
                 if (!_activeEntriesWindow.VisibleIndexRange.HasValue)
                 {
-                    _activeEntriesWindow.VisibleIndexRange = (entryIndex, entryIndex);
+                    _activeEntriesWindow.SetVisibleRangeUpdateCaches((entryIndex, entryIndex));
                     return;
                 }
 
@@ -752,7 +754,7 @@ namespace RecyclerScrollRect
                     newVisibleIndices.End = entryIndex;
                 }
 
-                _activeEntriesWindow.VisibleIndexRange = newVisibleIndices;
+                _activeEntriesWindow.SetVisibleRangeUpdateCaches(newVisibleIndices);
             }
 
             // Not visible
@@ -797,7 +799,7 @@ namespace RecyclerScrollRect
                     }
                 }
 
-                _activeEntriesWindow.VisibleIndexRange = newVisibleIndices;
+                _activeEntriesWindow.SetVisibleRangeUpdateCaches(newVisibleIndices);
             }
         }
 
@@ -1359,7 +1361,7 @@ namespace RecyclerScrollRect
             {
                 SendToRecycling(activeEntry);
             }
-            _activeEntriesWindow.VisibleIndexRange = null;
+            _activeEntriesWindow.ClearVisibleRangeUpdateCaches(true, true);
             
             CreateAndAddEntry(index, 0);
             content.SetPivotWithoutMoving(content.pivot.WithY(0.5f));

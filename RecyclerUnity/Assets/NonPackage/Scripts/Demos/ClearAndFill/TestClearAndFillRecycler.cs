@@ -94,7 +94,7 @@ namespace RecyclerScrollRect
             }
             
             if (_activeEntriesWindow.Exists || 
-                _activeEntriesWindow.IsDirty || 
+                _activeEntriesWindow.AreVisibleEntriesDirty || 
                 _activeEntriesWindow.ActiveEntriesRange.HasValue || 
                 _activeEntriesWindow.VisibleIndexRange.HasValue ||
                 _activeEntriesWindow.StartCacheIndexRange.HasValue || 
