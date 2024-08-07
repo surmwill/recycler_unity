@@ -686,8 +686,6 @@ namespace RecyclerScrollRect
 
         private void CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
         {
-            Debug.Log("CREATIOMG " + dataIndex);
-            
             if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
             {
                 entry = Instantiate(_recyclerEntryPrefab, content);
@@ -770,7 +768,7 @@ namespace RecyclerScrollRect
                 bool wentOffTop = Vector3.Dot(entry.RectTransform.position - viewport.transform.position, viewport.transform.up) > 0;
 
                 // Note that for any entry to be non-visible there must be at least one other entry pushing it offscreen.
-                // This means there's a guaranteed existent entry below/above it and we can be safe adding +/- 1 to our index window bounds
+                // This means there's a guaranteed existent entry below/above it and we can be safe adding +/- 1 to our index window bounds.
                 if (IsZerothEntryAtTop)
                 {
                     // Anything off the top means we are scrolling down, away from entry 0, away from lesser indices
@@ -800,6 +798,14 @@ namespace RecyclerScrollRect
                 }
 
                 _activeEntriesWindow.SetVisibleRangeAndUpdateCaches(newVisibleIndices);
+                
+                // Special case: we have a full screen endcap, meaning no visible indices, but indices in the start cache.
+                // The start cache can only get incremented to hold the final index by incrementing the visible range one past the final index.
+                // Therefore after updating the caches like normal we reset the visible range back to its proper value of nothing.
+                if (newVisibleIndices.Start == _dataForEntries.Count)
+                {
+                    _activeEntriesWindow.ClearVisibleRange();
+                }
             }
         }
 
@@ -1361,7 +1367,7 @@ namespace RecyclerScrollRect
             {
                 SendToRecycling(activeEntry);
             }
-            _activeEntriesWindow.ClearVisibleRangeAndUpdateCaches(true, true);
+            _activeEntriesWindow.ClearVisibleRangeAndCaches();
             
             CreateAndAddEntry(index, 0);
             content.SetPivotWithoutMoving(content.pivot.WithY(0.5f));

@@ -60,7 +60,7 @@ namespace RecyclerScrollRect
         public (int Start, int End)? ActiveEntriesRange => !StartCacheIndexRange.HasValue && !VisibleIndexRange.HasValue && !EndCacheIndexRange.HasValue ?
             null : 
             (StartCacheIndexRange?.Start ?? VisibleIndexRange?.Start ?? 0, 
-                EndCacheIndexRange?.End ?? VisibleIndexRange.Value.End);
+                EndCacheIndexRange?.End ?? VisibleIndexRange?.End ?? StartCacheIndexRange.Value.End);
 
         /// <summary>
         /// Whether the range of active entries has changed.
@@ -73,34 +73,6 @@ namespace RecyclerScrollRect
         
         private int _currentDataSize;
         private readonly int _numCached;
-        
-        public void SetVisibleRangeAndUpdateCaches((int Start, int End) newVisibleRange)
-        {
-            VisibleIndexRange = newVisibleRange;
-            
-            StartCacheIndexRange = newVisibleRange.Start == 0 ?
-                null :
-                (Mathf.Max(newVisibleRange.Start - _numCached, 0), newVisibleRange.Start - 1);
-            
-            EndCacheIndexRange = newVisibleRange.End == _currentDataSize - 1 ?
-                null :
-                (newVisibleRange.End + 1, Mathf.Min( newVisibleRange.End + _numCached, _currentDataSize - 1));
-        }
-
-        public void ClearVisibleRangeAndUpdateCaches(bool clearStartCache = false, bool clearEndCache = false)
-        {
-            VisibleIndexRange = null;
-
-            if (clearStartCache)
-            {
-                StartCacheIndexRange = null;
-            }
-
-            if (clearEndCache)
-            {
-                EndCacheIndexRange = _currentDataSize == 0 ? null : (0, Mathf.Min(_numCached - 1, _currentDataSize - 1));
-            }
-        }
 
         /// <summary>
         /// Inserts new entries into the window.
@@ -157,7 +129,7 @@ namespace RecyclerScrollRect
             // If we've deleted everything then nothing is visible
             if (_currentDataSize == 0)
             {
-                ClearVisibleRangeAndUpdateCaches(true, true);
+                ClearVisibleRangeAndCaches();
                 return;
             }
             
@@ -192,8 +164,43 @@ namespace RecyclerScrollRect
         public void Reset()
         {
             _currentDataSize = 0;
-            ClearVisibleRangeAndUpdateCaches(true, true);
+            ClearVisibleRangeAndCaches();
             AreActiveEntriesDirty = false;
+        }
+        
+        /// <summary>
+        /// Updates the visible range of indices, which, in turn, updates what's in the start and end cache.
+        /// </summary>
+        /// <param name="newVisibleRange"> The new visible range of indices. </param>
+        public void SetVisibleRangeAndUpdateCaches((int Start, int End) newVisibleRange)
+        {
+            VisibleIndexRange = newVisibleRange;
+            
+            StartCacheIndexRange = newVisibleRange.Start == 0 ?
+                null :
+                (Mathf.Max(newVisibleRange.Start - _numCached, 0), newVisibleRange.Start - 1);
+            
+            EndCacheIndexRange = newVisibleRange.End == _currentDataSize - 1 ?
+                null :
+                (newVisibleRange.End + 1, Mathf.Min( newVisibleRange.End + _numCached, _currentDataSize - 1));
+        }
+
+        /// <summary>
+        /// Clears only the visible range of indices.
+        /// </summary>
+        public void ClearVisibleRange()
+        {
+            VisibleIndexRange = null;
+        }
+
+        /// <summary>
+        /// Clears the visible range of indices, as well as those in the start and end cache.
+        /// </summary>
+        public void ClearVisibleRangeAndCaches()
+        {
+            ClearVisibleRange();
+            StartCacheIndexRange = null;
+            EndCacheIndexRange = _currentDataSize == 0 ? null : (0, Mathf.Min(_numCached - 1, _currentDataSize - 1));
         }
 
        /// <summary>
