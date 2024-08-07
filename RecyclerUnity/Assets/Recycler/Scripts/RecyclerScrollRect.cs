@@ -527,9 +527,9 @@ namespace RecyclerScrollRect
             LinkedListNode<int> current;
 
             bool didActiveEntriesChange = false;
-            while (_activeEntriesWindow.AreVisibleEntriesDirty)
+            while (_activeEntriesWindow.AreActiveEntriesDirty)
             {
-                _activeEntriesWindow.SetVisibleEntriesNonDirty();
+                _activeEntriesWindow.SetActiveEntriesNonDirty();
                 didActiveEntriesChange = true;
                 
                 _toRecycleEntries.Clear();
@@ -738,7 +738,7 @@ namespace RecyclerScrollRect
 
                 if (!_activeEntriesWindow.VisibleIndexRange.HasValue)
                 {
-                    _activeEntriesWindow.SetVisibleRangeUpdateCaches((entryIndex, entryIndex));
+                    _activeEntriesWindow.SetVisibleRangeAndUpdateCaches((entryIndex, entryIndex));
                     return;
                 }
 
@@ -754,7 +754,7 @@ namespace RecyclerScrollRect
                     newVisibleIndices.End = entryIndex;
                 }
 
-                _activeEntriesWindow.SetVisibleRangeUpdateCaches(newVisibleIndices);
+                _activeEntriesWindow.SetVisibleRangeAndUpdateCaches(newVisibleIndices);
             }
 
             // Not visible
@@ -799,7 +799,7 @@ namespace RecyclerScrollRect
                     }
                 }
 
-                _activeEntriesWindow.SetVisibleRangeUpdateCaches(newVisibleIndices);
+                _activeEntriesWindow.SetVisibleRangeAndUpdateCaches(newVisibleIndices);
             }
         }
 
@@ -1361,7 +1361,7 @@ namespace RecyclerScrollRect
             {
                 SendToRecycling(activeEntry);
             }
-            _activeEntriesWindow.ClearVisibleRangeUpdateCaches(true, true);
+            _activeEntriesWindow.ClearVisibleRangeAndUpdateCaches(true, true);
             
             CreateAndAddEntry(index, 0);
             content.SetPivotWithoutMoving(content.pivot.WithY(0.5f));
