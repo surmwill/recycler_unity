@@ -126,7 +126,7 @@ namespace RecyclerScrollRect
 
         private bool IsZerothEntryAtTop => _appendTo == RecyclerPosition.Bot;
 
-        private bool IsEndcapActive => _endcap != null && _endcap.gameObject.activeSelf;
+        private bool IsEndcapActive => _hasEndcap && _endcap.gameObject.activeSelf;
 
         private RecyclerPosition StartCachePosition => IsZerothEntryAtTop ? RecyclerPosition.Top : RecyclerPosition.Bot;
 
@@ -157,6 +157,8 @@ namespace RecyclerScrollRect
         private readonly LinkedList<int> _newCachedStartEntries = new();
         private readonly LinkedList<int> _newCachedEndEntries = new();
         private LinkedList<int> _updateStateOfEntries = new();
+
+        private bool _hasEndcap;
 
         protected override void Awake()
         {
@@ -201,7 +203,8 @@ namespace RecyclerScrollRect
             _initPivot = content.pivot;
 
             // Cache the endcap's layout behaviours if there are any. These will be disabled when not in use for performance reasons.
-            if (_endcap != null)
+            _hasEndcap = _endcap != null;
+            if (_hasEndcap)
             {
                 _endcapLayoutBehaviours = LayoutUtilities.GetLayoutBehaviours(_endcap.gameObject, true);
             }
@@ -1140,7 +1143,7 @@ namespace RecyclerScrollRect
             }
             
             bool hasFirstEntry = HasEntryWithIndex(0);
-            bool hasLastEntry = HasEntryWithIndex(DataForEntries.Count - 1) || IsEndcapActive;
+            bool hasLastEntry = _hasEndcap ? IsEndcapActive : HasEntryWithIndex(DataForEntries.Count - 1);
 
             // If we're reducing the size of the first or last entries, then we might be creating extra space at the top or bottom of the list
             // that can't be filled by future entries. Shift the list up or down to occupy this space.
