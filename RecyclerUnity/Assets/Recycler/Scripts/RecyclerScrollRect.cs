@@ -527,9 +527,9 @@ namespace RecyclerScrollRect
             LinkedListNode<int> current;
 
             bool didActiveEntriesChange = false;
-            while (_activeEntriesWindow.IsDirty)
+            while (_activeEntriesWindow.AreActiveEntriesDirty)
             {
-                _activeEntriesWindow.SetNonDirty();
+                _activeEntriesWindow.SetActiveEntriesNonDirty();
                 didActiveEntriesChange = true;
                 
                 _toRecycleEntries.Clear();
@@ -737,6 +737,7 @@ namespace RecyclerScrollRect
                 if (!_activeEntriesWindow.VisibleIndexRange.HasValue)
                 {
                     _activeEntriesWindow.VisibleIndexRange = (entryIndex, entryIndex);
+                    _activeEntriesWindow.UpdateCachesFromVisibleRange();
                     return;
                 }
 
@@ -753,6 +754,7 @@ namespace RecyclerScrollRect
                 }
 
                 _activeEntriesWindow.VisibleIndexRange = newVisibleIndices;
+                _activeEntriesWindow.UpdateCachesFromVisibleRange();
             }
 
             // Not visible
@@ -768,7 +770,7 @@ namespace RecyclerScrollRect
                 bool wentOffTop = Vector3.Dot(entry.RectTransform.position - viewport.transform.position, viewport.transform.up) > 0;
 
                 // Note that for any entry to be non-visible there must be at least one other entry pushing it offscreen.
-                // This means there's a guaranteed existent entry below/above it and we can be safe adding +/- 1 to our index window bounds
+                // This means there's a guaranteed existent entry below/above it and we can be safe adding +/- 1 to our index window bounds.
                 if (IsZerothEntryAtTop)
                 {
                     // Anything off the top means we are scrolling down, away from entry 0, away from lesser indices
@@ -798,6 +800,15 @@ namespace RecyclerScrollRect
                 }
 
                 _activeEntriesWindow.VisibleIndexRange = newVisibleIndices;
+                _activeEntriesWindow.UpdateCachesFromVisibleRange();
+
+                // Special case: we have a full screen endcap, meaning no visible indices, but indices in the start cache.
+                // The start cache can only get incremented to hold the final index by incrementing the visible range one past the final index.
+                // Therefore after updating the caches like normal we reset the visible range back to its proper value of nothing.
+                if (newVisibleIndices.Start == _dataForEntries.Count)
+                {
+                    _activeEntriesWindow.VisibleIndexRange = null;
+                }
             }
         }
 
@@ -1359,7 +1370,9 @@ namespace RecyclerScrollRect
             {
                 SendToRecycling(activeEntry);
             }
+
             _activeEntriesWindow.VisibleIndexRange = null;
+            _activeEntriesWindow.UpdateCachesFromVisibleRange();
             
             CreateAndAddEntry(index, 0);
             content.SetPivotWithoutMoving(content.pivot.WithY(0.5f));

@@ -18,7 +18,7 @@ namespace RecyclerScrollRect
     /// </summary>
     public class FullScreenEntriesEndcap : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
     {
-        private const float BufferPct = 0.1f;
+        private const float BufferPct = 0.2f;
         
         public override void OnFetchedFromPool()
         {

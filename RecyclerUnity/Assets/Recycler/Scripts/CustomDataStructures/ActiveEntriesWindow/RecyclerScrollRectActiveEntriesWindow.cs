@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using PlasticPipe.PlasticProtocol.Client;
 using UnityEngine;
 
 namespace RecyclerScrollRect
@@ -13,46 +14,67 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Returns true if the window exists, that is, we have some underlying recycler data to have a window over in the first place.
         /// </summary>
-        public bool Exists => _virContainer.CurrentDataSize > 0;
+        public bool Exists => _currentDataSize > 0;
 
         /// <summary>
         /// The range of entry indices that are visible. Null if the range is empty.
         /// </summary>
         public (int Start, int End)? VisibleIndexRange
         {
-            get => _virContainer.VisibleIndexRange;
-            set => _virContainer.VisibleIndexRange = value;
+            get => _visibleIndexRange; 
+            set
+            {
+                AreActiveEntriesDirty = AreActiveEntriesDirty || IsRangeDifferent(value, _visibleIndexRange);
+                _visibleIndexRange = value;
+            }
         }
 
         /// <summary>
         /// The range of entry indices contained in the start cache. Null if the range is empty.
         /// </summary>
-        public (int Start, int End)? StartCacheIndexRange => !Exists || !VisibleIndexRange.HasValue || VisibleIndexRange.Value.Start == 0 ?
-                null :
-                (Mathf.Max(VisibleIndexRange.Value.Start - _numCached, 0), VisibleIndexRange.Value.Start - 1);
+        public (int Start, int End)? StartCacheIndexRange
+        {
+            get => _startCacheIndexRange;
+            private set
+            {
+                AreActiveEntriesDirty = AreActiveEntriesDirty || IsRangeDifferent(value, _startCacheIndexRange);
+                _startCacheIndexRange = value;
+            }
+        }
 
         /// <summary>
         /// The range of entry indices contained in the end cache. Null if the range is empty.
         /// </summary>
-        public (int Start, int End)? EndCacheIndexRange => !Exists || (VisibleIndexRange.HasValue && VisibleIndexRange.Value.End == _virContainer.CurrentDataSize - 1) ?
-            null :
-            (VisibleIndexRange?.End + 1 ?? 0, Mathf.Min(VisibleIndexRange.HasValue ? VisibleIndexRange.Value.End + _numCached : _numCached - 1, _virContainer.CurrentDataSize - 1));
+        public (int Start, int End)? EndCacheIndexRange
+        {
+            get => _endCacheIndexRange;
+            private set
+            {
+                AreActiveEntriesDirty = AreActiveEntriesDirty || IsRangeDifferent(value, _endCacheIndexRange);
+                _endCacheIndexRange = value;
+            }
+        }
 
         /// <summary>
         /// The range of indices of active entries: both visible and cached. Null if the range is empty.
         /// </summary>
-        public (int Start, int End)? ActiveEntriesRange => !Exists ?
-            null :
-            (StartCacheIndexRange?.Start ?? VisibleIndexRange?.Start ?? 0, EndCacheIndexRange?.End ?? VisibleIndexRange.Value.End);
+        public (int Start, int End)? ActiveEntriesRange => !StartCacheIndexRange.HasValue && !VisibleIndexRange.HasValue && !EndCacheIndexRange.HasValue ?
+            null : 
+            (StartCacheIndexRange?.Start ?? VisibleIndexRange?.Start ?? 0, 
+                EndCacheIndexRange?.End ?? VisibleIndexRange?.End ?? StartCacheIndexRange.Value.End);
 
         /// <summary>
-        /// Whether the window of active entries has changed.
+        /// Whether the range of active entries has changed.
         /// </summary>
-        public bool IsDirty { get; private set; }
+        public bool AreActiveEntriesDirty { get; private set; }
 
-        private readonly int _numCached;
-        private readonly VisibleIndexRangeContainer _virContainer;
+        private (int Start, int End)? _visibleIndexRange;
+        private (int Start, int End)? _startCacheIndexRange;
+        private (int Start, int End)? _endCacheIndexRange;
         
+        private int _currentDataSize;
+        private readonly int _numCached;
+
         /// <summary>
         /// Inserts new entries into the window.
         /// By default, the visible state of entries is preserved: what was visible stays visible and vice-versa.
@@ -62,30 +84,31 @@ namespace RecyclerScrollRect
         /// <param name="num"> The number of entries to insert. </param>
         public void InsertRange(int index, int num)
         {
+            bool isFirstInsert = _currentDataSize == 0;
+            
             // Increase the size of the window
-            _virContainer.CurrentDataSize += num;
+            _currentDataSize += num;
 
-            if (!VisibleIndexRange.HasValue)
+            // The first inserted entries get put into the end cache
+            if (isFirstInsert)
             {
+                EndCacheIndexRange = (0, Mathf.Min(_numCached - 1, _currentDataSize - 1));
                 return;
             }
 
-            // Shift the currently visible window to accomodate the added entries
-            (int Start, int End) shiftedVisibleIndices = VisibleIndexRange.Value;
-            
-            if (index <= VisibleIndexRange.Value.End)
+            // If there's visible entries, then update those and then the caches based on the updated range.
+            if (VisibleIndexRange.HasValue)
             {
-                shiftedVisibleIndices.End += num;
-            }
-            
-            if (index <= VisibleIndexRange.Value.Start)
-            {
-                shiftedVisibleIndices.Start += num;
+                VisibleIndexRange = InsertIndicesToRange(VisibleIndexRange, index, num);
+                UpdateCachesFromVisibleRange();
+                return;
             }
 
-            VisibleIndexRange = shiftedVisibleIndices;
+            // If there's no visible entries, but things still in the start/end cache (i.e. we have a full-screen endcap), then update the caches individually.
+            StartCacheIndexRange = TrimRange(InsertIndicesToRange(StartCacheIndexRange, index, num), _currentDataSize - 1, _numCached, true);
+            EndCacheIndexRange = TrimRange(InsertIndicesToRange(EndCacheIndexRange, index, num), _currentDataSize - 1, _numCached, false);
         }
-        
+
         /// <summary>
         /// Removes an entry from the window.
         /// By default, the visible state of entries is preserved: what was visible stays visible and vice-versa.
@@ -95,38 +118,19 @@ namespace RecyclerScrollRect
         public void Remove(int index)
         {
             // Decrease the size of the window
-            _virContainer.CurrentDataSize--;
-
-            if (!VisibleIndexRange.HasValue)
+            _currentDataSize--;
+            
+            // If there's visible entries, then update those and then the caches based on the updated range.
+            if (VisibleIndexRange.HasValue)
             {
+                VisibleIndexRange = RemoveIndexFromRange(VisibleIndexRange, index);
+                UpdateCachesFromVisibleRange();
                 return;
             }
 
-            // If we've deleted everything then nothing is visible
-            if (_virContainer.CurrentDataSize == 0)
-            {
-                VisibleIndexRange = null;
-                return;
-            }
-
-            // Shift the current window to accomodate the removed entry
-            (int Start, int End) shiftedVisibleIndices = VisibleIndexRange.Value;
-
-            if (index <= VisibleIndexRange.Value.End)
-            {
-                shiftedVisibleIndices.End--;
-            }
-
-            if (index < VisibleIndexRange.Value.Start)
-            {
-                shiftedVisibleIndices.Start--;
-            }
-            else if (index == VisibleIndexRange.Value.Start)
-            {
-                shiftedVisibleIndices.Start = Mathf.Min(shiftedVisibleIndices.End, shiftedVisibleIndices.Start + 1);
-            }
-
-            VisibleIndexRange = shiftedVisibleIndices;
+            // If there's no visible entries, but things still in the start/end cache (i.e. we have a full-screen endcap), then update the caches individually.
+            StartCacheIndexRange = TrimRange(RemoveIndexFromRange(StartCacheIndexRange, index), _currentDataSize - 1, _numCached, true);
+            EndCacheIndexRange = TrimRange(RemoveIndexFromRange(EndCacheIndexRange, index), _currentDataSize - 1, _numCached, false);
         }
 
         /// <summary>
@@ -134,12 +138,35 @@ namespace RecyclerScrollRect
         /// </summary>
         public void Reset()
         {
-            VisibleIndexRange = null;
-            _virContainer.CurrentDataSize = 0;
-            IsDirty = false;
+            _currentDataSize = 0;
+            (StartCacheIndexRange, VisibleIndexRange, EndCacheIndexRange) = (null, null, null);
+            AreActiveEntriesDirty = false;
         }
 
-       /// <summary>
+        /// <summary>
+        /// Based on the visible indices, determines what should be in the start and end caches.
+        /// </summary>
+        public void UpdateCachesFromVisibleRange()
+        {
+            if (!VisibleIndexRange.HasValue)
+            {
+                StartCacheIndexRange = null;
+                EndCacheIndexRange = _currentDataSize == 0 ? null : (0, Mathf.Min(_numCached - 1, _currentDataSize - 1));
+                return;
+            }
+
+            (int Start, int End) visibleIndexRange = VisibleIndexRange.Value;
+            
+            StartCacheIndexRange = visibleIndexRange.Start == 0 ?
+                null :
+                (Mathf.Max(visibleIndexRange.Start - _numCached, 0), visibleIndexRange.Start - 1);
+            
+            EndCacheIndexRange = visibleIndexRange.End == _currentDataSize - 1 ?
+                null :
+                (visibleIndexRange.End + 1, Mathf.Min(visibleIndexRange.End + _numCached, _currentDataSize - 1));
+        }
+
+        /// <summary>
        /// Returns true if the given index is visible.
        /// </summary>
        /// <param name="index"> The index to test if it is visible. </param>
@@ -180,12 +207,11 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Relays that we have checked the current range of active entries, done any work we need to,
-        /// and are now waiting on the window to become dirty again (the range of active entries changes).
+        /// Relays that we have checked the changed range of active entries and are now waiting for the next change.
         /// </summary>
-        public void SetNonDirty()
+        public void SetActiveEntriesNonDirty()
         {
-            IsDirty = false;
+            AreActiveEntriesDirty = false;
         }
 
         /// <summary>
@@ -198,7 +224,14 @@ namespace RecyclerScrollRect
                 $"Start Cache Range: {(!StartCacheIndexRange.HasValue ? "[]" : $"[{StartCacheIndexRange.Value.Start},{StartCacheIndexRange.Value.End}]")}\n" +
                 $"End Cache Range: {(!EndCacheIndexRange.HasValue ? "[]" : $"[{EndCacheIndexRange.Value.Start},{EndCacheIndexRange.Value.End}]")}";
         }
-        
+
+        public RecyclerScrollRectActiveEntriesWindow(int numCached)
+        {
+            _numCached = numCached;
+        }
+
+        #region Enumeration
+
         /// <summary>
         /// Returns the indices of all the active entries in increasing order.
         /// </summary>
@@ -220,59 +253,99 @@ namespace RecyclerScrollRect
         {
             return GetEnumerator();
         }
+        
+        #endregion
 
-        public RecyclerScrollRectActiveEntriesWindow(int numCached)
+        #region StaticRangeHelpers
+        
+        private static (int Start, int End)? TrimRange((int Start, int End)? range, int maxIndex, int maxSize, bool fromStart)
         {
-            _numCached = numCached;
-            _virContainer = new VisibleIndexRangeContainer(this);
+            if (!range.HasValue)
+            {
+                return null;
+            }
+
+            (int Start, int End) newRange = (range.Value.Start, Mathf.Min(range.Value.End, maxIndex));
+            int diff = maxSize - (newRange.End - newRange.Start + 1);
+            
+            if (diff >= 0)
+            {
+                return newRange;
+            }
+
+            if (fromStart)
+            {
+                newRange.Start += diff;
+            }
+            else
+            {
+                newRange.End -= diff;
+            }
+
+            return newRange;
         }
 
-        /// <summary>
-        /// This class encapsulates a set of properties that could technically live in the outer class just fine.
-        /// Its purpose is to ensure the backing fields are never modified directly, but only through the property setters.
-        /// </summary>
-        private class VisibleIndexRangeContainer
+        private static (int Start, int End)? InsertIndicesToRange((int Start, int End)? range, int index, int num)
         {
-            private readonly RecyclerScrollRectActiveEntriesWindow _entriesWindow;
-
-            private (int Start, int End)? _visibleIndexRange;
-            private int _currentDataSize;
-
-            /// <summary>
-            /// The range of entry indices that are visible. Null if the range is empty.
-            /// </summary>
-            public (int Start, int End)? VisibleIndexRange
+            if (!range.HasValue)
             {
-                get => _visibleIndexRange;
-                set
-                {
-                    (int Start, int End)? newVisibleIndices = value;
-                    _entriesWindow.IsDirty = _entriesWindow.IsDirty ||
-                                             _visibleIndexRange.HasValue != newVisibleIndices.HasValue ||
-                                             _visibleIndexRange?.Start != newVisibleIndices?.Start ||
-                                             _visibleIndexRange?.End != newVisibleIndices?.End;
-
-                    _visibleIndexRange = newVisibleIndices;
-                }
+                return null;
             }
 
-            /// <summary>
-            /// The current size of the underlying data that the window moves over.
-            /// </summary>
-            public int CurrentDataSize
+            (int Start, int End) newRange = range.Value;
+            
+            // Adjust end
+            if (index <= newRange.End)
             {
-                get => _currentDataSize;
-                set
-                {
-                    _entriesWindow.IsDirty = _entriesWindow.IsDirty || value != _currentDataSize;
-                    _currentDataSize = value;
-                }
+                newRange.End += num;
+            }
+            
+            // Adjust start
+            if (index <= newRange.Start)
+            {
+                newRange.Start += num;
             }
 
-            public VisibleIndexRangeContainer(RecyclerScrollRectActiveEntriesWindow entriesWindow)
-            {
-                _entriesWindow = entriesWindow;
-            }
+            return newRange;
         }
+        
+        private static (int Start, int End)? RemoveIndexFromRange((int Start, int End)? fromRange, int index)
+        {
+            if (!fromRange.HasValue)
+            {
+                return null;
+            }
+
+            (int Start, int End) newRange = fromRange.Value;
+            if (newRange.Start == newRange.End && newRange.End == index)
+            {
+                return null;
+            }
+
+            // Adjust end
+            if (index <= newRange.End)
+            {
+                newRange.End--;
+            }
+            
+            // Adjust start
+            if (index < newRange.Start)
+            {
+                newRange.Start--;
+            }
+            else if (index == newRange.Start)
+            {
+                newRange.Start = Mathf.Min(newRange.Start + 1, newRange.End);
+            }
+
+            return newRange;
+        }
+        
+        private static bool IsRangeDifferent((int Start, int End)? range1, (int Start, int End)? range2)
+        {
+            return range1?.Start != range2?.Start || range1?.End != range2?.End;
+        }
+        
+        #endregion
     }
 }

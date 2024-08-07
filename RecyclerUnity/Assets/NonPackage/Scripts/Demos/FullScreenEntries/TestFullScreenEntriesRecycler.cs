@@ -13,7 +13,7 @@ namespace RecyclerScrollRect
         [SerializeField]
         private EmptyRecyclerScrollRect _recycler = null;
 
-        private const int InitNumEntries = 10;
+        private const int InitNumEntries = 5;
 
         protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _recycler;
 
