@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -27,6 +28,19 @@ namespace RecyclerScrollRect
         {
             base.Start();
             _recycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(InitNumEntries));
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                //_recycler.InsertAtIndex(_recycler.DataForEntries.Count - 3, new EmptyRecyclerData(), FixEntries.Above);
+                _recycler.AppendEntries(new []{ new EmptyRecyclerData(), new EmptyRecyclerData(), new EmptyRecyclerData()});
+            }
+            else if (Input.GetKeyDown(KeyCode.D))
+            {
+                _recycler.RemoveAtIndex(_recycler.DataForEntries.Count - 1, FixEntries.Below);
+            }
         }
 
         private void OnValidate()

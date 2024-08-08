@@ -236,18 +236,9 @@ namespace RecyclerScrollRect
             {
                 return;
             }
-
-            // Find the proper place in the hierarchy for the entry
-            int siblingIndex = IsZerothEntryAtTop ? 0 : content.childCount;
-            foreach (Transform entryTransform in content)
-            {
-                if (entryTransform.gameObject.name == (index - 1).ToString())
-                {
-                    siblingIndex = entryTransform.GetSiblingIndex() + (IsZerothEntryAtTop ? 1 : 0);
-                }
-            }
-
+            
             // Create the entry
+            int siblingIndex = GetSiblingIndexForEntry(index);
             if (_activeEntriesWindow.IsInStartCache(index))
             {
                 CreateAndAddEntry(index, siblingIndex, StartCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
@@ -590,7 +581,7 @@ namespace RecyclerScrollRect
                 {
                     _newCachedStartEntries.RemoveFirst();
                     CreateAndAddEntry(current.Value,
-                        isStartCacheAtTop ? 0 : content.childCount,
+                        GetSiblingIndexForEntry(current.Value),
                         isStartCacheAtTop ? FixEntries.Below : FixEntries.Above);
                     current = _newCachedStartEntries.First;
                 }
@@ -603,7 +594,7 @@ namespace RecyclerScrollRect
                 {
                     _newCachedEndEntries.RemoveFirst();
                     CreateAndAddEntry(current.Value,
-                        isEndCacheAtTop ? 0 + Convert.ToInt32(IsEndcapActive) : content.childCount - Convert.ToInt32(IsEndcapActive),
+                        GetSiblingIndexForEntry(current.Value),
                         isEndCacheAtTop ? FixEntries.Below : FixEntries.Above);
                     current = _newCachedEndEntries.First;
                 }
@@ -638,6 +629,19 @@ namespace RecyclerScrollRect
             {
                 _endcap.SetState(GetStateOfEndcap());
             }
+        }
+        
+        private int GetSiblingIndexForEntry(int entryIndex)
+        {
+            int siblingIndex = IsZerothEntryAtTop ? 0 : content.childCount;
+            foreach (Transform entryTransform in content)
+            {
+                if (entryTransform.gameObject.name == (entryIndex - 1).ToString())
+                {
+                    siblingIndex = entryTransform.GetSiblingIndex() + (IsZerothEntryAtTop ? 1 : 0);
+                }
+            }
+            return siblingIndex;
         }
 
         /// <summary>

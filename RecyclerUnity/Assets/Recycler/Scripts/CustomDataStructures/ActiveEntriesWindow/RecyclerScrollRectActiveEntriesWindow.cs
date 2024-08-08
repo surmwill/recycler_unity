@@ -84,13 +84,13 @@ namespace RecyclerScrollRect
         /// <param name="num"> The number of entries to insert. </param>
         public void InsertRange(int index, int num)
         {
-            bool isFirstInsert = _currentDataSize == 0;
+            bool isFirstData = _currentDataSize == 0;
             
             // Increase the size of the window
             _currentDataSize += num;
 
             // The first inserted entries get put into the end cache
-            if (isFirstInsert)
+            if (isFirstData)
             {
                 EndCacheIndexRange = (0, Mathf.Min(_numCached - 1, _currentDataSize - 1));
                 return;
@@ -104,9 +104,20 @@ namespace RecyclerScrollRect
                 return;
             }
 
-            // If there's no visible entries, but things still in the start/end cache (i.e. we have a full-screen endcap), then update the caches individually.
-            StartCacheIndexRange = TrimRange(InsertIndicesToRange(StartCacheIndexRange, index, num), _currentDataSize - 1, _numCached, true);
-            EndCacheIndexRange = TrimRange(InsertIndicesToRange(EndCacheIndexRange, index, num), _currentDataSize - 1, _numCached, false);
+            // If there's no visible entries, but entries are still in the start cache (i.e. we have a full-screen endcap),
+            // then update the start cache individually.
+            (int Start, int End)? newRange = StartCacheIndexRange;
+            if (index == newRange?.End + 1)
+            {
+                // Normally we ignore entries outside of the range, but here we expand it. Otherwise when we scroll up, we'll get the wrong entry
+                newRange = (newRange.Value.Start, newRange.Value.End + num);
+            }
+            else
+            {
+                newRange = InsertIndicesToRange(newRange, index, num);
+            }
+            
+            StartCacheIndexRange = TrimRange(newRange, _currentDataSize - 1, _numCached, true);
         }
 
         /// <summary>
@@ -128,9 +139,17 @@ namespace RecyclerScrollRect
                 return;
             }
 
-            // If there's no visible entries, but things still in the start/end cache (i.e. we have a full-screen endcap), then update the caches individually.
-            StartCacheIndexRange = TrimRange(RemoveIndexFromRange(StartCacheIndexRange, index), _currentDataSize - 1, _numCached, true);
-            EndCacheIndexRange = TrimRange(RemoveIndexFromRange(EndCacheIndexRange, index), _currentDataSize - 1, _numCached, false);
+            // If there's no visible entries, but entries are still in the start cache (i.e. we have a full-screen endcap),
+            // then update the start cache individually.
+            (int Start, int End)? newRange = StartCacheIndexRange;
+            newRange = RemoveIndexFromRange(newRange, index);
+            
+            if (newRange.HasValue)
+            {
+                newRange = (0, newRange.Value.End);
+            }
+            
+            StartCacheIndexRange = TrimRange(newRange, _currentDataSize - 1, _numCached, true);
         }
 
         /// <summary>
@@ -264,7 +283,7 @@ namespace RecyclerScrollRect
             {
                 return null;
             }
-
+            
             (int Start, int End) newRange = (range.Value.Start, Mathf.Min(range.Value.End, maxIndex));
             int diff = maxSize - (newRange.End - newRange.Start + 1);
             
@@ -275,11 +294,11 @@ namespace RecyclerScrollRect
 
             if (fromStart)
             {
-                newRange.Start += diff;
+                newRange.Start += Mathf.Abs(diff);
             }
             else
             {
-                newRange.End -= diff;
+                newRange.End -= Mathf.Abs(diff);
             }
 
             return newRange;
