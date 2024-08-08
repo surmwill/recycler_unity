@@ -405,6 +405,7 @@ Scrolls to the entry at a given index. The entry doesn't need to be on-screen at
 - `scrollToAlignment:` the position within the entry we want to center on
 - `scrollSpeedViewportsPerSecond:` the speed of the scroll
 - `onScrollComplete:` callback invoked once we've successfully scrolled to the entry
+- `onScrollCanceled:` callback invoked when the scroll gets cancelled: either by the user scrolling to something else, or the user pressing down on the recycler
 
 <ins>Exceptions</ins>
 - `ArgumentException:` thrown when attempting to scroll to an invalid index
@@ -420,6 +421,7 @@ Scrolls to the entry with the given key. The entry doesn't need to be on-screen 
 - `scrollToAlignment:` the position within the entry we want to center on
 - `scrollSpeedViewportsPerSecond:` the speed of the scroll
 - `onScrollComplete:` callback invoked once we've successfully scrolled to the entry
+- - `onScrollCanceled:` callback invoked when the scroll gets cancelled: either by the user scrolling to something else, or the user pressing down on the recycler
 
 ### ScrollToIndexImmediate
 ```
@@ -517,7 +519,19 @@ Note that this triggers a layout rebuild of the endcap, incorporating any change
 ```
 public void OnPointerDown(PointerEventData eventData)
 ```
-Unity input event for when the user taps on the recycler. Stops any `ScrollToIndex/Key` calls.
+Unity input event for when the user starts holding down the recycler. Stops any `ScrollToIndex/Key` calls.
+
+<ins>Parameters</ins>
+- `eventData:` data about the pointer down event
+
+### OnPointerUp
+```
+public void OnPointerUp(PointerEventData eventData)
+```
+Unity input event for when the user stops holding down the recycler. Permits new `ScrollToIndex/Key` calls.
+
+<ins>Parameters</ins>
+- `eventData:` data about the pointer up event
 
 ### DataForEntries
 ```
