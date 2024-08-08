@@ -104,20 +104,12 @@ namespace RecyclerScrollRect
                 return;
             }
 
-            // If there's no visible entries, but entries are still in the start cache (i.e. we have a full-screen endcap),
-            // then update the start cache individually.
-            (int Start, int End)? newRange = StartCacheIndexRange;
-            if (index == newRange?.End + 1)
+            // If there's no visible entries, but entries are still in the start cache, then we have a full-screen endcap.
+            // Fill up the start cache with the ending entries.
+            if (StartCacheIndexRange.HasValue)
             {
-                // Normally we ignore entries outside of the range, but here we expand it. Otherwise when we scroll up, we'll get the wrong entry
-                newRange = (newRange.Value.Start, newRange.Value.End + num);
+                StartCacheIndexRange = TrimRange((0, _currentDataSize - 1), _currentDataSize - 1, _numCached, true);
             }
-            else
-            {
-                newRange = InsertIndicesToRange(newRange, index, num);
-            }
-            
-            StartCacheIndexRange = TrimRange(newRange, _currentDataSize - 1, _numCached, true);
         }
 
         /// <summary>
@@ -139,17 +131,12 @@ namespace RecyclerScrollRect
                 return;
             }
 
-            // If there's no visible entries, but entries are still in the start cache (i.e. we have a full-screen endcap),
-            // then update the start cache individually.
-            (int Start, int End)? newRange = StartCacheIndexRange;
-            newRange = RemoveIndexFromRange(newRange, index);
-            
-            if (newRange.HasValue)
+            // If there's no visible entries, but entries are still in the start cache, then we have a full-screen endcap.
+            // Fill up the start cache with the ending entries.
+            if (StartCacheIndexRange.HasValue)
             {
-                newRange = (0, newRange.Value.End);
+                StartCacheIndexRange = TrimRange((0, _currentDataSize - 1), _currentDataSize - 1, _numCached, true);
             }
-            
-            StartCacheIndexRange = TrimRange(newRange, _currentDataSize - 1, _numCached, true);
         }
 
         /// <summary>
