@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using PlasticPipe.PlasticProtocol.Client;
 using UnityEngine;
 
 namespace RecyclerScrollRect
@@ -14,7 +13,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Returns true if the window exists, that is, we have some underlying recycler data to have a window over in the first place.
         /// </summary>
-        public bool Exists => _currentDataSize > 0;
+        public bool Exists => CurrentDataSize > 0;
 
         /// <summary>
         /// The range of entry indices that are visible. Null if the range is empty.
@@ -71,7 +70,17 @@ namespace RecyclerScrollRect
         private (int Start, int End)? _visibleIndexRange;
         private (int Start, int End)? _startCacheIndexRange;
         private (int Start, int End)? _endCacheIndexRange;
-        
+
+        private int CurrentDataSize
+        {
+            get => _currentDataSize;
+            set
+            {
+                AreActiveEntriesDirty = AreActiveEntriesDirty || _currentDataSize != value;
+                _currentDataSize = value;
+            }
+        }
+
         private int _currentDataSize;
         private readonly int _numCached;
 
@@ -84,15 +93,15 @@ namespace RecyclerScrollRect
         /// <param name="num"> The number of entries to insert. </param>
         public void InsertRange(int index, int num)
         {
-            bool isFirstData = _currentDataSize == 0;
+            bool isFirstData = CurrentDataSize == 0;
             
             // Increase the size of the window
-            _currentDataSize += num;
+            CurrentDataSize += num;
 
             // The first inserted entries get put into the end cache
             if (isFirstData)
             {
-                EndCacheIndexRange = (0, Mathf.Min(_numCached - 1, _currentDataSize - 1));
+                EndCacheIndexRange = (0, Mathf.Min(_numCached - 1, CurrentDataSize - 1));
                 return;
             }
 
@@ -103,12 +112,12 @@ namespace RecyclerScrollRect
                 UpdateCachesFromVisibleRange();
                 return;
             }
-
+            
             // If there's no visible entries, but entries are still in the start cache, then we have a full-screen endcap.
             // Fill up the start cache with the ending entries.
             if (StartCacheIndexRange.HasValue)
             {
-                StartCacheIndexRange = TrimRange((0, _currentDataSize - 1), _currentDataSize - 1, _numCached, true);
+                StartCacheIndexRange = TrimRange((0, CurrentDataSize - 1), CurrentDataSize - 1, _numCached, true);
             }
         }
 
@@ -121,7 +130,7 @@ namespace RecyclerScrollRect
         public void Remove(int index)
         {
             // Decrease the size of the window
-            _currentDataSize--;
+            CurrentDataSize--;
             
             // If there's visible entries, then update those and then the caches based on the updated range.
             if (VisibleIndexRange.HasValue)
@@ -135,7 +144,7 @@ namespace RecyclerScrollRect
             // Fill up the start cache with the ending entries.
             if (StartCacheIndexRange.HasValue)
             {
-                StartCacheIndexRange = TrimRange((0, _currentDataSize - 1), _currentDataSize - 1, _numCached, true);
+                StartCacheIndexRange = TrimRange((0, CurrentDataSize - 1), CurrentDataSize - 1, _numCached, true);
             }
         }
 
@@ -144,7 +153,7 @@ namespace RecyclerScrollRect
         /// </summary>
         public void Reset()
         {
-            _currentDataSize = 0;
+            CurrentDataSize = 0;
             (StartCacheIndexRange, VisibleIndexRange, EndCacheIndexRange) = (null, null, null);
             AreActiveEntriesDirty = false;
         }
@@ -157,7 +166,7 @@ namespace RecyclerScrollRect
             if (!VisibleIndexRange.HasValue)
             {
                 StartCacheIndexRange = null;
-                EndCacheIndexRange = _currentDataSize == 0 ? null : (0, Mathf.Min(_numCached - 1, _currentDataSize - 1));
+                EndCacheIndexRange = CurrentDataSize == 0 ? null : (0, Mathf.Min(_numCached - 1, CurrentDataSize - 1));
                 return;
             }
 
@@ -167,9 +176,9 @@ namespace RecyclerScrollRect
                 null :
                 (Mathf.Max(visibleIndexRange.Start - _numCached, 0), visibleIndexRange.Start - 1);
             
-            EndCacheIndexRange = visibleIndexRange.End == _currentDataSize - 1 ?
+            EndCacheIndexRange = visibleIndexRange.End == CurrentDataSize - 1 ?
                 null :
-                (visibleIndexRange.End + 1, Mathf.Min(visibleIndexRange.End + _numCached, _currentDataSize - 1));
+                (visibleIndexRange.End + 1, Mathf.Min(visibleIndexRange.End + _numCached, CurrentDataSize - 1));
         }
 
         /// <summary>
