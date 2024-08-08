@@ -46,7 +46,8 @@ namespace RecyclerScrollRect
     ///
     /// See full documentation at: https://github.com/surmwill/recycler_unity
     /// </summary>
-    public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : ScrollRectWithDragSensitivity, IPointerDownHandler where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
+    public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : ScrollRectWithDragSensitivity, IPointerDownHandler, IPointerUpHandler 
+        where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         private const float DefaultScrollSpeedViewportsPerSecond = 1f;
         private const RecyclerPosition DefaultAppendTo = RecyclerPosition.Bot;
@@ -157,8 +158,11 @@ namespace RecyclerScrollRect
         private readonly LinkedList<int> _newCachedStartEntries = new();
         private readonly LinkedList<int> _newCachedEndEntries = new();
         private LinkedList<int> _updateStateOfEntries = new();
-
+        
         private bool _hasEndcap;
+
+        private Action _onScrollCancelled;
+        private bool _isPressed;
 
         protected override void Awake()
         {
@@ -1215,12 +1219,14 @@ namespace RecyclerScrollRect
         /// <param name="scrollToAlignment"> The position within the entry to center on. </param>
         /// <param name="scrollSpeedViewportsPerSecond"> The speed of the scroll. </param>
         /// <param name="onScrollComplete"> Callback invoked once we've successfully scrolled to the entry. </param>
+        /// <param name="onScrollCancelled"> Callback invoked when the scroll gets cancelled: either by the user scrolling to something else, or the user pressing down on the recycler. </param>
         /// <exception cref="ArgumentException"> Thrown when attempting to scroll to an invalid index. </exception>
         public void ScrollToIndex(
             int index,
             ScrollToAlignment scrollToAlignment = ScrollToAlignment.EntryMiddle,
             float scrollSpeedViewportsPerSecond = DefaultScrollSpeedViewportsPerSecond,
-            Action onScrollComplete = null)
+            Action onScrollComplete = null,
+            Action onScrollCancelled = null)
         {
             if (index < 0 || index >= _dataForEntries.Count)
             {
@@ -1232,7 +1238,14 @@ namespace RecyclerScrollRect
                 StopScrollToIndexCoroutine();
             }
 
+            if (_isPressed)
+            {
+                onScrollCancelled?.Invoke();
+                return;
+            }
+
             _currScrollingToIndex = index;
+            _onScrollCancelled = onScrollCancelled;
             _scrollToIndexCoroutine = StartCoroutine(ScrollToIndexInner(scrollToAlignment, scrollSpeedViewportsPerSecond, onScrollComplete));
         }
 
@@ -1243,13 +1256,15 @@ namespace RecyclerScrollRect
         /// <param name="scrollToAlignment"> The position within the entry to center on. </param>
         /// <param name="scrollSpeedViewportsPerSecond"> The speed of the scroll. </param>
         /// <param name="onScrollComplete"> Callback invoked once we've successfully scrolled to the entry. </param>
+        /// <param name="onScrollCancelled"> Callback invoked when the scroll gets cancelled: either by the user scrolling to something else, or the user pressing down on the recycler. </param>
         public void ScrollToKey(
             TKeyEntryData key,
             ScrollToAlignment scrollToAlignment = ScrollToAlignment.EntryMiddle,
             float scrollSpeedViewportsPerSecond = DefaultScrollSpeedViewportsPerSecond,
-            Action onScrollComplete = null)
+            Action onScrollComplete = null,
+            Action onScrollCancelled = null)
         {
-            ScrollToIndex(GetCurrentIndexForKey(key), scrollToAlignment, scrollSpeedViewportsPerSecond, onScrollComplete);
+            ScrollToIndex(GetCurrentIndexForKey(key), scrollToAlignment, scrollSpeedViewportsPerSecond, onScrollComplete, onScrollCancelled);
         }
 
         private IEnumerator ScrollToIndexInner(
@@ -1258,9 +1273,6 @@ namespace RecyclerScrollRect
             Action onScrollComplete)
         {
             const float ToleranceViewportPct = 0.01f;
-            
-            // Scrolling should not fight existing movement
-            StopMovementAndDrag();
 
             // The position within the child the scroll will center on (ex: middle, top edge, bottom edge)
             float normalizedPositionWithinChild = ScrollAlignmentToNormalizedPosition(scrollToAlignment);
@@ -1325,6 +1337,8 @@ namespace RecyclerScrollRect
 
             _currScrollingToIndex = null;
             _scrollToIndexCoroutine = null;
+            _onScrollCancelled = null;
+            
             onScrollComplete?.Invoke();
 
             // Returns the distance we'd like to scroll in a single frame
@@ -1508,14 +1522,25 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Stop any ScrollTo call when the user taps on the Recycler.
+        /// Unity input event for when the user starts holding down the recycler. Stops any ScrollToIndex/Key calls.
         /// </summary>
+        /// <param name="eventData"> Data about the pointer down event. </param>
         public void OnPointerDown(PointerEventData eventData)
         {
+            _isPressed = true;
             if (_scrollToIndexCoroutine != null)
             {
                 StopScrollToIndexCoroutine();
             }
+        }
+        
+        /// <summary>
+        /// Unity input event for when the user stops holding down the recycler. Permits new ScrollToIndex/Key calls.
+        /// </summary>
+        /// <param name="eventData"> Data about the pointer up event. </param>
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            _isPressed = false;
         }
 
         protected override void OnDestroy()
@@ -1568,6 +1593,9 @@ namespace RecyclerScrollRect
             {
                 StopCoroutine(_scrollToIndexCoroutine);
                 _scrollToIndexCoroutine = null;
+                
+                _onScrollCancelled?.Invoke();
+                _onScrollCancelled = null;
             }
         }
 

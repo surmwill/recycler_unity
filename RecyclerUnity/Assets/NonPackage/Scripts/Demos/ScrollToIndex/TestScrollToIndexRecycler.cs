@@ -63,17 +63,23 @@ namespace RecyclerScrollRect
             // Scroll to middle index
             if ((Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.M)) || DemoToolbar.GetButtonDown(0))
             {
-                _recycler.ScrollToIndex(ScrollToMiddleIndex, onScrollComplete:() => Debug.Log("Middle index scroll complete."));
+                _recycler.ScrollToIndex(ScrollToMiddleIndex, 
+                    onScrollComplete:() => Debug.Log("Middle index scroll complete."),
+                    onScrollCancelled:() => Debug.Log("Middle index scroll cancelled."));
             }
             // Scroll to top index
             else if ((Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.T)) || DemoToolbar.GetButtonDown(1))
             {
-                _recycler.ScrollToIndex(0, onScrollComplete:() => Debug.Log("Top index scroll complete."));
+                _recycler.ScrollToIndex(0, 
+                    onScrollComplete:() => Debug.Log("Top index scroll complete."),
+                    onScrollCancelled:() => Debug.Log("Top index scroll cancelled."));
             }
             // Scroll to bot index
             else if ((Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.B)) || DemoToolbar.GetButtonDown(2))
             {
-                _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, onScrollComplete:() => Debug.Log("Bottom index scroll complete."));
+                _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, 
+                    onScrollComplete:() => Debug.Log("Bottom index scroll complete."),
+                    onScrollCancelled:() => Debug.Log("Bottom index scroll cancelled."));
             }
 
             /*** Fighting ***/
