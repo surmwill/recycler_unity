@@ -30,14 +30,19 @@ namespace RecyclerScrollRect
             $"2: Batch inserts a fullscreen's worth of entries {MoreThanFullScreenNumEntries} to the end of the list.",
         };
 
+        private IRecyclerScrollRectActiveEntriesWindow _activeEntriesWindow;
+
         protected override void Start()
         {
             base.Start();
             _recycler.AppendEntries(CreateDataForEntries(InitNumEntries, false));
+            _activeEntriesWindow = _recycler.ActiveEntriesWindow;
         }
         
         private void Update()
         {
+            (int Start, int End) = _activeEntriesWindow.ActiveEntriesRange.Value;
+            
             // Inserts and grows entries.
             if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
             {
@@ -49,9 +54,16 @@ namespace RecyclerScrollRect
                 _recycler.InsertRangeAtIndex(_recycler.DataForEntries.Count - 1, CreateDataForEntries(NumInsertionEntries, false), FixEntries.Above);
             }
             // Immediately inserts a full screen of entries at the end
-            else if (Input.GetKeyDown(KeyCode.C) || DemoToolbar.GetButtonDown(2))
+            else if (Input.GetKeyDown(KeyCode.F) || DemoToolbar.GetButtonDown(2))
             {
                 _recycler.InsertRangeAtIndex(_recycler.DataForEntries.Count - 1, CreateDataForEntries(MoreThanFullScreenNumEntries, false), FixEntries.Above);
+            }
+            else if ((Input.GetKey(KeyCode.R) && Input.GetKeyDown(KeyCode.A)) || DemoToolbar.GetButtonDown(3))
+            {
+                int insertionIndex = Random.Range(Start, End);
+                Debug.Log($"Inserting at {insertionIndex}");
+                
+                _recycler.InsertAtIndex(insertionIndex, new InsertAndResizeData(true), FixEntries.Above);
             }
         }
 

@@ -13,7 +13,6 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
 {
     private readonly RecyclerScrollRect<TEntryData, TKeyEntryData> _recycler;
     private readonly RectTransform _recyclerViewport;
-    private readonly BoxCollider _recyclerViewportCollider;
     private readonly Canvas _rootCanvas;
 
     private RecyclerPosition StartCachePosition => EndCachePosition == RecyclerPosition.Bot ? RecyclerPosition.Top : RecyclerPosition.Bot;
@@ -24,9 +23,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
     {
         _recycler = recycler;
         _recyclerViewport = recycler.viewport;
-        
-        _recyclerViewportCollider = recycler.viewport.GetComponent<BoxCollider>();
-        
+
         _rootCanvas = recycler.GetComponent<Canvas>();
         if (_rootCanvas == null)
         {
