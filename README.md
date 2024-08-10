@@ -494,7 +494,7 @@ public RecyclerScrollRectContentState GetStateOfEndcap()
 ```
 Returns the state of the endcap.
 
-### RecalculateEntrySize
+### RecalculateEntryHeight
 ```
 public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, float? newHeight, FixEntries fixEntries)
 ```
