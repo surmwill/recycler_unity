@@ -28,7 +28,7 @@ namespace RecyclerScrollRect
             $"0: Inserts and grows {NumInsertionEntries} entries at index {InsertionIndex}",
             $"1: Batch inserts {NumInsertionEntries} to the end of the list.",
             $"2: Batch inserts a fullscreen's worth of entries {MoreThanFullScreenNumEntries} to the end of the list.",
-            $"3: Inserts and grows and entry into a random active index."
+            $"3: Inserts and grows an entry into a random active index."
         };
 
         private IRecyclerScrollRectActiveEntriesWindow _activeEntriesWindow;
@@ -49,16 +49,17 @@ namespace RecyclerScrollRect
             {
                 _recycler.InsertRangeAtIndex(InsertionIndex, CreateDataForEntries(NumInsertionEntries, true));
             }
-            // Immediately inserts a batch of entries at the end
+            // Immediately inserts a batch of entries at the end.
             else if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(1))
             {
                 _recycler.InsertRangeAtIndex(_recycler.DataForEntries.Count - 1, CreateDataForEntries(NumInsertionEntries, false), FixEntries.Above);
             }
-            // Immediately inserts a full screen of entries at the end
+            // Immediately inserts a full screen of entries at the end.
             else if (Input.GetKeyDown(KeyCode.F) || DemoToolbar.GetButtonDown(2))
             {
                 _recycler.InsertRangeAtIndex(_recycler.DataForEntries.Count - 1, CreateDataForEntries(MoreThanFullScreenNumEntries, false), FixEntries.Above);
             }
+            // Inserts and grows a random active entry.
             else if (Input.GetKeyDown(KeyCode.R) || DemoToolbar.GetButtonDown(3))
             {
                 int insertionIndex = Random.Range(Start, End);

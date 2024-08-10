@@ -26,17 +26,23 @@ namespace RecyclerScrollRect
         {
             $"0: Shrinks and deletes {NumEntriesToDelete} starting at {DeleteAtIndex}.",
             $"1: Batch deletes the last {NumEntriesToDelete} instantly.",
-            $"2: Deletes the entire range of active entries."
+            $"2: Deletes the entire range of active entries.",
+            $"3: Shrinks and deletes an entry from a random active index."
         };
+        
+        private IRecyclerScrollRectActiveEntriesWindow _activeEntriesWindow;
 
         protected override void Start()
         {
             base.Start();
             _deleteRecycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(InitNumEntries));
+            _activeEntriesWindow = _deleteRecycler.ActiveEntriesWindow;
         }
 
         private void Update()
         {
+            (int Start, int End)? activeEntriesRange = _activeEntriesWindow.ActiveEntriesRange;
+            
             // Animate delete.
             if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
             {
@@ -59,10 +65,17 @@ namespace RecyclerScrollRect
                 _deleteRecycler.RemoveRangeAtIndex(_deleteRecycler.DataForEntries.Count - NumEntriesToDelete, NumEntriesToDelete, FixEntries.Below);
             }
             // Delete the entire range of active entries.
-            else if ((Input.GetKeyDown(KeyCode.C) || DemoToolbar.GetButtonDown(2)) && _deleteRecycler.ActiveEntriesWindow.ActiveEntriesRange.HasValue)
+            else if ((Input.GetKeyDown(KeyCode.C) || DemoToolbar.GetButtonDown(2)) && activeEntriesRange.HasValue)
             {
-                (int Start, int End) = _deleteRecycler.ActiveEntriesWindow.ActiveEntriesRange.Value;
+                (int Start, int End) = activeEntriesRange.Value;
                 _deleteRecycler.RemoveRangeAtIndex(Start, End - Start + 1, FixEntries.Below);
+            }
+            // Deletes and shrinks a random active entry.
+            else if ((Input.GetKeyDown(KeyCode.R) || DemoToolbar.GetButtonDown(3)) && activeEntriesRange.HasValue)
+            {
+                int deletionIndex = Random.Range(activeEntriesRange.Value.Start, activeEntriesRange.Value.End);
+                Debug.Log($"Deleting at {deletionIndex}");
+                ((DeleteRecyclerEntry) _deleteRecycler.ActiveEntries[deletionIndex]).ShrinkAndDelete();
             }
         }
 
