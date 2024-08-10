@@ -682,7 +682,7 @@ This defines how and what entries will get moved. If we're not updating an entry
 
 ### Other
 
-Below are public functions called on the entries by the recycler to manage their state and lifecycle. **They are intended for the user to call.** They are listed here for the sake of completeness.
+Below are public functions called on the entries by the recycler to manage their state and lifecycle. **They are not intended for the user to call.** They are listed here for the sake of completeness.
 
 #### BindNewData
 `public void BindNewData(int index, TEntryData entryData)`
