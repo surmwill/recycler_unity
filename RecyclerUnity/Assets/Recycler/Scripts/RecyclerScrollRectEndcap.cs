@@ -23,7 +23,7 @@ namespace RecyclerScrollRect
         /// </summary>
         protected RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; private set; }
 
-        private void Awake()
+        protected virtual void Awake()
         {
             RectTransform = (RectTransform) transform;
             Recycler = GetComponentInParent<RecyclerScrollRect<TEntryData, TKeyEntryData>>();

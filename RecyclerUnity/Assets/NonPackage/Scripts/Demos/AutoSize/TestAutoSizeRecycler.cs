@@ -26,7 +26,9 @@ namespace RecyclerScrollRect
 
         protected override string[] DemoButtonDescriptions => new[]
         {
-            "0: Appends a random number of lines of text to a random active entry."
+            "0: Appends a random number of lines of text to a random active entry.",
+            "1: Increases the size of the endcap through its layout group.",
+            "2: Decreases the size of the endcap through its layout group."
         };
 
         private IRecyclerScrollRectActiveEntriesWindow _indexWindow;
@@ -44,11 +46,22 @@ namespace RecyclerScrollRect
         {
             (int Start, int End) = _indexWindow.ActiveEntriesRange.Value;
             
+            // Randomly grow an active entry.
             if (Input.GetKeyDown(KeyCode.R) || DemoToolbar.GetButtonDown(0))
             {
                 int appendTextToIndex = Random.Range(Start, End);
                 Debug.Log($"Adding text to entry {appendTextToIndex}.");
                 ((AutoSizeEntry) _autoSizeRecycler.ActiveEntries[appendTextToIndex]).AppendLines();
+            }
+            // Increases the size of the endcap through its layout group.
+            else if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(1))
+            {
+                ((AutoSizeEndcap) _autoSizeRecycler.Endcap).Grow();
+            }
+            // Decreases the size of the endcap through its layout group.
+            else if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(2))
+            {
+                ((AutoSizeEndcap) _autoSizeRecycler.Endcap).Shrink();
             }
         }
 

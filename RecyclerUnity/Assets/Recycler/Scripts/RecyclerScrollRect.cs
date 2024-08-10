@@ -677,7 +677,7 @@ namespace RecyclerScrollRect
                 _endcap.transform.SetParent(content, false);
                 _endcap.gameObject.SetActive(true);
                 _endcap.OnFetchedFromPool();
-
+                
                 AddToContent(
                     _endcap.RectTransform,
                     _endcapLayoutBehaviours,

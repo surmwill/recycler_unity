@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Recycler entry to test if we can handle auto-sized content
+    /// Recycler entry to test if we can handle auto-sized entries.
     /// </summary>
     public class AutoSizeEntry : RecyclerScrollRectEntry<AutoSizeData, string>
     {
