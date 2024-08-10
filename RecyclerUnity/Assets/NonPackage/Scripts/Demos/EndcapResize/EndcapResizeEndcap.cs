@@ -30,8 +30,7 @@ namespace RecyclerScrollRect
         public void ResetSizeToNormal()
         {
             StopResizeAndComplete();
-            RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(NormalSize);
-            RecalculateDimensions();
+            RecalculateHeight(NormalSize);
         }
 
         /// <summary>
@@ -39,8 +38,7 @@ namespace RecyclerScrollRect
         /// </summary>
         public void Grow()
         {
-            _resizeTween ??= RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowTimeSeconds)
-                .OnUpdate(() => RecalculateDimensions());
+            _resizeTween ??= DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight), GrowSize, GrowTimeSeconds);
         }
     }
 }

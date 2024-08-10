@@ -30,9 +30,9 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Called when the endcap updates its dimensions and needs to alert the recycler of its new size.
-        /// Note that this triggers a layout rebuild of the endcap, incorporating any changes in its auto-calculated size.
+        /// Called when the endcap needs to update its height in the recycler.
         /// </summary>
+        /// <param name="newHeight"> The height to set the endcap to, null if it should be auto-calculated. </param>
         /// <param name="fixEntries">
         /// If we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy.
         /// This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored,
@@ -41,9 +41,9 @@ namespace RecyclerScrollRect
         /// Being positioned at the end of the list, the default null value will fix all the entries that come before it.
         /// That value depends on the orientation of the recycler.
         /// </param>
-        protected void RecalculateDimensions(FixEntries? fixEntries = null)
+        protected void RecalculateHeight(float? newHeight, FixEntries? fixEntries = null)
         {
-            Recycler.RecalculateEndcapSize(fixEntries);
+            Recycler.RecalculateEndcapHeight(newHeight, fixEntries);
         }
         
         /// <summary>

@@ -45,7 +45,7 @@ namespace RecyclerScrollRect
                 _endcap.Grow();
             }
             // Resets the endcap to its original size
-            else if (Input.GetKeyDown(KeyCode.C) || DemoToolbar.GetButtonDown(1))
+            else if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(1))
             {
                 _endcap.ResetSizeToNormal();
             }

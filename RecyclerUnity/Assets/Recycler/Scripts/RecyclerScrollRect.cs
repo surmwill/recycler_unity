@@ -1113,20 +1113,20 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Called when an endcap has updates its dimensions and needs to alert the recycler of its new size.
-        /// This should never need to be called directly, instead using RecyclerScrollRectEndcap.RecalculateDimensions.
-        /// Note that this triggers a layout rebuild of the endcap, incorporating any changes in its auto-calculated size.
+        /// Called when an endcap needs to update its height in the recycler.
+        /// This should never need to be called directly, instead using RecyclerScrollRectEndcap.RecalculateHeight.
         /// </summary>
+        /// <param name="newHeight"> The new height of the endcap, null if it is auto-calculated. </param>
         /// <param name="fixEntries">
         /// if we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy.
         /// This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored, and the parameter will
         /// be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
-        public void RecalculateEndcapSize(FixEntries? fixEntries = null)
+        public void RecalculateEndcapHeight(float? newHeight, FixEntries? fixEntries = null)
         {
             if (IsEndcapActive)
             {
-                RecalculateContentChildHeight(_endcap.RectTransform, null, _endcapLayoutBehaviours, fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
+                RecalculateContentChildHeight(_endcap.RectTransform, newHeight, _endcapLayoutBehaviours, fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
                 RecalculateActiveEntries();   
             }
         }
