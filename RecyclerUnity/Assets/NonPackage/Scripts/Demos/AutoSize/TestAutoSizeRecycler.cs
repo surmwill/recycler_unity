@@ -24,14 +24,32 @@ namespace RecyclerScrollRect
 
         protected override string DemoDescription => "Tests auto-sized entries. Each entry is a different size.";
 
-        protected override string[] DemoButtonDescriptions => null;
-        
+        protected override string[] DemoButtonDescriptions => new[]
+        {
+            "0: Appends a random number of lines of text to a random active entry."
+        };
+
+        private IRecyclerScrollRectActiveEntriesWindow _indexWindow;
 
         protected override void Start()
         {
             base.Start();
             _autoSizeRecycler.AppendEntries(Enumerable.Range(0, NumEntries)
                 .Select(_ => new AutoSizeData(Random.Range(MinNumLines, MaxNumLines + 1))));
+
+            _indexWindow = _autoSizeRecycler.ActiveEntriesWindow;
+        }
+
+        private void Update()
+        {
+            (int Start, int End) = _indexWindow.ActiveEntriesRange.Value;
+            
+            if (Input.GetKeyDown(KeyCode.R) || DemoToolbar.GetButtonDown(0))
+            {
+                int appendTextToIndex = Random.Range(Start, End);
+                Debug.Log($"Adding text to entry {appendTextToIndex}.");
+                ((AutoSizeEntry) _autoSizeRecycler.ActiveEntries[appendTextToIndex]).AppendLines();
+            }
         }
 
         private void OnValidate()
