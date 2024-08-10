@@ -28,6 +28,7 @@ namespace RecyclerScrollRect
             $"0: Inserts and grows {NumInsertionEntries} entries at index {InsertionIndex}",
             $"1: Batch inserts {NumInsertionEntries} to the end of the list.",
             $"2: Batch inserts a fullscreen's worth of entries {MoreThanFullScreenNumEntries} to the end of the list.",
+            $"3: Inserts and grows and entry into a random active index."
         };
 
         private IRecyclerScrollRectActiveEntriesWindow _activeEntriesWindow;
@@ -58,7 +59,7 @@ namespace RecyclerScrollRect
             {
                 _recycler.InsertRangeAtIndex(_recycler.DataForEntries.Count - 1, CreateDataForEntries(MoreThanFullScreenNumEntries, false), FixEntries.Above);
             }
-            else if ((Input.GetKey(KeyCode.R) && Input.GetKeyDown(KeyCode.A)) || DemoToolbar.GetButtonDown(3))
+            else if (Input.GetKeyDown(KeyCode.R) || DemoToolbar.GetButtonDown(3))
             {
                 int insertionIndex = Random.Range(Start, End);
                 Debug.Log($"Inserting at {insertionIndex}");
