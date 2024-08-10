@@ -1061,12 +1061,26 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Called when a child has updated its dimensions, and needs to alert the parent Recycler of its new size
         /// </summary>
-        private void RecalculateContentChildSize(RectTransform contentChild, Behaviour[] layoutBehaviours, FixEntries fixEntries = FixEntries.Below)
+        private void RecalculateContentChildSize(RectTransform contentChild, float? newHeight, Behaviour[] layoutBehaviours, FixEntries fixEntries = FixEntries.Below)
         {
             // If the child is not visible then grow in the direction which keeps it off screen and preserves the currently visible entries
             if (!IsInViewport(contentChild, viewport, _rootCanvas.worldCamera))
             {
                 fixEntries = IsAboveViewportCenter(contentChild, viewport) ? FixEntries.Below : FixEntries.Above;
+            }
+
+            // Directly set the height of the child
+            if (newHeight.HasValue)
+            {
+                (contentChild.anchorMin, contentChild.anchorMax) = (Vector2.one * 0.5f, Vector2.one * 0.5f);
+                contentChild.sizeDelta = contentChild.sizeDelta.WithY(newHeight.Value);
+            }
+            // Auto-calculate the height of the child
+            else if (layoutBehaviours != null && layoutBehaviours.Length > 0)
+            {
+                SetBehavioursEnabled(layoutBehaviours, true);
+                LayoutRebuilder.ForceRebuildLayoutImmediate(contentChild);
+                SetBehavioursEnabled(layoutBehaviours, false);   
             }
 
             // Calculate the height of the child
@@ -1092,9 +1106,9 @@ namespace RecyclerScrollRect
         /// This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will
         /// be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
-        public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
+        public void RecalculateEntryHeight(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, float? newHeight, FixEntries fixEntries = FixEntries.Below)
         {
-            RecalculateContentChildSize(entry.RectTransform, _entryGameObjectLayoutBehaviours[entry.UidGameObject], fixEntries);
+            RecalculateContentChildSize(entry.RectTransform, newHeight, _entryGameObjectLayoutBehaviours[entry.UidGameObject], fixEntries);
             RecalculateActiveEntries();
         }
 
@@ -1112,7 +1126,7 @@ namespace RecyclerScrollRect
         {
             if (IsEndcapActive)
             {
-                RecalculateContentChildSize(_endcap.RectTransform, _endcapLayoutBehaviours, fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
+                RecalculateContentChildSize(_endcap.RectTransform, null, _endcapLayoutBehaviours, fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
                 RecalculateActiveEntries();   
             }
         }

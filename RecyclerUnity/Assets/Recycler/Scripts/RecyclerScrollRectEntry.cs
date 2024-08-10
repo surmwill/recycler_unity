@@ -63,9 +63,9 @@ namespace RecyclerScrollRect
         /// This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored,
         /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
-        protected void RecalculateDimensions(FixEntries fixEntries = FixEntries.Mid)
+        protected void RecalculateHeight(float? newHeight, FixEntries fixEntries = FixEntries.Mid)
         {
-            Recycler.RecalculateEntrySize(this, fixEntries);
+            Recycler.RecalculateEntryHeight(this, newHeight, fixEntries);
         }
 
         #region LIFECYCLE_METHODS

@@ -55,14 +55,9 @@ namespace RecyclerScrollRect
             _backgroundGlow.fillAmount = 1f;
             
             _animateInSequence = DOTween.Sequence()
-                .Append(RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(Height), AnimateInOutTime))
+                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight, Data.AnimateInFixEntries), Height, AnimateInOutTime))
                 .Join(_backgroundGlow.DOFillAmount(0f, AnimateInOutTime))
-                .OnUpdate(() => RecalculateDimensions(Data.AnimateInFixEntries))
-                .OnKill(() =>
-                {
-                    RecalculateDimensions(FixEntries.Below);
-                    Data.AnimateIn = false;
-                });
+                .OnKill(() => Data.AnimateIn = false);
         }
 
         /// <summary>
@@ -79,14 +74,9 @@ namespace RecyclerScrollRect
             _backgroundGlow.fillAmount = 0f;
             
             _animateOutSequence = DOTween.Sequence()
-                .Append(RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(0f), AnimateInOutTime))
+                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight, fixEntries), 0f, AnimateInOutTime))
                 .Join(_backgroundGlow.DOFillAmount(1f, AnimateInOutTime))
-                .OnUpdate(() => RecalculateDimensions(fixEntries))
-                .OnKill(() =>
-                {
-                    RecalculateDimensions(fixEntries);
-                    Recycler.RemoveAtIndex(Index);
-                });
+                .OnKill(() => Recycler.RemoveAtIndex(Index));
         }
 
         protected override void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)

@@ -37,9 +37,8 @@ namespace RecyclerScrollRect
             float initHeight = RectTransform.sizeDelta.y;
 
             _deleteSequence = DOTween.Sequence()
-                .Append(RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(0f), DeleteTime)
-                    .SetEase(Ease.OutBounce)
-                    .OnUpdate(() => RecalculateDimensions(FixEntries.Mid)))
+                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight, FixEntries.Mid), 0f, DeleteTime))
+                .SetEase(Ease.OutBounce)
                 .OnKill(() =>
                 {
                     Recycler.RemoveAtIndex(Index, FixEntries.Above);

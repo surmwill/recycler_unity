@@ -38,8 +38,7 @@ namespace RecyclerScrollRect
         {
             _sequence?.Kill();
             _sequence = DOTween.Sequence()
-                .Append(RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowShrinkTime))
-                .OnUpdate(() => RecalculateDimensions(fixEntries));
+                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight, fixEntries), GrowSize, GrowShrinkTime));
         }
 
         /// <summary>
@@ -49,8 +48,7 @@ namespace RecyclerScrollRect
         {
             _sequence?.Kill();
             _sequence = DOTween.Sequence()
-                .Append(RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(ShrinkSize), GrowShrinkTime))
-                .OnUpdate(() => RecalculateDimensions(fixEntries));
+                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight, fixEntries), ShrinkSize, GrowShrinkTime));
         }
 
         private void Update()
