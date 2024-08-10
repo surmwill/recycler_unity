@@ -55,9 +55,9 @@ namespace RecyclerScrollRect
         }
         
         /// <summary>
-        /// Called when an entry updates its dimensions and needs to alert the recycler of its new size.
-        /// Note that this triggers a layout rebuild of the entry, incorporating any changes in its auto-calculated size.
+        /// Called when an entry needs to update its height in the recycler.
         /// </summary>
+        /// <param name="newHeight"> The new height the entry should be set to, null if it should be auto-calculated. </param>
         /// <param name="fixEntries">
         /// If we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
         /// This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored,
