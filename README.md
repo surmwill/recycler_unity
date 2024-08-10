@@ -506,14 +506,14 @@ Note that this triggers a layout rebuild of the entry, incorporating any changes
 - `newHeight:` The new height the entry should be set to, null if it should be auto-calculated.
 - `fixEntries:` if we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy. This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
-### RecalculateEndcapSize
+### RecalculateEndcapHeight
 ```
-public void RecalculateEndcapSize(FixEntries fixEntries)
+public void RecalculateEndcapHeight(float? newHeight, FixEntries fixEntries)
 ```
-Called when an endcap has updates its dimensions and needs to alert the recycler of its new size. This should never need to be called directly, instead using `RecyclerScrollRectEndcap.RecalculateDimensions`.
-Note that this triggers a layout rebuild of the endcap, incorporating any changes in its auto-calculated size.
+Called when an endcap needs to update its height in the recycler. This should never need to be called directly, instead using `RecyclerScrollRectEndcap.RecalculateHeight`.
 
 <ins>Parameters</ins>
+- `newHeight:` the new height of the endcap, null if it is auto-calculated.
 - `fixEntries:` if we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy. This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
 ### OnPointerDown
@@ -764,15 +764,15 @@ Lifecycle method called when the state of the endcap changes.
 - `prevState:` the previous state the endcap was in.
 - `newState:` the new state the endcap is currently in.
 
-### RecalculateDimensions
+### RecalculateHeight
 ```
-protected void RecalculateDimensions(FixEntries? fixEntries)
+protected void RecalculateHeight(float? newHeight, FixEntries? fixEntries)
 ```
 
-Called when the endcap updates its dimensions and needs to alert the recycler of its new size.
-Note that this triggers a layout rebuild of the endcap, incorporating any changes in its auto-calculated size.
+Called when the endcap needs to update its height in the recycler.
 
 <ins>Parameters</ins>
+- `newHeight:` the height to set the endcap to, null if it should be auto-calculated.
 - `fixEntries:` if we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy.
 This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
