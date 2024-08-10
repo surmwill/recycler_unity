@@ -1059,9 +1059,9 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Called when a child has updated its dimensions, and needs to alert the parent Recycler of its new size
+        /// Called when a child needs to update its height in the recycler.
         /// </summary>
-        private void RecalculateContentChildSize(RectTransform contentChild, float? newHeight, Behaviour[] layoutBehaviours, FixEntries fixEntries = FixEntries.Below)
+        private void RecalculateContentChildHeight(RectTransform contentChild, float? newHeight, Behaviour[] layoutBehaviours, FixEntries fixEntries = FixEntries.Below)
         {
             // If the child is not visible then grow in the direction which keeps it off screen and preserves the currently visible entries
             if (!IsInViewport(contentChild, viewport, _rootCanvas.worldCamera))
@@ -1108,7 +1108,7 @@ namespace RecyclerScrollRect
         /// </param>
         public void RecalculateEntryHeight(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, float? newHeight, FixEntries fixEntries = FixEntries.Below)
         {
-            RecalculateContentChildSize(entry.RectTransform, newHeight, _entryGameObjectLayoutBehaviours[entry.UidGameObject], fixEntries);
+            RecalculateContentChildHeight(entry.RectTransform, newHeight, _entryGameObjectLayoutBehaviours[entry.UidGameObject], fixEntries);
             RecalculateActiveEntries();
         }
 
@@ -1126,7 +1126,7 @@ namespace RecyclerScrollRect
         {
             if (IsEndcapActive)
             {
-                RecalculateContentChildSize(_endcap.RectTransform, null, _endcapLayoutBehaviours, fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
+                RecalculateContentChildHeight(_endcap.RectTransform, null, _endcapLayoutBehaviours, fixEntries ?? (EndCachePosition == RecyclerPosition.Bot ? FixEntries.Above : FixEntries.Below));
                 RecalculateActiveEntries();   
             }
         }
