@@ -496,13 +496,14 @@ Returns the state of the endcap.
 
 ### RecalculateEntrySize
 ```
-public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries)
+public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, float? newHeight, FixEntries fixEntries)
 ```
-Called when an entry updates its dimensions and needs to alert the recycler of its new size. This should never need to be called directly, instead using `RecyclerScrollRectEntry.RecalculateDimensions`.
+Called when an entry needs to update its height in the recycler. This should never need to be called directly, instead using `RecyclerScrollRectEntry.RecalculateHeight`.
 Note that this triggers a layout rebuild of the entry, incorporating any changes in its auto-calculated size.
 
 <ins>Parameters</ins>
 - `entry:` the entry with an updated dimensions
+- `newHeight:` The new height the entry should be set to, null if it should be auto-calculated.
 - `fixEntries:` if we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy. This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
 ### RecalculateEndcapSize
@@ -667,15 +668,15 @@ Note that if entry's previous state was in the pool, the new state is the initia
 - `prevState:` the previous state of the entry
 - `newState:` the current state of the entry
 
-### RecalculateDimensions
+### RecalculateHeight
 ```
-protected void RecalculateDimensions(FixEntries fixEntries)
+protected void RecalculateHeight(float? newHeight, FixEntries fixEntries)
 ```
 
-Called when an entry updates its dimensions and needs to alert the recycler of its new size.
-Note that this triggers a layout rebuild of the entry, incorporating any changes in its auto-calculated size.
+Called when an entry needs to update its height in the recycler.
 
 <ins>Parameters</ins>
+- `newHeight:` the new height the entry should be set to, null if it should be auto-calculated.
 - `fixEntries:` if we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
 This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
@@ -925,15 +926,14 @@ This includes things such as `Images`, which should go under a child transform i
 
 `LayoutGroups` and `ContentSizeFitters` can still go on the root as they are needed for auto-size calculations.
 
-### The Recycler must be manually informed of an entry's dimension changes.
+### Entries must update their height through the recycler.
 
-Every dimension change of an entry, except during binding/rebinding, must be followed by a call [RecalculateDimensions](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculatedimensions) to alert the Recycler of it.
+In order for height changes to be properly reflected in the recycler, the entry must call [RecalculateHeight](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculateheight) to set its new height.
 
 For example, to animate an entry growing using DoTween, the below code is used to update the Recycler at each step.
 
 ```
-RectTransform.DOSizeDelta(RectTransform.sizeDelta.WithY(GrowSize), GrowTimeSeconds)
-            .OnUpdate(() => RecalculateDimensions());
+DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight), TargetHeight, Time);
 ```
 
 # Repo Organization
