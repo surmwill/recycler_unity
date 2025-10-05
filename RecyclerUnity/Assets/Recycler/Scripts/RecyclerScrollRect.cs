@@ -732,8 +732,6 @@ namespace RecyclerScrollRect
                 {
                     EntryIsNotVisible(entry);
                 }
-                
-                entry.SetState(GetStateOfEntryWithIndex(entry.Index));
             }
 
             // Visible
