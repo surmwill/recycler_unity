@@ -157,6 +157,7 @@ namespace RecyclerScrollRect
         private readonly LinkedList<int> _toRecycleEntries = new();
         private readonly LinkedList<int> _newCachedStartEntries = new();
         private readonly LinkedList<int> _newCachedEndEntries = new();
+        private LinkedList<int> _updateStateOfEntries = new();
 
         private bool _hasEndcap;
 
@@ -471,6 +472,7 @@ namespace RecyclerScrollRect
             ShiftLinkedList(_toRecycleEntries);
             ShiftLinkedList(_newCachedStartEntries);
             ShiftLinkedList(_newCachedEndEntries);
+            ShiftLinkedList(_updateStateOfEntries);
 
             void ShiftLinkedList(LinkedList<int> indices)
             {
@@ -516,9 +518,13 @@ namespace RecyclerScrollRect
             // Check which entries are visible, which are not, and what entries need to be in the start/end caches
             UpdateVisibility();
             
+            bool didActiveEntriesChange = false;
+            LinkedListNode<int> current = null;
+
             while (_activeEntriesWindow.AreActiveEntriesDirty)
             {
                 _activeEntriesWindow.SetActiveEntriesNonDirty();
+                didActiveEntriesChange = true;
 
                 _toRecycleEntries.Clear();
                 _newCachedStartEntries.Clear();
@@ -562,7 +568,7 @@ namespace RecyclerScrollRect
                 }
 
                 // Recycle unneeded entries
-                LinkedListNode<int> current = _toRecycleEntries.First;
+                current = _toRecycleEntries.First;
                 while (current != null)
                 {
                     _toRecycleEntries.RemoveFirst();
@@ -601,6 +607,21 @@ namespace RecyclerScrollRect
 
             // Append an endcap if we are near the last entry, or remove it if not
             UpdateEndcap();
+            
+            // Update the state of the entries
+            if (didActiveEntriesChange)
+            {
+                _updateStateOfEntries = new LinkedList<int>(ActiveEntriesWindow);
+            
+                current = _updateStateOfEntries.First;
+                while (current != null)
+                {
+                    _updateStateOfEntries.RemoveFirst();
+                    int entryIndex = current.Value;
+                    _activeEntries[entryIndex].SetState(GetStateOfEntryWithIndex(entryIndex));
+                    current = _updateStateOfEntries.First;
+                }   
+            }
 
             // Update the state of the endcap
             if (_endcap != null)
