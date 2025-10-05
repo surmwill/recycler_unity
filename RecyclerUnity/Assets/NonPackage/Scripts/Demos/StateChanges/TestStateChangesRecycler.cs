@@ -12,12 +12,14 @@ namespace RecyclerScrollRect
         
         // The time it takes for the entries and endcap to change colors
         public const float CrossFadeTimeSeconds = 1.5f;
-        
-        // Output state changes for the entry with this index
-        public const int DebugPrintStateChangesForEntryIndex = 15;
 
         private const int InitNumEntries = 50;
 
+        // Colors corresponding to the different states of the entries
+        public static readonly Color OnVisibleColor = new(0xFB / 255f, 0xAF / 255f, 0x00 / 255f);
+        public static readonly Color OnStartCacheColor = new(0x00 / 255f, 0x7C / 255f, 0xBE / 255f);
+        public static readonly Color OnEndCacheColor = new(0x00 / 255f, 0xAF / 255f, 0x54 / 255f);
+        
         protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _recycler;
 
         protected override string DemoTitle => "State change demo";

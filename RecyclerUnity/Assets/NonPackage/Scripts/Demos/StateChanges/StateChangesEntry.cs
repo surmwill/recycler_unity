@@ -16,11 +16,6 @@ namespace RecyclerScrollRect
         private Image _background = null;
 
         private Tween _colorTween;
-        
-        // Colors corresponding to the different states of the entries
-        private static readonly Color OnVisibleColor = new(0xFB / 255f, 0xAF / 255f, 0x00 / 255f);
-        private static readonly Color OnStartCacheColor = new(0x00 / 255f, 0x7C / 255f, 0xBE / 255f);
-        private static readonly Color OnEndCacheColor = new(0x00 / 255f, 0xAF / 255f, 0x54 / 255f);
 
         protected override void OnBindNewData(EmptyRecyclerData entryData)
         {
@@ -29,32 +24,21 @@ namespace RecyclerScrollRect
 
         protected override void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
         {
-            if (TestStateChangesRecycler.DebugPrintStateChangesForEntryIndex == Index)
-            {
-                Debug.Log($"Entry {Index} changing state from {prevState} -> {newState}");
-            }
-            
             _colorTween?.Kill();
             
             switch (newState)
             {
                 case RecyclerScrollRectContentState.ActiveVisible:
-                    _colorTween = _background.DOColor(OnVisibleColor, TestStateChangesRecycler.CrossFadeTimeSeconds);
+                    _colorTween = _background.DOColor(TestStateChangesRecycler.OnVisibleColor, TestStateChangesRecycler.CrossFadeTimeSeconds);
                     break;
                 
                 case RecyclerScrollRectContentState.ActiveInStartCache:
-                    _colorTween = _background.DOColor(OnStartCacheColor, TestStateChangesRecycler.CrossFadeTimeSeconds);
+                    _background.color = TestStateChangesRecycler.OnStartCacheColor;
                     break;
                 
                 case RecyclerScrollRectContentState.ActiveInEndCache:
-                    _colorTween = _background.DOColor(OnEndCacheColor, TestStateChangesRecycler.CrossFadeTimeSeconds);
+                    _background.color = TestStateChangesRecycler.OnEndCacheColor;
                     break;
-            }
-
-            // If we fetched the entry from the pool then this is its starting color
-            if (prevState == RecyclerScrollRectContentState.InactiveInPool)
-            {
-                _colorTween?.Complete();
             }
         }
     }
