@@ -75,7 +75,7 @@ namespace RecyclerScrollRect
                 for (int i = visibleEndIndex; i >= visibleStartIndex; i--)
                 {
                     PrettyInsertDeleteEntry entry = (PrettyInsertDeleteEntry) _recycler.ActiveEntries[i];
-                    if (!entry.IsDeleteing)
+                    if (!entry.IsDeleting)
                     {
                         entry.AnimateOutAndDelete(FixEntries.Below);
                         break;

@@ -244,18 +244,15 @@ namespace RecyclerScrollRect
             int siblingIndex = GetSiblingIndexForEntry(index);
             if (_activeEntriesWindow.IsInStartCache(index))
             {
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = CreateAndAddEntry(index, siblingIndex, StartCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
-                entry.SetState(RecyclerScrollRectContentState.ActiveInStartCache);
+                CreateAndAddEntry(index, siblingIndex, StartCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
             else if (_activeEntriesWindow.IsInEndCache(index))
             {
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = CreateAndAddEntry(index, siblingIndex, EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
-                entry.SetState(RecyclerScrollRectContentState.ActiveInEndCache);
+                CreateAndAddEntry(index, siblingIndex, EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
             else
             {
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = CreateAndAddEntry(index, siblingIndex, fixEntries);
-                entry.SetState(RecyclerScrollRectContentState.ActiveVisible);
+                CreateAndAddEntry(index, siblingIndex, fixEntries);
             }
 
             // Adding the entry shifted things around, possibly pushing things offscreen. Recalculate what entries are active
@@ -580,8 +577,7 @@ namespace RecyclerScrollRect
                 while (current != null)
                 {
                     _newCachedStartEntries.RemoveFirst();
-                    RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = CreateAndAddEntry(current.Value, GetSiblingIndexForEntry(current.Value), isStartCacheAtTop ? FixEntries.Below : FixEntries.Above);
-                    entry.SetState(RecyclerScrollRectContentState.ActiveInStartCache);
+                    CreateAndAddEntry(current.Value, GetSiblingIndexForEntry(current.Value), isStartCacheAtTop ? FixEntries.Below : FixEntries.Above);
                     current = _newCachedStartEntries.First;
                 }
 
@@ -592,8 +588,7 @@ namespace RecyclerScrollRect
                 while (current != null)
                 {
                     _newCachedEndEntries.RemoveFirst();
-                    RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = CreateAndAddEntry(current.Value, GetSiblingIndexForEntry(current.Value), isEndCacheAtTop ? FixEntries.Below : FixEntries.Above);
-                    entry.SetState(RecyclerScrollRectContentState.ActiveInEndCache);
+                    CreateAndAddEntry(current.Value, GetSiblingIndexForEntry(current.Value), isEndCacheAtTop ? FixEntries.Below : FixEntries.Above);
                     current = _newCachedEndEntries.First;
                 }
                 
@@ -671,7 +666,7 @@ namespace RecyclerScrollRect
             _endcap.OnReturnedToPool();
         }
 
-        private RecyclerScrollRectEntry<TEntryData, TKeyEntryData> CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
+        private void CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
         {
             if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
             {
@@ -695,8 +690,8 @@ namespace RecyclerScrollRect
 
             AddToContent(entry.RectTransform, layoutBehaviors, siblingIndex, fixEntries);
             _activeEntries[dataIndex] = entry;
-
-            return entry;
+            
+            entry.SetState(GetStateOfEntryWithIndex(entry.Index));
         }
 
         /// <summary>
@@ -1389,9 +1384,7 @@ namespace RecyclerScrollRect
             _activeEntriesWindow.VisibleIndexRange = null;
             _activeEntriesWindow.UpdateCachesFromVisibleRange();
             
-            entry = CreateAndAddEntry(index, 0);
-            entry.SetState(RecyclerScrollRectContentState.ActiveInEndCache);
-            
+            CreateAndAddEntry(index, 0);
             content.SetPivotWithoutMoving(content.pivot.WithY(0.5f));
             normalizedPosition = normalizedPosition.WithY(0.5f);
             
