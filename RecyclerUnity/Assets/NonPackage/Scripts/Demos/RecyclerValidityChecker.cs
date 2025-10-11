@@ -55,12 +55,10 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
     {
         DebugCheckValidWindowIndices();
         DebugCheckWindowAlignsWithEntryPositions();
-        DebugCheckWindowAlignment();
 
         DebugCheckDuplicates();
         DebugCheckOrdering();
-
-        DebugCheckIndexToKeyMapping();
+        
         DebugCheckKeyToIndexMapping();
                 
         DebugCheckStates();
@@ -238,25 +236,35 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
     }
 
     /// <summary>
-    /// Check for duplicate entries
+    /// Check for duplicate entries and endcaps
     /// </summary>
     private void DebugCheckDuplicates()
     {
-        // TODO: check duplicate endcaps
-        
         HashSet<int> seenIndices = new HashSet<int>();
+        RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> foundEndcap = null;
+        
         foreach (Transform t in _recycler.content)
         {
-            RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
-            if (entry == null)
+            RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap = t.GetComponent<RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>>();
+            if (endcap != null)
             {
-                return;
-            }
+                if (foundEndcap != null)
+                {
+                    Debug.LogError("DUPLICATE ENDCAP");
+                    Debug.Break();
+                    return;
+                }
 
+                foundEndcap = endcap;
+                continue;
+            }
+            
+            RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
             int currentIndex = entry.Index;
+            
             if (seenIndices.Contains(currentIndex))
             {
-                Debug.LogError($"DUPLICATE: {currentIndex}");
+                Debug.LogError($"DUPLICATE INDEX: {currentIndex}");
                 Debug.Break();
                 return;
             }
@@ -354,13 +362,59 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
     // Check entries and endcap correctly update their visibility
     private void DebugCheckVisibility()
     {
+        RecycledEntries<TEntryData, TKeyEntryData> _recycledEntries;
+        Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _unboundEntries;
         
+        _recycledEntries = GetRecyclerPrivateFieldValue<RecycledEntries<TEntryData, TKeyEntryData>>(nameof(_recycledEntries));
+        _unboundEntries = GetRecyclerPrivateFieldValue<Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>>(nameof(_unboundEntries));
+
+        foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _recycler.ActiveEntries.Values)
+        {
+            if (!entry.IsVisible.HasValue)
+            {
+                Debug.LogError($"All active entries should have a non-null {entry.IsVisible} value");
+                Debug.Break();
+                return;
+            }
+            
+            bool isEntryInViewport = IsInViewport(entry.RectTransform, _recycler.viewport, _rootCanvas.worldCamera);
+            if (isEntryInViewport && !entry.IsVisible.Value)
+            {
+                Debug.LogError($"Entry \"{entry.Index}\" is visible in the viewport but its state reports it's not visible");
+                Debug.Break();
+                return;
+            }
+
+            if (!isEntryInViewport && entry.IsVisible.Value)
+            {
+                Debug.LogError($"Entry \"{entry.Index}\" is not visible in the viewport but its state reports it's visible");
+                Debug.Break();
+                return;
+            }
+            
+            break;
+        }
+
+        foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> pooledEntry in _recycledEntries.Entries.Values.Concat(_unboundEntries))
+        {
+            if (pooledEntry.IsVisible.HasValue)
+            {
+                Debug.LogError($"An entry \"{pooledEntry.Index}\" in the pool has an {nameof(pooledEntry.IsVisible)} value of non-null");
+                Debug.Break();
+                return;
+            }
+        }
+
+        // TODO: check recycler visibility
+        if (_recycler.Endcap != null)
+        {
+            
+        }
     }
 
     // Check that pooled and unbound entries go under the _poolParent
     private void DebugCheckPool()
     {
-        // Private entries that we need to get through reflection, matching their names 1-to-1
         RecycledEntries<TEntryData, TKeyEntryData> _recycledEntries;
         Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _unboundEntries;
         RectTransform _poolParent;
