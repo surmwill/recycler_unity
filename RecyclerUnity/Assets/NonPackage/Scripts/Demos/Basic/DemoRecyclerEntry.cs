@@ -41,8 +41,8 @@ namespace RecyclerScrollRect
 
         }
         
-        // Optional: called when the state of the entry changes
-        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
+        // Optional: called when the visibility of the entry changes
+        protected override void OnVisibilityChanged(bool isVisible, bool isInitial)
         {
         }
     }

@@ -539,10 +539,7 @@ namespace RecyclerScrollRect
                 {
                     _toRecycleEntries.RemoveFirst();
                     RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = _activeEntries[current.Value];
-                    
-                    entry.SetVisibility(false);
                     SendToRecycling(_activeEntries[current.Value]);
-                    
                     current = _toRecycleEntries.First;
                 }
 
@@ -889,8 +886,8 @@ namespace RecyclerScrollRect
 
             // Bookkeeping
             _activeEntries.Remove(entry.Index);
-
-            // Callback
+            
+            // Cleanup and callback
             entry.OnRecycled();
         }
 

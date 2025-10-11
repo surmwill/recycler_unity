@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Entry for testing clearing and adding entries to a recycler, one-by-one
+    /// Entry for testing the changing of visible to non-visible states 
     /// </summary>
     public class StateChangesEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
     {
@@ -22,23 +22,17 @@ namespace RecyclerScrollRect
             _indexText.text = Index.ToString();
         }
 
-        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
+        protected override void OnVisibilityChanged(bool isVisible, bool isInitial)
         {
             _colorTween?.Kill();
-            
-            switch (newState)
+
+            if (isVisible)
             {
-                case RecyclerScrollRectContentState.Visible:
-                    _colorTween = _background.DOColor(TestStateChangesRecycler.OnVisibleColor, TestStateChangesRecycler.CrossFadeTimeSeconds);
-                    break;
-                
-                case RecyclerScrollRectContentState.InStartCache:
-                    _background.color = TestStateChangesRecycler.OnStartCacheColor;
-                    break;
-                
-                case RecyclerScrollRectContentState.InEndCache:
-                    _background.color = TestStateChangesRecycler.OnEndCacheColor;
-                    break;
+                _colorTween = _background.DOColor(TestStateChangesRecycler.OnVisibleColor, TestStateChangesRecycler.CrossFadeTimeSeconds);
+            }
+            else
+            {
+                _background.color = TestStateChangesRecycler.OnNotVisibleColor;
             }
         }
     }

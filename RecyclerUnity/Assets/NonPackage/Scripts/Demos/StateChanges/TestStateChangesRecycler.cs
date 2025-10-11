@@ -17,8 +17,7 @@ namespace RecyclerScrollRect
 
         // Colors corresponding to the different states of the entries
         public static readonly Color OnVisibleColor = new(0xFB / 255f, 0xAF / 255f, 0x00 / 255f);
-        public static readonly Color OnStartCacheColor = new(0x00 / 255f, 0x7C / 255f, 0xBE / 255f);
-        public static readonly Color OnEndCacheColor = new(0x00 / 255f, 0xAF / 255f, 0x54 / 255f);
+        public static readonly Color OnNotVisibleColor = new(0x00 / 255f, 0x7C / 255f, 0xBE / 255f);
         
         protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _recycler;
 

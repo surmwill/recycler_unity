@@ -41,9 +41,9 @@ namespace RecyclerScrollRect
         public int UidGameObject { get; private set; }
 
         /// <summary>
-        /// Whether the entry is visible in the viewport
+        /// Whether the entry is visible in the viewport. Null indicates it is in the recycling pool.
         /// </summary>
-        public bool IsVisible { get; private set; }
+        public bool? IsVisible { get; private set; }
 
         protected virtual void Awake()
         {
@@ -96,7 +96,8 @@ namespace RecyclerScrollRect
         /// Called when the visibility of the entry changes as it enters and leaves the viewport
         /// </summary>
         /// <param name="isVisible"> Whether the entry is visible in the viewport </param>
-        protected virtual void OnVisibilityChanged(bool isVisible)
+        /// <param name="isInitial"> Whether this is the initial visible state of the entry </param> 
+        protected virtual void OnVisibilityChanged(bool isVisible, bool isInitial)
         {
             // Empty
         }
@@ -133,6 +134,12 @@ namespace RecyclerScrollRect
         [CalledByRecycler]
         public void OnRecycled()
         {
+            if (IsVisible.HasValue)
+            {
+                SetVisibility(false);   
+                SetVisibility(null);
+            }
+            
             OnSentToRecycling();
         }
 
@@ -156,14 +163,19 @@ namespace RecyclerScrollRect
         }
 
         [CalledByRecycler]
-        public void SetVisibility(bool isVisible)
+        public void SetVisibility(bool? isVisible)
         {
-            bool lastIsVisible = IsVisible;
+            bool? lastIsVisible = IsVisible;
             IsVisible = isVisible;
 
-            if (isVisible != lastIsVisible)
+            if (!isVisible.HasValue)
             {
-                OnVisibilityChanged(isVisible);
+                return;
+            }
+
+            if (isVisible.Value != lastIsVisible)
+            {
+                OnVisibilityChanged(isVisible.Value, !lastIsVisible.HasValue);
             }
         }
 
