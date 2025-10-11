@@ -5,7 +5,7 @@ namespace RecyclerScrollRect
     {
         public static bool IsInCache(this RecyclerScrollRectContentState state)
         {
-            return state == RecyclerScrollRectContentState.ActiveInStartCache || state == RecyclerScrollRectContentState.ActiveInEndCache;
+            return state == RecyclerScrollRectContentState.InStartCache || state == RecyclerScrollRectContentState.InEndCache;
         }
     }
 }

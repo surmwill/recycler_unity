@@ -29,12 +29,6 @@ namespace RecyclerScrollRect
         /// The data this entry is currently bound to.
         /// </summary>
         public TEntryData Data { get; private set; }
-        
-        /// <summary>
-        /// The current state of the entry.
-        /// Note that until binding/rebinding is complete, the state will report as in the pool.
-        /// </summary>
-        public RecyclerScrollRectContentState State { get; private set; }
 
         /// <summary>
         /// The recycler this is entry is a part of.
@@ -45,6 +39,11 @@ namespace RecyclerScrollRect
         /// A unique id representing the GameObject this entry lives on.
         /// </summary>
         public int UidGameObject { get; private set; }
+
+        /// <summary>
+        /// Whether the entry is visible in the viewport
+        /// </summary>
+        public bool IsVisible { get; private set; }
 
         protected virtual void Awake()
         {
@@ -94,12 +93,10 @@ namespace RecyclerScrollRect
         }
         
         /// <summary>
-        /// Lifecycle method called when the state of the entry changes.
-        /// Note that if entry's previous state was in the pool, the new state is the initial state of the entry post-binding/rebinding.
+        /// Called when the visibility of the entry changes as it enters and leaves the viewport
         /// </summary>
-        /// <param name="prevState"> The previous state of the entry. </param>
-        /// <param name="newState"> The current state of the entry. </param>
-        protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+        /// <param name="isVisible"> Whether the entry is visible in the viewport </param>
+        protected virtual void OnVisibilityChanged(bool isVisible)
         {
             // Empty
         }
@@ -149,7 +146,7 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Called by the recycler to set the the entry's index.
+        /// Called by the recycler to set the entry's index.
         /// </summary>
         [CalledByRecycler]
         public void SetIndex(int index)
@@ -158,19 +155,15 @@ namespace RecyclerScrollRect
             gameObject.name = index.ToString();
         }
 
-        /// <summary>
-        /// Called by the recycler to set the current state of the entry.
-        /// </summary>
-        /// <param name="newState"> The current state of the entry. </param>
         [CalledByRecycler]
-        public void SetState(RecyclerScrollRectContentState newState)
+        public void SetVisibility(bool isVisible)
         {
-            RecyclerScrollRectContentState lastState = State;
-            State = newState;
-            
-            if (newState != lastState)
+            bool lastIsVisible = IsVisible;
+            IsVisible = isVisible;
+
+            if (isVisible != lastIsVisible)
             {
-                OnStateChanged(lastState, newState);   
+                OnVisibilityChanged(isVisible);
             }
         }
 

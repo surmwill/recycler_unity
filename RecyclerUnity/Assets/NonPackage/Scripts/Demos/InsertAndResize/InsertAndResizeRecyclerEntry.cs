@@ -34,7 +34,7 @@ namespace RecyclerScrollRect
             _growSequence?.Kill(true);
         }
 
-        protected override void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
         {
             if (prevState == RecyclerScrollRectContentState.InactiveInPool)
             {
@@ -50,7 +50,7 @@ namespace RecyclerScrollRect
             }
             Data.DidGrow = true;
 
-            if (firstState != RecyclerScrollRectContentState.ActiveVisible)
+            if (firstState != RecyclerScrollRectContentState.Visible)
             {
                 RecalculateHeight(GrowSize, FixEntries.Below);
                 return;

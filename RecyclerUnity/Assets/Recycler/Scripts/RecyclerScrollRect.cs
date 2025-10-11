@@ -245,18 +245,15 @@ namespace RecyclerScrollRect
             int siblingIndex = GetSiblingIndexForEntry(index);
             if (_activeEntriesWindow.IsInStartCache(index))
             {
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = CreateAndAddEntry(index, siblingIndex, StartCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
-                entry.SetState(RecyclerScrollRectContentState.ActiveInStartCache);
+                CreateAndAddEntry(index, siblingIndex, StartCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
             else if (_activeEntriesWindow.IsInEndCache(index))
             {
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = CreateAndAddEntry(index, siblingIndex, EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
-                entry.SetState(RecyclerScrollRectContentState.ActiveInEndCache);
+                CreateAndAddEntry(index, siblingIndex, EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above);
             }
             else
             {
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = CreateAndAddEntry(index, siblingIndex, fixEntries);
-                entry.SetState(RecyclerScrollRectContentState.ActiveVisible);
+                CreateAndAddEntry(index, siblingIndex, fixEntries);
             }
 
             // Adding the entry shifted things around, possibly pushing things offscreen. Recalculate what entries are active
@@ -275,7 +272,7 @@ namespace RecyclerScrollRect
         /// </param>
         public void InsertAtKey(TKeyEntryData insertAtKey, TEntryData entryData, FixEntries fixEntries = FixEntries.Below)
         {
-            InsertAtIndex(GetCurrentIndexForKey(insertAtKey), entryData, fixEntries);
+            InsertAtIndex(_entryKeyToCurrentIndex[insertAtKey], entryData, fixEntries);
         }
 
         /// <summary>
@@ -308,7 +305,7 @@ namespace RecyclerScrollRect
         /// </param>
         public void InsertRangeAtKey(TKeyEntryData insertAtKey, IEnumerable<TEntryData> dataForEntries, FixEntries fixEntries = FixEntries.Below)
         {
-            InsertRangeAtIndex(GetCurrentIndexForKey(insertAtKey), dataForEntries, fixEntries);
+            InsertRangeAtIndex(_entryKeyToCurrentIndex[insertAtKey], dataForEntries, fixEntries);
         }
 
         /// <summary>
@@ -369,7 +366,7 @@ namespace RecyclerScrollRect
         /// </param>
         public void RemoveAtKey(TKeyEntryData removeAtKey, FixEntries fixEntries = FixEntries.Below)
         {
-            RemoveAtIndex(GetCurrentIndexForKey(removeAtKey), fixEntries);
+            RemoveAtIndex(_entryKeyToCurrentIndex[removeAtKey], fixEntries);
         }
 
         /// <summary>
@@ -402,7 +399,7 @@ namespace RecyclerScrollRect
         /// </param>
         public void RemoveRangeAtKey(TKeyEntryData removeAtKey, int count, FixEntries fixEntries = FixEntries.Below)
         {
-            RemoveRangeAtIndex(GetCurrentIndexForKey(removeAtKey), count, fixEntries);
+            RemoveRangeAtIndex(_entryKeyToCurrentIndex[removeAtKey], count, fixEntries);
         }
         
         /// <summary>
@@ -521,19 +518,13 @@ namespace RecyclerScrollRect
             // Check which entries are visible, which are not, and what entries need to be in the start/end caches
             UpdateVisibility();
             
-            bool didActiveEntriesChange = false;
-            LinkedListNode<int> current = null;
-
-            while (_activeEntriesWindow.AreActiveEntriesDirty)
+            bool didActiveEntriesChange = _activeEntriesWindow.AreActiveEntriesDirty;
+            if (didActiveEntriesChange)
             {
                 _activeEntriesWindow.SetActiveEntriesNonDirty();
-                didActiveEntriesChange = true;
 
+                // Determine what entries need to be removed (offscreen and too far away to belong in the caches)
                 _toRecycleEntries.Clear();
-                _newCachedStartEntries.Clear();
-                _newCachedEndEntries.Clear();
-
-                // Determine what entries need to be removed (aren't in the cache and aren't visible)
                 foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> _) in _activeEntries)
                 {
                     if (!_activeEntriesWindow.Contains(index))
@@ -541,94 +532,97 @@ namespace RecyclerScrollRect
                         _toRecycleEntries.AddLast(index);
                     }
                 }
-
-                // Determine what entries need to be added to the start cache
-                if (_activeEntriesWindow.StartCacheIndexRange.HasValue)
-                {
-                    for (int i = _activeEntriesWindow.StartCacheIndexRange.Value.End; 
-                         i >= _activeEntriesWindow.StartCacheIndexRange.Value.Start; 
-                         i--)
-                    {
-                        if (!_activeEntries.ContainsKey(i))
-                        {
-                            _newCachedStartEntries.AddLast(i);
-                        }
-                    }
-                }
-
-                // Determine what entries need to be added to the end cache
-                if (_activeEntriesWindow.EndCacheIndexRange.HasValue)
-                {
-                    for (int i = _activeEntriesWindow.EndCacheIndexRange.Value.Start; 
-                         i <= _activeEntriesWindow.EndCacheIndexRange.Value.End; 
-                         i++)
-                    {
-                        if (!_activeEntries.ContainsKey(i))
-                        {
-                            _newCachedEndEntries.AddLast(i);
-                        }
-                    }
-                }
-
+                
                 // Recycle unneeded entries
-                current = _toRecycleEntries.First;
+                LinkedListNode<int> current = _toRecycleEntries.First;
                 while (current != null)
                 {
                     _toRecycleEntries.RemoveFirst();
+                    RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = _activeEntries[current.Value];
+                    
+                    entry.SetVisibility(false);
                     SendToRecycling(_activeEntries[current.Value]);
+                    
                     current = _toRecycleEntries.First;
                 }
 
-                // Create new entries in the start cache
-                bool isStartCacheAtTop = StartCachePosition == RecyclerPosition.Top;
-
-                current = _newCachedStartEntries.First;
-                while (current != null)
+                // Fill the screen and then the start and end caches with entries
+                do
                 {
-                    _newCachedStartEntries.RemoveFirst();
-                    RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = CreateAndAddEntry(current.Value, GetSiblingIndexForEntry(current.Value), isStartCacheAtTop ? FixEntries.Below : FixEntries.Above);
-                    entry.SetState(RecyclerScrollRectContentState.ActiveInStartCache);
+                    // Determine what entries need to be added to the start cache
+                    _newCachedStartEntries.Clear();
+                    if (_activeEntriesWindow.StartCacheIndexRange.HasValue)
+                    {
+                        for (int i = _activeEntriesWindow.StartCacheIndexRange.Value.End; i >= _activeEntriesWindow.StartCacheIndexRange.Value.Start; i--)
+                        {
+                            if (!_activeEntries.ContainsKey(i))
+                            {
+                                _newCachedStartEntries.AddLast(i);
+                            }
+                        }
+                    }
+
+                    // Determine what entries need to be added to the end cache
+                    _newCachedEndEntries.Clear();
+                    if (_activeEntriesWindow.EndCacheIndexRange.HasValue)
+                    {
+                        for (int i = _activeEntriesWindow.EndCacheIndexRange.Value.Start; i <= _activeEntriesWindow.EndCacheIndexRange.Value.End; i++)
+                        {
+                            if (!_activeEntries.ContainsKey(i))
+                            {
+                                _newCachedEndEntries.AddLast(i);
+                            }
+                        }
+                    }
+                    
+                    // Create new entries in the start cache
+                    bool isStartCacheAtTop = StartCachePosition == RecyclerPosition.Top;
                     current = _newCachedStartEntries.First;
-                }
+                    
+                    while (current != null)
+                    {
+                        _newCachedStartEntries.RemoveFirst();
+                        CreateAndAddEntry(current.Value, GetSiblingIndexForEntry(current.Value), isStartCacheAtTop ? FixEntries.Below : FixEntries.Above);
+                        current = _newCachedStartEntries.First;
+                    }
 
-                // Create new entries in the end cache
-                bool isEndCacheAtTop = EndCachePosition == RecyclerPosition.Top;
-
-                current = _newCachedEndEntries.First;
-                while (current != null)
-                {
-                    _newCachedEndEntries.RemoveFirst();
-                    RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = CreateAndAddEntry(current.Value, GetSiblingIndexForEntry(current.Value), isEndCacheAtTop ? FixEntries.Below : FixEntries.Above);
-                    entry.SetState(RecyclerScrollRectContentState.ActiveInEndCache);
+                    // Create new entries in the end cache
+                    bool isEndCacheAtTop = EndCachePosition == RecyclerPosition.Top;
                     current = _newCachedEndEntries.First;
-                }
+                    
+                    while (current != null)
+                    {
+                        _newCachedEndEntries.RemoveFirst();
+                        CreateAndAddEntry(current.Value, GetSiblingIndexForEntry(current.Value), isEndCacheAtTop ? FixEntries.Below : FixEntries.Above);
+                        current = _newCachedEndEntries.First;
+                    }
                 
-                // Cached entries come just before and just after what is visible. We may have added entries initially as part of the cache, but there's actually room
-                // for them to be visible. Thus we'll check if they are visible, and loop fetching the next set entries to be part of the start/end cache if so.
-                // This allows us, for example, to initially insert a single entry of many, have that entry fetch more entries, those entries fetch more, and so on and so on,
-                // until we have completely filled up the screen and caches. 
-                UpdateVisibility();
+                    // Entries put in the cache might actually become instantly visible on screen if there are not enough entries to fill the screen.
+                    // Loop until we fill the screen with entries and have filled the start and end caches.
+                    UpdateVisibility();
+                } while (_activeEntriesWindow.AreActiveEntriesDirty);
             }
-
-            // Append an endcap if we are near the last entry, or remove it if not
-            UpdateEndcap();
             
-            // Update the state of the entries
+            // Update the visible state of the active entries
             if (didActiveEntriesChange)
             {
-                _updateStateOfEntries = new LinkedList<int>(ActiveEntriesWindow);
+                _updateStateOfEntries = new LinkedList<int>(_activeEntriesWindow);
             
-                current = _updateStateOfEntries.First;
+                LinkedListNode<int> current = _updateStateOfEntries.First;
                 while (current != null)
                 {
                     _updateStateOfEntries.RemoveFirst();
                     int entryIndex = current.Value;
-                    _activeEntries[entryIndex].SetState(GetStateOfEntryWithIndex(entryIndex));
+                    _activeEntries[entryIndex].SetVisibility(_activeEntriesWindow.IsVisible(entryIndex));
                     current = _updateStateOfEntries.First;
                 }   
             }
 
-            // Update the state of the endcap
+            // Append an endcap if we are near the last entry, or remove it if not.
+            // Note that as it belongs at the end of the list, it will not shift any of the active entries.
+            UpdateEndcap();
+
+            // Update the visible state of the endcap
             if (_endcap != null)
             {
                 _endcap.SetState(GetStateOfEndcap());
@@ -692,7 +686,7 @@ namespace RecyclerScrollRect
             _endcap.OnReturnedToPool();
         }
 
-        private RecyclerScrollRectEntry<TEntryData, TKeyEntryData> CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
+        private void CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
         {
             if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
             {
@@ -716,8 +710,6 @@ namespace RecyclerScrollRect
 
             AddToContent(entry.RectTransform, layoutBehaviors, siblingIndex, fixEntries);
             _activeEntries[dataIndex] = entry;
-
-            return entry;
         }
 
         /// <summary>
@@ -831,65 +823,6 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Returns the state of the entry at the given index.
-        /// </summary>
-        /// <param name="index"> The index of the entry. </param>
-        /// <returns> The state of the entry at the given index. </returns>
-        public RecyclerScrollRectContentState GetStateOfEntryWithIndex(int index)
-        {
-            if (index != RecyclerScrollRectEntry<TEntryData, TKeyEntryData>.UnboundIndex && (index < 0 || index >= _dataForEntries.Count))
-            {
-                throw new ArgumentException($"index \"{index}\" must be >= 0 and < the length of data \"{_dataForEntries.Count}\"");
-            }
-
-            if (_activeEntriesWindow.IsVisible(index))
-            {
-                return RecyclerScrollRectContentState.ActiveVisible;
-            }
-
-            if (_activeEntriesWindow.IsInStartCache(index))
-            {
-                return RecyclerScrollRectContentState.ActiveInStartCache;
-            }
-
-            if (_activeEntriesWindow.IsInEndCache(index))
-            {
-                return RecyclerScrollRectContentState.ActiveInEndCache;
-            }
-
-            return RecyclerScrollRectContentState.InactiveInPool;
-        }
-
-        /// <summary>
-        /// Returns the state of the entry with a given key.
-        /// </summary>
-        /// <param name="key"> The key of the entry to check the state of. </param>
-        /// <returns> The state of the entry with the given key. </returns>
-        public RecyclerScrollRectContentState GetStateOfEntryWithKey(TKeyEntryData key)
-        {
-            return GetStateOfEntryWithIndex(GetCurrentIndexForKey(key));
-        }
-
-        /// <summary>
-        /// Returns the state of the endcap.
-        /// </summary>
-        /// <returns> The state of the endcap. </returns>
-        public RecyclerScrollRectContentState GetStateOfEndcap()
-        {
-            if (!_endcap.gameObject.activeSelf)
-            {
-                return RecyclerScrollRectContentState.InactiveInPool;
-            }
-
-            if (IsInViewport(_endcap.RectTransform, viewport, _rootCanvas.worldCamera))
-            {
-                return RecyclerScrollRectContentState.ActiveVisible;
-            }
-
-            return RecyclerScrollRectContentState.ActiveInEndCache;
-        }
-
-        /// <summary>
         /// Clears the Recycler of all entries and their underlying data.
         /// </summary>
         public void Clear()
@@ -956,9 +889,6 @@ namespace RecyclerScrollRect
 
             // Bookkeeping
             _activeEntries.Remove(entry.Index);
-            
-            // Update the state
-            entry.SetState(RecyclerScrollRectContentState.InactiveInPool);
 
             // Callback
             entry.OnRecycled();
@@ -1280,7 +1210,7 @@ namespace RecyclerScrollRect
             Action onScrollComplete = null,
             Action onScrollCancelled = null)
         {
-            ScrollToIndex(GetCurrentIndexForKey(key), scrollToAlignment, scrollSpeedViewportsPerSecond, onScrollComplete, onScrollCancelled);
+            ScrollToIndex(_entryKeyToCurrentIndex[key], scrollToAlignment, scrollSpeedViewportsPerSecond, onScrollComplete, onScrollCancelled);
         }
 
         private IEnumerator ScrollToIndexInner(
@@ -1408,8 +1338,7 @@ namespace RecyclerScrollRect
             _activeEntriesWindow.VisibleIndexRange = null;
             _activeEntriesWindow.UpdateCachesFromVisibleRange();
             
-            entry = CreateAndAddEntry(index, 0);
-            entry.SetState(RecyclerScrollRectContentState.ActiveInEndCache);
+            CreateAndAddEntry(index, 0);
             
             content.SetPivotWithoutMoving(content.pivot.WithY(0.5f));
             normalizedPosition = normalizedPosition.WithY(0.5f);
@@ -1452,7 +1381,7 @@ namespace RecyclerScrollRect
         /// <param name="scrollToAlignment"> The position within the entry to center on. </param>
         public void ScrollToKeyImmediate(TKeyEntryData key, ScrollToAlignment scrollToAlignment = ScrollToAlignment.EntryMiddle)
         {
-            ScrollToIndexImmediate(GetCurrentIndexForKey(key), scrollToAlignment);
+            ScrollToIndexImmediate(_entryKeyToCurrentIndex[key], scrollToAlignment);
         }
 
         /// <summary>
@@ -1581,25 +1510,27 @@ namespace RecyclerScrollRect
                 StopScrollToIndexCoroutine();
             }
         }
-
+        
         /// <summary>
-        /// Returns the current index of the entry with a given key.
+        /// Returns the entry with the given index if it is currently active (cached or visible) in the recycler.
         /// </summary>
-        /// <param name="key"> The key of the entry to get the current index of. </param>
-        /// <returns> The current index of the entry with the given key. </returns>
-        public int GetCurrentIndexForKey(TKeyEntryData key)
+        /// <param name="index"> The index of the entry </param>
+        /// <param name="activeEntry"> The active entry, or null if it is not currently active </param>
+        /// <returns> Whether the entry with the given index is currently active in the recycler </returns>
+        public bool TryGetEntryWithIndex(int index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry)
         {
-            return _entryKeyToCurrentIndex[key];
+            return _activeEntries.TryGetValue(index, out activeEntry);
         }
 
         /// <summary>
-        /// Returns the key of the entry at the given index.
+        /// Returns the entry with the given key if it is currently active (cached or visible) in the recycler.
         /// </summary>
-        /// <param name="index"> The index of the entry to get the key of. </param>
-        /// <returns> The key of the entry at the given index. </returns>
-        public TKeyEntryData GetKeyForCurrentIndex(int index)
+        /// <param name="key"> The key of the entry </param>
+        /// <param name="activeEntry"> The active entry, or null if it is not currently active </param>
+        /// <returns> Whether the entry with the given index is currently active in the recycler </returns>
+        public bool TryGetEntryWithKey(TKeyEntryData key, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry)
         {
-            return _dataForEntries[index].Key;
+            return TryGetEntryWithIndex(_entryKeyToCurrentIndex[key], out activeEntry);
         }
 
         private void StopScrollToIndexCoroutine()

@@ -16,7 +16,7 @@ namespace RecyclerScrollRect
         /// The current state of the endcap.
         /// Note that until fetching is complete, the state will report as in the pool.
         /// </summary>
-        public RecyclerScrollRectContentState State { get; private set; }
+        public RecyclerScrollRectContentState? State { get; private set; }
 
         /// <summary>
         /// The Recycler this endcap is a part of.
@@ -49,9 +49,9 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Lifecycle method called when the state of the endcap changes.
         /// </summary>
-        /// <param name="prevState"> The previous state of the endcap. </param>
+        /// <param name="prevState"> The previous state of the endcap. If null, the endcap was fetched from the pool. </param>
         /// <param name="newState"> The current state of the endcap. </param>
-        protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+        protected virtual void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
         {
             // Empty
         }
@@ -82,14 +82,14 @@ namespace RecyclerScrollRect
         /// </summary>
         /// <param name="newState"> The current state of the endcap. </param>
         [CalledByRecycler]
-        public void SetState(RecyclerScrollRectContentState newState)
+        public void SetState(RecyclerScrollRectContentState? newState)
         {
-            RecyclerScrollRectContentState lastState = State;
+            RecyclerScrollRectContentState? lastState = State;
             State = newState;
             
-            if (newState != lastState)
+            if (newState.HasValue && newState.Value != lastState)
             {
-                OnStateChanged(lastState, newState);   
+                OnActiveStateChanged(lastState, newState.Value);   
             }
         }
         

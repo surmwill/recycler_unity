@@ -22,21 +22,21 @@ namespace RecyclerScrollRect
             _indexText.text = Index.ToString();
         }
 
-        protected override void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
         {
             _colorTween?.Kill();
             
             switch (newState)
             {
-                case RecyclerScrollRectContentState.ActiveVisible:
+                case RecyclerScrollRectContentState.Visible:
                     _colorTween = _background.DOColor(TestStateChangesRecycler.OnVisibleColor, TestStateChangesRecycler.CrossFadeTimeSeconds);
                     break;
                 
-                case RecyclerScrollRectContentState.ActiveInStartCache:
+                case RecyclerScrollRectContentState.InStartCache:
                     _background.color = TestStateChangesRecycler.OnStartCacheColor;
                     break;
                 
-                case RecyclerScrollRectContentState.ActiveInEndCache:
+                case RecyclerScrollRectContentState.InEndCache:
                     _background.color = TestStateChangesRecycler.OnEndCacheColor;
                     break;
             }

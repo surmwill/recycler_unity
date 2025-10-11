@@ -19,7 +19,7 @@ namespace RecyclerScrollRect
         
         private Tween _colorTween;
         
-        protected override void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
         {
             Debug.Log($"Endcap changing state from {prevState} -> {newState}");
             
@@ -27,11 +27,11 @@ namespace RecyclerScrollRect
             
             switch (newState)
             {
-                case RecyclerScrollRectContentState.ActiveVisible:
+                case RecyclerScrollRectContentState.Visible:
                     _colorTween = _background.DOColor(OnVisibleColor, TestStateChangesRecycler.CrossFadeTimeSeconds);
                     break;
 
-                case RecyclerScrollRectContentState.ActiveInEndCache:
+                case RecyclerScrollRectContentState.InEndCache:
                     _colorTween = _background.DOColor(OnEndCacheColor, TestStateChangesRecycler.CrossFadeTimeSeconds);
                     break;
             }

@@ -42,7 +42,7 @@ namespace RecyclerScrollRect
         }
         
         // Optional: called when the state of the entry changes
-        protected override void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
         {
         }
     }

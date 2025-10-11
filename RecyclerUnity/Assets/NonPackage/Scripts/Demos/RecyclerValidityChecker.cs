@@ -361,7 +361,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
             switch (entry.State)
             {
                 // Visible
-                case RecyclerScrollRectContentState.ActiveVisible:
+                case RecyclerScrollRectContentState.Visible:
                 {
                     if (!IsInViewport(entry.RectTransform, _recycler.viewport, _rootCanvas.worldCamera))
                     {
@@ -373,7 +373,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
                 }
 
                 // In start cache
-                case RecyclerScrollRectContentState.ActiveInStartCache:
+                case RecyclerScrollRectContentState.InStartCache:
                 {
                     if ((StartCachePosition == RecyclerPosition.Top && !IsAboveViewportCenter(entry.RectTransform, _recyclerViewport)) ||
                          (StartCachePosition == RecyclerPosition.Bot && !IsBelowViewportCenter(entry.RectTransform, _recyclerViewport)))
@@ -386,7 +386,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
                 }
 
                 // In end cache
-                case RecyclerScrollRectContentState.ActiveInEndCache:
+                case RecyclerScrollRectContentState.InEndCache:
                 {
                     if ((EndCachePosition == RecyclerPosition.Top && !IsAboveViewportCenter(entry.RectTransform, _recyclerViewport)) ||
                         (EndCachePosition == RecyclerPosition.Bot && !IsBelowViewportCenter(entry.RectTransform, _recyclerViewport)))
@@ -399,7 +399,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
                 }
 
                 // In the recycling pool
-                case RecyclerScrollRectContentState.InactiveInPool:
+                case null:
                 {
                     Debug.LogError($"Entry {entry.Index} state says it's in the recycling pool but it's in the list as an active entry.");
                     Debug.Break();
@@ -411,7 +411,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
         // Check that each inactive entry reports that it's waiting in the pool
         foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _recycledEntries.Entries.Values.Concat(_unboundEntries))
         {
-            if (entry.State != RecyclerScrollRectContentState.InactiveInPool)
+            if (entry.State != null)
             {
                 Debug.LogError($"Inactive entries should report that they are in the recycling pool, {entry.Index} with state \"{entry.State}\" doesn't.");
                 Debug.Break();
@@ -441,7 +441,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
         switch (_recycler.Endcap.State)
         {
             // Visible
-            case RecyclerScrollRectContentState.ActiveVisible:
+            case RecyclerScrollRectContentState.Visible:
             {
                 if (!IsInViewport(endcap.RectTransform, _recycler.viewport, _rootCanvas.worldCamera))
                 {
@@ -453,7 +453,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
             }
 
             // In the end cache
-            case RecyclerScrollRectContentState.ActiveInEndCache:
+            case RecyclerScrollRectContentState.InEndCache:
             {
                 if (EndCachePosition == RecyclerPosition.Top && !IsAboveViewportCenter(endcap.RectTransform, _recyclerViewport) || 
                     EndCachePosition == RecyclerPosition.Bot && !IsBelowViewportCenter(endcap.RectTransform, _recyclerViewport))
@@ -466,7 +466,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
             }
 
             // In the start cache
-            case RecyclerScrollRectContentState.ActiveInStartCache:
+            case RecyclerScrollRectContentState.InStartCache:
             {
                 Debug.LogError("The endcap should never be in the start cache.");
                 Debug.Break();
@@ -474,7 +474,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
             }
 
             // Pooled
-            case RecyclerScrollRectContentState.InactiveInPool:
+            case null:
             {
                 if (endcap.gameObject.activeSelf)
                 {
@@ -487,7 +487,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
         }
         
         // Check that the state of the endcap reflects its actual position in the list
-        if (endcap.State == RecyclerScrollRectContentState.ActiveVisible && !IsInViewport(endcap.RectTransform, _recycler.viewport, _rootCanvas.worldCamera))
+        if (endcap.State == RecyclerScrollRectContentState.Visible && !IsInViewport(endcap.RectTransform, _recycler.viewport, _rootCanvas.worldCamera))
         {
             Debug.LogError("The endcap's state says it's visible but its position in the list does not reflect this.");
             Debug.Break();
