@@ -31,6 +31,37 @@ namespace RecyclerScrollRect
         /// The range of indices of active entries: both visible and cached. Null if the range is empty.
         /// </summary>
         (int Start, int End)? ActiveEntriesRange { get; }
+        
+        /// <summary>
+        /// Returns true if the given index is visible.
+        /// </summary>
+        /// <param name="index"> The index to test if it is visible. </param>
+        /// <returns> True if the index is visible. </returns>
+        public bool IsVisible(int index)
+        {
+            return VisibleIndexRange.HasValue && index >= VisibleIndexRange.Value.Start && index <= VisibleIndexRange.Value.End;
+        }
+
+        /// <summary>
+        /// Returns true if the given index is in the start cache.
+        /// </summary>
+        /// <param name="index"> The index to test if it is in the start cache. </param>
+        /// <returns> True if the index is in the start cache. </returns>
+        public bool IsInStartCache(int index);
+
+        /// <summary>
+        /// Returns true if the given index is in the end cache.
+        /// </summary>
+        /// <param name="index"> The index to test if it is in the end cache </param>
+        /// <returns> True if the index is in the end cache. </returns>
+        public bool IsInEndCache(int index);
+
+        /// <summary>
+        /// Returns true if the given index is an active entry, either visible or cached. 
+        /// </summary>
+        /// <param name="index"> The index to test if it is an active entry. </param>
+        /// <returns> True if the index is of an active entry. </returns>
+        public bool Contains(int index);
 
         /// <summary>
         /// Returns information about the current ranges of entry indices

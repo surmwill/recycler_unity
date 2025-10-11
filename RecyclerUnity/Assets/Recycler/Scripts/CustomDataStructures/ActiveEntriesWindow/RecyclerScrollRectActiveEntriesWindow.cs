@@ -180,12 +180,12 @@ namespace RecyclerScrollRect
                 null :
                 (visibleIndexRange.End + 1, Mathf.Min(visibleIndexRange.End + _numCached, CurrentDataSize - 1));
         }
-
+        
         /// <summary>
-       /// Returns true if the given index is visible.
-       /// </summary>
-       /// <param name="index"> The index to test if it is visible. </param>
-       /// <returns> True if the index is visible. </returns>
+        /// Returns true if the given index is visible.
+        /// </summary>
+        /// <param name="index"> The index to test if it is visible. </param>
+        /// <returns> True if the index is visible. </returns>
         public bool IsVisible(int index)
         {
             return VisibleIndexRange.HasValue && index >= VisibleIndexRange.Value.Start && index <= VisibleIndexRange.Value.End;

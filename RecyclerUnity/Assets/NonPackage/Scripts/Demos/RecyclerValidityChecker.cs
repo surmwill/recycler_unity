@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using RecyclerScrollRect;
@@ -52,8 +53,8 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
 
     private void CheckValidity()
     {
-        DebugCheckWindowIndices();
-        DebugCheckWindowStates();
+        DebugCheckValidWindowIndices();
+        DebugCheckWindowAlignsWithEntryPositions();
         DebugCheckWindowAlignment();
 
         DebugCheckDuplicates();
@@ -68,7 +69,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
     /// <summary>
     /// Check that the start index of the visible indices is not > the end.
     /// </summary>
-    private void DebugCheckWindowIndices()
+    private void DebugCheckValidWindowIndices()
     {
         (int Start, int End)? visibleIndexRange = _recycler.ActiveEntriesWindow.VisibleIndexRange;
         if (!visibleIndexRange.HasValue)
@@ -83,12 +84,52 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
             return;
         }
     }
-
+    
     /// <summary>
-    /// Check that the indices we report as visible, in the start cache, and in the end cache, correspond to actual
-    /// entries that are visible, in the start cache, and in the end cache
+    /// Check that the children of the recycler are all active entries, and that there are no missing or extra.
     /// </summary>
-    private void DebugCheckWindowStates()
+    private void DebugCheckAllChildrenAreActiveEntries()
+    {
+        Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> activeEntries = 
+            new Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>(_recycler.ActiveEntries);
+        
+        foreach (Transform t in _recycler.content)
+        {
+            RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap = t.GetComponent<RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>>();
+            if (endcap != null)
+            {
+                continue;
+            }
+            
+            RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
+            if (entry == null)
+            {
+                Debug.LogError($"{t.gameObject.name} is a child of the recycler but not an entry or endap");
+                Debug.Break();
+                return;
+            }
+
+            if (!activeEntries.TryGetValue(entry.Index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry) || entry != activeEntry)
+            {
+                Debug.LogError($"Entry with index \"{entry.Index}\" is present as a recycler child but not tracked as active");
+                Debug.Break();
+                return;
+            }
+
+            activeEntries.Remove(entry.Index);
+        }
+
+        if (activeEntries.Any())
+        {
+            Debug.LogError($"Entries: \"{string.Join(',', activeEntries.Keys)}\" are reported as active but not present as a child in the recycler");
+        }
+    }
+    
+    /// <summary>
+    /// Check that all active entries map correctly to their state in the index window, and the index window maps
+    /// correctly to all active entries.
+    /// </summary>
+    private void DebugCheckWindowAlignsWithEntryPositions()
     {
         HashSet<int> indicesInStartCache = new HashSet<int>();
         HashSet<int> indicesInEndCache = new HashSet<int>();
@@ -114,14 +155,8 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
             visibleIndices = new HashSet<int>(Enumerable.Range(Start, End - Start + 1));
         }
 
-        foreach (Transform t in _recycler.content)
+        foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _recycler.ActiveEntries.Values)
         {
-            RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
-            if (entry == null)
-            {
-                return;
-            }
-
             // Entries that are visible in the viewport should be reported as visible
             if (IsInViewport(entry.RectTransform, _recycler.viewport, _rootCanvas.worldCamera))
             {
@@ -207,6 +242,8 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
     /// </summary>
     private void DebugCheckDuplicates()
     {
+        // TODO: check duplicate endcaps
+        
         HashSet<int> seenIndices = new HashSet<int>();
         foreach (Transform t in _recycler.content)
         {
@@ -255,35 +292,18 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
     }
 
     /// <summary>
-    /// Ensure that as we insert and remove entries and their indices shift, their shifted index still maps to the same key
-    /// </summary>
-    private void DebugCheckIndexToKeyMapping()
-    {
-        IReadOnlyList<TEntryData> dataForEntries = _recycler.DataForEntries;
-        for (int i = 0; i < dataForEntries.Count; i++)
-        {
-            TKeyEntryData actualKey = dataForEntries[i].Key;
-            TKeyEntryData mappedKey = _recycler.GetKeyForCurrentIndex(i);
-
-            if (!EqualityComparer<TKeyEntryData>.Default.Equals(actualKey, mappedKey))
-            {
-                Debug.LogError($"The mapped key corresponding to index {i} \"{mappedKey}\" does not match the actual key of the data at index {i} \"{actualKey}\"");
-                Debug.Break();
-                return;
-            }
-        }
-    }
-
-    /// <summary>
     /// Ensure that as we insert and remove entries and their indices shift, their keys map to their shifted index
     /// </summary>
     private void DebugCheckKeyToIndexMapping()
     {
+        Dictionary<TKeyEntryData, int> _entryKeyToCurrentIndex;
+        _entryKeyToCurrentIndex = GetRecyclerPrivateFieldValue<Dictionary<TKeyEntryData, int>>(nameof(_entryKeyToCurrentIndex));
+        
         IReadOnlyList<TEntryData> dataForEntries = _recycler.DataForEntries;
         for (int i = 0; i < dataForEntries.Count; i++)
         {
             TKeyEntryData key = dataForEntries[i].Key;
-            int mappedIndex = _recycler.GetCurrentIndexForKey(dataForEntries[i].Key);
+            int mappedIndex = _entryKeyToCurrentIndex[dataForEntries[i].Key];
 
             if (mappedIndex != i)
             {
@@ -294,50 +314,78 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
         }
     }
 
-    /// <summary>
-    /// Ensures that the range of active indices reported in the index window correspond to the set of actual references to active entries
-    /// </summary>
-    private void DebugCheckWindowAlignment()
+    // Check it only appears at the end of active entries and is only active when the last index is active
+    private void DebugCheckEndcapPosition()
     {
-        IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> activeEntries = _recycler.ActiveEntries;
-        IRecyclerScrollRectActiveEntriesWindow activeEntriesWindow = _recycler.ActiveEntriesWindow;
-        
-        // No indices reported and no references to active entries
-        if (!activeEntriesWindow.ActiveEntriesRange.HasValue && !activeEntries.Any())
+        RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap = _recycler.Endcap;
+        if (endcap == null)
         {
             return;
         }
 
-        // No indices reported but references to active entries
-        if (!activeEntriesWindow.ActiveEntriesRange.HasValue && activeEntries.Any())
+        bool hasLastEntry = _recycler.ActiveEntries.ContainsKey(_recycler.DataForEntries.Count - 1);
+        if (!hasLastEntry && endcap.gameObject.activeSelf)
         {
-            Debug.LogError("The window states there are no active indices, but we are still referencing active entries.");
+            Debug.LogError("Endcap should not be active if the last entry is not active.");
             Debug.Break();
             return;
         }
-
-        (int activeIndicesStart, int activeIndicesEnd) = activeEntriesWindow.ActiveEntriesRange.Value;
-
-        // Check that each active index has a corresponding reference to an active entry
-        for (int i = activeIndicesStart; i <= activeIndicesEnd; i++)
+        
+        if (hasLastEntry && !endcap.gameObject.activeSelf)
         {
-            if (!activeEntries.ContainsKey(i))
+            Debug.LogError("Endcap should be active if the last entry is active.");
+            Debug.Break();
+            return;
+        }
+        
+        int endcapSiblingIndex = endcap.transform.GetSiblingIndex();
+        if (EndCachePosition == RecyclerPosition.Top && endcapSiblingIndex != 0)
+        {
+            Debug.LogError("Endcap should be the first sibling when the end cache is at the top. No entries should come before it");
+            Debug.Break();
+        }
+        else
+        {
+            Debug.LogError("Endcap should be the last sibling when the end cache is at the bottom. No entries should come after it");
+            Debug.Break();
+        }
+    }
+
+    // Check entries and endcap correctly update their visibility
+    private void DebugCheckVisibility()
+    {
+        
+    }
+
+    // Check that pooled and unbound entries go under the _poolParent
+    private void DebugCheckPool()
+    {
+        // Private entries that we need to get through reflection, matching their names 1-to-1
+        RecycledEntries<TEntryData, TKeyEntryData> _recycledEntries;
+        Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _unboundEntries;
+        RectTransform _poolParent;
+        RectTransform _endcapParent;
+
+        _recycledEntries = GetRecyclerPrivateFieldValue<RecycledEntries<TEntryData, TKeyEntryData>>(nameof(_recycledEntries));
+        _unboundEntries = GetRecyclerPrivateFieldValue<Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>>(nameof(_unboundEntries));
+        _poolParent = GetRecyclerPrivateFieldValue<RectTransform>(nameof(_poolParent));
+        _endcapParent = GetRecyclerPrivateFieldValue<RectTransform>(nameof(_endcapParent));
+        
+        // Check that each inactive entry reports that it's waiting in the pool
+        foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _recycledEntries.Entries.Values.Concat(_unboundEntries))
+        {
+            if (entry.transform.parent != _poolParent)
             {
-                Debug.LogError($"The window states that index {i} should be active, but there is no reference to an active entry with that index.");
+                Debug.LogError($"Entries not active in the recycler should be in the recycling pool. Entry \"{entry.Index}\" isn't.");
                 Debug.Break();
                 return;
             }
         }
 
-        // Check that each reference to an active entry has a corresponding active index
-        foreach (int index in activeEntries.Keys)
+        RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap = _recycler.Endcap;
+        if (endcap != null && !endcap.gameObject.activeSelf && endcap.transform.parent != _endcapParent)
         {
-            if (index < activeIndicesStart || index > activeIndicesEnd)
-            {
-                Debug.LogError($"We have a reference to an active entry with index {index}, but the window does not contain this active index.");
-                Debug.Break();
-                return;
-            }
+            Debug.LogError($"An inactive endcap should be waiting in its recycling pool.");
         }
     }
 
@@ -358,7 +406,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
         // Check that each active entry's state reflect its actual position in the list
         foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in activeEntries.Values)
         {
-            switch (entry.State)
+            switch (GetWindowStateOfEntry(entry))
             {
                 // Visible
                 case RecyclerScrollRectContentState.Visible:
@@ -495,9 +543,38 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
         }
     }
     
-
     private TFieldValue GetRecyclerPrivateFieldValue<TFieldValue>(string fieldName)
     {
         return RecyclerScrollRectReflectionHelpers.GetPrivateFieldValue<TFieldValue, TEntryData, TKeyEntryData>(_recycler, fieldName);
     }
+
+    private RecyclerScrollRectContentState GetWindowStateOfEntry(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
+    {
+        int index = entry.Index;
+        
+        if (index != RecyclerScrollRectEntry<TEntryData, TKeyEntryData>.UnboundIndex && (index < 0 || index >= _recycler.DataForEntries.Count))
+        {
+            throw new ArgumentException($"index \"{index}\" must be >= 0 and < the length of data \"{_recycler.DataForEntries.Count}\"");
+        }
+
+        IRecyclerScrollRectActiveEntriesWindow activeEntriesWindow = _recycler.ActiveEntriesWindow;
+        
+        if (activeEntriesWindow.IsVisible(index))
+        {
+            return RecyclerScrollRectContentState.Visible;
+        }
+
+        if (activeEntriesWindow.IsInStartCache(index))
+        {
+            return RecyclerScrollRectContentState.InStartCache;
+        }
+
+        if (activeEntriesWindow.IsInEndCache(index))
+        {
+            return RecyclerScrollRectContentState.InEndCache;
+        }
+
+        return RecyclerScrollRectContentState.Pooled;
+    }
+    
 }

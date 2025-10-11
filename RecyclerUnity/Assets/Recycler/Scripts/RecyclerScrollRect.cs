@@ -136,7 +136,7 @@ namespace RecyclerScrollRect
         private readonly List<TEntryData> _dataForEntries = new();
         private readonly Dictionary<TKeyEntryData, int> _entryKeyToCurrentIndex = new();
 
-        private Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _activeEntries = new();
+        private readonly Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _activeEntries = new();
         private readonly RecycledEntries<TEntryData, TKeyEntryData> _recycledEntries = new();
         private readonly Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _unboundEntries = new();
         
@@ -450,8 +450,12 @@ namespace RecyclerScrollRect
 
                 shiftedActiveEntries[shiftedIndex] = activeEntry;
             }
-
-            _activeEntries = shiftedActiveEntries;
+            
+            _activeEntries.Clear();
+            foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> shiftedActiveEntry) in shiftedActiveEntries)
+            {
+                _activeEntries[index] = shiftedActiveEntry;
+            }
 
             // Shift our recycled entries
             _recycledEntries.ShiftIndices(startIndex, shiftAmount);
