@@ -21,10 +21,10 @@ namespace RecyclerScrollRect
 
         protected override string[] DemoButtonDescriptions => new[]
         {
-            "0: Appends a new entry.",
-            "1: Deletes the first entry",
-            "2: Clears the entries",
-            "3: Resets the list to the beginning entries."
+            "0 (key 'A'): Appends a new entry.",
+            "1 (key 'D'): Deletes the first entry",
+            "2 (key 'C'): Clears the entries",
+            "3 (key 'R'): Resets the list to the beginning entries."
         };
 
         private void Update()
