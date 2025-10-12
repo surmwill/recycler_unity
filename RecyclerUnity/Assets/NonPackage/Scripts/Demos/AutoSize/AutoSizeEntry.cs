@@ -31,23 +31,14 @@ namespace RecyclerScrollRect
         {
             Data.NumAppendedLines += Random.Range(AppendMinLinesOfText, AppendMaxLinesOfText);
             UpdateLines();
-            RecalculateHeight(null, FixEntries.Above);
+            AutoRecalculateHeight(FixEntries.Above);
         }
 
         private void UpdateLines()
         {
-            _linesText.text = Enumerable.Range(0, Data.NumLines)
-                .Aggregate(string.Empty, (s, i) => s + $"Line {i + 1}\n")
-                .Trim();
-
-            if (Data.NumAppendedLines > 0)
-            {
-                _linesText.text += "\n";
-            }
-
-            _linesText.text += Enumerable.Range(0, Data.NumAppendedLines)
-                .Aggregate(string.Empty, (s, i) => s + $"Appended line {i + 1}\n")
-                .Trim();
+            _linesText.text = Enumerable.Range(0, Data.NumLines).Aggregate(string.Empty, (s, i) => s + $"Line {i + 1}\n").Trim();
+            _linesText.text += Data.NumAppendedLines > 0 ? "\n" : string.Empty;
+            _linesText.text += Enumerable.Range(0, Data.NumAppendedLines).Aggregate(string.Empty, (s, i) => s + $"Appended line {i + 1}\n").Trim();
 
         }
     }

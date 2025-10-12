@@ -38,11 +38,25 @@ namespace RecyclerScrollRect
         /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         ///
         /// Being positioned at the end of the list, the default null value will fix all the entries that come before it.
-        /// That value depends on the orientation of the recycler.
         /// </param>
-        protected void RecalculateHeight(float? newHeight, FixEntries? fixEntries = null)
+        protected void RecalculateHeight(float newHeight, FixEntries? fixEntries = null)
         {
             Recycler.RecalculateEndcapHeight(newHeight, fixEntries);
+        }
+        
+        /// <summary>
+        /// Called when the endcap needs to recalculate its height in the recycler.
+        /// </summary>
+        /// <param name="fixEntries">
+        /// If we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy.
+        /// This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored,
+        /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
+        ///
+        /// Being positioned at the end of the list, the default null value will fix all the entries that come before it.
+        /// </param>
+        protected void AutoRecalculateHeight(FixEntries? fixEntries = null)
+        {
+            Recycler.RecalculateEndcapHeight(null, fixEntries);
         }
         
         #region LIFECYCLE_METHODS

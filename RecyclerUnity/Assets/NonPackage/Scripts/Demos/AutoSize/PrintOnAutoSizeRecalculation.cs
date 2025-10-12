@@ -24,14 +24,10 @@ namespace RecyclerScrollRect
 
         public void CalculateLayoutInputHorizontal()
         {
-            Debug.Log($"CALCULATING LAYOUT FOR {gameObject.name} AT {Time.frameCount}");
+            Debug.Log($"CALCULATING LAYOUT FOR {gameObject.name} AT FRAME {Time.frameCount}");
         }
 
         public void CalculateLayoutInputVertical()
-        {
-        }
-
-        private void OnDisable()
         {
         }
     }

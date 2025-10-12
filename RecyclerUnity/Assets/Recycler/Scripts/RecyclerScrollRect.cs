@@ -996,7 +996,7 @@ namespace RecyclerScrollRect
         /// </summary>
         private void RecalculateContentChildHeight(RectTransform contentChild, float? newHeight, Behaviour[] layoutBehaviours, FixEntries fixEntries = FixEntries.Below)
         {
-            // If the child is not visible then grow in the direction which keeps it off screen and preserves the currently visible entries
+            // If the child is not visible then grow in the direction which keeps it off-screen and preserves the currently visible entries
             if (!IsInViewport(contentChild, viewport, _rootCanvas.worldCamera))
             {
                 fixEntries = IsAboveViewportCenter(contentChild, viewport) ? FixEntries.Below : FixEntries.Above;
@@ -1005,19 +1005,13 @@ namespace RecyclerScrollRect
             // Directly set the height of the child
             if (newHeight.HasValue)
             {
+                (Vector2 prevAnchorMin, Vector2 prevAnchorMax) = (contentChild.anchorMin, contentChild.anchorMax);
                 (contentChild.anchorMin, contentChild.anchorMax) = (Vector2.one * 0.5f, Vector2.one * 0.5f);
                 contentChild.sizeDelta = contentChild.sizeDelta.WithY(newHeight.Value);
+                (contentChild.anchorMin, contentChild.anchorMax) = (prevAnchorMin, prevAnchorMax);
             }
             // Auto-calculate the height of the child
             else if (layoutBehaviours != null && layoutBehaviours.Length > 0)
-            {
-                SetBehavioursEnabled(layoutBehaviours, true);
-                LayoutRebuilder.ForceRebuildLayoutImmediate(contentChild);
-                SetBehavioursEnabled(layoutBehaviours, false);   
-            }
-
-            // Calculate the height of the child
-            if (layoutBehaviours != null && layoutBehaviours.Length > 0)
             {
                 SetBehavioursEnabled(layoutBehaviours, true);
                 LayoutRebuilder.ForceRebuildLayoutImmediate(contentChild);
@@ -1511,16 +1505,64 @@ namespace RecyclerScrollRect
                 StopScrollToIndexCoroutine();
             }
         }
+
+        /// <summary>
+        /// Returns the endcap
+        /// </summary>
+        /// <typeparam name="TEndcap"> The type of the endcap </typeparam>
+        /// <returns> The endcap </returns>
+        public TEndcap GetEndcap<TEndcap>() where TEndcap : RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>
+        {
+            return Endcap as TEndcap;
+        }
+        
+        /// <summary>
+        /// Returns the active entry with the given index
+        /// </summary>
+        /// <param name="index"> The index of the entry </param>
+        /// <typeparam name="TEntry"> The type of your entry </typeparam>
+        /// <exception cref="ArgumentException"> There is no active entry with the given index </exception>
+        /// <returns> The active entry with the given index </returns>
+        public TEntry GetActiveEntryWithIndex<TEntry>(int index) where TEntry : RecyclerScrollRectEntry<TEntryData, TKeyEntryData>
+        {
+            if (!_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
+            {
+                throw new ArgumentException($"There is no active entry with index: {index}");
+            }
+            return entry as TEntry;
+        }
+        
+        /// <summary>
+        /// Returns the active entry with the given key
+        /// </summary>
+        /// <param name="key"> The key of the entry </param>
+        /// <typeparam name="TEntry"> The type of your entry </typeparam>
+        /// <exception cref="ArgumentException"> There is no active entry with the given key </exception>
+        /// <returns> The active entry with the given key </returns>
+        public TEntry GetActiveEntryWithKey<TEntry>(TKeyEntryData key) where TEntry : RecyclerScrollRectEntry<TEntryData, TKeyEntryData>
+        {
+            if (!_entryKeyToCurrentIndex.TryGetValue(key, out int index) || !_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
+            {
+                throw new ArgumentException($"There is no active entry with key: {key}");
+            }
+            return entry as TEntry;
+        }
         
         /// <summary>
         /// Returns the entry with the given index if it is currently active (cached or visible) in the recycler.
         /// </summary>
         /// <param name="index"> The index of the entry </param>
         /// <param name="activeEntry"> The active entry, or null if it is not currently active </param>
+        /// <typeparam name="TEntry"> The type of your entry </typeparam>
         /// <returns> Whether the entry with the given index is currently active in the recycler </returns>
-        public bool TryGetEntryWithIndex(int index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry)
+        public bool TryGetActiveEntryWithIndex<TEntry>(int index, out TEntry activeEntry) where TEntry : RecyclerScrollRectEntry<TEntryData, TKeyEntryData>
         {
-            return _activeEntries.TryGetValue(index, out activeEntry);
+            activeEntry = null;
+            if (!_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
+            {
+                return false;
+            }
+            return entry as TEntry;
         }
 
         /// <summary>
@@ -1529,9 +1571,9 @@ namespace RecyclerScrollRect
         /// <param name="key"> The key of the entry </param>
         /// <param name="activeEntry"> The active entry, or null if it is not currently active </param>
         /// <returns> Whether the entry with the given index is currently active in the recycler </returns>
-        public bool TryGetEntryWithKey(TKeyEntryData key, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry)
+        public bool TryGetActiveEntryWithKey<TEntry>(TKeyEntryData key, out TEntry activeEntry) where TEntry : RecyclerScrollRectEntry<TEntryData, TKeyEntryData>
         {
-            return TryGetEntryWithIndex(_entryKeyToCurrentIndex[key], out activeEntry);
+            return TryGetActiveEntryWithIndex(_entryKeyToCurrentIndex[key], out activeEntry);
         }
 
         private void StopScrollToIndexCoroutine()

@@ -49,9 +49,9 @@ namespace RecyclerScrollRect
                 string[] deleteKeys = Enumerable.Range(DeleteAtIndex, NumEntriesToDelete).Select(i => _deleteRecycler.DataForEntries[i].Key).ToArray();
                 foreach (string key in deleteKeys)
                 {
-                    if (_deleteRecycler.TryGetEntryWithKey(key, out RecyclerScrollRectEntry<EmptyRecyclerData, string> entry))
+                    if (_deleteRecycler.TryGetActiveEntryWithKey(key, out DeleteRecyclerEntry entry))
                     {
-                        ((DeleteRecyclerEntry) entry).ShrinkAndDelete();
+                        entry.ShrinkAndDelete();
                     }
                     else
                     {

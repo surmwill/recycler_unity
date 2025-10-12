@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -22,13 +21,14 @@ namespace RecyclerScrollRect
 
         protected override string DemoTitle => "Auto-size Demo";
 
-        protected override string DemoDescription => "Tests auto-sized entries. Each entry is a different size.";
+        protected override string DemoDescription => "Tests auto-sized entries. Each entry holds a different amount of text and therefore has a different size. " +
+                                                     "Buttons are used to dynamically append text to entries.";
 
         protected override string[] DemoButtonDescriptions => new[]
         {
-            "0: Appends a random number of lines of text to a random active entry.",
-            "1: Increases the size of the endcap through its layout group.",
-            "2: Decreases the size of the endcap through its layout group."
+            "0 (or 'A'): Appends a random number of lines of text to a random active entry.",
+            "1 (or 'S'): Increases the size of the endcap through its layout group.",
+            "2 (or 'D'): Decreases the size of the endcap through its layout group."
         };
 
         private IRecyclerScrollRectActiveEntriesWindow _indexWindow;
@@ -36,9 +36,7 @@ namespace RecyclerScrollRect
         protected override void Start()
         {
             base.Start();
-            _autoSizeRecycler.AppendEntries(Enumerable.Range(0, NumEntries)
-                .Select(_ => new AutoSizeData(Random.Range(MinNumLines, MaxNumLines + 1))));
-
+            _autoSizeRecycler.AppendEntries(Enumerable.Range(0, NumEntries).Select(_ => new AutoSizeData(Random.Range(MinNumLines, MaxNumLines + 1))));
             _indexWindow = _autoSizeRecycler.ActiveEntriesWindow;
         }
 
@@ -47,21 +45,20 @@ namespace RecyclerScrollRect
             (int Start, int End) = _indexWindow.ActiveEntriesRange.Value;
             
             // Randomly grow an active entry.
-            if (Input.GetKeyDown(KeyCode.R) || DemoToolbar.GetButtonDown(0))
+            if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
             {
-                int appendTextToIndex = Random.Range(Start, End);
-                Debug.Log($"Adding text to entry {appendTextToIndex}.");
-                ((AutoSizeEntry) _autoSizeRecycler.ActiveEntries[appendTextToIndex]).AppendLines();
+                int indexToAppend = Random.Range(Start, End);
+                _autoSizeRecycler.GetActiveEntryWithIndex<AutoSizeEntry>(indexToAppend).AppendLines();
             }
             // Increases the size of the endcap through its layout group.
-            else if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(1))
+            else if (Input.GetKeyDown(KeyCode.S) || DemoToolbar.GetButtonDown(1))
             {
-                ((AutoSizeEndcap) _autoSizeRecycler.Endcap).Grow();
+                _autoSizeRecycler.GetEndcap<AutoSizeEndcap>().Grow();
             }
             // Decreases the size of the endcap through its layout group.
             else if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(2))
             {
-                ((AutoSizeEndcap) _autoSizeRecycler.Endcap).Shrink();
+                _autoSizeRecycler.GetEndcap<AutoSizeEndcap>().Shrink();
             }
         }
 
