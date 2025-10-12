@@ -23,7 +23,6 @@ namespace RecyclerScrollRect
 
         private const float TimeToLoadNextPageSeconds = 3f;
         private const float TimeBetweenEllipseChangeSeconds = 0.25f;
-        private const int NumEntriesToAppend = 15;
 
         private Coroutine _fetchWhenOnScreen;
 
@@ -67,7 +66,7 @@ namespace RecyclerScrollRect
                 timeLeft -= Time.deltaTime;
             }
 
-            Recycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(NumEntriesToAppend));
+            Recycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(TestAppendPrependRecycler.NumAppendPrependEntries));
             Reset();
         }
 
