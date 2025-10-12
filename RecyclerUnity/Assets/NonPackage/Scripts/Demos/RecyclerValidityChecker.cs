@@ -260,30 +260,35 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
         }
 
         bool hasLastEntry = _recycler.ActiveEntries.ContainsKey(_recycler.DataForEntries.Count - 1);
-        if (!hasLastEntry && endcap.gameObject.activeSelf)
+        bool isEndcapActive = endcap.gameObject.activeInHierarchy;
+        
+        if (!hasLastEntry && isEndcapActive)
         {
             Debug.LogError("Endcap should not be active if the last entry is not active.");
             Debug.Break();
             return;
         }
         
-        if (hasLastEntry && !endcap.gameObject.activeSelf)
+        if (hasLastEntry && !isEndcapActive)
         {
             Debug.LogError("Endcap should be active if the last entry is active.");
             Debug.Break();
             return;
         }
-        
-        int endcapSiblingIndex = endcap.transform.GetSiblingIndex();
-        if (EndCachePosition == RecyclerPosition.Top && endcapSiblingIndex != 0)
+
+        if (isEndcapActive)
         {
-            Debug.LogError("Endcap should be the first sibling when the end cache is at the top. No entries should come before it");
-            Debug.Break();
-        }
-        else
-        {
-            Debug.LogError("Endcap should be the last sibling when the end cache is at the bottom. No entries should come after it");
-            Debug.Break();
+            int endcapSiblingIndex = endcap.transform.GetSiblingIndex();
+            if (EndCachePosition == RecyclerPosition.Top && endcapSiblingIndex != 0)
+            {
+                Debug.LogError("Endcap should be the first sibling when the end cache is at the top. No entries should come before it");
+                Debug.Break();
+            }
+            else if (EndCachePosition == RecyclerPosition.Bot && endcapSiblingIndex != _recycler.content.childCount - 1)
+            {
+                Debug.LogError("Endcap should be the last sibling when the end cache is at the bottom. No entries should come after it");
+                Debug.Break();
+            }   
         }
     }
 
@@ -428,7 +433,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
             return;
         }
 
-        if (endcap.gameObject.activeSelf)
+        if (endcap.gameObject.activeInHierarchy)
         {
             if (!endcap.IsVisible.HasValue)
             {
@@ -487,7 +492,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
         }
 
         RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap = _recycler.Endcap;
-        if (endcap != null && !endcap.gameObject.activeSelf && endcap.transform.parent != _endcapParent)
+        if (endcap != null && !endcap.gameObject.activeInHierarchy && endcap.transform.parent != _endcapParent)
         {
             Debug.LogError($"An inactive endcap should be waiting in its recycling pool.");
         }

@@ -525,8 +525,6 @@ namespace RecyclerScrollRect
             bool didActiveEntriesChange = _activeEntriesWindow.AreActiveEntriesDirty;
             if (didActiveEntriesChange)
             {
-                _activeEntriesWindow.SetActiveEntriesNonDirty();
-
                 // Determine what entries need to be removed (offscreen and too far away to belong in the caches)
                 _toRecycleEntries.Clear();
                 foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> _) in _activeEntries)
@@ -550,6 +548,8 @@ namespace RecyclerScrollRect
                 // Fill the screen and then the start and end caches with entries
                 do
                 {
+                    _activeEntriesWindow.SetActiveEntriesNonDirty();
+                    
                     // Determine what entries need to be added to the start cache
                     _newCachedStartEntries.Clear();
                     if (_activeEntriesWindow.StartCacheIndexRange.HasValue)

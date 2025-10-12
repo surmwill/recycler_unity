@@ -23,6 +23,9 @@ namespace RecyclerScrollRect
         private Text _demoDescription = null;
 
         [SerializeField]
+        private Text _buttonDescriptionsTitle = null;
+
+        [SerializeField]
         private Text _buttonDesciptions = null;
 
         [SerializeField]
@@ -103,9 +106,17 @@ namespace RecyclerScrollRect
         public void SetHelpMenuDemoButtonDescriptions(string[] buttonDescriptions)
         {
             _buttonDesciptions.text = string.Empty;
-            for (int i = 0; i < buttonDescriptions?.Length; i++)
+
+            if (buttonDescriptions?.Length > 0)
             {
-                _buttonDesciptions.text += $"{buttonDescriptions[i]}\n";
+                foreach (string description in buttonDescriptions)
+                {
+                    _buttonDesciptions.text += $"{description}\n";
+                }
+            }
+            else
+            {
+                _buttonDescriptionsTitle.gameObject.SetActive(false);
             }
         }
 

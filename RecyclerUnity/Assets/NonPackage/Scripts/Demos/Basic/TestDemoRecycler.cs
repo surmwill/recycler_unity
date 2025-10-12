@@ -28,7 +28,7 @@ namespace RecyclerScrollRect
 
         protected override string DemoTitle => "Simple recycler demo";
 
-        protected override string DemoDescription => "Tests a basic recycler with no special functionality.\n" +
+        protected override string DemoDescription => "Tests a basic recycler with no special functionality. " +
                                                      "Used as a simple example in the documentation.";
 
         protected override string[] DemoButtonDescriptions => null;
