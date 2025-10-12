@@ -13,10 +13,9 @@ namespace RecyclerScrollRect
         public RectTransform RectTransform { get; private set; }
         
         /// <summary>
-        /// The current state of the endcap.
-        /// Note that until fetching is complete, the state will report as in the pool.
+        /// Whether the endcap is visible in the viewport. Null indicates it is pooled
         /// </summary>
-        public RecyclerScrollRectContentState? State { get; private set; }
+        public bool? IsVisible { get; private set; }
 
         /// <summary>
         /// The Recycler this endcap is a part of.
@@ -46,50 +45,82 @@ namespace RecyclerScrollRect
             Recycler.RecalculateEndcapHeight(newHeight, fixEntries);
         }
         
+        #region LIFECYCLE_METHODS
+        
         /// <summary>
-        /// Lifecycle method called when the state of the endcap changes.
-        /// </summary>
-        /// <param name="prevState"> The previous state of the endcap. If null, the endcap was fetched from the pool. </param>
-        /// <param name="newState"> The current state of the endcap. </param>
-        protected virtual void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
-        {
-            // Empty
-        }
-
-        #region CALLED_BY_PARENT_RECYCLER
-
-        /// <summary>
-        /// Lifecycle method called by the recycler when the endcap becomes active, being fetched from its pool.
+        /// Lifecycle method called when the endcap becomes active, being fetched from its pool.
         /// </summary>
         [CalledByRecycler]
-        public virtual void OnFetchedFromPool()
+        protected virtual void OnFetchedFromPool()
         {
             // Empty   
         }
 
         /// <summary>
-        /// Lifecycle method called by the recycler when the endcap gets returned to its pool.
+        /// Lifecycle method called when the endcap gets returned to its pool.
         /// </summary>
         [CalledByRecycler]
-        public virtual void OnReturnedToPool()
+        protected virtual void OnReturnedToPool()
         {
             // Empty
         }
-
-       
+        
         /// <summary>
-        /// Called by the recycler to set the current state of the endcap.
+        /// Called when the visibility of the endcap changes as it enters and leaves the viewport
         /// </summary>
-        /// <param name="newState"> The current state of the endcap. </param>
-        [CalledByRecycler]
-        public void SetState(RecyclerScrollRectContentState? newState)
+        /// <param name="isVisible"> Whether the endcap is visible in the viewport </param>
+        /// <param name="isInitial"> Whether this is the initial visible state of the endcap </param> 
+        protected virtual void OnVisibilityChanged(bool isVisible, bool isInitial)
         {
-            RecyclerScrollRectContentState? lastState = State;
-            State = newState;
-            
-            if (newState.HasValue && newState.Value != lastState)
+            // Empty
+        }
+        
+        #endregion
+
+        #region CALLED_BY_PARENT_RECYCLER
+
+        /// <summary>
+        /// Called by the recycler when the endcap gets fetched from the pool
+        /// </summary>
+        [CalledByRecycler]
+        public void FetchFromPool()
+        {
+            OnFetchedFromPool();
+        }
+
+        /// <summary>
+        /// Called by the recycler when the endcap gets returned to the pool
+        /// </summary>
+        [CalledByRecycler]
+        public void ReturnToPool()
+        {
+            if (IsVisible.HasValue)
             {
-                OnActiveStateChanged(lastState, newState.Value);   
+                SetVisibility(false);   
+                SetVisibility(null);
+            }
+            
+            OnReturnedToPool();
+        }
+        
+        /// <summary>
+        /// Called by the recycler to set the current visible state of the entry
+        /// </summary>
+        /// <param name="isVisible"> Whether the entry is visible (null indicates the entry is in the pool) </param>
+        [CalledByRecycler]
+        public void SetVisibility(bool? isVisible)
+        {
+            bool? lastIsVisible = IsVisible;
+            IsVisible = isVisible;
+
+            if (!isVisible.HasValue)
+            {
+                return;
+            }
+
+            if (isVisible.Value != lastIsVisible)
+            {
+                OnVisibilityChanged(isVisible.Value, !lastIsVisible.HasValue);
             }
         }
         

@@ -53,15 +53,28 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
 
     private void CheckValidity()
     {
+        // Check the window indices make sense
         DebugCheckValidWindowIndices();
+        
+        // Check that all the recycler children are active entries, and the active entries are 1-to-1 with the indices tracked in the window
+        DebugCheckAllChildrenAreActiveEntries();
         DebugCheckWindowAlignsWithEntryPositions();
 
+        // Check that the endcap is positioned properly
+        DebugCheckEndcapPosition();
+        
+        // Check for duplicate entries and endcaps. Check that the entries are properly ordered
         DebugCheckDuplicates();
         DebugCheckOrdering();
         
+        // Check that entries' keys map to their index (which can shift)
         DebugCheckKeyToIndexMapping();
-                
-        DebugCheckStates();
+        
+        // Check that the visible state of entries and the endcap match their position in the viewport
+        DebugCheckVisibility();
+        
+        // Check that pooled entries and endcaps fall under the correct transform
+        DebugCheckPool();
     }
 
     /// <summary>
@@ -234,6 +247,45 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
             return;
         }
     }
+    
+    /// <summary>
+    /// Check the endcap only appears at the end of the active entries and is only active when the last index is active
+    /// </summary>
+    private void DebugCheckEndcapPosition()
+    {
+        RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap = _recycler.Endcap;
+        if (endcap == null)
+        {
+            return;
+        }
+
+        bool hasLastEntry = _recycler.ActiveEntries.ContainsKey(_recycler.DataForEntries.Count - 1);
+        if (!hasLastEntry && endcap.gameObject.activeSelf)
+        {
+            Debug.LogError("Endcap should not be active if the last entry is not active.");
+            Debug.Break();
+            return;
+        }
+        
+        if (hasLastEntry && !endcap.gameObject.activeSelf)
+        {
+            Debug.LogError("Endcap should be active if the last entry is active.");
+            Debug.Break();
+            return;
+        }
+        
+        int endcapSiblingIndex = endcap.transform.GetSiblingIndex();
+        if (EndCachePosition == RecyclerPosition.Top && endcapSiblingIndex != 0)
+        {
+            Debug.LogError("Endcap should be the first sibling when the end cache is at the top. No entries should come before it");
+            Debug.Break();
+        }
+        else
+        {
+            Debug.LogError("Endcap should be the last sibling when the end cache is at the bottom. No entries should come after it");
+            Debug.Break();
+        }
+    }
 
     /// <summary>
     /// Check for duplicate entries and endcaps
@@ -322,44 +374,9 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
         }
     }
 
-    // Check it only appears at the end of active entries and is only active when the last index is active
-    private void DebugCheckEndcapPosition()
-    {
-        RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap = _recycler.Endcap;
-        if (endcap == null)
-        {
-            return;
-        }
-
-        bool hasLastEntry = _recycler.ActiveEntries.ContainsKey(_recycler.DataForEntries.Count - 1);
-        if (!hasLastEntry && endcap.gameObject.activeSelf)
-        {
-            Debug.LogError("Endcap should not be active if the last entry is not active.");
-            Debug.Break();
-            return;
-        }
-        
-        if (hasLastEntry && !endcap.gameObject.activeSelf)
-        {
-            Debug.LogError("Endcap should be active if the last entry is active.");
-            Debug.Break();
-            return;
-        }
-        
-        int endcapSiblingIndex = endcap.transform.GetSiblingIndex();
-        if (EndCachePosition == RecyclerPosition.Top && endcapSiblingIndex != 0)
-        {
-            Debug.LogError("Endcap should be the first sibling when the end cache is at the top. No entries should come before it");
-            Debug.Break();
-        }
-        else
-        {
-            Debug.LogError("Endcap should be the last sibling when the end cache is at the bottom. No entries should come after it");
-            Debug.Break();
-        }
-    }
-
-    // Check entries and endcap correctly update their visibility
+    /// <summary>
+    /// Check that entries and the endcap have proper visibility values
+    /// </summary>
     private void DebugCheckVisibility()
     {
         RecycledEntries<TEntryData, TKeyEntryData> _recycledEntries;
@@ -405,14 +422,47 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
             }
         }
 
-        // TODO: check recycler visibility
-        if (_recycler.Endcap != null)
+        RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap = _recycler.Endcap;
+        if (endcap == null)
         {
+            return;
+        }
+
+        if (endcap.gameObject.activeSelf)
+        {
+            if (!endcap.IsVisible.HasValue)
+            {
+                Debug.LogError($"An active endcap should have a non-null {endcap.IsVisible} value");
+                Debug.Break();
+                return;
+            }
             
+            bool isEndcapInViewport = IsInViewport(endcap.RectTransform, _recycler.viewport, _rootCanvas.worldCamera);
+            if (isEndcapInViewport && !endcap.IsVisible.Value)
+            {
+                Debug.LogError($"The endcap is visible in the viewport but its state reports it's not visible");
+                Debug.Break();
+                return;
+            }
+
+            if (!isEndcapInViewport && endcap.IsVisible.Value)
+            {
+                Debug.LogError($"The endcap is not visible in the viewport but its state reports it's visible");
+                Debug.Break();
+                return;
+            }   
+        }
+        else if (endcap.IsVisible.HasValue)
+        {
+            Debug.LogError($"An inactive endcap should have a null {endcap.IsVisible} value");
+            Debug.Break();
+            return;
         }
     }
 
-    // Check that pooled and unbound entries go under the _poolParent
+    /// <summary>
+    /// Check that pooled entries and endcaps are actually in the pool (the correct transform)
+    /// </summary>
     private void DebugCheckPool()
     {
         RecycledEntries<TEntryData, TKeyEntryData> _recycledEntries;
@@ -442,193 +492,9 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
             Debug.LogError($"An inactive endcap should be waiting in its recycling pool.");
         }
     }
-
-    /// <summary>
-    /// Ensure that each entry's state reflects its actual position within the recycler
-    /// </summary>
-    private void DebugCheckStates()
-    {
-        IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> activeEntries = _recycler.ActiveEntries;
-        
-        // Private entries that we need to get through reflection, matching their names 1-to-1
-        RecycledEntries<TEntryData, TKeyEntryData> _recycledEntries;
-        Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _unboundEntries;
-
-        _recycledEntries = GetRecyclerPrivateFieldValue<RecycledEntries<TEntryData, TKeyEntryData>>(nameof(_recycledEntries));
-        _unboundEntries = GetRecyclerPrivateFieldValue<Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>>(nameof(_unboundEntries));
-
-        // Check that each active entry's state reflect its actual position in the list
-        foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in activeEntries.Values)
-        {
-            switch (GetWindowStateOfEntry(entry))
-            {
-                // Visible
-                case RecyclerScrollRectContentState.Visible:
-                {
-                    if (!IsInViewport(entry.RectTransform, _recycler.viewport, _rootCanvas.worldCamera))
-                    {
-                        Debug.LogError($"Entry {entry.Index} state says it's visible but its position in the list does not reflect this.");
-                        Debug.Break();
-                        return;
-                    }
-                    break;
-                }
-
-                // In start cache
-                case RecyclerScrollRectContentState.InStartCache:
-                {
-                    if ((StartCachePosition == RecyclerPosition.Top && !IsAboveViewportCenter(entry.RectTransform, _recyclerViewport)) ||
-                         (StartCachePosition == RecyclerPosition.Bot && !IsBelowViewportCenter(entry.RectTransform, _recyclerViewport)))
-                    {
-                        Debug.LogError($"Entry {entry.Index} state says it's in the start cache but its position in the list does not reflect this.");
-                        Debug.Break();
-                        return;
-                    }
-                    break;
-                }
-
-                // In end cache
-                case RecyclerScrollRectContentState.InEndCache:
-                {
-                    if ((EndCachePosition == RecyclerPosition.Top && !IsAboveViewportCenter(entry.RectTransform, _recyclerViewport)) ||
-                        (EndCachePosition == RecyclerPosition.Bot && !IsBelowViewportCenter(entry.RectTransform, _recyclerViewport)))
-                    {
-                        Debug.LogError($"Entry {entry.Index} state says it's in the end cache but its position in the list does not reflect this.");
-                        Debug.Break();
-                        return; 
-                    }
-                    break;
-                }
-
-                // In the recycling pool
-                case null:
-                {
-                    Debug.LogError($"Entry {entry.Index} state says it's in the recycling pool but it's in the list as an active entry.");
-                    Debug.Break();
-                    return;
-                }
-            }
-        }
-        
-        // Check that each inactive entry reports that it's waiting in the pool
-        foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _recycledEntries.Entries.Values.Concat(_unboundEntries))
-        {
-            if (entry.State != null)
-            {
-                Debug.LogError($"Inactive entries should report that they are in the recycling pool, {entry.Index} with state \"{entry.State}\" doesn't.");
-                Debug.Break();
-                return;
-            }
-        }
-        
-        // Check that the state contained within all the entries matches what the recycler reports its state is
-        foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in activeEntries.Values.Concat(_recycledEntries.Entries.Values).Concat(_unboundEntries))
-        {
-            RecyclerScrollRectContentState recyclerReportedEntryState = _recycler.GetStateOfEntryWithIndex(entry.Index);
-            if (recyclerReportedEntryState != entry.State)
-            {
-                Debug.LogError($"Mismatch between the state contained in entry {entry.Index} \"{entry.State}\" and the recycler's view on its state \"{recyclerReportedEntryState}\".");
-                Debug.Break();
-                return;
-            }   
-        }
-        
-        RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap = _recycler.Endcap;
-        if (endcap == null)
-        {
-            return;
-        }
-
-        // Check that the endcap's state reflects its actual position in the list
-        switch (_recycler.Endcap.State)
-        {
-            // Visible
-            case RecyclerScrollRectContentState.Visible:
-            {
-                if (!IsInViewport(endcap.RectTransform, _recycler.viewport, _rootCanvas.worldCamera))
-                {
-                    Debug.LogError("The endcap's state says it's visible but its position in the list does not reflect this.");
-                    Debug.Break();
-                    return;
-                }
-                break;
-            }
-
-            // In the end cache
-            case RecyclerScrollRectContentState.InEndCache:
-            {
-                if (EndCachePosition == RecyclerPosition.Top && !IsAboveViewportCenter(endcap.RectTransform, _recyclerViewport) || 
-                    EndCachePosition == RecyclerPosition.Bot && !IsBelowViewportCenter(endcap.RectTransform, _recyclerViewport))
-                {
-                    Debug.LogError("The endcap's state says it's in the end cache but its position in the list does not reflect this.");
-                    Debug.Break();
-                    return;
-                }
-                break;
-            }
-
-            // In the start cache
-            case RecyclerScrollRectContentState.InStartCache:
-            {
-                Debug.LogError("The endcap should never be in the start cache.");
-                Debug.Break();
-                return;
-            }
-
-            // Pooled
-            case null:
-            {
-                if (endcap.gameObject.activeSelf)
-                {
-                    Debug.LogError("The endcap should not be active while in the pool");
-                    Debug.Break();
-                    return;
-                }
-                break;
-            }
-        }
-        
-        // Check that the state of the endcap reflects its actual position in the list
-        if (endcap.State == RecyclerScrollRectContentState.Visible && !IsInViewport(endcap.RectTransform, _recycler.viewport, _rootCanvas.worldCamera))
-        {
-            Debug.LogError("The endcap's state says it's visible but its position in the list does not reflect this.");
-            Debug.Break();
-            return;
-        }
-    }
     
     private TFieldValue GetRecyclerPrivateFieldValue<TFieldValue>(string fieldName)
     {
         return RecyclerScrollRectReflectionHelpers.GetPrivateFieldValue<TFieldValue, TEntryData, TKeyEntryData>(_recycler, fieldName);
     }
-
-    private RecyclerScrollRectContentState GetWindowStateOfEntry(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
-    {
-        int index = entry.Index;
-        
-        if (index != RecyclerScrollRectEntry<TEntryData, TKeyEntryData>.UnboundIndex && (index < 0 || index >= _recycler.DataForEntries.Count))
-        {
-            throw new ArgumentException($"index \"{index}\" must be >= 0 and < the length of data \"{_recycler.DataForEntries.Count}\"");
-        }
-
-        IRecyclerScrollRectActiveEntriesWindow activeEntriesWindow = _recycler.ActiveEntriesWindow;
-        
-        if (activeEntriesWindow.IsVisible(index))
-        {
-            return RecyclerScrollRectContentState.Visible;
-        }
-
-        if (activeEntriesWindow.IsInStartCache(index))
-        {
-            return RecyclerScrollRectContentState.InStartCache;
-        }
-
-        if (activeEntriesWindow.IsInEndCache(index))
-        {
-            return RecyclerScrollRectContentState.InEndCache;
-        }
-
-        return RecyclerScrollRectContentState.Pooled;
-    }
-    
 }

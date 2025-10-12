@@ -132,7 +132,7 @@ namespace RecyclerScrollRect
         /// Called by the recycler when the entry gets recycled.
         /// </summary>
         [CalledByRecycler]
-        public void OnRecycled()
+        public void Recycle()
         {
             if (IsVisible.HasValue)
             {
@@ -162,6 +162,10 @@ namespace RecyclerScrollRect
             gameObject.name = index.ToString();
         }
 
+        /// <summary>
+        /// Called by the recycler to set the current visible state of the entry
+        /// </summary>
+        /// <param name="isVisible"> Whether the entry is visible (null indicates the entry is in the pool) </param>
         [CalledByRecycler]
         public void SetVisibility(bool? isVisible)
         {

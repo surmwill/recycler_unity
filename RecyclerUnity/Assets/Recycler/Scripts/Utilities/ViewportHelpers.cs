@@ -7,6 +7,9 @@ namespace RecyclerScrollRect
     /// </summary>
     public static class ViewportHelpers
     {
+        private static readonly Vector3[] RectCorners = new Vector3[4];
+        private static readonly Vector3[] ViewportCorners = new Vector3[4];
+        
         /// <summary>
         /// Returns true if a given RectTransform is contained in a viewport.
         /// </summary>
@@ -17,31 +20,28 @@ namespace RecyclerScrollRect
         /// <returns> True if the given RectTransform overlaps some part of the viewport </returns>
         public static bool IsInViewport(RectTransform rectTransform, RectTransform viewport, Camera canvasCamera, float bufferViewportPct = 0.001f)
         {
-            Vector3[] rectCorners = new Vector3[4];
-            Vector3[] viewportCorners = new Vector3[4];
-
-            rectTransform.GetWorldCorners(rectCorners);
-            viewport.GetWorldCorners(viewportCorners);
+            rectTransform.GetWorldCorners(RectCorners);
+            viewport.GetWorldCorners(ViewportCorners);
 
             if (canvasCamera != null)
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    rectCorners[i] = canvasCamera.WorldToScreenPoint(rectCorners[i]);
-                    viewportCorners[i] = canvasCamera.WorldToScreenPoint(viewportCorners[i]);
+                    RectCorners[i] = canvasCamera.WorldToScreenPoint(RectCorners[i]);
+                    ViewportCorners[i] = canvasCamera.WorldToScreenPoint(ViewportCorners[i]);
                 }   
             }
 
-            float viewportWidth = viewportCorners[2].x - viewportCorners[0].x;
+            float viewportWidth = ViewportCorners[2].x - ViewportCorners[0].x;
             float viewportBufferWidth = viewportWidth * bufferViewportPct;
 
-            float viewportHeight = viewportCorners[2].y - viewportCorners[0].y;
+            float viewportHeight = ViewportCorners[2].y - ViewportCorners[0].y;
             float viewportBufferHeight = viewportHeight * bufferViewportPct;
 
-            Rect rect = new Rect(rectCorners[0].x, rectCorners[0].y, rectCorners[2].x - rectCorners[0].x, rectCorners[2].y - rectCorners[0].y);
+            Rect rect = new Rect(RectCorners[0].x, RectCorners[0].y, RectCorners[2].x - RectCorners[0].x, RectCorners[2].y - RectCorners[0].y);
             Rect viewportRect = new Rect(
-                viewportCorners[0].x - viewportBufferWidth / 2f, 
-                viewportCorners[0].y - viewportBufferHeight / 2f, 
+                ViewportCorners[0].x - viewportBufferWidth / 2f, 
+                ViewportCorners[0].y - viewportBufferHeight / 2f, 
                 viewportWidth + viewportBufferWidth, 
                 viewportHeight + viewportBufferHeight);
 

@@ -624,9 +624,9 @@ namespace RecyclerScrollRect
             UpdateEndcap();
 
             // Update the visible state of the endcap
-            if (_endcap != null)
+            if (_endcap != null && _endcap.gameObject.activeSelf)
             {
-                _endcap.SetState(GetStateOfEndcap());
+                _endcap.SetVisibility(IsInViewport(_endcap.RectTransform, viewport, _rootCanvas.worldCamera));
             }
         }
         
@@ -671,7 +671,7 @@ namespace RecyclerScrollRect
             {
                 _endcap.transform.SetParent(content, false);
                 _endcap.gameObject.SetActive(true);
-                _endcap.OnFetchedFromPool();
+                _endcap.FetchFromPool();
                 
                 AddToContent(
                     _endcap.RectTransform,
@@ -684,7 +684,7 @@ namespace RecyclerScrollRect
         private void RecycleEndcap()
         {
             RemoveFromContent(_endcap.RectTransform, EndCachePosition == RecyclerPosition.Top ? FixEntries.Below : FixEntries.Above).SetParent(_endcapParent, false);
-            _endcap.OnReturnedToPool();
+            _endcap.ReturnToPool();
         }
 
         private void CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
@@ -892,7 +892,7 @@ namespace RecyclerScrollRect
             _activeEntries.Remove(entry.Index);
             
             // Cleanup and callback
-            entry.OnRecycled();
+            entry.Recycle();
         }
 
         private bool TryFetchFromRecycling(int entryIndex, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)

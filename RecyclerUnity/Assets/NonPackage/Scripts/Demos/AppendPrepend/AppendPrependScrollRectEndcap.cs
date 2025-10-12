@@ -32,9 +32,9 @@ namespace RecyclerScrollRect
             Reset();
         }
 
-        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
+        protected override void OnVisibilityChanged(bool isVisible, bool isInitial)
         {
-            if (newState == RecyclerScrollRectContentState.Visible)
+            if (isVisible)
             {
                 _fetchWhenOnScreen = StartCoroutine(FetchWhenOnScreen());
             }
