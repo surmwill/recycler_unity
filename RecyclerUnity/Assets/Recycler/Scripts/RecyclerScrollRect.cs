@@ -1035,8 +1035,11 @@ namespace RecyclerScrollRect
         /// </param>
         public void RecalculateEntryHeight(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, float? newHeight, FixEntries fixEntries = FixEntries.Below)
         {
-            RecalculateContentChildHeight(entry.RectTransform, newHeight, _entryGameObjectLayoutBehaviours[entry.UidGameObject], fixEntries);
-            RecalculateActiveEntries();
+            if (_activeEntries.ContainsKey(entry.Index))
+            {
+                RecalculateContentChildHeight(entry.RectTransform, newHeight, _entryGameObjectLayoutBehaviours[entry.UidGameObject], fixEntries);
+                RecalculateActiveEntries();   
+            }
         }
 
         /// <summary>

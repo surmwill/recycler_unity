@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace RecyclerScrollRect
@@ -23,8 +20,8 @@ namespace RecyclerScrollRect
 
         protected override string[] DemoButtonDescriptions => new[]
         {
-            "0: Grows the endcap if it is visible.",
-            "1. Resets the endcap to its original size."
+            "0 (key 'A'): Grows the endcap if it is active.",
+            "1 (key 'D'): Resets the endcap to its original size if it is active."
         };
 
         private EndcapResizeEndcap _endcap;
@@ -39,8 +36,13 @@ namespace RecyclerScrollRect
 
         private void Update()
         {
+            if (!_endcap.gameObject.activeInHierarchy)
+            {
+                return;
+            }
+            
             // Grows the endcap
-            if ((Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0)) && _endcap.IsVisible.HasValue && _endcap.IsVisible.Value)
+            if ((Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0)))
             {
                 _endcap.Grow();
             }
