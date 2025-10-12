@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Tests that our recycler works with a Screen Space - Camera Canvas
+    /// Tests that our recycler works with a Screen Space - Camera canvas
     /// </summary>
     public class CanvasCameraEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
     {

@@ -3,7 +3,7 @@ using UnityEngine;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Tests that our recycler works with a Screen Space - Camera Canvas
+    /// Tests that our recycler works with a Screen Space - Camera canvas
     /// </summary>
     public class TestCanvasCameraRecycler : TestRecycler<EmptyRecyclerData, string>
     {
@@ -16,7 +16,7 @@ namespace RecyclerScrollRect
 
         protected override string DemoTitle => "Screen Space - Camera Canvas Demo";
 
-        protected override string DemoDescription => "Tests if the recycler stays stable with a moving camera.";
+        protected override string DemoDescription => "Tests if the recycler stays stable with a moving camera and a Screen Space - Camera canvas.";
 
         protected override string[] DemoButtonDescriptions => null;
 
