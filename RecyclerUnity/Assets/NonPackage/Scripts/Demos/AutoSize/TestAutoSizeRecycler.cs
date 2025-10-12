@@ -48,6 +48,7 @@ namespace RecyclerScrollRect
             if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
             {
                 int indexToAppend = Random.Range(Start, End);
+                Debug.Log($"Appending text to: {indexToAppend}");
                 _autoSizeRecycler.GetActiveEntryWithIndex<AutoSizeEntry>(indexToAppend).AppendLines();
             }
             // Increases the size of the endcap through its layout group.

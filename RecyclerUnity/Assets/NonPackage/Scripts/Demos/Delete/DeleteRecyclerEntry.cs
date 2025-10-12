@@ -24,7 +24,6 @@ namespace RecyclerScrollRect
         protected override void OnSentToRecycling()
         {
             _deleteSequence?.Kill(true);
-            
         }
 
         public void ShrinkAndDelete()

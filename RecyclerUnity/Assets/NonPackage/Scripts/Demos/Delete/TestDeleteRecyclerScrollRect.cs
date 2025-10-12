@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Demos deleting a couple entries in the recycler.
+    /// Demos deleting a entries in the recycler.
     /// </summary>
     public class TestDeleteRecyclerScrollRect : TestRecycler<EmptyRecyclerData, string>
     {
@@ -24,10 +24,10 @@ namespace RecyclerScrollRect
 
         protected override string[] DemoButtonDescriptions => new[]
         {
-            $"0: Shrinks and deletes {NumEntriesToDelete} starting at {DeleteAtIndex}.",
-            $"1: Batch deletes the last {NumEntriesToDelete} instantly.",
-            $"2: Deletes the entire range of active entries.",
-            $"3: Shrinks and deletes an entry from a random active index."
+            $"0 (key 'A'): Starting starting at {DeleteAtIndex}, shrinks and deletes {NumEntriesToDelete}.",
+            $"1 (key 'D'): Batch deletes the last {NumEntriesToDelete} entries instantly.",
+            $"2 (key 'C'): Deletes the entire range of active entries instantly.",
+            $"3 (key 'R'): Shrinks and deletes an entry from a random active index."
         };
         
         private IRecyclerScrollRectActiveEntriesWindow _activeEntriesWindow;
@@ -43,10 +43,13 @@ namespace RecyclerScrollRect
         {
             (int Start, int End)? activeEntriesRange = _activeEntriesWindow.ActiveEntriesRange;
             
-            // Animate delete.
+            // Shrink and delete delete
             if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
             {
-                string[] deleteKeys = Enumerable.Range(DeleteAtIndex, NumEntriesToDelete).Select(i => _deleteRecycler.DataForEntries[i].Key).ToArray();
+                string[] deleteKeys = Enumerable.Range(DeleteAtIndex, NumEntriesToDelete)
+                    .Where(i => i < _deleteRecycler.DataForEntries.Count)
+                    .Select(i => _deleteRecycler.DataForEntries[i].Key).ToArray();
+                
                 foreach (string key in deleteKeys)
                 {
                     if (_deleteRecycler.TryGetActiveEntryWithKey(key, out DeleteRecyclerEntry entry))
@@ -62,20 +65,22 @@ namespace RecyclerScrollRect
             // Immediate batch delete from the end.
             else if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(1))
             { 
-                _deleteRecycler.RemoveRangeAtIndex(_deleteRecycler.DataForEntries.Count - NumEntriesToDelete, NumEntriesToDelete, FixEntries.Below);
+                _deleteRecycler.RemoveRangeAtIndex(
+                    Mathf.Max(_deleteRecycler.DataForEntries.Count - NumEntriesToDelete, 0), 
+                    Mathf.Min(NumEntriesToDelete, _deleteRecycler.DataForEntries.Count));
             }
             // Delete the entire range of active entries.
             else if ((Input.GetKeyDown(KeyCode.C) || DemoToolbar.GetButtonDown(2)) && activeEntriesRange.HasValue)
             {
                 (int Start, int End) = activeEntriesRange.Value;
-                _deleteRecycler.RemoveRangeAtIndex(Start, End - Start + 1, FixEntries.Below);
+                _deleteRecycler.RemoveRangeAtIndex(Start, End - Start + 1);
             }
             // Deletes and shrinks a random active entry.
             else if ((Input.GetKeyDown(KeyCode.R) || DemoToolbar.GetButtonDown(3)) && activeEntriesRange.HasValue)
             {
                 int deletionIndex = Random.Range(activeEntriesRange.Value.Start, activeEntriesRange.Value.End);
                 Debug.Log($"Deleting at {deletionIndex}");
-                ((DeleteRecyclerEntry) _deleteRecycler.ActiveEntries[deletionIndex]).ShrinkAndDelete();
+                _deleteRecycler.GetActiveEntryWithIndex<DeleteRecyclerEntry>(deletionIndex).ShrinkAndDelete();
             }
         }
 

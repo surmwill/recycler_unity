@@ -1562,7 +1562,9 @@ namespace RecyclerScrollRect
             {
                 return false;
             }
-            return entry as TEntry;
+            
+            activeEntry = entry as TEntry;
+            return true;
         }
 
         /// <summary>
