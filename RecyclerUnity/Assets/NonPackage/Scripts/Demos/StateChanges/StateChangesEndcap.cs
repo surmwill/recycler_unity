@@ -14,32 +14,32 @@ namespace RecyclerScrollRect
         [SerializeField]
         private Image _background = null;
         
-        private static readonly Color OnVisibleColor = new(0x00 / 255f, 0x96 / 255f, 0x89 / 255f);
-        private static readonly Color OnEndCacheColor = new(0xFF / 255f, 0xBD / 255f, 0x74 / 255f);
+        private static readonly Color VisibleColor = new(0x00 / 255f, 0x96 / 255f, 0x89 / 255f);
+        private static readonly Color NotVisibleColor = new(0xFF / 255f, 0xBD / 255f, 0x74 / 255f);
         
         private Tween _colorTween;
-        
-        protected override void OnActiveStateChanged(RecyclerScrollRectContentState? prevState, RecyclerScrollRectContentState newState)
+
+        protected override void OnFetchedFromPool()
         {
-            Debug.Log($"Endcap changing state from {prevState} -> {newState}");
-            
+            _background.color = NotVisibleColor;
+        }
+
+        protected override void OnReturnedToPool()
+        {
             _colorTween?.Kill();
-            
-            switch (newState)
-            {
-                case RecyclerScrollRectContentState.Visible:
-                    _colorTween = _background.DOColor(OnVisibleColor, TestStateChangesRecycler.CrossFadeTimeSeconds);
-                    break;
+        }
 
-                case RecyclerScrollRectContentState.InEndCache:
-                    _colorTween = _background.DOColor(OnEndCacheColor, TestStateChangesRecycler.CrossFadeTimeSeconds);
-                    break;
+        protected override void OnVisibilityChanged(bool isVisible, bool isInitial)
+        {
+            _colorTween?.Kill();
+
+            if (isVisible)
+            {
+                _colorTween = _background.DOColor(VisibleColor, TestStateChangesRecycler.CrossFadeTimeSeconds);
             }
-
-            // If we fetched the endcap from its pool then this is its starting color
-            if (prevState == RecyclerScrollRectContentState.InactiveInPool)
+            else
             {
-                _colorTween.Complete();
+                _colorTween = _background.DOColor(NotVisibleColor, TestStateChangesRecycler.CrossFadeTimeSeconds);
             }
         }
     }

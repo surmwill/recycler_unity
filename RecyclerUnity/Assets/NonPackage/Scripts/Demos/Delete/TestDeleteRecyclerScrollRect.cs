@@ -46,10 +46,10 @@ namespace RecyclerScrollRect
             // Animate delete.
             if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
             {
-                string[] deleteKeys = Enumerable.Range(DeleteAtIndex, NumEntriesToDelete).Select(i => _deleteRecycler.GetKeyForCurrentIndex(i)).ToArray();
+                string[] deleteKeys = Enumerable.Range(DeleteAtIndex, NumEntriesToDelete).Select(i => _deleteRecycler.DataForEntries[i].Key).ToArray();
                 foreach (string key in deleteKeys)
                 {
-                    if (_deleteRecycler.ActiveEntries.TryGetValue(_deleteRecycler.GetCurrentIndexForKey(key), out RecyclerScrollRectEntry<EmptyRecyclerData, string> entry))
+                    if (_deleteRecycler.TryGetEntryWithKey(key, out RecyclerScrollRectEntry<EmptyRecyclerData, string> entry))
                     {
                         ((DeleteRecyclerEntry) entry).ShrinkAndDelete();
                     }

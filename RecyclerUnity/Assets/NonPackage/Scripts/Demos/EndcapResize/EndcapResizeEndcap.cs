@@ -13,7 +13,7 @@ namespace RecyclerScrollRect
 
         private Tween _resizeTween;
 
-        public override void OnReturnedToPool()
+        protected override void OnReturnedToPool()
         {
             StopResizeAndComplete();
         }

@@ -40,7 +40,7 @@ namespace RecyclerScrollRect
         private void Update()
         {
             // Grows the endcap
-            if ((Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0)) && _endcap.State == RecyclerScrollRectContentState.Visible)
+            if ((Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0)) && _endcap.IsVisible.HasValue && _endcap.IsVisible.Value)
             {
                 _endcap.Grow();
             }

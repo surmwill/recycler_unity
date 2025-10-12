@@ -10,7 +10,7 @@ namespace RecyclerScrollRect
     {
         private const float BufferPct = 0.2f;
         
-        public override void OnFetchedFromPool()
+        protected override void OnFetchedFromPool()
         {
             // Add a bit of a buffer just to be safe
             RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(Screen.height + Screen.height * BufferPct);

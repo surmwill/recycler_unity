@@ -27,7 +27,7 @@ namespace RecyclerScrollRect
 
         private Coroutine _fetchWhenOnScreen;
 
-        public override void OnReturnedToPool()
+        protected override void OnReturnedToPool()
         {
             Reset();
         }
