@@ -22,12 +22,12 @@ namespace RecyclerScrollRect
 
         protected override string[] DemoButtonDescriptions => new []
         {
-            $"0: Appends {NumEntriesToAppend} entries.",
-            $"1: Deletes the last entry.",
-            $"2: Inserts an entry into a random index in the active entry window.",
-            $"3: Deletes an entry at a random index in the active entry window.",
-            $"4: Immediately scrolls to the top of topmost entry.",
-            $"5: Immediately scrolls to the bottom of the bottommost entry."
+            $"0 (key 'A'): Appends {NumEntriesToAppend} entries.",
+            $"1 (key 'D'): Deletes the last entry.",
+            $"2 (keys 'R' and 'A'): Inserts an entry into a random index in the active entry window.",
+            $"3 (keys 'R' and 'D'): Deletes an entry at a random index in the active entry window.",
+            $"4 (keys 'S' and 'T') Immediately scrolls to the top of topmost entry.",
+            $"5 (keys 'S' and 'B') Immediately scrolls to the bottom of the bottommost entry."
         };
 
         private IRecyclerScrollRectActiveEntriesWindow _indexWindow;
@@ -41,45 +41,60 @@ namespace RecyclerScrollRect
 
         private void Update()
         {
-            (int Start, int End) = _indexWindow.ActiveEntriesRange.Value;
-            
             // Inserts a random active entry
-            if ((Input.GetKey(KeyCode.R) && Input.GetKeyDown(KeyCode.A)) || DemoToolbar.GetButtonDown(2))
+            if (_indexWindow.ActiveEntriesRange.HasValue)
             {
-                int insertionIndex = Random.Range(Start, End);
-                Debug.Log($"Inserting at {insertionIndex}");
+                 (int Start, int End) = _indexWindow.ActiveEntriesRange.Value;
                 
-                _recycler.InsertAtIndex(insertionIndex, new EmptyRecyclerData(), FixEntries.Below);                
-            }
-            // Deletes a random active entry
-            else if ((Input.GetKey(KeyCode.R) && Input.GetKeyDown(KeyCode.D)) || DemoToolbar.GetButtonDown(3))
-            {
-                int deletionIndex = Random.Range(Start, End);
-                Debug.Log($"Deleting at {deletionIndex}");
+                if ((Input.GetKey(KeyCode.R) && Input.GetKeyDown(KeyCode.A)) || DemoToolbar.GetButtonDown(2))
+                {
+                    int insertionIndex = Random.Range(Start, End);
+                    Debug.Log($"Inserting at {insertionIndex}");
                 
-                _recycler.RemoveAtIndex(deletionIndex, FixEntries.Below);
+                    _recycler.InsertAtIndex(insertionIndex, new EmptyRecyclerData(), FixEntries.Below);
+                    return;
+                }
+                
+                // Deletes a random active entry
+                if ((Input.GetKey(KeyCode.R) && Input.GetKeyDown(KeyCode.D)) || DemoToolbar.GetButtonDown(3))
+                {
+                    int deletionIndex = Random.Range(Start, End);
+                    Debug.Log($"Deleting at {deletionIndex}");
+                
+                    _recycler.RemoveAtIndex(deletionIndex, FixEntries.Below);
+                    return;
+                }   
             }
             
             // Appends entries
-            else if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
+            if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
             {
                 _recycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(NumEntriesToAppend));
-            }
-            // Deletes the last entry
-            else if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(1))
-            {
-                _recycler.RemoveAtIndex(_recycler.DataForEntries.Count - 1, FixEntries.Below);
+                return;
             }
             
-            // Immediately scrolls to the top of the topmost entry
-            else if ((Input.GetKey(KeyCode.S) && Input.GetKeyDown(KeyCode.T)) || DemoToolbar.GetButtonDown(4))
+            // Deletes the last entry
+            if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(1))
             {
-                _recycler.ScrollToIndexImmediate(0, ScrollToAlignment.EntryTop);
+                _recycler.RemoveAtIndex(_recycler.DataForEntries.Count - 1, FixEntries.Below);
+                return;
             }
-            // Immediately scrolls to the bottom of the bottommost entry
-            else if (Input.GetKey(KeyCode.S) && Input.GetKeyDown(KeyCode.B) || DemoToolbar.GetButtonDown(5))
+
+            if (_recycler.DataForEntries.Count > 0)
             {
-                _recycler.ScrollToIndexImmediate(_recycler.DataForEntries.Count - 1, ScrollToAlignment.EntryBottom);
+                // Immediately scrolls to the top of the topmost entry
+                if ((Input.GetKey(KeyCode.S) && Input.GetKeyDown(KeyCode.T)) || DemoToolbar.GetButtonDown(4))
+                {
+                    _recycler.ScrollToIndexImmediate(0, ScrollToAlignment.EntryTop);
+                    return;
+                }
+                
+                // Immediately scrolls to the bottom of the bottommost entry
+                if (Input.GetKey(KeyCode.S) && Input.GetKeyDown(KeyCode.B) || DemoToolbar.GetButtonDown(5))
+                {
+                    _recycler.ScrollToIndexImmediate(_recycler.DataForEntries.Count - 1, ScrollToAlignment.EntryBottom);
+                    return;
+                }   
             }
         }
 
