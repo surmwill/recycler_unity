@@ -1448,6 +1448,12 @@ namespace RecyclerScrollRect
             {
                 throw new IndexOutOfRangeException($"Invalid index: {index}. Current data length: {_dataForEntries.Count}");
             }
+            
+            // If we are in the midst of updating what entries are active, ensure we don't operate on the removed data
+            _toRecycleEntries.Remove(index);
+            _newCachedStartEntries.Remove(index);
+            _newCachedEndEntries.Remove(index);
+            _updateStateOfEntries.Remove(index);
 
             // Shift the indices of existing entries that will be affected by the deletion
             ShiftIndices(index + 1, -1);
@@ -1458,11 +1464,6 @@ namespace RecyclerScrollRect
             // Actual removal (and modification) of underlying data
             _activeEntriesWindow.Remove(index);
             _dataForEntries.RemoveAt(index);
-
-            // If we are in the midst of updating what entries are active, ensure we don't operate on the removed data
-            _toRecycleEntries.Remove(index);
-            _newCachedStartEntries.Remove(index);
-            _newCachedEndEntries.Remove(index);
         }
 
         /// <summary>
