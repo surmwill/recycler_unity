@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using RecyclerScrollRect;
+using Unity.VisualScripting;
 using UnityEngine;
 
 using static RecyclerScrollRect.ViewportHelpers;
@@ -364,6 +366,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
         Dictionary<TKeyEntryData, int> _entryKeyToCurrentIndex;
         _entryKeyToCurrentIndex = GetRecyclerPrivateFieldValue<Dictionary<TKeyEntryData, int>>(nameof(_entryKeyToCurrentIndex));
         
+        // Check correct key to index mapping
         IReadOnlyList<TEntryData> dataForEntries = _recycler.DataForEntries;
         for (int i = 0; i < dataForEntries.Count; i++)
         {
@@ -376,6 +379,67 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
                 Debug.Break();
                 return;
             }
+        }
+
+        IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow = _recycler.ActiveEntriesWindow;
+        
+        // Check correct keys are reported as active
+        CheckRange(
+            activeEntriesWindow.ActiveEntriesRange,
+            new HashSet<TKeyEntryData>(activeEntriesWindow.GetActiveKeys()),
+            (activeIndex, activeKey) => $"Entry at index {activeIndex} has key {activeKey} that is not reported in the active keys",
+            (activeKeys) => $"Keys {string.Join(',', activeKeys)} are reported as active but aren't actually");
+        
+        // Check correct keys are reported as visible
+        CheckRange(
+            activeEntriesWindow.VisibleIndexRange,
+            new HashSet<TKeyEntryData>(activeEntriesWindow.GetVisibleKeys()),
+                (visibleIndex, visibleKey) => $"Entry at index {visibleIndex} has key {visibleKey} that is not reported in the visible keys",
+                (visibleKeys) => $"Keys {string.Join(',', visibleKeys)} are reported as visible but aren't actually");
+        
+        // Check correct keys are reported as in the start cache
+        CheckRange(
+            activeEntriesWindow.StartCacheIndexRange,
+            new HashSet<TKeyEntryData>(activeEntriesWindow.GetStartCacheKeys()),
+            (startCacheIndex, startCacheKey) => $"Entry at index {startCacheIndex} has key {startCacheKey} that is not reported in the start cache keys",
+            (startCacheKeys) => $"Keys {string.Join(',', startCacheKeys)} are reported as in the start cache but aren't actually");
+        
+        // Check correct keys are reported as in the end cache
+        CheckRange(
+            activeEntriesWindow.EndCacheIndexRange,
+            new HashSet<TKeyEntryData>(activeEntriesWindow.GetEndCacheKeys()),
+            (endCacheIndex, endCacheKey) => $"Entry at index {endCacheIndex} has key {endCacheKey} that is not reported in the end cache keys",
+            (endCacheKeys) => $"Keys {string.Join(',', endCacheKeys)} are reported as in the end cache but aren't actually");
+        
+        
+        // Check that the given range of keys maps to the given range of indices
+        void CheckRange(
+            (int Start, int End)? indexRange, 
+            HashSet<TKeyEntryData> keysRange, 
+            Func<int, TKeyEntryData, string> errorIndexButNoKey, 
+            Func<IEnumerable<TKeyEntryData>, string> errorKeyButNoIndex)
+        {
+            if (indexRange.HasValue)
+            {
+                (int Start, int End) = indexRange.Value;
+                foreach (int indexInRange in Enumerable.Range(Start, End - Start + 1))
+                {
+                    TKeyEntryData key = _recycler.DataForEntries[indexInRange].Key;
+                    if (!keysRange.Remove(key))
+                    {
+                        Debug.LogError(errorIndexButNoKey.Invoke(indexInRange, key));
+                        Debug.Break();
+                        return;
+                    }
+                }   
+            }
+
+            if (keysRange.Any())
+            {
+                Debug.LogError(errorKeyButNoIndex);
+                Debug.Break();
+                return;
+            }   
         }
     }
 

@@ -4,6 +4,12 @@ using RecyclerScrollRect;
 
 public static class IRecyclerScrollRectActiveEntriesWindowExtensions
 {
+    public static IEnumerable<TKeyEntryData> GetActiveKeys<TEntryData, TKeyEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow) 
+        where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
+    {
+        return GetKeyRange(activeEntriesWindow, activeEntriesWindow.ActiveEntriesRange);
+    }
+    
     public static IEnumerable<TKeyEntryData> GetVisibleKeys<TEntryData, TKeyEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow) 
         where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
