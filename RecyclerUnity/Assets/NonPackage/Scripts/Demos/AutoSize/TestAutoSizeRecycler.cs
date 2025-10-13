@@ -31,7 +31,7 @@ namespace RecyclerScrollRect
             "2 (or 'D'): Decreases the size of the endcap through its layout group."
         };
 
-        private IRecyclerScrollRectActiveEntriesWindow _indexWindow;
+        private IRecyclerScrollRectActiveEntriesWindow<AutoSizeData, string> _indexWindow;
 
         protected override void Start()
         {

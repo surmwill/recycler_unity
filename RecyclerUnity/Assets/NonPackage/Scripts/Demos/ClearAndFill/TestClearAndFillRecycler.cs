@@ -54,7 +54,7 @@ namespace RecyclerScrollRect
             Queue<RecyclerScrollRectEntry<EmptyRecyclerData, string>> _unboundEntries = null;
             
             Dictionary<string, int> _entryKeyToCurrentIndex = null;
-            RecyclerScrollRectActiveEntriesWindow _activeEntriesWindow = null;
+            RecyclerScrollRectActiveEntriesWindow<EmptyRecyclerData, string> _activeEntriesWindow = null;
             
             int? _currScrollingToIndex = null;
             Coroutine _scrollToIndexCoroutine = null;
@@ -64,7 +64,7 @@ namespace RecyclerScrollRect
             _unboundEntries = GetRecyclerPrivateFieldValue<Queue<RecyclerScrollRectEntry<EmptyRecyclerData, string>>>(nameof(_unboundEntries));
             
             _entryKeyToCurrentIndex = GetRecyclerPrivateFieldValue<Dictionary<string, int>>(nameof(_entryKeyToCurrentIndex));
-            _activeEntriesWindow = GetRecyclerPrivateFieldValue<RecyclerScrollRectActiveEntriesWindow>(nameof(_activeEntriesWindow));
+            _activeEntriesWindow = GetRecyclerPrivateFieldValue<RecyclerScrollRectActiveEntriesWindow<EmptyRecyclerData, string>>(nameof(_activeEntriesWindow));
             
             _currScrollingToIndex = GetRecyclerPrivateFieldValue<int?>(nameof(_currScrollingToIndex));
             _scrollToIndexCoroutine = GetRecyclerPrivateFieldValue<Coroutine>(nameof(_scrollToIndexCoroutine));

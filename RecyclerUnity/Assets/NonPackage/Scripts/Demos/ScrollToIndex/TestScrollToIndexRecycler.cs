@@ -48,7 +48,7 @@ namespace RecyclerScrollRect
             $"11: Toggles the middle indicator on/off to know if we've properly centered on an index."
         };
 
-        private IRecyclerScrollRectActiveEntriesWindow _window;
+        private IRecyclerScrollRectActiveEntriesWindow<ScrollToIndexData, string> _window;
 
         protected override void Start()
         {

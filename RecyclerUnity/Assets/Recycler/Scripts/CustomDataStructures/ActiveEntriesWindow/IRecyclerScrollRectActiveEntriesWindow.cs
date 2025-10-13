@@ -5,8 +5,13 @@ namespace RecyclerScrollRect
     /// <summary>
     /// Interface for the user to query the various index ranges of active entries in the recycler.
     /// </summary>
-    public interface IRecyclerScrollRectActiveEntriesWindow : IEnumerable<int>
+    public interface IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> : IEnumerable<int> where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
+        /// <summary>
+        /// The recycler associated with the window
+        /// </summary>
+        public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get;  }
+        
         /// <summary>
         /// Returns true if the window exists, that is, we have some underlying recycler data to have a window over in the first place.
         /// </summary>

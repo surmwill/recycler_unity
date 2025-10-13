@@ -147,7 +147,7 @@ public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData
         HashSet<int> visibleIndices = new HashSet<int>();
 
         // Check which indices we report as visible, in the start cache, and in the end cache
-        IRecyclerScrollRectActiveEntriesWindow activeEntriesWindow = _recycler.ActiveEntriesWindow;
+        IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow = _recycler.ActiveEntriesWindow;
         if (activeEntriesWindow.StartCacheIndexRange.HasValue)
         {
             (int Start, int End) = activeEntriesWindow.StartCacheIndexRange.Value;

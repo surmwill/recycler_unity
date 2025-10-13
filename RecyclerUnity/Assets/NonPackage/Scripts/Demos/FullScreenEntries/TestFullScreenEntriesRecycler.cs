@@ -30,7 +30,7 @@ namespace RecyclerScrollRect
             $"5 (keys 'S' and 'B') Immediately scrolls to the bottom of the bottommost entry."
         };
 
-        private IRecyclerScrollRectActiveEntriesWindow _indexWindow;
+        private IRecyclerScrollRectActiveEntriesWindow<EmptyRecyclerData, string> _indexWindow;
 
         protected override void Start()
         {

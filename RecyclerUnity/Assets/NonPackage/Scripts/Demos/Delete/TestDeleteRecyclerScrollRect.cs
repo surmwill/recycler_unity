@@ -30,7 +30,7 @@ namespace RecyclerScrollRect
             $"3 (key 'R'): Shrinks and deletes an entry from a random active index."
         };
         
-        private IRecyclerScrollRectActiveEntriesWindow _activeEntriesWindow;
+        private IRecyclerScrollRectActiveEntriesWindow<EmptyRecyclerData, string> _activeEntriesWindow;
 
         protected override void Start()
         {

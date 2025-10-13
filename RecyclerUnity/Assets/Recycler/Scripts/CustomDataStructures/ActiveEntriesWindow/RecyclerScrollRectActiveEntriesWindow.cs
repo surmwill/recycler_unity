@@ -8,8 +8,14 @@ namespace RecyclerScrollRect
     /// <summary>
     /// Represents a sliding range of entry indices currently active in the recycler: visible or cached. 
     /// </summary>
-    public class RecyclerScrollRectActiveEntriesWindow : IRecyclerScrollRectActiveEntriesWindow
+    public class RecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> : IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> 
+        where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
+        /// <summary>
+        /// The recycler associated with the window
+        /// </summary>
+        public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get;  }
+        
         /// <summary>
         /// Returns true if the window exists, that is, we have some underlying recycler data to have a window over in the first place.
         /// </summary>
@@ -240,8 +246,9 @@ namespace RecyclerScrollRect
                 $"End Cache Range: {(!EndCacheIndexRange.HasValue ? "[]" : $"[{EndCacheIndexRange.Value.Start},{EndCacheIndexRange.Value.End}]")}";
         }
 
-        public RecyclerScrollRectActiveEntriesWindow(int numCached)
+        public RecyclerScrollRectActiveEntriesWindow(RecyclerScrollRect<TEntryData, TKeyEntryData> recycler, int numCached)
         {
+            Recycler = recycler;
             _numCached = numCached;
         }
 

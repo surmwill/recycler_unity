@@ -31,7 +31,7 @@ namespace RecyclerScrollRect
             $"3 (key 'R'): Inserts and grows an entry into a random active index."
         };
 
-        private IRecyclerScrollRectActiveEntriesWindow _activeEntriesWindow;
+        private IRecyclerScrollRectActiveEntriesWindow<InsertAndResizeData, string> _activeEntriesWindow;
 
         protected override void Start()
         {

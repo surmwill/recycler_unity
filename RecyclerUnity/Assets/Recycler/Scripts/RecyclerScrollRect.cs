@@ -113,7 +113,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Contains information about the current index ranges of active entries.
         /// </summary>
-        public IRecyclerScrollRectActiveEntriesWindow ActiveEntriesWindow => _activeEntriesWindow;
+        public IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> ActiveEntriesWindow => _activeEntriesWindow;
 
         /// <summary>
         /// A reference to the endcap - if it exists.
@@ -143,7 +143,7 @@ namespace RecyclerScrollRect
         private readonly Dictionary<int, Behaviour[]> _entryGameObjectLayoutBehaviours = new();
         private Behaviour[] _endcapLayoutBehaviours;
 
-        private RecyclerScrollRectActiveEntriesWindow _activeEntriesWindow;
+        private RecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> _activeEntriesWindow;
 
         private DrivenRectTransformTracker _tracker;
         private Vector2 _initPivot;
@@ -191,7 +191,7 @@ namespace RecyclerScrollRect
             _rootCanvas = _rootCanvas.rootCanvas;
 
             // Keeps track of what indices are visible, and subsequently which indices are cached
-            _activeEntriesWindow = new RecyclerScrollRectActiveEntriesWindow(_numCachedAtEachEnd);
+            _activeEntriesWindow = new RecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData>(this, _numCachedAtEachEnd);
 
             // All the entries in the pool are initially unbound
             RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = null;
