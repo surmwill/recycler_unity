@@ -25,10 +25,10 @@ namespace RecyclerScrollRect
 
         protected override string[] DemoButtonDescriptions => new[]
         {
-            $"0: Inserts and grows {NumInsertionEntries} entries at index {InsertionIndex}",
-            $"1: Batch inserts {NumInsertionEntries} to the end of the list.",
-            $"2: Batch inserts a fullscreen's worth of entries {MoreThanFullScreenNumEntries} to the end of the list.",
-            $"3: Inserts and grows an entry into a random active index."
+            $"0 (key 'A'): Inserts and grows {NumInsertionEntries} entries at index {InsertionIndex}",
+            $"1 (key 'D'): Batch inserts {NumInsertionEntries} immediately to the end of the list.",
+            $"2 (key 'F'): Batch inserts a fullscreen's worth of entries ({MoreThanFullScreenNumEntries}) immediately to the end of the list.",
+            $"3 (key 'R'): Inserts and grows an entry into a random active index."
         };
 
         private IRecyclerScrollRectActiveEntriesWindow _activeEntriesWindow;
