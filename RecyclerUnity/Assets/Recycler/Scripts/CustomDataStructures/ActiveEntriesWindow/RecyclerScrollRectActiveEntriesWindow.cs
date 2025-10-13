@@ -236,13 +236,14 @@ namespace RecyclerScrollRect
         }
 
         /// <summary>
-        /// Returns information about the current ranges of entry indices.
+        /// Returns information about the current ranges of entry indices
         /// </summary>
+        /// <returns> A string detailing the current ranges of entry indices </returns>
         public string PrintRanges()
         {
             return
-                $"Visible Index Range: {(!VisibleIndexRange.HasValue ? "[]" : $"[{VisibleIndexRange.Value.Start},{VisibleIndexRange.Value.End}]")}\n" +
                 $"Start Cache Range: {(!StartCacheIndexRange.HasValue ? "[]" : $"[{StartCacheIndexRange.Value.Start},{StartCacheIndexRange.Value.End}]")}\n" +
+                $"Visible Index Range: {(!VisibleIndexRange.HasValue ? "[]" : $"[{VisibleIndexRange.Value.Start},{VisibleIndexRange.Value.End}]")}\n" +
                 $"End Cache Range: {(!EndCacheIndexRange.HasValue ? "[]" : $"[{EndCacheIndexRange.Value.Start},{EndCacheIndexRange.Value.End}]")}";
         }
 

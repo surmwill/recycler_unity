@@ -71,6 +71,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Returns information about the current ranges of entry indices
         /// </summary>
+        /// <returns> A string detailing the current ranges of entry indices </returns>
         string PrintRanges();
     }
 }
