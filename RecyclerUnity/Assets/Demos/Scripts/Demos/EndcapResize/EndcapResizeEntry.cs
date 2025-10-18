@@ -2,7 +2,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Swill.Recycler
+namespace Swill.Recycler.Demos
 {
     /// <summary>
     /// Recycler entry for demoing resizing the endcap

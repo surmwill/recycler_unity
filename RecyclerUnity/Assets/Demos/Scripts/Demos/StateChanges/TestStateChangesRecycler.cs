@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Swill.Recycler
+namespace Swill.Recycler.Demos
 {
     /// <summary>
     /// Tests changing entries' colours as they move between non-visible and visible

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Swill.Recycler
+namespace Swill.Recycler.Demos
 {
     /// <summary>
     /// Tests the recycler for animating an entry in on insertion/deletion.

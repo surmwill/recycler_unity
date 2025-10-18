@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Swill.Recycler
+namespace Swill.Recycler.Demos
 {
     /// <summary>
     /// Data for animating an entry in on insertion/deletion

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Swill.Recycler;
 using UnityEngine;
 
-namespace Swill.Recycler
+namespace Swill.Recycler.Demos
 {
     /// <summary>
     /// Recycler for animating an entry in on insertion/deletion

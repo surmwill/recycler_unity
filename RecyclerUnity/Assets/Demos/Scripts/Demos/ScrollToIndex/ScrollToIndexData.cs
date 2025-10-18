@@ -1,6 +1,6 @@
 using System;
 
-namespace Swill.Recycler
+namespace Swill.Recycler.Demos
 {
    /// <summary>
    /// Data used to demo scrolling to an index in a recycler

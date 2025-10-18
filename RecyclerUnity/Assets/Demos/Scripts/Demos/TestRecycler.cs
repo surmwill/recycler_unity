@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Swill.Recycler
+namespace Swill.Recycler.Demos
 {
     /// <summary>
     /// Base class for testing recyclers in demo scenes.

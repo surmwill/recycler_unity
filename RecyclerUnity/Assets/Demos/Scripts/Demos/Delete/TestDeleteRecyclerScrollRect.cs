@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace Swill.Recycler
+namespace Swill.Recycler.Demos
 {
     /// <summary>
     /// Demos deleting a entries in the recycler.

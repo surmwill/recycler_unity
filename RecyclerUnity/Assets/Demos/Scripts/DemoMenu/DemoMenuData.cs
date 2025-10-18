@@ -1,6 +1,6 @@
 
 
-namespace Swill.Recycler
+namespace Swill.Recycler.Demos
 {
     /// <summary>
     /// Data representing the name of a demo scene to navigate to.

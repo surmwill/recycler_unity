@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Swill.Recycler
+namespace Swill.Recycler.Demos
 {
     /// <summary>
     /// Endcap for testing a recycler with full screen entries and endcap.

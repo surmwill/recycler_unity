@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Swill.Recycler
+namespace Swill.Recycler.Demos
 {
     /// <summary>
     /// Rotates the camera to check if the Recycler stays stable on a moving "Screen Space - Camera" Canvas

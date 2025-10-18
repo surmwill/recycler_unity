@@ -1,6 +1,6 @@
 using System;
 
-namespace Swill.Recycler
+namespace Swill.Recycler.Demos
 {
     /// <summary>
     /// Data to test an auto-sized recycler entry

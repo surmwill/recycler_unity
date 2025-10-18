@@ -1,5 +1,5 @@
 
-namespace Swill.Recycler
+namespace Swill.Recycler.Demos
 {
     /// <summary>
     /// Recycler to test auto-sized entries
