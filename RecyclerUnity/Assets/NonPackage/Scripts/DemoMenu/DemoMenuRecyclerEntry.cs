@@ -15,13 +15,13 @@ namespace RecyclerScrollRect
         [SerializeField]
         private Button _loadSceneButton = null;
         
-        protected override void OnBindNewData(DemoMenuData entryData)
+        protected override void OnBind(DemoMenuData entryData)
         {
             _demoName.text = entryData.SceneName;
             _loadSceneButton.onClick.AddListener(LoadScene);
         }
 
-        protected override void OnSentToRecycling()
+        protected override void OnRecycled()
         {
             _loadSceneButton.onClick.RemoveListener(LoadScene);
         }

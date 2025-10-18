@@ -16,12 +16,12 @@ namespace RecyclerScrollRect
 
         private Sequence _deleteSequence;
 
-        protected override void OnBindNewData(EmptyRecyclerData _)
+        protected override void OnBind(EmptyRecyclerData _)
         {
             _indexText.text = Index.ToString();
         }
 
-        protected override void OnSentToRecycling()
+        protected override void OnRecycled()
         {
             _deleteSequence?.Kill(true);
         }

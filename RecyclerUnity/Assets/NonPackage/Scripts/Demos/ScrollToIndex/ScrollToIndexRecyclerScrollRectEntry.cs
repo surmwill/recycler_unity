@@ -20,12 +20,12 @@ namespace RecyclerScrollRect
 
         private Sequence _sequence;
 
-        protected override void OnBindNewData(ScrollToIndexData entryData)
+        protected override void OnBind(ScrollToIndexData entryData)
         {
             _numberText.text = Index.ToString();
         }
 
-        protected override void OnSentToRecycling()
+        protected override void OnRecycled()
         {
             _sequence?.Kill();
             RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(NormalSize);

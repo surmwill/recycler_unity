@@ -18,7 +18,7 @@ namespace RecyclerScrollRect
         private const int AppendMinLinesOfText = 1;
         private const int AppendMaxLinesOfText = 4;
 
-        protected override void OnBindNewData(AutoSizeData entryData)
+        protected override void OnBind(AutoSizeData entryData)
         {
             _titleText.text = $"Randomly Generated <color=red>{entryData.NumLines}</color> Line(s)";
             UpdateLines();

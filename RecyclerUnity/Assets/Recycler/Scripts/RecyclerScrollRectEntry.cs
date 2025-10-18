@@ -86,13 +86,13 @@ namespace RecyclerScrollRect
         /// Lifecycle method called when the entry becomes active and bound to a new piece of data.
         /// </summary>
         /// <param name="entryData"> The data the entry is being bound to. </param>
-        protected abstract void OnBindNewData(TEntryData entryData);
+        protected abstract void OnBind(TEntryData entryData);
 
         /// <summary>
-        /// Lifecycle method called instead of OnBindNewData when the data to be bound to is the same data that's already bound.
-        /// (Note that entries maintain their state when recycled, only losing it when being bound to new data).
+        /// Lifecycle method called instead of OnBind when the data to be bound to is the same data that's already bound.
+        /// (Entries maintain their data/state when recycled, only losing it when being bound to new data).
         /// </summary>
-        protected virtual void OnRebindExistingData()
+        protected virtual void OnCachedRebind()
         {
             // Empty
         }
@@ -100,7 +100,7 @@ namespace RecyclerScrollRect
         /// <summary>
         /// Lifecycle method called when the entry gets sent back to the recycling pool.
         /// </summary>
-        protected virtual void OnSentToRecycling()
+        protected virtual void OnRecycled()
         {
             // Empty
         }
@@ -129,7 +129,7 @@ namespace RecyclerScrollRect
         {
             Data = entryData;
             SetIndex(index);
-            OnBindNewData(entryData);
+            OnBind(entryData);
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace RecyclerScrollRect
         [CalledByRecycler]
         public void RebindExistingData()
         {
-            OnRebindExistingData();
+            OnCachedRebind();
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace RecyclerScrollRect
                 SetVisibility(null);
             }
             
-            OnSentToRecycling();
+            OnRecycled();
         }
 
         /// <summary>

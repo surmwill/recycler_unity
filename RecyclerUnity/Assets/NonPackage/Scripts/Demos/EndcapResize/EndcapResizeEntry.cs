@@ -12,7 +12,7 @@ namespace RecyclerScrollRect
         [SerializeField]
         private Text _numberText = null;
 
-        protected override void OnBindNewData(EmptyRecyclerData entryData)
+        protected override void OnBind(EmptyRecyclerData entryData)
         {
         }
 

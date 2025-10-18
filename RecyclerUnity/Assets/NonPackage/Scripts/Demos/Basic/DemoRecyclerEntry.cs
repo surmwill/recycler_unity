@@ -18,7 +18,7 @@ namespace RecyclerScrollRect
         private Image _background = null;
 
         // Mandatory: Called when this entry is bound to new data
-        protected override void OnBindNewData(DemoRecyclerData entryData)
+        protected override void OnBind(DemoRecyclerData entryData)
         {
             // Set the word and background color to whatever is passed in the data
             _wordText.text = entryData.Word;
@@ -28,15 +28,15 @@ namespace RecyclerScrollRect
             _indexText.text = Index.ToString();
         }
 
-        // Optional: called when this entry is bound with data it had before (and therefore still currently has)
-        protected override void OnRebindExistingData()
+        // Optional: called instead on OnBind when the data we're binding to is the same data already present/bound on the entry
+        protected override void OnCachedRebind()
         {
             // Debug.Log(Data.Word);
             // Debug.Log(Data.BackgroundColor);
         }
 
         // Optional: Called when this entry has been sent back to the recycling pool
-        protected override void OnSentToRecycling()
+        protected override void OnRecycled()
         {
 
         }

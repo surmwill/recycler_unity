@@ -23,13 +23,13 @@ namespace RecyclerScrollRect
 
         private Sequence _growSequence;
 
-        protected override void OnBindNewData(InsertAndResizeData entryData)
+        protected override void OnBind(InsertAndResizeData entryData)
         {
             _numberText.text = Index.ToString();
             RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(entryData.DidGrow ? GrowSize : (entryData.ShouldGrow ? 0f : NormalSize));
         }
 
-        protected override void OnSentToRecycling()
+        protected override void OnRecycled()
         {
             _growSequence?.Kill(true);
         }

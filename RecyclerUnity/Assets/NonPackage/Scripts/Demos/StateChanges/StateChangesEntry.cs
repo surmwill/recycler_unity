@@ -17,7 +17,7 @@ namespace RecyclerScrollRect
 
         private Tween _colorTween;
 
-        protected override void OnBindNewData(EmptyRecyclerData entryData)
+        protected override void OnBind(EmptyRecyclerData entryData)
         {
             _indexText.text = Index.ToString();
         }

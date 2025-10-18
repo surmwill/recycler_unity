@@ -33,7 +33,7 @@ namespace RecyclerScrollRect
         private Sequence _animateInSequence;
         private Sequence _animateOutSequence;
         
-        protected override void OnBindNewData(PrettyInsertDeleteData entryData)
+        protected override void OnBind(PrettyInsertDeleteData entryData)
         {
             _indexText.text = Index.ToString();
             RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(entryData.AnimateIn ? 0f : Height);
@@ -48,7 +48,7 @@ namespace RecyclerScrollRect
             }
         }
 
-        protected override void OnSentToRecycling()
+        protected override void OnRecycled()
         {
             _animateInSequence?.Kill(true);
             _animateOutSequence?.Kill(true);

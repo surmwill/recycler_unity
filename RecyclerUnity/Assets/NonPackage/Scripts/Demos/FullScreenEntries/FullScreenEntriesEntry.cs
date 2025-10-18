@@ -13,7 +13,7 @@ namespace RecyclerScrollRect
 
         private const float BufferPct = 0.1f;
 
-        protected override void OnBindNewData(EmptyRecyclerData entryData)
+        protected override void OnBind(EmptyRecyclerData entryData)
         {
             _indexText.text = Index.ToString();
             
