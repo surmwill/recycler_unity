@@ -3,17 +3,17 @@ using UnityEngine;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Tests changing entries' colours as they move states from cached to visible.
+    /// Tests changing entries' colours as they move between non-visible and visible
     /// </summary>
     public class TestStateChangesRecycler : TestRecycler<EmptyRecyclerData, string>
     {
         [SerializeField]
         private EmptyRecyclerScrollRect _recycler = null;
+
+        private const int InitNumEntries = 50;
         
         // The time it takes for the entries and endcap to change colors
         public const float CrossFadeTimeSeconds = 1.5f;
-
-        private const int InitNumEntries = 50;
 
         // Colors corresponding to the different states of the entries
         public static readonly Color OnVisibleColor = new(0xFB / 255f, 0xAF / 255f, 0x00 / 255f);
@@ -23,8 +23,7 @@ namespace RecyclerScrollRect
 
         protected override string DemoTitle => "State change demo";
 
-        protected override string DemoDescription =>
-            "Tests changing an entries' colours as they move from the start cache, to visible, to the end cache";
+        protected override string DemoDescription => "Tests changing entries' colours as they move between non-visible and visible";
 
         protected override string[] DemoButtonDescriptions => null;
 

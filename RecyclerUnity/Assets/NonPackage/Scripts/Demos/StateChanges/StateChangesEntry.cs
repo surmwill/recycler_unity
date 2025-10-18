@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Entry for testing the changing of visible to non-visible states 
+    /// Entry for testing the changing of visible states
     /// </summary>
     public class StateChangesEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
     {
