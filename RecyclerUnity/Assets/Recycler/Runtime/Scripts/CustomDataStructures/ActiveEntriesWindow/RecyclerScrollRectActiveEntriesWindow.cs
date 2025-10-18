@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Represents a sliding range of entry indices currently active in the recycler: visible or cached. 

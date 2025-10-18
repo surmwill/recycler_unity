@@ -2,11 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using com.swill.recycler;
+using Swill.Recycler;
 using Unity.VisualScripting;
 using UnityEngine;
 
-using static com.swill.recycler.ViewportHelpers;
+using static Swill.Recycler.ViewportHelpers;
 
 /// <summary>
 /// Ensures our Recycler is in the proper format each frame.

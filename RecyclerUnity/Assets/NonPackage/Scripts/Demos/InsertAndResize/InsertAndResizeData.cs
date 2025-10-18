@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Data for recycler entries used in our insert and resize demo.

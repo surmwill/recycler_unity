@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Example of a recycler entry for demoing purposes

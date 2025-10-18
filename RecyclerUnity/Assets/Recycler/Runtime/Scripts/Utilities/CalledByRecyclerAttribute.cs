@@ -1,6 +1,6 @@
 using System;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Indicates that a method is intended to be called by the recycler as part of the lifecycle management of the object, and not the user.

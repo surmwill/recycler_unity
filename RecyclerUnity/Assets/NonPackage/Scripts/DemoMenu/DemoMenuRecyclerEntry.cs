@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Recycler entry for navigating between different demo scenes.

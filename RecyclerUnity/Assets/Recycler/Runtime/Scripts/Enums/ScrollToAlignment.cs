@@ -1,5 +1,5 @@
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Defines the position within an entry to center on when we scroll to it.

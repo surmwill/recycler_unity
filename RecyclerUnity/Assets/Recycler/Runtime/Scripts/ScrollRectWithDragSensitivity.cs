@@ -4,7 +4,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     [SelectionBase]
     [ExecuteAlways]

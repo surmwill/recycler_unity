@@ -3,7 +3,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// A button with an additional OnPointerDown callback.

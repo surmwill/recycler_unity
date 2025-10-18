@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
    /// <summary>
    /// Demos appending and prepending entries to a Recycler.

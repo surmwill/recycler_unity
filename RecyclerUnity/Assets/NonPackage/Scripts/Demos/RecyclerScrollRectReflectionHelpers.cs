@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using com.swill.recycler;
+using Swill.Recycler;
 using UnityEngine;
 
 /// <summary>

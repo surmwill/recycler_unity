@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Maintains a dictionary of recycled entries as well as a queue (a LinkedList) which tracks what entries have sat in recycling the longest

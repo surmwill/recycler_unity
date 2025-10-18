@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Base class for all entries displayed in the recycler. Contains overridable lifecycle methods to customize their behaviour.

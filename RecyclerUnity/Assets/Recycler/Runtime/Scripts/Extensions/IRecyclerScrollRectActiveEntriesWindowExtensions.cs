@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using com.swill.recycler;
+using Swill.Recycler;
 
 public static class IRecyclerScrollRectActiveEntriesWindowExtensions
 {

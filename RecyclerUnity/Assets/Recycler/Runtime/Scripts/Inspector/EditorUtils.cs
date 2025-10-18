@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Helpful editor functions.

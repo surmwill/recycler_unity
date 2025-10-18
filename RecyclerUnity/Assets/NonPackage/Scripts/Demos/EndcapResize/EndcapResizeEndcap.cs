@@ -1,6 +1,6 @@
 using DG.Tweening;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Endcap that tests resizing

@@ -1,5 +1,5 @@
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Recycler for navigating between different demo scenes.

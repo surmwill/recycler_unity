@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Tests resizing of the endcap

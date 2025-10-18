@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Represents the 4 corners of a RectTransform in world space.

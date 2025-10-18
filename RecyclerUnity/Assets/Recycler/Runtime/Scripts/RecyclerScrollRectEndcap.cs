@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// The endcap to a recycler: an entry different than all the others, appearing at the very end of the content.

@@ -1,5 +1,5 @@
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// If we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.

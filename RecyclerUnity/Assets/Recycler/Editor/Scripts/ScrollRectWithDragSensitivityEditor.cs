@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor.AnimatedValues;
 
-namespace com.swill.recycler
+namespace Swill.Recycler.Editor
 {
     [CustomEditor(typeof(ScrollRectWithDragSensitivity), true)]
     [CanEditMultipleObjects]
@@ -16,7 +16,7 @@ namespace com.swill.recycler
     ///   Custom Editor for the ScrollRect Component.
     ///   Extend this class to write a custom editor for an ScrollRect-derived component.
     /// </summary>
-    public class ScrollRectWithDragSensitivityEditor : Editor
+    public class ScrollRectWithDragSensitivityEditor : UnityEditor.Editor
     {
         SerializedProperty m_Content;
         SerializedProperty m_Horizontal;

@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace com.swill.recycler
+namespace Swill.Recycler.Editor
 {
     /// <summary>
     /// Draws a readonly property in the inspector.

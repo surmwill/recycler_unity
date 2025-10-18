@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Interface for the user to query the various index ranges of active entries in the recycler.

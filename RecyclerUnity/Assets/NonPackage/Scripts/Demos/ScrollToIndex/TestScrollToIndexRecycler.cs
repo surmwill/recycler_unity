@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Demos scrolling to an index in a recycler

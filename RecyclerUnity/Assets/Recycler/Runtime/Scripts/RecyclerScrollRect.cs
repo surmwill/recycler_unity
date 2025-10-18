@@ -6,10 +6,10 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-using static com.swill.recycler.ViewportHelpers;
+using static Swill.Recycler.ViewportHelpers;
 using Transform = UnityEngine.Transform;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// A Recycler.

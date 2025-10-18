@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace com.swill.recycler
+namespace Swill.Recycler
 {
     /// <summary>
     /// Attribute to make a serialized field read-only in the inspector.
