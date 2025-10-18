@@ -2,7 +2,8 @@
     "name": "com.swill.recycler.samples",
     "rootNamespace": "",
     "references": [
-        "GUID:a26bedfb6ec07e244b8c7cb5e098bfcc"
+        "GUID:a26bedfb6ec07e244b8c7cb5e098bfcc",
+        "GUID:76901b45aa6f8ad46a3757fe22d26418"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -10,7 +11,9 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "DOTWEEN"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }
