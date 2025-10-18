@@ -881,11 +881,6 @@ namespace RecyclerScrollRect
             entryTransform.SetParent(_poolParent, false);
 
             // Mark the entry for re-use
-            if (_recycledEntries.Entries.ContainsKey(entry.Index))
-            {
-                throw new InvalidOperationException("We should not have two copies of the same entry in recycling; we only need one.");
-            }
-
             _recycledEntries.Add(entry);
 
             // Bookkeeping
