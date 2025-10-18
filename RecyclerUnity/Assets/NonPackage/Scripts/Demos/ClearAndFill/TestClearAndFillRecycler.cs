@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Tests clearing and adding entries to a recycler, one-by-one

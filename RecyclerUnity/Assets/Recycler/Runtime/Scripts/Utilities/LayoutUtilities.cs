@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Utilities for dealing with layouts.

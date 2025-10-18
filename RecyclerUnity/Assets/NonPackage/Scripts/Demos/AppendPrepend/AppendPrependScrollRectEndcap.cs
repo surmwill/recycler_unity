@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Endcap to demo appending to a recycler

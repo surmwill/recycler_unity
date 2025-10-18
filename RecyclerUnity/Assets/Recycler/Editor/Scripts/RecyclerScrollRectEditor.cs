@@ -1,7 +1,7 @@
 #if UNITY_EDITOR
 using UnityEditor;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Override Unity's default ScrollRectEditor so we can see our custom fields too

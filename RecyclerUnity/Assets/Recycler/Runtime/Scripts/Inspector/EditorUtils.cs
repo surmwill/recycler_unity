@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Helpful editor functions.

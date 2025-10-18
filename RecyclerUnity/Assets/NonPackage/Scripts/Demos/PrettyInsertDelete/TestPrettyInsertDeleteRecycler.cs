@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Tests the recycler for animating an entry in on insertion/deletion.

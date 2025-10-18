@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Extension methods for ScrollRectWithDragSensitivities.

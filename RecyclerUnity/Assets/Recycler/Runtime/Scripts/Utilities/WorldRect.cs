@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Represents the 4 corners of a RectTransform in world space.

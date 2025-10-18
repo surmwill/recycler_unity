@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor.AnimatedValues;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     [CustomEditor(typeof(ScrollRectWithDragSensitivity), true)]
     [CanEditMultipleObjects]

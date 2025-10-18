@@ -1,6 +1,6 @@
 using System;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Data to test an auto-sized recycler entry

@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Draws a readonly property in the inspector.

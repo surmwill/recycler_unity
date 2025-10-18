@@ -6,10 +6,10 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-using static RecyclerScrollRect.ViewportHelpers;
+using static com.swill.recycler.ViewportHelpers;
 using Transform = UnityEngine.Transform;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// A Recycler.

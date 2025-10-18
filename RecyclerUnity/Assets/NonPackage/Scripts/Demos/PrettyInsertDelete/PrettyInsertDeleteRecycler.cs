@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using RecyclerScrollRect;
+using com.swill.recycler;
 using UnityEngine;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Recycler for animating an entry in on insertion/deletion

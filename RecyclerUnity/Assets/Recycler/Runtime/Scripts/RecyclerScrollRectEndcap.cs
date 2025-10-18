@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// The endcap to a recycler: an entry different than all the others, appearing at the very end of the content.

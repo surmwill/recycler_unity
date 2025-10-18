@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Attribute to make a serialized field read-only in the inspector.

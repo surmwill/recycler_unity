@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Maintains a dictionary of recycled entries as well as a queue (a LinkedList) which tracks what entries have sat in recycling the longest

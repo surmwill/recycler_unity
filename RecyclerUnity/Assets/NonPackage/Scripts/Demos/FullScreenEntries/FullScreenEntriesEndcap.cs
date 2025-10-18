@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Endcap for testing a recycler with full screen entries and endcap.

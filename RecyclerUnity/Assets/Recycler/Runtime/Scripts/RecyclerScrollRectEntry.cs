@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Base class for all entries displayed in the recycler. Contains overridable lifecycle methods to customize their behaviour.

@@ -1,6 +1,6 @@
 
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Data representing the name of a demo scene to navigate to.

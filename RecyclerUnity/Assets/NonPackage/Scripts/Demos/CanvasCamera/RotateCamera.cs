@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Rotates the camera to check if the Recycler stays stable on a moving "Screen Space - Camera" Canvas

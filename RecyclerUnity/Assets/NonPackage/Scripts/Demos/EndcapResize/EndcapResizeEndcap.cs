@@ -1,6 +1,6 @@
 using DG.Tweening;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Endcap that tests resizing

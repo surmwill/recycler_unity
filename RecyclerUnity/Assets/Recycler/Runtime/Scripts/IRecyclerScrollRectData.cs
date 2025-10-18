@@ -1,5 +1,5 @@
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Interface for the data bound to entries in the RecyclerScrollRect.

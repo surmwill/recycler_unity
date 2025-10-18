@@ -1,6 +1,6 @@
 using System;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
    /// <summary>
    /// Data used to demo scrolling to an index in a recycler

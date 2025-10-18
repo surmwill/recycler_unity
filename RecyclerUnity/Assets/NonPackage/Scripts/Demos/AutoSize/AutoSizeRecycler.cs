@@ -1,5 +1,5 @@
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Recycler to test auto-sized entries

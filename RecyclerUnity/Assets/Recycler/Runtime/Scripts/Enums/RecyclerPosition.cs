@@ -1,5 +1,5 @@
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Defines two important locations of the recycler list: the top and bottom.

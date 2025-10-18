@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace RecyclerScrollRect
+namespace com.swill.recycler
 {
     /// <summary>
     /// Interface for the user to query the various index ranges of active entries in the recycler.
