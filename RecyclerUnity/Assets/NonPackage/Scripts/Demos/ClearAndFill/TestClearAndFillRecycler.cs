@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using UnityEngine;
 
@@ -80,17 +79,23 @@ namespace RecyclerScrollRect
             // Ensure clearing resets us back to the recycler's initial state
             if (_recycler.DataForEntries.Any())
             {
-                throw new DataException("The data is supposed to cleared, but there is still some present.");
+                Debug.LogError("The data is supposed to cleared, but there is still some present.");
+                Debug.Break();
+                return;
             }
 
             if (_entryKeyToCurrentIndex.Any())
             {
-                throw new DataException("The data has been cleared. There should be no keys either.");
+                Debug.LogError("The data has been cleared. There should be no keys either.");
+                Debug.Break();
+                return;
             }
 
             if (_recycler.ActiveEntries.Any())
             {
-                throw new DataException($"The data has been cleared. We should not have any active entries.");
+                Debug.LogError($"The data has been cleared. We should not have any active entries.");
+                Debug.Break();
+                return;
             }
             
             if (_activeEntriesWindow.Exists || 
@@ -100,33 +105,45 @@ namespace RecyclerScrollRect
                 _activeEntriesWindow.StartCacheIndexRange.HasValue || 
                 _activeEntriesWindow.EndCacheIndexRange.HasValue)
             {
-                throw new DataException($"The data has been cleared and the window should not exist. There's no underlying data to have a window over.");
+                Debug.LogError($"The data has been cleared and the window should not exist. There's no underlying data to have a window over.");
+                Debug.Break();
+                return;
             }
 
             if (_recycledEntries.Entries.Any())
             {
-                throw new DataException($"After clearing, all entries should return to the pool unbound. There are still {_recycledEntries.Entries.Count} entries in the pool bound.");
+                Debug.LogError($"After clearing, all entries should return to the pool unbound. There are still {_recycledEntries.Entries.Count} entries in the pool bound.");
+                Debug.Break();
+                return;
             }
 
             int numMissingUnboundEntries = numTargetUnboundEntries - _unboundEntries.Count;
             if (numMissingUnboundEntries != 0)
             {
-                throw new DataException($"After clearing, all entries should return to the pool unbound. Missing {numMissingUnboundEntries} entries.");
+                Debug.LogError($"After clearing, all entries should return to the pool unbound. Missing {numMissingUnboundEntries} entries.");
+                Debug.Break();
+                return;
             }
 
             if (_recycler.Endcap != null && _recycler.Endcap.gameObject.activeSelf)
             {
-                throw new DataException("The data has been cleared. We expect an empty window and therefore the endcap should not be active.");
+                Debug.LogError("The data has been cleared. We expect an empty window and therefore the endcap should not be active.");
+                Debug.Break();
+                return;
             }
 
             if (_currScrollingToIndex.HasValue || _scrollToIndexCoroutine != null)
             {
-                throw new DataException("The data has been cleared. We should not be auto-scrolling to an index.");
+                Debug.LogError("The data has been cleared. We should not be auto-scrolling to an index.");
+                Debug.Break();
+                return;
             }
 
             if (_recycler.content.pivot != _initPivot)
             {
-                throw new DataException("After clearing, the pivot should be reset to whatever it was on initialization.");
+                Debug.LogError("After clearing, the pivot should be reset to whatever it was on initialization.");
+                Debug.Break();
+                return;
             }
         }
 
