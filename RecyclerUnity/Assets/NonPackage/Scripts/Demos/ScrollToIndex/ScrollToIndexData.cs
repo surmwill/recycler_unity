@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace RecyclerScrollRect
 {
@@ -12,11 +9,8 @@ namespace RecyclerScrollRect
    {
       public string Key { get; }
 
-      public bool ShouldResize { get; private set; }
-
-      public ScrollToIndexData(bool shouldResize)
+      public ScrollToIndexData()
       {
-         ShouldResize = shouldResize;
          Key = Guid.NewGuid().ToString();
       }
    }

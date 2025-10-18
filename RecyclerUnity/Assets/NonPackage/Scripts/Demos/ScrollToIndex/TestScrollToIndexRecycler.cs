@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -18,10 +16,10 @@ namespace RecyclerScrollRect
 
         private const int InitNumEntries = 50;
         private const int ScrollToMiddleIndex = 25;
+        
+        private const float NormalScrollSpeed = 2.5f;
         private const float ScrollWhileGrowShrinkingSpeed = 0.5f;
-
-        private static readonly int[] EnlargeEntryIndices = { 41, 42 };
-
+        
         protected override RecyclerScrollRect<ScrollToIndexData, string> ValidateRecycler => _recycler;
 
         protected override string DemoTitle => "Scroll to index demo";
@@ -30,22 +28,22 @@ namespace RecyclerScrollRect
 
         protected override string[] DemoButtonDescriptions => new[]
         {
-            $"0: Scrolls to the middle index {ScrollToMiddleIndex}.",
-            $"1: Scrolls to the top index 0.",
-            $"2: Scrolls to the bottom index {InitNumEntries - 1}.",
+            $"0 (keys 'A' and 'M'): Scrolls to the middle index {ScrollToMiddleIndex}.",
+            $"1 (keys 'A' and 'T'): Scrolls to the top index 0.",
+            $"2 (keys 'A' and 'B'): Scrolls to the bottom index {InitNumEntries - 1}.",
 
-            $"3: Scrolls to the middle index {ScrollToMiddleIndex} while making the bottom visible entry grow, scrolling over the expanding entry.",
-            $"4: Scrolls to the middle index {ScrollToMiddleIndex} while making the bottom visible entry shrink, scrolling over the shrinking entry.",
+            $"3 (keys 'F' and 'G'): Scrolls to the middle index {ScrollToMiddleIndex} while making the bottom visible entry grow, scrolling over the expanding entry.",
+            $"4 (keys 'F' and 'S'): Scrolls to the middle index {ScrollToMiddleIndex} while making the bottom visible entry shrink, scrolling over the shrinking entry.",
             
-            $"5: Scrolls immediately to the middle index {ScrollToMiddleIndex}.",
-            $"6: Scrolls immediately to the top index 0.",
-            $"7: Scrolls immediately to the bottom index {InitNumEntries - 1}.",
+            $"5 (keys 'I' and 'M'): Scrolls immediately to the middle index {ScrollToMiddleIndex}.",
+            $"6 (keys 'I' and 'T'): Scrolls immediately to the top index 0.",
+            $"7 (keys 'I' and 'B'): Scrolls immediately to the bottom index {InitNumEntries - 1}.",
             
-            $"8: Scrolls immediately to the top edge of the middle index {ScrollToMiddleIndex}.",
-            $"9: Scrolls immediately to the bottom edge of the middle index {ScrollToMiddleIndex}.",
+            $"8 (keys 'E' and 'T'): Scrolls immediately to the top edge of the middle index {ScrollToMiddleIndex}.",
+            $"9 (keys 'E' and 'B'): Scrolls immediately to the bottom edge of the middle index {ScrollToMiddleIndex}.",
 
-            $"10: Cancels the current scroll call.",
-            $"11: Toggles the middle indicator on/off to know if we've properly centered on an index."
+            $"10 (key 'C'): Cancels the current scroll call.",
+            $"11 (key 'V'): Toggles the middle indicator on/off to know if we've properly centered on an index."
         };
 
         private IRecyclerScrollRectActiveEntriesWindow<ScrollToIndexData, string> _window;
@@ -53,7 +51,7 @@ namespace RecyclerScrollRect
         protected override void Start()
         {
             base.Start();
-            _recycler.AppendEntries(CreateEntryData(InitNumEntries, EnlargeEntryIndices));
+            _recycler.AppendEntries(Enumerable.Repeat((ScrollToIndexData) null, InitNumEntries).Select(_ => new ScrollToIndexData()));
             _window = _recycler.ActiveEntriesWindow;
         }
 
@@ -64,13 +62,15 @@ namespace RecyclerScrollRect
             if ((Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.M)) || DemoToolbar.GetButtonDown(0))
             {
                 _recycler.ScrollToIndex(ScrollToMiddleIndex, 
+                    scrollSpeedViewportsPerSecond:NormalScrollSpeed,
                     onScrollComplete:() => Debug.Log("Middle index scroll complete."),
                     onScrollCancelled:() => Debug.Log("Middle index scroll cancelled."));
             }
             // Scroll to top index
             else if ((Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.T)) || DemoToolbar.GetButtonDown(1))
             {
-                _recycler.ScrollToIndex(0, 
+                _recycler.ScrollToIndex(0,
+                    scrollSpeedViewportsPerSecond:NormalScrollSpeed,
                     onScrollComplete:() => Debug.Log("Top index scroll complete."),
                     onScrollCancelled:() => Debug.Log("Top index scroll cancelled."));
             }
@@ -78,6 +78,7 @@ namespace RecyclerScrollRect
             else if ((Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.B)) || DemoToolbar.GetButtonDown(2))
             {
                 _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, 
+                    scrollSpeedViewportsPerSecond:NormalScrollSpeed,
                     onScrollComplete:() => Debug.Log("Bottom index scroll complete."),
                     onScrollCancelled:() => Debug.Log("Bottom index scroll cancelled."));
             }
@@ -136,14 +137,6 @@ namespace RecyclerScrollRect
             {
                 _middleIndicator.SetActive(!_middleIndicator.activeSelf);
             }
-        }
-
-        private ScrollToIndexData[] CreateEntryData(int numEntries, IEnumerable<int> enlargeIndices = null)
-        {
-            HashSet<int> enlarge = new HashSet<int>(enlargeIndices ?? Array.Empty<int>());
-            return Enumerable.Repeat((ScrollToIndexData) null, numEntries)
-                .Select((_, i) => new ScrollToIndexData(enlarge.Contains(i)))
-                .ToArray();
         }
 
         private void OnValidate()

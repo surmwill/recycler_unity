@@ -1269,8 +1269,8 @@ namespace RecyclerScrollRect
                 distanceLeftToTravelThisFrame -= NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
                 RecalculateActiveEntries();
                 
-                // If we have less than 1% left of a viewport to travel this frame, we say we've travelled enough this frame
-                if (distanceLeftToTravelThisFrame < 0.01f * viewport.rect.height)
+                // If we have less than 0.1% left of a viewport to travel this frame, we say we've travelled enough this frame
+                if (distanceLeftToTravelThisFrame < 0.001f * viewport.rect.height)
                 {
                     yield return null;
                     distanceLeftToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
