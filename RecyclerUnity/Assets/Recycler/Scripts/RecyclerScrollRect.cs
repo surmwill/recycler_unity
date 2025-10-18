@@ -1216,8 +1216,6 @@ namespace RecyclerScrollRect
             float scrollSpeedViewportsPerSecond,
             Action onScrollComplete)
         {
-            const float ToleranceViewportPct = 0.01f;
-
             // The position within the child the scroll will center on (ex: middle, top edge, bottom edge)
             float normalizedPositionWithinChild = ScrollAlignmentToNormalizedPosition(scrollToAlignment);
             
@@ -1230,7 +1228,7 @@ namespace RecyclerScrollRect
                 float currNormalizedY = normalizedPosition.y;
                 float newNormalizedY = 0f;
 
-                // Scroll through entries until the entry we want is active; then we'll know the exact position to center on
+                // Scroll through entries until the entry we want is active, then we'll know the exact position to center on
                 if (!_activeEntriesWindow.Contains(index))
                 {
                     // Scroll toward lesser indices
@@ -1246,7 +1244,6 @@ namespace RecyclerScrollRect
                     
                     normalizedPosition = normalizedPosition.WithY(newNormalizedY);
                 }
-
                 // Find and scroll to the exact position of the now active entry
                 else
                 {
@@ -1262,7 +1259,7 @@ namespace RecyclerScrollRect
                     newNormalizedY = Mathf.MoveTowards(currNormalizedY, Mathf.Clamp01(entryNormalizedY), normalizedScrollDistanceLeftToTravelThisFrame);
                     normalizedPosition = normalizedPosition.WithY(newNormalizedY);
 
-                    // If we can't scroll any more (we've hit the very end of the list), then we're done scrolling
+                    // If we can't scroll anymore (we've hit the very end of the list), then we're done scrolling
                     if (Mathf.Approximately(prevNormalizedPosY, normalizedPosition.y))
                     {
                         break;
@@ -1272,7 +1269,8 @@ namespace RecyclerScrollRect
                 distanceLeftToTravelThisFrame -= NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedY - currNormalizedY));
                 RecalculateActiveEntries();
                 
-                if (distanceLeftToTravelThisFrame < ToleranceViewportPct * viewport.rect.height)
+                // If we have less than 1% left of a viewport to travel this frame, we say we've travelled enough this frame
+                if (distanceLeftToTravelThisFrame < 0.01f * viewport.rect.height)
                 {
                     yield return null;
                     distanceLeftToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
@@ -1294,12 +1292,14 @@ namespace RecyclerScrollRect
             // Returns the normalized scroll distance corresponding to a certain non-normalized distance.
             float DistanceToNormalizedScrollDistance(float distance)
             {
+                // Subtracting the viewport from the content height leaves the available space the viewport can move (the scroll distance)
                 return Mathf.InverseLerp(0, content.rect.height - viewport.rect.height, distance);
             }
 
             // Returns the distance corresponding to scrolling a certain normalized distance
             float NormalizedScrollDistanceToDistance(float normalizedScrollDistance)
             {
+                // Subtracting the viewport from the content height leaves the available space the viewport can move (the scroll distance)
                 return normalizedScrollDistance * (content.rect.height - viewport.rect.height);
             }
         }
