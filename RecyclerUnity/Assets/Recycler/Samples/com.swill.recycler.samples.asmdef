@@ -11,7 +11,9 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "DOTWEEN"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }
