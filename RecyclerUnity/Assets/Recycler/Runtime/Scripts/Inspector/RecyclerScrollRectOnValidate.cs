@@ -8,7 +8,8 @@ using Object = UnityEngine.Object;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Contains editor calls for the RecyclerScrollRect.
+    /// Contains the editor OnValidate call for the RecyclerScrollRect.
+    /// Used for automatically setting up the GameObject structure when adding the component.
     /// </summary>
     public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
     {

@@ -1,0 +1,18 @@
+{
+    "name": "com.swill.recycler.editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a26bedfb6ec07e244b8c7cb5e098bfcc"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
