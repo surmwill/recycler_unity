@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace RecyclerScrollRect
 {
     /// <summary>
-    /// Maintains a dictionary of recycled entries as well as as a queue (a LinkedList) to track which entries have sat in recycling the longest
+    /// Maintains a dictionary of recycled entries as well as a queue (a LinkedList) which tracks what entries have sat in recycling the longest
     /// </summary>
     public class RecycledEntries<TEntryData, TKeyEntryData> where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
