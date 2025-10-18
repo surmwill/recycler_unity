@@ -29,10 +29,10 @@ namespace RecyclerScrollRect
 
         protected override string[] DemoButtonDescriptions => new[]
         {
-            "0: Inserts an entry at the end.",
-            "1: Deletes the entry at the end.",
-            $"2: Adds {NumEntriesInsertedAtMiddle} entries to the middle of wherever we are in the list.",
-            $"3: Deletes {NumEntriesDeletedBeforeMiddle + 1 + NumEntriesDeletedAfterMiddle} entries from the middle of wherever we are in the list.",
+            "0 (key 'A'): Inserts an entry at the end of the list.",
+            "1 (key 'D'): Deletes the first entry starting at the end of the visible window that is not currently in the process of being deleted.",
+            $"2 (keys 'M' and 'A'): Adds {NumEntriesInsertedAtMiddle} entries to the middle of the visible window.",
+            $"3 (keys 'M' and 'D'): Deletes {NumEntriesDeletedBeforeMiddle + 1 + NumEntriesDeletedAfterMiddle} entries from the middle of the visible window.",
         };
 
         protected override void Start()
@@ -43,16 +43,27 @@ namespace RecyclerScrollRect
 
         private void Update()
         {
-            int dataLength = _recycler.DataForEntries.Count;
+            // Inserts an entry at the end of the list
+            if ((!Input.GetKey(KeyCode.M) && Input.GetKeyDown(KeyCode.A)) || DemoToolbar.GetButtonDown(0))
+            {
+                _recycler.InsertAtIndex(_recycler.DataForEntries.Count, new PrettyInsertDeleteData(true, FixEntries.Below));
+                return;
+            }
+
+            if (!_recycler.ActiveEntriesWindow.VisibleIndexRange.HasValue)
+            {
+                return;
+            }
+            
             (int visibleStartIndex, int visibleEndIndex) = _recycler.ActiveEntriesWindow.VisibleIndexRange.Value;
             int middleEntryIndex = visibleStartIndex + (visibleEndIndex - visibleStartIndex + 1) / 2;
             
-            // Add entries at middle
+            // Add entries at middle of the visible window
             if ((Input.GetKey(KeyCode.M) && Input.GetKeyDown(KeyCode.A)) || DemoToolbar.GetButtonDown(2))
             {
                 _recycler.InsertRangeAtIndex(middleEntryIndex, PrettyInsertDeleteData.GenerateData(NumEntriesInsertedAtMiddle, true, FixEntries.Mid));  
             }
-            // Delete entries at middle
+            // Delete entries in the middle of the visible window 
             else if ((Input.GetKey(KeyCode.M) && Input.GetKeyDown(KeyCode.D)) || DemoToolbar.GetButtonDown(3))
             {
                 int startDeleteIndex = middleEntryIndex - NumEntriesDeletedBeforeMiddle;
@@ -64,12 +75,7 @@ namespace RecyclerScrollRect
                     entry.AnimateOutAndDelete(FixEntries.Mid);
                 }
             }
-            // Add entry at bottom
-            else if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
-            {
-                _recycler.InsertAtIndex(dataLength, new PrettyInsertDeleteData(true, FixEntries.Below));
-            }
-            // Delete entry at bottom
+            // Deletes the first entry starting at the end of the visible window that is not currently in the process of being deleted
             else if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(1))
             {
                 for (int i = visibleEndIndex; i >= visibleStartIndex; i--)

@@ -43,8 +43,8 @@ namespace RecyclerScrollRect
 
             if (entryData.AnimateIn)
             {
-                AnimateIn();
                 entryData.AnimateIn = false;
+                AnimateIn();
             }
         }
 
@@ -52,6 +52,8 @@ namespace RecyclerScrollRect
         {
             _animateInSequence?.Kill(true);
             _animateOutSequence?.Kill(true);
+            
+            RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(Data.AnimateIn ? 0f : Height);
         }
 
         private void AnimateIn()
@@ -59,7 +61,8 @@ namespace RecyclerScrollRect
             _backgroundGlow.fillAmount = 1f;
             _animateInSequence = DOTween.Sequence()
                 .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight, Data.AnimateInFixEntries), Height, AnimateInOutTime))
-                .Join(_backgroundGlow.DOFillAmount(0f, AnimateInOutTime));
+                .Join(_backgroundGlow.DOFillAmount(0f, AnimateInOutTime))
+                .OnKill(() => _animateInSequence = null);
         }
 
         /// <summary>
@@ -67,11 +70,11 @@ namespace RecyclerScrollRect
         /// </summary>
         public void AnimateOutAndDelete(FixEntries fixEntries)
         {
-            if (_animateOutSequence?.IsActive() ?? false)
+            if (IsDeleting)
             {
                 return;
             }
-            
+                
             _animateInSequence?.Kill(true);
             
             _background.color = AnimateOutColor;
@@ -80,7 +83,11 @@ namespace RecyclerScrollRect
             _animateOutSequence = DOTween.Sequence()
                 .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight, fixEntries), 0f, AnimateInOutTime))
                 .Join(_backgroundGlow.DOFillAmount(1f, AnimateInOutTime))
-                .OnKill(() => Recycler.RemoveAtIndex(Index));
+                .OnKill(() =>
+                {
+                    _animateOutSequence = null;
+                    Recycler.RemoveAtIndex(Index);
+                });
         }
 
         private void Update()
