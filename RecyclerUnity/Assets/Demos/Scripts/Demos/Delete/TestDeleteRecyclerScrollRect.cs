@@ -79,7 +79,7 @@ namespace Swill.Recycler.Demos
             else if ((Input.GetKeyDown(KeyCode.R) || DemoToolbar.GetButtonDown(3)) && activeEntriesRange.HasValue)
             {
                 int deletionIndex = Random.Range(activeEntriesRange.Value.Start, activeEntriesRange.Value.End);
-                Debug.Log($"Deleting at {deletionIndex}");
+                TestRecyclerEditorLogger.Log($"Deleting at {deletionIndex}");
                 _deleteRecycler.GetActiveEntryWithIndex<DeleteRecyclerEntry>(deletionIndex).ShrinkAndDelete();
             }
         }

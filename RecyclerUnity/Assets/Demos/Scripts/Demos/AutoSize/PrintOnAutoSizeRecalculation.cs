@@ -24,7 +24,8 @@ namespace Swill.Recycler.Demos
 
         public void CalculateLayoutInputHorizontal()
         {
-            Debug.Log($"CALCULATING LAYOUT FOR {gameObject.name} AT FRAME {Time.frameCount}");
+            // If this is being printed out every frame we have issues
+            TestRecyclerEditorLogger.Log($"CALCULATING LAYOUT FOR {gameObject.name} AT FRAME {Time.frameCount}");
         }
 
         public void CalculateLayoutInputVertical()

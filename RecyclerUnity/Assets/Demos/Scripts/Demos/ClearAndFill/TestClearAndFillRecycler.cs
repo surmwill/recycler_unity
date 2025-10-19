@@ -38,7 +38,11 @@ namespace Swill.Recycler.Demos
             }
             else if (Input.GetKeyDown(KeyCode.C) || DemoToolbar.GetButtonDown(2))
             {
+                #if UNITY_EDITOR
                 ClearAndCheck();
+                #else
+                _recycler.Clear();
+                #endif
             }
             else if (Input.GetKeyDown(KeyCode.R) || DemoToolbar.GetButtonDown(3))
             {
@@ -79,22 +83,19 @@ namespace Swill.Recycler.Demos
             // Ensure clearing resets us back to the recycler's initial state
             if (_recycler.DataForEntries.Any())
             {
-                Debug.LogError("The data is supposed to cleared, but there is still some present.");
-                Debug.Break();
+                TestRecyclerEditorLogger.LogErrorAndBreak("The data is supposed to cleared, but there is still some present");
                 return;
             }
 
             if (_entryKeyToCurrentIndex.Any())
             {
-                Debug.LogError("The data has been cleared. There should be no keys either.");
-                Debug.Break();
+                TestRecyclerEditorLogger.LogErrorAndBreak("The data has been cleared. There should be no keys either.");
                 return;
             }
 
             if (_recycler.ActiveEntries.Any())
             {
-                Debug.LogError($"The data has been cleared. We should not have any active entries.");
-                Debug.Break();
+                TestRecyclerEditorLogger.LogErrorAndBreak($"The data has been cleared. We should not have any active entries.");
                 return;
             }
             
@@ -105,44 +106,38 @@ namespace Swill.Recycler.Demos
                 _activeEntriesWindow.StartCacheIndexRange.HasValue || 
                 _activeEntriesWindow.EndCacheIndexRange.HasValue)
             {
-                Debug.LogError($"The data has been cleared and the window should not exist. There's no underlying data to have a window over.");
-                Debug.Break();
+                TestRecyclerEditorLogger.LogErrorAndBreak($"The data has been cleared and the window should not exist. There's no underlying data to have a window over.");
                 return;
             }
 
             if (_recycledEntries.Entries.Any())
             {
-                Debug.LogError($"After clearing, all entries should return to the pool unbound. There are still {_recycledEntries.Entries.Count} entries in the pool bound.");
-                Debug.Break();
+                TestRecyclerEditorLogger.LogErrorAndBreak($"After clearing, all entries should return to the pool unbound. There are still {_recycledEntries.Entries.Count} entries in the pool bound.");
                 return;
             }
 
             int numMissingUnboundEntries = numTargetUnboundEntries - _unboundEntries.Count;
             if (numMissingUnboundEntries != 0)
             {
-                Debug.LogError($"After clearing, all entries should return to the pool unbound. Missing {numMissingUnboundEntries} entries.");
-                Debug.Break();
+                TestRecyclerEditorLogger.LogErrorAndBreak($"After clearing, all entries should return to the pool unbound. Missing {numMissingUnboundEntries} entries.");
                 return;
             }
 
             if (_recycler.Endcap != null && _recycler.Endcap.gameObject.activeSelf)
             {
-                Debug.LogError("The data has been cleared. We expect an empty window and therefore the endcap should not be active.");
-                Debug.Break();
+                TestRecyclerEditorLogger.LogErrorAndBreak("The data has been cleared. We expect an empty window and therefore the endcap should not be active.");
                 return;
             }
 
             if (_currScrollingToIndex.HasValue || _scrollToIndexCoroutine != null)
             {
-                Debug.LogError("The data has been cleared. We should not be auto-scrolling to an index.");
-                Debug.Break();
+                TestRecyclerEditorLogger.LogErrorAndBreak("The data has been cleared. We should not be auto-scrolling to an index.");
                 return;
             }
 
             if (_recycler.content.pivot != _initPivot)
             {
-                Debug.LogError("After clearing, the pivot should be reset to whatever it was on initialization.");
-                Debug.Break();
+                TestRecyclerEditorLogger.LogErrorAndBreak("After clearing, the pivot should be reset to whatever it was on initialization.");
                 return;
             }
         }

@@ -13,6 +13,7 @@ namespace Swill.Recycler.Demos
 
         protected override void OnBind(EmptyRecyclerData _)
         {
+            // Empty
         }
 
         private void Update()
