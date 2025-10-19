@@ -17,8 +17,7 @@ namespace Swill.Recycler.Demos
         private readonly RectTransform _recyclerViewport;
         private readonly Canvas _rootCanvas;
 
-        private RecyclerPosition StartCachePosition =>
-            EndCachePosition == RecyclerPosition.Bot ? RecyclerPosition.Top : RecyclerPosition.Bot;
+        private RecyclerPosition StartCachePosition => EndCachePosition == RecyclerPosition.Bot ? RecyclerPosition.Top : RecyclerPosition.Bot;
 
         private RecyclerPosition EndCachePosition => _recycler.AppendTo;
 
