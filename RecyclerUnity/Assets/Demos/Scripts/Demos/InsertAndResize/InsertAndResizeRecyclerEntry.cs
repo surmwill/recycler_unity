@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Recycler entry for demoing inserting and resizing entries
     /// </summary>
-    public class InsertAndResizeRecyclerEntry : RecyclerScrollRectEntry<InsertAndResizeData, string>
+    public class InsertAndResizeRecyclerEntry : RecyclerScrollRectEntry<string, InsertAndResizeData>
     {
         [SerializeField]
         private CanvasGroup _displayNumber = null;

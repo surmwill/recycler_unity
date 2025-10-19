@@ -5,7 +5,7 @@ namespace Swill.Recycler
     /// <summary>
     /// The endcap to a recycler: an entry different than all the others, appearing at the very end of the content.
     /// </summary>
-    public abstract class RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> : MonoBehaviour where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
+    public abstract class RecyclerScrollRectEndcap<TKeyEntryData, TEntryData> : MonoBehaviour where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         /// <summary>
         /// The endcap's RectTransform.
@@ -20,12 +20,12 @@ namespace Swill.Recycler
         /// <summary>
         /// The Recycler this endcap is a part of.
         /// </summary>
-        protected RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; private set; }
+        protected RecyclerScrollRect<TKeyEntryData, TEntryData> Recycler { get; private set; }
 
         protected virtual void Awake()
         {
             RectTransform = (RectTransform) transform;
-            Recycler = GetComponentInParent<RecyclerScrollRect<TEntryData, TKeyEntryData>>();
+            Recycler = GetComponentInParent<RecyclerScrollRect<TKeyEntryData, TEntryData>>();
         }
 
         /// <summary>

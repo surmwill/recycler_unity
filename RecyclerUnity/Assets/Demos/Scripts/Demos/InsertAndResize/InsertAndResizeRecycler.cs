@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Swill.Recycler.Demos
 {
-    public class InsertAndResizeRecycler : RecyclerScrollRect<InsertAndResizeData, string>
+    public class InsertAndResizeRecycler : RecyclerScrollRect<string, InsertAndResizeData>
     {
 
     }

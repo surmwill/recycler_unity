@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Recycler entry used to demo scrolling to an index
     /// </summary>
-    public class ScrollToIndexRecyclerScrollRectEntry : RecyclerScrollRectEntry<ScrollToIndexData, string>
+    public class ScrollToIndexRecyclerScrollRectEntry : RecyclerScrollRectEntry<string, ScrollToIndexData>
     {
         [SerializeField]
         private Text _numberText = null;

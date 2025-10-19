@@ -8,7 +8,7 @@ namespace Swill.Recycler.Demos
     /// Endcap to test inspector options.
     /// (Swapping endcap prefab and ensuring endcap is switching.)
     /// </summary>
-    public class InspectorEndcapOne : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
+    public class InspectorEndcapOne : RecyclerScrollRectEndcap<string, EmptyRecyclerData>
     {
     }
 }

@@ -6,7 +6,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Recycler entry for demoing appending
     /// </summary>
-    public class AppendPrependEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
+    public class AppendPrependEntry : RecyclerScrollRectEntry<string, EmptyRecyclerData>
     {
         [SerializeField]
         private Text _indexText = null;

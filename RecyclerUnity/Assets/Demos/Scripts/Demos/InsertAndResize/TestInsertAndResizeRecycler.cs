@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Tests inserting entries into the recycler.
     /// </summary>
-    public class TestInsertAndResizeRecycler : TestRecycler<InsertAndResizeData, string>
+    public class TestInsertAndResizeRecycler : TestRecycler<string, InsertAndResizeData>
     {
         [SerializeField]
         private InsertAndResizeRecycler _recycler = null;
@@ -17,7 +17,7 @@ namespace Swill.Recycler.Demos
         private const int NumInsertionEntries = 3;
         private const int MoreThanFullScreenNumEntries = 20;
 
-        protected override RecyclerScrollRect<InsertAndResizeData, string> ValidateRecycler => _recycler;
+        protected override RecyclerScrollRect<string, InsertAndResizeData> ValidateRecycler => _recycler;
 
         protected override string DemoTitle => "Insert and resize demo";
 
@@ -31,7 +31,7 @@ namespace Swill.Recycler.Demos
             $"3 (key 'R'): Inserts and grows an entry into a random active index."
         };
 
-        private IRecyclerScrollRectActiveEntriesWindow<InsertAndResizeData, string> _activeEntriesWindow;
+        private IRecyclerScrollRectActiveEntriesWindow<string, InsertAndResizeData> _activeEntriesWindow;
 
         protected override void Start()
         {

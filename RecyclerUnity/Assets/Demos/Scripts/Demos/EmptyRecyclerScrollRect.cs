@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Recycler passed empty data, for when we want to test simple things
     /// </summary>
-    public class EmptyRecyclerScrollRect : RecyclerScrollRect<EmptyRecyclerData, string>
+    public class EmptyRecyclerScrollRect : RecyclerScrollRect<string, EmptyRecyclerData>
     {
 
     }

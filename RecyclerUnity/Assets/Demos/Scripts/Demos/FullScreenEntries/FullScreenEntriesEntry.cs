@@ -6,7 +6,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Entry for testing a recycler with full screen entries and endcap.
     /// </summary>
-    public class FullScreenEntriesEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
+    public class FullScreenEntriesEntry : RecyclerScrollRectEntry<string, EmptyRecyclerData>
     {
         [SerializeField]
         private Text _indexText = null;

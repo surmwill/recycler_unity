@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Recycler entry to test if we can handle auto-sized entries.
     /// </summary>
-    public class AutoSizeEntry : RecyclerScrollRectEntry<AutoSizeData, string>
+    public class AutoSizeEntry : RecyclerScrollRectEntry<string, AutoSizeData>
     {
         [SerializeField]
         private Text _titleText = null;

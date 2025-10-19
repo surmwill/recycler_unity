@@ -8,7 +8,7 @@ namespace Swill.Recycler.Demos
     /// Entry to test inspector options.
     /// (Swapping entry prefab and ensuring pool is regenerated.)
     /// </summary>
-    public class InspectorEntryOne : RecyclerScrollRectEntry<EmptyRecyclerData, string>
+    public class InspectorEntryOne : RecyclerScrollRectEntry<string, EmptyRecyclerData>
     {
         protected override void OnBind(EmptyRecyclerData entryData)
         {

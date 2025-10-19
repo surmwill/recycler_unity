@@ -6,7 +6,7 @@ namespace Swill.Recycler.Demos
     /// Tests the recycler for animating an entry in on insertion/deletion.
     /// While there are already demos for insertion and deletion, this one is more polished and suitable for videos.
     /// </summary>
-    public class TestPrettyInsertDeleteRecycler : TestRecycler<PrettyInsertDeleteData, string>
+    public class TestPrettyInsertDeleteRecycler : TestRecycler<string, PrettyInsertDeleteData>
     {
         [SerializeField]
         private PrettyInsertDeleteRecycler _recycler = null;
@@ -17,9 +17,9 @@ namespace Swill.Recycler.Demos
         private const int NumEntriesDeletedBeforeMiddle = 2;
         private const int NumEntriesDeletedAfterMiddle = 1;
 
-        private RecyclerValidityChecker<PrettyInsertDeleteData, string> _validityChecker;
+        private RecyclerValidityChecker<string, PrettyInsertDeleteData> _validityChecker;
 
-        protected override RecyclerScrollRect<PrettyInsertDeleteData, string> ValidateRecycler => _recycler;
+        protected override RecyclerScrollRect<string, PrettyInsertDeleteData> ValidateRecycler => _recycler;
 
         protected override string DemoTitle => "Pretty insertion and deletion demo";
 

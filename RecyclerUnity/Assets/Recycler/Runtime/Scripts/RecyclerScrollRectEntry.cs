@@ -6,7 +6,7 @@ namespace Swill.Recycler
     /// Base class for all entries displayed in the recycler. Contains overridable lifecycle methods to customize their behaviour.
     /// </summary>
     [RequireComponent(typeof(RectTransform))]
-    public abstract class RecyclerScrollRectEntry<TEntryData, TKeyEntryData> : MonoBehaviour where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
+    public abstract class RecyclerScrollRectEntry<TKeyEntryData, TEntryData> : MonoBehaviour where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         private static int UidGameObjectCounter = 0;
         
@@ -33,7 +33,7 @@ namespace Swill.Recycler
         /// <summary>
         /// The recycler this is entry is a part of.
         /// </summary>
-        public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; private set; }
+        public RecyclerScrollRect<TKeyEntryData, TEntryData> Recycler { get; private set; }
         
         /// <summary>
         /// A unique id representing the GameObject this entry lives on.
@@ -49,7 +49,7 @@ namespace Swill.Recycler
         {
             UidGameObject = UidGameObjectCounter++;
             RectTransform = (RectTransform) transform;
-            Recycler = GetComponentInParent<RecyclerScrollRect<TEntryData, TKeyEntryData>>();
+            Recycler = GetComponentInParent<RecyclerScrollRect<TKeyEntryData, TEntryData>>();
             UnbindIndex();
         }
         

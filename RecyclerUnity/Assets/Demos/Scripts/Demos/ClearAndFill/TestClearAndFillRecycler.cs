@@ -7,12 +7,12 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Tests clearing and adding entries to a recycler, one-by-one
     /// </summary>
-    public class TestClearAndFillRecycler : TestRecycler<EmptyRecyclerData, string>
+    public class TestClearAndFillRecycler : TestRecycler<string, EmptyRecyclerData>
     {
         [SerializeField]
         private EmptyRecyclerScrollRect _recycler = null;
 
-        protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _recycler;
+        protected override RecyclerScrollRect<string, EmptyRecyclerData> ValidateRecycler => _recycler;
 
         protected override string DemoTitle => "Clear and fill demo";
 
@@ -53,21 +53,21 @@ namespace Swill.Recycler.Demos
         private void ClearAndCheck()
         {
             // Private fields in the RecyclerScrollRect that we'd like access here for testing purposes, matching their name 1-to-1
-            RecycledEntries<EmptyRecyclerData, string> _recycledEntries = null;
-            Queue<RecyclerScrollRectEntry<EmptyRecyclerData, string>> _unboundEntries = null;
+            RecycledEntries<string, EmptyRecyclerData> _recycledEntries = null;
+            Queue<RecyclerScrollRectEntry<string, EmptyRecyclerData>> _unboundEntries = null;
             
             Dictionary<string, int> _entryKeyToCurrentIndex = null;
-            RecyclerScrollRectActiveEntriesWindow<EmptyRecyclerData, string> _activeEntriesWindow = null;
+            RecyclerScrollRectActiveEntriesWindow<string, EmptyRecyclerData> _activeEntriesWindow = null;
             
             int? _currScrollingToIndex = null;
             Coroutine _scrollToIndexCoroutine = null;
             Vector2 _initPivot = default;
             
-            _recycledEntries = GetRecyclerPrivateFieldValue<RecycledEntries<EmptyRecyclerData, string>>(nameof(_recycledEntries));
-            _unboundEntries = GetRecyclerPrivateFieldValue<Queue<RecyclerScrollRectEntry<EmptyRecyclerData, string>>>(nameof(_unboundEntries));
+            _recycledEntries = GetRecyclerPrivateFieldValue<RecycledEntries<string, EmptyRecyclerData>>(nameof(_recycledEntries));
+            _unboundEntries = GetRecyclerPrivateFieldValue<Queue<RecyclerScrollRectEntry<string, EmptyRecyclerData>>>(nameof(_unboundEntries));
             
             _entryKeyToCurrentIndex = GetRecyclerPrivateFieldValue<Dictionary<string, int>>(nameof(_entryKeyToCurrentIndex));
-            _activeEntriesWindow = GetRecyclerPrivateFieldValue<RecyclerScrollRectActiveEntriesWindow<EmptyRecyclerData, string>>(nameof(_activeEntriesWindow));
+            _activeEntriesWindow = GetRecyclerPrivateFieldValue<RecyclerScrollRectActiveEntriesWindow<string, EmptyRecyclerData>>(nameof(_activeEntriesWindow));
             
             _currScrollingToIndex = GetRecyclerPrivateFieldValue<int?>(nameof(_currScrollingToIndex));
             _scrollToIndexCoroutine = GetRecyclerPrivateFieldValue<Coroutine>(nameof(_scrollToIndexCoroutine));

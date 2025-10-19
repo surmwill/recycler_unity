@@ -5,10 +5,10 @@ namespace Swill.Recycler
     /// <summary>
     /// Maintains a dictionary of recycled entries as well as a queue (a LinkedList) which tracks what entries have sat in recycling the longest
     /// </summary>
-    public class RecycledEntries<TEntryData, TKeyEntryData> where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
+    public class RecycledEntries<TKeyEntryData, TEntryData> where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         // The entries in the recycling pool, placed in a dictionary for quick lookup.
-        private Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _entries = new();
+        private Dictionary<int, RecyclerScrollRectEntry<TKeyEntryData, TEntryData>> _entries = new();
 
         // The entries (their indices) in the recycling pool, sorted front-to-back by whatever entry has been in the pool the longest.
         private readonly LinkedList<int> _entryQueue = new();
@@ -19,13 +19,13 @@ namespace Swill.Recycler
         /// <summary>
         /// The recycled entries; the key is their index.
         /// </summary>
-        public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> Entries => _entries;
+        public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TKeyEntryData, TEntryData>> Entries => _entries;
 
         /// <summary>
         /// Adds an entry to the recycling pool.
         /// </summary>
         /// <param name="entry"> The entry to add to the recycling pool. </param>
-        public void Add(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
+        public void Add(RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry)
         {
             int index = entry.Index;
             
@@ -65,10 +65,10 @@ namespace Swill.Recycler
         /// <param name="shiftAmount"> The amount to shift each index. </param>
         public void ShiftIndices(int startIndex, int shiftAmount)
         {
-            Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> shiftedEntries = new();
+            Dictionary<int, RecyclerScrollRectEntry<TKeyEntryData, TEntryData>> shiftedEntries = new();
             Dictionary<int, LinkedListNode<int>> shiftedQueuePositions = new();
             
-            foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> recycledEntry) in _entries)
+            foreach ((int index, RecyclerScrollRectEntry<TKeyEntryData, TEntryData> recycledEntry) in _entries)
             {
                 int shiftedIndex = index + (index >= startIndex ? shiftAmount : 0);
                 LinkedListNode<int> shiftedIndexInQueue = _entryIndexToQueuePosition[index];
@@ -91,7 +91,7 @@ namespace Swill.Recycler
         /// Returns the entry that has sat in the recycling pool the longest.
         /// </summary>
         /// <returns> The entry that has sat in the recycling pool the longest. </returns>
-        public RecyclerScrollRectEntry<TEntryData, TKeyEntryData> GetOldestEntry()
+        public RecyclerScrollRectEntry<TKeyEntryData, TEntryData> GetOldestEntry()
         {
             int oldestIndex = _entryQueue.First.Value;
             return _entries[oldestIndex];

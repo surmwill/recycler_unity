@@ -6,7 +6,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Recycler endcap to test if we can handle auto-sized endcaps
     /// </summary>
-    public class AutoSizeEndcap : RecyclerScrollRectEndcap<AutoSizeData, string>
+    public class AutoSizeEndcap : RecyclerScrollRectEndcap<string, AutoSizeData>
     {
         private const int GrowShrinkAmount = 200;
         private const int MinLayoutGroupHeight = 100;

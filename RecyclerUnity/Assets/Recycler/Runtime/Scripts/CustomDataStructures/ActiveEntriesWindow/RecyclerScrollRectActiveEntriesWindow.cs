@@ -8,13 +8,13 @@ namespace Swill.Recycler
     /// <summary>
     /// Represents a sliding range of entry indices currently active in the recycler: visible or cached. 
     /// </summary>
-    public class RecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> : IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> 
+    public class RecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> : IRecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> 
         where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         /// <summary>
         /// The recycler associated with the window
         /// </summary>
-        public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get;  }
+        public RecyclerScrollRect<TKeyEntryData, TEntryData> Recycler { get;  }
         
         /// <summary>
         /// Returns true if the window exists, that is, we have some underlying recycler data to have a window over in the first place.
@@ -247,7 +247,7 @@ namespace Swill.Recycler
                 $"End Cache Range: {(!EndCacheIndexRange.HasValue ? "[]" : $"[{EndCacheIndexRange.Value.Start},{EndCacheIndexRange.Value.End}]")}";
         }
 
-        public RecyclerScrollRectActiveEntriesWindow(RecyclerScrollRect<TEntryData, TKeyEntryData> recycler, int numCached)
+        public RecyclerScrollRectActiveEntriesWindow(RecyclerScrollRect<TKeyEntryData, TEntryData> recycler, int numCached)
         {
             Recycler = recycler;
             _numCached = numCached;

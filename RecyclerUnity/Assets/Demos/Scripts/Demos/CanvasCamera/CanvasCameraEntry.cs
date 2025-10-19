@@ -6,7 +6,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Tests that our recycler works with a Screen Space - Camera canvas
     /// </summary>
-    public class CanvasCameraEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
+    public class CanvasCameraEntry : RecyclerScrollRectEntry<string, EmptyRecyclerData>
     {
         [SerializeField]
         private Text _indexText = null;

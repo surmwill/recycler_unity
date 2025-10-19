@@ -5,14 +5,14 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Tests resizing of the endcap
     /// </summary>
-    public class TestEndcapResizeRecycler : TestRecycler<EmptyRecyclerData, string>
+    public class TestEndcapResizeRecycler : TestRecycler<string, EmptyRecyclerData>
     {
         [SerializeField]
         private EmptyRecyclerScrollRect _recycler = null;
 
         private const int NumEntries = 30;
 
-        protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _recycler;
+        protected override RecyclerScrollRect<string, EmptyRecyclerData> ValidateRecycler => _recycler;
 
         protected override string DemoTitle => "Endcap resizing demo";
 

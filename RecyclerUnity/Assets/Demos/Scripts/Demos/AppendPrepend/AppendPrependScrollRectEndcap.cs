@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Endcap to demo appending to a recycler
     /// </summary>
-    public class AppendPrependScrollRectEndcap : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
+    public class AppendPrependScrollRectEndcap : RecyclerScrollRectEndcap<string, EmptyRecyclerData>
     {
         [SerializeField]
         private Text _titleText = null;

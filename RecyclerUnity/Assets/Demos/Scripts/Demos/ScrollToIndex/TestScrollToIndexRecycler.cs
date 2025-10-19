@@ -6,7 +6,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Demos scrolling to an index in a recycler
     /// </summary>
-    public class TestScrollToIndexRecycler : TestRecycler<ScrollToIndexData, string>
+    public class TestScrollToIndexRecycler : TestRecycler<string, ScrollToIndexData>
     {
         [SerializeField]
         private ScrollToIndexRecyclerScrollRect _recycler = null;
@@ -20,7 +20,7 @@ namespace Swill.Recycler.Demos
         private const float NormalScrollSpeed = 2.5f;
         private const float ScrollWhileGrowShrinkingSpeed = 0.5f;
         
-        protected override RecyclerScrollRect<ScrollToIndexData, string> ValidateRecycler => _recycler;
+        protected override RecyclerScrollRect<string, ScrollToIndexData> ValidateRecycler => _recycler;
 
         protected override string DemoTitle => "Scroll to index demo";
 
@@ -46,7 +46,7 @@ namespace Swill.Recycler.Demos
             $"11 (key 'V'): Toggles the middle indicator on/off to know if we've properly centered on an index."
         };
 
-        private IRecyclerScrollRectActiveEntriesWindow<ScrollToIndexData, string> _window;
+        private IRecyclerScrollRectActiveEntriesWindow<string, ScrollToIndexData> _window;
 
         protected override void Start()
         {

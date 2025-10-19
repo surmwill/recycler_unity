@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Recycler to demo scrolling to an index
     /// </summary>
-    public class ScrollToIndexRecyclerScrollRect : RecyclerScrollRect<ScrollToIndexData, string>
+    public class ScrollToIndexRecyclerScrollRect : RecyclerScrollRect<string, ScrollToIndexData>
     {
     }
 }

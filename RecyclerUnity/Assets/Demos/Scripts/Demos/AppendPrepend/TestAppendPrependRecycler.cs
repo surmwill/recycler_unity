@@ -6,7 +6,7 @@ namespace Swill.Recycler.Demos
    /// Demos appending and prepending entries to a Recycler.
    /// The endcap will fetch and append more entries once we scroll to it.
    /// </summary>
-   public class TestAppendPrependRecycler : TestRecycler<EmptyRecyclerData, string>
+   public class TestAppendPrependRecycler : TestRecycler<string, EmptyRecyclerData>
    {
       [SerializeField]
       private EmptyRecyclerScrollRect _appendRecycler = null;
@@ -15,7 +15,7 @@ namespace Swill.Recycler.Demos
       
       private const int InitEntries = 30;
 
-      protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _appendRecycler;
+      protected override RecyclerScrollRect<string, EmptyRecyclerData> ValidateRecycler => _appendRecycler;
 
       protected override string DemoTitle => "Append and Prepend Demo";
       

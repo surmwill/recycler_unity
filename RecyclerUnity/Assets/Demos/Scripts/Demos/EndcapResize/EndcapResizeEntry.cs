@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Recycler entry for demoing resizing the endcap
     /// </summary>
-    public class EndcapResizeEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
+    public class EndcapResizeEntry : RecyclerScrollRectEntry<string, EmptyRecyclerData>
     {
         [SerializeField]
         private Text _numberText = null;

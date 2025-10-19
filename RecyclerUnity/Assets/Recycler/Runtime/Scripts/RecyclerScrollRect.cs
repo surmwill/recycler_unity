@@ -46,7 +46,7 @@ namespace Swill.Recycler
     ///
     /// See full documentation at: https://github.com/surmwill/recycler_unity
     /// </summary>
-    public abstract partial class RecyclerScrollRect<TEntryData, TKeyEntryData> : ScrollRectWithDragSensitivity, IPointerDownHandler, IPointerUpHandler 
+    public abstract partial class RecyclerScrollRect<TKeyEntryData, TEntryData> : ScrollRectWithDragSensitivity, IPointerDownHandler, IPointerUpHandler 
         where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         private const float DefaultScrollSpeedViewportsPerSecond = 1f;
@@ -55,7 +55,7 @@ namespace Swill.Recycler
         [Header("Recycler")]
         [Tooltip("The prefab which your data gets bound to.")]
         [SerializeField]
-        private RecyclerScrollRectEntry<TEntryData, TKeyEntryData> _recyclerEntryPrefab = null;
+        private RecyclerScrollRectEntry<TKeyEntryData, TEntryData> _recyclerEntryPrefab = null;
 
         [Tooltip("The number of cached entries waiting just above and just below the visible entries to smoothly scroll into.")]
         [SerializeField]
@@ -77,7 +77,7 @@ namespace Swill.Recycler
         [Header("Endcap (optional)")]
         [Tooltip("The endcap which gets appended at the very end of your entries.")]
         [SerializeField]
-        private RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> _endcapPrefab = null;
+        private RecyclerScrollRectEndcap<TKeyEntryData, TEntryData> _endcapPrefab = null;
 
         [Tooltip("The transform under which the endcap waits to become an active part of the entry list.")]
         [SerializeField]
@@ -86,7 +86,7 @@ namespace Swill.Recycler
         [Tooltip("A reference to the endcap itself. Read-only and created when the endcap prefab gets serialized.")]
         [ReadOnly]
         [SerializeField]
-        private RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> _endcap = null;
+        private RecyclerScrollRectEndcap<TKeyEntryData, TEntryData> _endcap = null;
 
         [Header("Extra")]
         [Tooltip("On mobile, the target frame rate is often lower than technically possible to preserve battery, but a higher frame rate will result in smoother scrolling.")]
@@ -108,17 +108,17 @@ namespace Swill.Recycler
         /// <summary>
         /// The currently active entries: visible and cached. The key is their index. 
         /// </summary>
-        public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> ActiveEntries => _activeEntries;
+        public IReadOnlyDictionary<int, RecyclerScrollRectEntry<TKeyEntryData, TEntryData>> ActiveEntries => _activeEntries;
 
         /// <summary>
         /// Contains information about the current index ranges of active entries.
         /// </summary>
-        public IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> ActiveEntriesWindow => _activeEntriesWindow;
+        public IRecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> ActiveEntriesWindow => _activeEntriesWindow;
 
         /// <summary>
         /// A reference to the endcap - if it exists.
         /// </summary>
-        public RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> Endcap => _endcap;
+        public RecyclerScrollRectEndcap<TKeyEntryData, TEntryData> Endcap => _endcap;
 
         /// <summary>
         /// The position in the recycler that appended entries are added to.
@@ -136,14 +136,14 @@ namespace Swill.Recycler
         private readonly List<TEntryData> _dataForEntries = new();
         private readonly Dictionary<TKeyEntryData, int> _entryKeyToCurrentIndex = new();
 
-        private readonly Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _activeEntries = new();
-        private readonly RecycledEntries<TEntryData, TKeyEntryData> _recycledEntries = new();
-        private readonly Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _unboundEntries = new();
+        private readonly Dictionary<int, RecyclerScrollRectEntry<TKeyEntryData, TEntryData>> _activeEntries = new();
+        private readonly RecycledEntries<TKeyEntryData, TEntryData> _recycledEntries = new();
+        private readonly Queue<RecyclerScrollRectEntry<TKeyEntryData, TEntryData>> _unboundEntries = new();
         
         private readonly Dictionary<int, Behaviour[]> _entryGameObjectLayoutBehaviours = new();
         private Behaviour[] _endcapLayoutBehaviours;
 
-        private RecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> _activeEntriesWindow;
+        private RecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> _activeEntriesWindow;
 
         private DrivenRectTransformTracker _tracker;
         private Vector2 _initPivot;
@@ -191,10 +191,10 @@ namespace Swill.Recycler
             _rootCanvas = _rootCanvas.rootCanvas;
 
             // Keeps track of what indices are visible, and subsequently which indices are cached
-            _activeEntriesWindow = new RecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData>(this, _numCachedAtEachEnd);
+            _activeEntriesWindow = new RecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData>(this, _numCachedAtEachEnd);
 
             // All the entries in the pool are initially unbound
-            RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = null;
+            RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry = null;
             foreach (Transform _ in _poolParent.Children().Where(t => t.TryGetComponent(out entry)))
             {
                 _unboundEntries.Enqueue(entry);
@@ -338,7 +338,7 @@ namespace Swill.Recycler
             }
 
             // Unbind the entry in recycling
-            if (_recycledEntries.Entries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
+            if (_recycledEntries.Entries.TryGetValue(index, out RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry))
             {
                 entry.UnbindIndex();
                 _recycledEntries.Remove(index);
@@ -438,9 +438,9 @@ namespace Swill.Recycler
         private void ShiftIndices(int startIndex, int shiftAmount)
         {
             // Shift our active entries
-            Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> shiftedActiveEntries = new();
+            Dictionary<int, RecyclerScrollRectEntry<TKeyEntryData, TEntryData>> shiftedActiveEntries = new();
 
-            foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry) in _activeEntries)
+            foreach ((int index, RecyclerScrollRectEntry<TKeyEntryData, TEntryData> activeEntry) in _activeEntries)
             {
                 int shiftedIndex = index + (index >= startIndex ? shiftAmount : 0);
                 if (shiftedIndex != index)
@@ -452,7 +452,7 @@ namespace Swill.Recycler
             }
             
             _activeEntries.Clear();
-            foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> shiftedActiveEntry) in shiftedActiveEntries)
+            foreach ((int index, RecyclerScrollRectEntry<TKeyEntryData, TEntryData> shiftedActiveEntry) in shiftedActiveEntries)
             {
                 _activeEntries[index] = shiftedActiveEntry;
             }
@@ -527,7 +527,7 @@ namespace Swill.Recycler
             {
                 // Determine what entries need to be removed (offscreen and too far away to belong in the caches)
                 _toRecycleEntries.Clear();
-                foreach ((int index, RecyclerScrollRectEntry<TEntryData, TKeyEntryData> _) in _activeEntries)
+                foreach ((int index, RecyclerScrollRectEntry<TKeyEntryData, TEntryData> _) in _activeEntries)
                 {
                     if (!_activeEntriesWindow.Contains(index))
                     {
@@ -540,7 +540,7 @@ namespace Swill.Recycler
                 while (current != null)
                 {
                     _toRecycleEntries.RemoveFirst();
-                    RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = _activeEntries[current.Value];
+                    RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry = _activeEntries[current.Value];
                     SendToRecycling(_activeEntries[current.Value]);
                     current = _toRecycleEntries.First;
                 }
@@ -689,7 +689,7 @@ namespace Swill.Recycler
 
         private void CreateAndAddEntry(int dataIndex, int siblingIndex, FixEntries fixEntries = FixEntries.Below)
         {
-            if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
+            if (!TryFetchFromRecycling(dataIndex, out RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry))
             {
                 entry = Instantiate(_recyclerEntryPrefab, content);
             }
@@ -719,7 +719,7 @@ namespace Swill.Recycler
         /// </summary>
         private void UpdateVisibility()
         {
-            foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _activeEntries.Values)
+            foreach (RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry in _activeEntries.Values)
             {
                 bool isVisible = IsInViewport(entry.RectTransform, viewport, _rootCanvas.worldCamera);
                 if (isVisible)
@@ -733,7 +733,7 @@ namespace Swill.Recycler
             }
 
             // Visible
-            void EntryIsVisible(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
+            void EntryIsVisible(RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry)
             {
                 int entryIndex = entry.Index;
 
@@ -761,7 +761,7 @@ namespace Swill.Recycler
             }
 
             // Not visible
-            void EntryIsNotVisible(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
+            void EntryIsNotVisible(RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry)
             {
                 if (!_activeEntriesWindow.VisibleIndexRange.HasValue)
                 {
@@ -841,13 +841,13 @@ namespace Swill.Recycler
             _entryKeyToCurrentIndex.Clear();
 
             // Recycle all the entries
-            foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _activeEntries.Values.ToList())
+            foreach (RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry in _activeEntries.Values.ToList())
             {
                 SendToRecycling(entry);
             }
 
             // Unbind everything
-            foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _recycledEntries.Entries.Values.ToList())
+            foreach (RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry in _recycledEntries.Entries.Values.ToList())
             {
                 _recycledEntries.Remove(entry.Index);
                 entry.UnbindIndex();
@@ -873,7 +873,7 @@ namespace Swill.Recycler
             StopMovement();
         }
 
-        private void SendToRecycling(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, FixEntries fixEntries = FixEntries.Below)
+        private void SendToRecycling(RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry, FixEntries fixEntries = FixEntries.Below)
         {
             // Handle the GameObject
             RectTransform entryTransform = entry.RectTransform;
@@ -890,7 +890,7 @@ namespace Swill.Recycler
             entry.Recycle();
         }
 
-        private bool TryFetchFromRecycling(int entryIndex, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
+        private bool TryFetchFromRecycling(int entryIndex, out RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry)
         {
             entry = null;
 
@@ -906,7 +906,7 @@ namespace Swill.Recycler
             // Then try and use the bound entry in recycling that's been there the longest
             else if (_recycledEntries.Entries.Any())
             {
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> firstEntry = _recycledEntries.GetOldestEntry();
+                RecyclerScrollRectEntry<TKeyEntryData, TEntryData> firstEntry = _recycledEntries.GetOldestEntry();
                 entry = firstEntry;
                 _recycledEntries.Remove(firstEntry.Index);
             }
@@ -1028,7 +1028,7 @@ namespace Swill.Recycler
         /// This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will
         /// be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
-        public void RecalculateEntryHeight(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, float? newHeight, FixEntries fixEntries = FixEntries.Below)
+        public void RecalculateEntryHeight(RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry, float? newHeight, FixEntries fixEntries = FixEntries.Below)
         {
             if (_activeEntries.ContainsKey(entry.Index))
             {
@@ -1316,14 +1316,14 @@ namespace Swill.Recycler
             StopScrollToIndexCoroutine();
             
             // If the entry's already active, then scroll to it
-            if (_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
+            if (_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry))
             {
                ScrollToActiveEntry(entry);
                return;
             }
             
             // Otherwise clear and fill up a new window, centering on the entry
-            foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry in _activeEntries.Values.ToList())
+            foreach (RecyclerScrollRectEntry<TKeyEntryData, TEntryData> activeEntry in _activeEntries.Values.ToList())
             {
                 SendToRecycling(activeEntry);
             }
@@ -1339,7 +1339,7 @@ namespace Swill.Recycler
             RecalculateActiveEntries();
             ScrollToActiveEntry(_activeEntries[index]);
 
-            void ScrollToActiveEntry(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry)
+            void ScrollToActiveEntry(RecyclerScrollRectEntry<TKeyEntryData, TEntryData> activeEntry)
             {
                 for (;;)
                 {
@@ -1510,7 +1510,7 @@ namespace Swill.Recycler
         /// </summary>
         /// <typeparam name="TEndcap"> The type of the endcap </typeparam>
         /// <returns> The endcap </returns>
-        public TEndcap GetEndcap<TEndcap>() where TEndcap : RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>
+        public TEndcap GetEndcap<TEndcap>() where TEndcap : RecyclerScrollRectEndcap<TKeyEntryData, TEntryData>
         {
             return Endcap as TEndcap;
         }
@@ -1522,9 +1522,9 @@ namespace Swill.Recycler
         /// <typeparam name="TEntry"> The type of your entry </typeparam>
         /// <exception cref="ArgumentException"> There is no active entry with the given index </exception>
         /// <returns> The active entry with the given index </returns>
-        public TEntry GetActiveEntryWithIndex<TEntry>(int index) where TEntry : RecyclerScrollRectEntry<TEntryData, TKeyEntryData>
+        public TEntry GetActiveEntryWithIndex<TEntry>(int index) where TEntry : RecyclerScrollRectEntry<TKeyEntryData, TEntryData>
         {
-            if (!_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
+            if (!_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry))
             {
                 throw new ArgumentException($"There is no active entry with index: {index}");
             }
@@ -1538,9 +1538,9 @@ namespace Swill.Recycler
         /// <typeparam name="TEntry"> The type of your entry </typeparam>
         /// <exception cref="ArgumentException"> There is no active entry with the given key </exception>
         /// <returns> The active entry with the given key </returns>
-        public TEntry GetActiveEntryWithKey<TEntry>(TKeyEntryData key) where TEntry : RecyclerScrollRectEntry<TEntryData, TKeyEntryData>
+        public TEntry GetActiveEntryWithKey<TEntry>(TKeyEntryData key) where TEntry : RecyclerScrollRectEntry<TKeyEntryData, TEntryData>
         {
-            if (!_entryKeyToCurrentIndex.TryGetValue(key, out int index) || !_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
+            if (!_entryKeyToCurrentIndex.TryGetValue(key, out int index) || !_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry))
             {
                 throw new ArgumentException($"There is no active entry with key: {key}");
             }
@@ -1554,10 +1554,10 @@ namespace Swill.Recycler
         /// <param name="activeEntry"> The active entry, or null if it is not currently active </param>
         /// <typeparam name="TEntry"> The type of your entry </typeparam>
         /// <returns> Whether the entry with the given index is currently active in the recycler </returns>
-        public bool TryGetActiveEntryWithIndex<TEntry>(int index, out TEntry activeEntry) where TEntry : RecyclerScrollRectEntry<TEntryData, TKeyEntryData>
+        public bool TryGetActiveEntryWithIndex<TEntry>(int index, out TEntry activeEntry) where TEntry : RecyclerScrollRectEntry<TKeyEntryData, TEntryData>
         {
             activeEntry = null;
-            if (!_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry))
+            if (!_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry))
             {
                 return false;
             }
@@ -1572,7 +1572,7 @@ namespace Swill.Recycler
         /// <param name="key"> The key of the entry </param>
         /// <param name="activeEntry"> The active entry, or null if it is not currently active </param>
         /// <returns> Whether the entry with the given index is currently active in the recycler </returns>
-        public bool TryGetActiveEntryWithKey<TEntry>(TKeyEntryData key, out TEntry activeEntry) where TEntry : RecyclerScrollRectEntry<TEntryData, TKeyEntryData>
+        public bool TryGetActiveEntryWithKey<TEntry>(TKeyEntryData key, out TEntry activeEntry) where TEntry : RecyclerScrollRectEntry<TKeyEntryData, TEntryData>
         {
             return TryGetActiveEntryWithIndex(_entryKeyToCurrentIndex[key], out activeEntry);
         }

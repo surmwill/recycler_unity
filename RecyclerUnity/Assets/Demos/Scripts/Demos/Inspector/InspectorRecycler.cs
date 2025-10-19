@@ -12,7 +12,7 @@ namespace Swill.Recycler.Demos
     /// - Ensuring a null entry prefab despawns the pool.
     /// - Ensuring a null endcap prefab despawns the endcap.
     /// </summary>
-    public class InspectorRecycler : RecyclerScrollRect<EmptyRecyclerData, string>
+    public class InspectorRecycler : RecyclerScrollRect<string, EmptyRecyclerData>
     {
 
     }

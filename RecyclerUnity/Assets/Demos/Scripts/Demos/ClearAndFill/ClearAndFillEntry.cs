@@ -6,7 +6,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Entry for testing clearing and adding entries to a recycler, one-by-one
     /// </summary>
-    public class ClearAndFillEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
+    public class ClearAndFillEntry : RecyclerScrollRectEntry<string, EmptyRecyclerData>
     {
         [SerializeField]
         private Text _indexText = null;

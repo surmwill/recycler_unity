@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// Tests a basic recycler with entries and an endcap - no special features.
     /// Used as an example in the documentation for how to create a basic recycler.
     /// </summary>
-    public class TestDemoRecycler : TestRecycler<DemoRecyclerData, string>
+    public class TestDemoRecycler : TestRecycler<string, DemoRecyclerData>
     {
         [SerializeField]
         private DemoRecycler _recycler = null;
@@ -24,7 +24,7 @@ namespace Swill.Recycler.Demos
             "head", "male", "evil", "toll", "base"
         };
 
-        protected override RecyclerScrollRect<DemoRecyclerData, string> ValidateRecycler => _recycler;
+        protected override RecyclerScrollRect<string, DemoRecyclerData> ValidateRecycler => _recycler;
 
         protected override string DemoTitle => "Simple recycler demo";
 

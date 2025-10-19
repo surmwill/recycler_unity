@@ -6,7 +6,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Demos deleting a entries in the recycler.
     /// </summary>
-    public class TestDeleteRecyclerScrollRect : TestRecycler<EmptyRecyclerData, string>
+    public class TestDeleteRecyclerScrollRect : TestRecycler<string, EmptyRecyclerData>
     {
         [SerializeField]
         private DeleteRecyclerScrollRect _deleteRecycler = null;
@@ -16,7 +16,7 @@ namespace Swill.Recycler.Demos
         private const int DeleteAtIndex = 15;
         private const int NumEntriesToDelete = 3;
 
-        protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _deleteRecycler;
+        protected override RecyclerScrollRect<string, EmptyRecyclerData> ValidateRecycler => _deleteRecycler;
 
         protected override string DemoTitle => "Deletion Demo";
 
@@ -30,7 +30,7 @@ namespace Swill.Recycler.Demos
             $"3 (key 'R'): Shrinks and deletes an entry from a random active index."
         };
         
-        private IRecyclerScrollRectActiveEntriesWindow<EmptyRecyclerData, string> _activeEntriesWindow;
+        private IRecyclerScrollRectActiveEntriesWindow<string, EmptyRecyclerData> _activeEntriesWindow;
 
         protected override void Start()
         {

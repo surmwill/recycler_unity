@@ -11,7 +11,7 @@ namespace Swill.Recycler
     /// Contains the editor OnValidate call for the RecyclerScrollRect.
     /// Used for automatically setting up the GameObject structure when adding the component.
     /// </summary>
-    public partial class RecyclerScrollRect<TEntryData, TKeyEntryData>
+    public partial class RecyclerScrollRect<TKeyEntryData, TEntryData>
     {
         private const string ContentName = "Entries";
         private const string PoolParentName = "Pool";
@@ -88,8 +88,8 @@ namespace Swill.Recycler
             }
 
             // Remove old entries from the pool that are not the current entry prefab (for example, we changed prefabs)
-            foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> oldEntry in _poolParent
-                         .GetComponentsInChildren<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>(true)
+            foreach (RecyclerScrollRectEntry<TKeyEntryData, TEntryData> oldEntry in _poolParent
+                         .GetComponentsInChildren<RecyclerScrollRectEntry<TKeyEntryData, TEntryData>>(true)
                          .Where(e => _recyclerEntryPrefab == null || !IsInstanceOfEntryPrefab(e)))
             {
                 EditorUtils.OnValidateDestroy(oldEntry.gameObject);
@@ -98,8 +98,8 @@ namespace Swill.Recycler
             // Ensure the pool is the correct size
             if (_recyclerEntryPrefab != null)
             {
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData>[] currentEntries = _poolParent
-                    .GetComponentsInChildren<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>(true)
+                RecyclerScrollRectEntry<TKeyEntryData, TEntryData>[] currentEntries = _poolParent
+                    .GetComponentsInChildren<RecyclerScrollRectEntry<TKeyEntryData, TEntryData>>(true)
                     .Where(IsInstanceOfEntryPrefab)
                     .ToArray();
 
@@ -108,10 +108,10 @@ namespace Swill.Recycler
                 // Add any missing entries
                 for (int i = 0; i < poolDifference; i++)
                 {
-                    RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = ((GameObject) PrefabUtility.InstantiatePrefab(_recyclerEntryPrefab.gameObject, _poolParent))
-                        .GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
+                    RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry = ((GameObject) PrefabUtility.InstantiatePrefab(_recyclerEntryPrefab.gameObject, _poolParent))
+                        .GetComponent<RecyclerScrollRectEntry<TKeyEntryData, TEntryData>>();
 
-                    entry.name = RecyclerScrollRectEntry<TEntryData, TKeyEntryData>.UnboundIndex.ToString();
+                    entry.name = RecyclerScrollRectEntry<TKeyEntryData, TEntryData>.UnboundIndex.ToString();
                     entry.gameObject.SetActive(false);
                 }
 
@@ -144,13 +144,13 @@ namespace Swill.Recycler
                 // Ensure the endcap exists in the pool
                 if (_endcap == null)
                 {
-                    _endcap = _endcapParent.GetComponentsInChildren<RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>>(true)
+                    _endcap = _endcapParent.GetComponentsInChildren<RecyclerScrollRectEndcap<TKeyEntryData, TEntryData>>(true)
                         .FirstOrDefault(IsInstanceOfEndcapPrefab);
 
                     if (_endcap == null)
                     {
                         _endcap = ((GameObject) PrefabUtility.InstantiatePrefab(_endcapPrefab.gameObject, _endcapParent))
-                            .GetComponent<RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>>();
+                            .GetComponent<RecyclerScrollRectEndcap<TKeyEntryData, TEntryData>>();
                         
                         _endcap.gameObject.SetActive(false);
                     }
@@ -214,12 +214,12 @@ namespace Swill.Recycler
             }
         }
         
-        private bool IsInstanceOfEntryPrefab(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry)
+        private bool IsInstanceOfEntryPrefab(RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry)
         {
             return IsInstanceOfPrefab(entry, _recyclerEntryPrefab);
         }
 
-        private bool IsInstanceOfEndcapPrefab(RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap)
+        private bool IsInstanceOfEndcapPrefab(RecyclerScrollRectEndcap<TKeyEntryData, TEntryData> endcap)
         {
             return IsInstanceOfPrefab(endcap, _endcapPrefab);
         }

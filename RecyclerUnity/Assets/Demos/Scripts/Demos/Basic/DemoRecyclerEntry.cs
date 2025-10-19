@@ -6,7 +6,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Example of a recycler entry for demoing purposes
     /// </summary>
-    public class DemoRecyclerEntry : RecyclerScrollRectEntry<DemoRecyclerData, string>
+    public class DemoRecyclerEntry : RecyclerScrollRectEntry<string, DemoRecyclerData>
     {
         [SerializeField]
         private Text _wordText = null;

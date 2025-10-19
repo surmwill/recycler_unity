@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Entry for testing the changing of visible states
     /// </summary>
-    public class StateChangesEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
+    public class StateChangesEntry : RecyclerScrollRectEntry<string, EmptyRecyclerData>
     {
         [SerializeField]
         private Text _indexText = null;

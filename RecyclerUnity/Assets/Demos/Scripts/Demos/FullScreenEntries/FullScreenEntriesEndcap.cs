@@ -6,7 +6,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Endcap for testing a recycler with full screen entries and endcap.
     /// </summary>
-    public class FullScreenEntriesEndcap : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
+    public class FullScreenEntriesEndcap : RecyclerScrollRectEndcap<string, EmptyRecyclerData>
     {
         private const float BufferPct = 0.2f;
         

@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Demo entry to test recycler deletion of entries
     /// </summary>
-    public class DeleteRecyclerEntry : RecyclerScrollRectEntry<EmptyRecyclerData, string>
+    public class DeleteRecyclerEntry : RecyclerScrollRectEntry<string, EmptyRecyclerData>
     {
         [SerializeField]
         private Text _indexText = null;

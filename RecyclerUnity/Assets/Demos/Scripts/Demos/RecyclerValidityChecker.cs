@@ -11,9 +11,9 @@ namespace Swill.Recycler.Demos
     /// Ensures our Recycler is in the proper format each frame.
     /// For example, ensuring there are no duplicate entries and ensuring the entries are properly increasing/decreasing.
     /// </summary>
-    public class RecyclerValidityChecker<TEntryData, TKeyEntryData> where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
+    public class RecyclerValidityChecker<TKeyEntryData, TEntryData> where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
-        private readonly RecyclerScrollRect<TEntryData, TKeyEntryData> _recycler;
+        private readonly RecyclerScrollRect<TKeyEntryData, TEntryData> _recycler;
         private readonly RectTransform _recyclerViewport;
         private readonly Canvas _rootCanvas;
 
@@ -21,7 +21,7 @@ namespace Swill.Recycler.Demos
 
         private RecyclerPosition EndCachePosition => _recycler.AppendTo;
 
-        public RecyclerValidityChecker(RecyclerScrollRect<TEntryData, TKeyEntryData> recycler)
+        public RecyclerValidityChecker(RecyclerScrollRect<TKeyEntryData, TEntryData> recycler)
         {
             _recycler = recycler;
             _recyclerViewport = recycler.viewport;
@@ -105,25 +105,25 @@ namespace Swill.Recycler.Demos
         /// </summary>
         private void DebugCheckAllChildrenAreActiveEntries()
         {
-            Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> activeEntries =
-                new Dictionary<int, RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>(_recycler.ActiveEntries);
+            Dictionary<int, RecyclerScrollRectEntry<TKeyEntryData, TEntryData>> activeEntries =
+                new Dictionary<int, RecyclerScrollRectEntry<TKeyEntryData, TEntryData>>(_recycler.ActiveEntries);
 
             foreach (Transform t in _recycler.content)
             {
-                RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap = t.GetComponent<RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>>();
+                RecyclerScrollRectEndcap<TKeyEntryData, TEntryData> endcap = t.GetComponent<RecyclerScrollRectEndcap<TKeyEntryData, TEntryData>>();
                 if (endcap != null)
                 {
                     continue;
                 }
 
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
+                RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TKeyEntryData, TEntryData>>();
                 if (entry == null)
                 {
                     TestRecyclerEditorLogger.LogErrorAndBreak($"{t.gameObject.name} is a child of the recycler but not an entry or endap");
                     return;
                 }
 
-                if (!activeEntries.TryGetValue(entry.Index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry) || entry != activeEntry)
+                if (!activeEntries.TryGetValue(entry.Index, out RecyclerScrollRectEntry<TKeyEntryData, TEntryData> activeEntry) || entry != activeEntry)
                 {
                     TestRecyclerEditorLogger.LogErrorAndBreak($"Entry with index \"{entry.Index}\" is present as a recycler child but not tracked as active");
                     return;
@@ -149,7 +149,7 @@ namespace Swill.Recycler.Demos
             HashSet<int> visibleIndices = new HashSet<int>();
 
             // Check which indices we report as visible, in the start cache, and in the end cache
-            IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow = _recycler.ActiveEntriesWindow;
+            IRecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> activeEntriesWindow = _recycler.ActiveEntriesWindow;
             if (activeEntriesWindow.StartCacheIndexRange.HasValue)
             {
                 (int Start, int End) = activeEntriesWindow.StartCacheIndexRange.Value;
@@ -168,7 +168,7 @@ namespace Swill.Recycler.Demos
                 visibleIndices = new HashSet<int>(Enumerable.Range(Start, End - Start + 1));
             }
 
-            foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _recycler.ActiveEntries.Values)
+            foreach (RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry in _recycler.ActiveEntries.Values)
             {
                 // Entries that are visible in the viewport should be reported as visible
                 if (IsInViewport(entry.RectTransform, _recycler.viewport, _rootCanvas.worldCamera))
@@ -246,7 +246,7 @@ namespace Swill.Recycler.Demos
         /// </summary>
         private void DebugCheckEndcapPosition()
         {
-            RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap = _recycler.Endcap;
+            RecyclerScrollRectEndcap<TKeyEntryData, TEntryData> endcap = _recycler.Endcap;
             if (endcap == null)
             {
                 return;
@@ -287,11 +287,11 @@ namespace Swill.Recycler.Demos
         private void DebugCheckDuplicates()
         {
             HashSet<int> seenIndices = new HashSet<int>();
-            RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> foundEndcap = null;
+            RecyclerScrollRectEndcap<TKeyEntryData, TEntryData> foundEndcap = null;
 
             foreach (Transform t in _recycler.content)
             {
-                RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap = t.GetComponent<RecyclerScrollRectEndcap<TEntryData, TKeyEntryData>>();
+                RecyclerScrollRectEndcap<TKeyEntryData, TEntryData> endcap = t.GetComponent<RecyclerScrollRectEndcap<TKeyEntryData, TEntryData>>();
                 if (endcap != null)
                 {
                     if (foundEndcap != null)
@@ -304,8 +304,8 @@ namespace Swill.Recycler.Demos
                     continue;
                 }
 
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry =
-                    t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
+                RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry =
+                    t.GetComponent<RecyclerScrollRectEntry<TKeyEntryData, TEntryData>>();
                 int currentIndex = entry.Index;
 
                 if (seenIndices.Contains(currentIndex))
@@ -326,7 +326,7 @@ namespace Swill.Recycler.Demos
             int? lastIndex = null;
             foreach (Transform t in _recycler.content)
             {
-                RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
+                RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TKeyEntryData, TEntryData>>();
                 if (entry == null)
                 {
                     return;
@@ -365,7 +365,7 @@ namespace Swill.Recycler.Demos
                 }
             }
 
-            IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow = _recycler.ActiveEntriesWindow;
+            IRecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> activeEntriesWindow = _recycler.ActiveEntriesWindow;
 
             // Check correct keys are reported as active
             CheckRange(
@@ -429,13 +429,13 @@ namespace Swill.Recycler.Demos
         /// </summary>
         private void DebugCheckVisibility()
         {
-            RecycledEntries<TEntryData, TKeyEntryData> _recycledEntries;
-            Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _unboundEntries;
+            RecycledEntries<TKeyEntryData, TEntryData> _recycledEntries;
+            Queue<RecyclerScrollRectEntry<TKeyEntryData, TEntryData>> _unboundEntries;
 
-            _recycledEntries = GetRecyclerPrivateFieldValue<RecycledEntries<TEntryData, TKeyEntryData>>(nameof(_recycledEntries));
-            _unboundEntries = GetRecyclerPrivateFieldValue<Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>>(nameof(_unboundEntries));
+            _recycledEntries = GetRecyclerPrivateFieldValue<RecycledEntries<TKeyEntryData, TEntryData>>(nameof(_recycledEntries));
+            _unboundEntries = GetRecyclerPrivateFieldValue<Queue<RecyclerScrollRectEntry<TKeyEntryData, TEntryData>>>(nameof(_unboundEntries));
 
-            foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _recycler.ActiveEntries.Values)
+            foreach (RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry in _recycler.ActiveEntries.Values)
             {
                 if (!entry.IsVisible.HasValue)
                 {
@@ -459,7 +459,7 @@ namespace Swill.Recycler.Demos
                 break;
             }
 
-            foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> pooledEntry in _recycledEntries.Entries.Values.Concat(_unboundEntries))
+            foreach (RecyclerScrollRectEntry<TKeyEntryData, TEntryData> pooledEntry in _recycledEntries.Entries.Values.Concat(_unboundEntries))
             {
                 if (pooledEntry.IsVisible.HasValue)
                 {
@@ -468,7 +468,7 @@ namespace Swill.Recycler.Demos
                 }
             }
 
-            RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap = _recycler.Endcap;
+            RecyclerScrollRectEndcap<TKeyEntryData, TEntryData> endcap = _recycler.Endcap;
             if (endcap == null)
             {
                 return;
@@ -505,18 +505,18 @@ namespace Swill.Recycler.Demos
         /// </summary>
         private void DebugCheckPool()
         {
-            RecycledEntries<TEntryData, TKeyEntryData> _recycledEntries;
-            Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>> _unboundEntries;
+            RecycledEntries<TKeyEntryData, TEntryData> _recycledEntries;
+            Queue<RecyclerScrollRectEntry<TKeyEntryData, TEntryData>> _unboundEntries;
             RectTransform _poolParent;
             RectTransform _endcapParent;
 
-            _recycledEntries = GetRecyclerPrivateFieldValue<RecycledEntries<TEntryData, TKeyEntryData>>(nameof(_recycledEntries));
-            _unboundEntries = GetRecyclerPrivateFieldValue<Queue<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>>(nameof(_unboundEntries));
+            _recycledEntries = GetRecyclerPrivateFieldValue<RecycledEntries<TKeyEntryData, TEntryData>>(nameof(_recycledEntries));
+            _unboundEntries = GetRecyclerPrivateFieldValue<Queue<RecyclerScrollRectEntry<TKeyEntryData, TEntryData>>>(nameof(_unboundEntries));
             _poolParent = GetRecyclerPrivateFieldValue<RectTransform>(nameof(_poolParent));
             _endcapParent = GetRecyclerPrivateFieldValue<RectTransform>(nameof(_endcapParent));
 
             // Check that each inactive entry reports that it's waiting in the pool
-            foreach (RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry in _recycledEntries.Entries.Values.Concat(
+            foreach (RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry in _recycledEntries.Entries.Values.Concat(
                          _unboundEntries))
             {
                 if (entry.transform.parent != _poolParent)
@@ -526,7 +526,7 @@ namespace Swill.Recycler.Demos
                 }
             }
 
-            RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap = _recycler.Endcap;
+            RecyclerScrollRectEndcap<TKeyEntryData, TEntryData> endcap = _recycler.Endcap;
             if (endcap != null && !endcap.gameObject.activeInHierarchy && endcap.transform.parent != _endcapParent)
             {
                 TestRecyclerEditorLogger.LogErrorAndBreak($"An inactive endcap should be waiting in its recycling pool.");

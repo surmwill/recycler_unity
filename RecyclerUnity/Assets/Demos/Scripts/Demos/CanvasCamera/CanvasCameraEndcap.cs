@@ -5,7 +5,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Tests that our recycler works with a Screen Space - Camera Canvas
     /// </summary>
-    public class CanvasCameraEndcap : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
+    public class CanvasCameraEndcap : RecyclerScrollRectEndcap<string, EmptyRecyclerData>
     {
     }
 }

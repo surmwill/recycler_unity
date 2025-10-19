@@ -5,7 +5,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Entry for testing a recycler with full screen entries and endcap.
     /// </summary>
-    public class TestFullScreenEntriesRecycler : TestRecycler<EmptyRecyclerData, string>
+    public class TestFullScreenEntriesRecycler : TestRecycler<string, EmptyRecyclerData>
     {
         [SerializeField]
         private EmptyRecyclerScrollRect _recycler = null;
@@ -14,7 +14,7 @@ namespace Swill.Recycler.Demos
 
         private const int NumEntriesToAppend = 3;
 
-        protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _recycler;
+        protected override RecyclerScrollRect<string, EmptyRecyclerData> ValidateRecycler => _recycler;
 
         protected override string DemoTitle => "Full-screen entries demo.";
 
@@ -30,7 +30,7 @@ namespace Swill.Recycler.Demos
             $"5 (keys 'S' and then 'B') Immediately scrolls to the bottom of the bottommost entry."
         };
 
-        private IRecyclerScrollRectActiveEntriesWindow<EmptyRecyclerData, string> _indexWindow;
+        private IRecyclerScrollRectActiveEntriesWindow<string, EmptyRecyclerData> _indexWindow;
 
         protected override void Start()
         {

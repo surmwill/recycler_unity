@@ -9,7 +9,7 @@ public static class IRecyclerScrollRectActiveEntriesWindowExtensions
     /// </summary>
     /// <param name="activeEntriesWindow"> The index window </param>
     /// <returns> The keys of the currently active entries </returns>
-    public static IEnumerable<TKeyEntryData> GetActiveKeys<TEntryData, TKeyEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow) 
+    public static IEnumerable<TKeyEntryData> GetActiveKeys<TKeyEntryData, TEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> activeEntriesWindow) 
         where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         return GetKeyRange(activeEntriesWindow, activeEntriesWindow.ActiveEntriesRange);
@@ -20,7 +20,7 @@ public static class IRecyclerScrollRectActiveEntriesWindowExtensions
     /// </summary>
     /// <param name="activeEntriesWindow"> The index window </param>
     /// <returns> The keys of the currently visible entries </returns>
-    public static IEnumerable<TKeyEntryData> GetVisibleKeys<TEntryData, TKeyEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow) 
+    public static IEnumerable<TKeyEntryData> GetVisibleKeys<TKeyEntryData, TEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> activeEntriesWindow) 
         where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         return GetKeyRange(activeEntriesWindow, activeEntriesWindow.VisibleIndexRange);
@@ -31,7 +31,7 @@ public static class IRecyclerScrollRectActiveEntriesWindowExtensions
     /// </summary>
     /// <param name="activeEntriesWindow"> The index window </param>
     /// <returns> The keys of the entries currently in the start cache </returns>
-    public static IEnumerable<TKeyEntryData> GetStartCacheKeys<TEntryData, TKeyEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow) 
+    public static IEnumerable<TKeyEntryData> GetStartCacheKeys<TKeyEntryData, TEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> activeEntriesWindow) 
         where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         return GetKeyRange(activeEntriesWindow, activeEntriesWindow.StartCacheIndexRange);
@@ -42,7 +42,7 @@ public static class IRecyclerScrollRectActiveEntriesWindowExtensions
     /// </summary>
     /// <param name="activeEntriesWindow"> The index window </param>
     /// <returns> The keys of the entries currently in the end cache </returns>
-    public static IEnumerable<TKeyEntryData> GetEndCacheKeys<TEntryData, TKeyEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow) 
+    public static IEnumerable<TKeyEntryData> GetEndCacheKeys<TKeyEntryData, TEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> activeEntriesWindow) 
         where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         return GetKeyRange(activeEntriesWindow, activeEntriesWindow.EndCacheIndexRange);
@@ -54,10 +54,10 @@ public static class IRecyclerScrollRectActiveEntriesWindowExtensions
     /// <param name="activeEntriesWindow"> The index window </param>
     /// <param name="key"> The key of the entry </param>
     /// <returns> True if the entry with the given is visible. </returns>
-    public static bool IsKeyVisible<TEntryData, TKeyEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow, TKeyEntryData key)
+    public static bool IsKeyVisible<TKeyEntryData, TEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> activeEntriesWindow, TKeyEntryData key)
         where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
-        return activeEntriesWindow.Recycler.TryGetActiveEntryWithKey(key, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry) && 
+        return activeEntriesWindow.Recycler.TryGetActiveEntryWithKey(key, out RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry) && 
                activeEntriesWindow.IsVisible(entry.Index);
     }
     
@@ -67,10 +67,10 @@ public static class IRecyclerScrollRectActiveEntriesWindowExtensions
     /// <param name="activeEntriesWindow"> The index window </param>
     /// <param name="key"> The key of the entry </param>
     /// <returns> True if the entry with the given key is in the start cache. </returns>
-    public static bool IsKeyInStartCache<TEntryData, TKeyEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow, TKeyEntryData key)
+    public static bool IsKeyInStartCache<TKeyEntryData, TEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> activeEntriesWindow, TKeyEntryData key)
         where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
-        return activeEntriesWindow.Recycler.TryGetActiveEntryWithKey(key, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry) && 
+        return activeEntriesWindow.Recycler.TryGetActiveEntryWithKey(key, out RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry) && 
                activeEntriesWindow.IsInStartCache(entry.Index);
     }
     
@@ -80,10 +80,10 @@ public static class IRecyclerScrollRectActiveEntriesWindowExtensions
     /// <param name="activeEntriesWindow"> The index window </param>
     /// <param name="key"> The key of the entry </param>
     /// <returns> True if the entry with the given key is in the end cache. </returns>
-    public static bool IsKeyInEndCache<TEntryData, TKeyEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow, TKeyEntryData key)
+    public static bool IsKeyInEndCache<TKeyEntryData, TEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> activeEntriesWindow, TKeyEntryData key)
         where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
-        return activeEntriesWindow.Recycler.TryGetActiveEntryWithKey(key, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry) && 
+        return activeEntriesWindow.Recycler.TryGetActiveEntryWithKey(key, out RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry) && 
                activeEntriesWindow.IsInEndCache(entry.Index);
     }
     
@@ -93,7 +93,7 @@ public static class IRecyclerScrollRectActiveEntriesWindowExtensions
     /// <param name="activeEntriesWindow"> The index window </param>
     /// <param name="key"> The key of the entry </param>
     /// <returns> True if the entry with the given key is active. </returns>
-    public static bool ContainsKey<TEntryData, TKeyEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow, TKeyEntryData key)
+    public static bool ContainsKey<TKeyEntryData, TEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> activeEntriesWindow, TKeyEntryData key)
         where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         return IsKeyVisible(activeEntriesWindow, key) || IsKeyInStartCache(activeEntriesWindow, key) || IsKeyInEndCache(activeEntriesWindow, key);
@@ -103,7 +103,7 @@ public static class IRecyclerScrollRectActiveEntriesWindowExtensions
     /// Returns information about the current ranges of entry ikeys
     /// </summary>
     /// <returns> A string detailing the current ranges of entry keys </returns>
-    public static string PrintKeyRanges<TEntryData, TKeyEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow)
+    public static string PrintKeyRanges<TKeyEntryData, TEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> activeEntriesWindow)
         where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         IEnumerable<TKeyEntryData> startCacheKeys = GetStartCacheKeys(activeEntriesWindow);
@@ -116,8 +116,8 @@ public static class IRecyclerScrollRectActiveEntriesWindowExtensions
             $"End Cache Range: {(!endCacheKeys.Any() ? "[]" : $"[{endCacheKeys.First()},{endCacheKeys.Last()}]")}";
     }
 
-    private static IEnumerable<TKeyEntryData> GetKeyRange<TEntryData, TKeyEntryData>(
-        IRecyclerScrollRectActiveEntriesWindow<TEntryData, TKeyEntryData> activeEntriesWindow, (int Start, int End)? range)
+    private static IEnumerable<TKeyEntryData> GetKeyRange<TKeyEntryData, TEntryData>(
+        IRecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> activeEntriesWindow, (int Start, int End)? range)
         where TEntryData : IRecyclerScrollRectData<TKeyEntryData>
     {
         if (!range.HasValue)

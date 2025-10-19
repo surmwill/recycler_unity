@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Tests clearing and adding entries to a recycler, one-by-one
     /// </summary>
-    public class ClearAndFillEndcap : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
+    public class ClearAndFillEndcap : RecyclerScrollRectEndcap<string, EmptyRecyclerData>
     {
     }
 }

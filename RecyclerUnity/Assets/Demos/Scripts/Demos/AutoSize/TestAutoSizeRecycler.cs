@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Tests a recycler working with auto-sized entries
     /// </summary>
-    public class TestAutoSizeRecycler : TestRecycler<AutoSizeData, string>
+    public class TestAutoSizeRecycler : TestRecycler<string, AutoSizeData>
     {
         [SerializeField]
         private AutoSizeRecycler _autoSizeRecycler = null;
@@ -17,7 +17,7 @@ namespace Swill.Recycler.Demos
         private const int MinNumLines = 1;
         private const int MaxNumLines = 6;
         
-        protected override RecyclerScrollRect<AutoSizeData, string> ValidateRecycler => _autoSizeRecycler;
+        protected override RecyclerScrollRect<string, AutoSizeData> ValidateRecycler => _autoSizeRecycler;
 
         protected override string DemoTitle => "Auto-size Demo";
 
@@ -31,7 +31,7 @@ namespace Swill.Recycler.Demos
             "2 (or 'D'): Decreases the size of the endcap through its layout group."
         };
 
-        private IRecyclerScrollRectActiveEntriesWindow<AutoSizeData, string> _indexWindow;
+        private IRecyclerScrollRectActiveEntriesWindow<string, AutoSizeData> _indexWindow;
 
         protected override void Start()
         {

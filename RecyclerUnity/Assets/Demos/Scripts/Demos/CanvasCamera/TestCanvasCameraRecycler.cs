@@ -5,14 +5,14 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Tests that our recycler works with a Screen Space - Camera canvas
     /// </summary>
-    public class TestCanvasCameraRecycler : TestRecycler<EmptyRecyclerData, string>
+    public class TestCanvasCameraRecycler : TestRecycler<string, EmptyRecyclerData>
     {
         [SerializeField]
         private EmptyRecyclerScrollRect _recycler = null;
 
         private const int InitNumEntries = 30;
 
-        protected override RecyclerScrollRect<EmptyRecyclerData, string> ValidateRecycler => _recycler;
+        protected override RecyclerScrollRect<string, EmptyRecyclerData> ValidateRecycler => _recycler;
 
         protected override string DemoTitle => "Screen Space - Camera Canvas Demo";
 

@@ -5,7 +5,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Endcap that tests resizing
     /// </summary>
-    public class EndcapResizeEndcap : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
+    public class EndcapResizeEndcap : RecyclerScrollRectEndcap<string, EmptyRecyclerData>
     {
         private const int NormalSize = 300;
         private const int GrowSize = 600;

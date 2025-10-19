@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Recycler entry for navigating between different demo scenes.
     /// </summary>
-    public class DemoMenuRecyclerEntry : RecyclerScrollRectEntry<DemoMenuData, string>
+    public class DemoMenuRecyclerEntry : RecyclerScrollRectEntry<string, DemoMenuData>
     {
         [SerializeField]
         private Text _demoName = null;

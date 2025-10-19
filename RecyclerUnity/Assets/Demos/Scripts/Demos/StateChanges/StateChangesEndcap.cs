@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Endcap for testing the changing of visible states
     /// </summary>
-    public class StateChangesEndcap : RecyclerScrollRectEndcap<EmptyRecyclerData, string>
+    public class StateChangesEndcap : RecyclerScrollRectEndcap<string, EmptyRecyclerData>
     {
         [SerializeField]
         private Image _background = null;

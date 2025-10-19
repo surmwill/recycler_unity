@@ -7,7 +7,7 @@ namespace Swill.Recycler.Demos
     /// <summary>
     /// Data for animating an entry in on insertion/deletion
     /// </summary>
-    public class PrettyInsertDeleteEntry : RecyclerScrollRectEntry<PrettyInsertDeleteData, string>
+    public class PrettyInsertDeleteEntry : RecyclerScrollRectEntry<string, PrettyInsertDeleteData>
     {
         [SerializeField]
         private Image _background = null;
