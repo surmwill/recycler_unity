@@ -49,7 +49,7 @@ namespace Swill.Recycler.Demos
                 if ((Input.GetKey(KeyCode.R) && Input.GetKeyDown(KeyCode.A)) || DemoToolbar.GetButtonDown(2))
                 {
                     int insertionIndex = Random.Range(Start, End);
-                    Debug.Log($"Inserting at {insertionIndex}");
+                    TestRecyclerEditorLogger.Log($"Inserting at {insertionIndex}");
                 
                     _recycler.InsertAtIndex(insertionIndex, new EmptyRecyclerData(), FixEntries.Below);
                     return;
@@ -59,7 +59,7 @@ namespace Swill.Recycler.Demos
                 if ((Input.GetKey(KeyCode.R) && Input.GetKeyDown(KeyCode.D)) || DemoToolbar.GetButtonDown(3))
                 {
                     int deletionIndex = Random.Range(Start, End);
-                    Debug.Log($"Deleting at {deletionIndex}");
+                    TestRecyclerEditorLogger.Log($"Deleting at {deletionIndex}");
                 
                     _recycler.RemoveAtIndex(deletionIndex, FixEntries.Below);
                     return;

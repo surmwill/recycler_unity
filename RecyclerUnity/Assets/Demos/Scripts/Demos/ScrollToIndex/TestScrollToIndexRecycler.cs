@@ -63,24 +63,24 @@ namespace Swill.Recycler.Demos
             {
                 _recycler.ScrollToIndex(ScrollToMiddleIndex, 
                     scrollSpeedViewportsPerSecond:NormalScrollSpeed,
-                    onScrollComplete:() => Debug.Log("Middle index scroll complete."),
-                    onScrollCancelled:() => Debug.Log("Middle index scroll cancelled."));
+                    onScrollComplete:() => TestRecyclerEditorLogger.Log("Middle index scroll complete."),
+                    onScrollCancelled:() => TestRecyclerEditorLogger.Log("Middle index scroll cancelled."));
             }
             // Scroll to top index
             else if ((Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.T)) || DemoToolbar.GetButtonDown(1))
             {
                 _recycler.ScrollToIndex(0,
                     scrollSpeedViewportsPerSecond:NormalScrollSpeed,
-                    onScrollComplete:() => Debug.Log("Top index scroll complete."),
-                    onScrollCancelled:() => Debug.Log("Top index scroll cancelled."));
+                    onScrollComplete:() => TestRecyclerEditorLogger.Log("Top index scroll complete."),
+                    onScrollCancelled:() => TestRecyclerEditorLogger.Log("Top index scroll cancelled."));
             }
             // Scroll to bot index
             else if ((Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.B)) || DemoToolbar.GetButtonDown(2))
             {
                 _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, 
                     scrollSpeedViewportsPerSecond:NormalScrollSpeed,
-                    onScrollComplete:() => Debug.Log("Bottom index scroll complete."),
-                    onScrollCancelled:() => Debug.Log("Bottom index scroll cancelled."));
+                    onScrollComplete:() => TestRecyclerEditorLogger.Log("Bottom index scroll complete."),
+                    onScrollCancelled:() => TestRecyclerEditorLogger.Log("Bottom index scroll cancelled."));
             }
 
             /*** Fighting ***/

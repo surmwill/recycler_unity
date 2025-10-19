@@ -63,7 +63,7 @@ namespace Swill.Recycler.Demos
             else if (Input.GetKeyDown(KeyCode.R) || DemoToolbar.GetButtonDown(3))
             {
                 int insertionIndex = Random.Range(Start, End);
-                Debug.Log($"Inserting at {insertionIndex}");
+                TestRecyclerEditorLogger.Log($"Inserting at {insertionIndex}");
                 
                 _recycler.InsertAtIndex(insertionIndex, new InsertAndResizeData(true), FixEntries.Above);
             }
