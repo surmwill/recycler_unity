@@ -41,7 +41,7 @@ namespace Swill.Recycler.Demos
         public void Bind()
         {
             #if UNITY_EDITOR
-            Debug.Log("Starting recycler validity checking.");
+            TestRecyclerEditorLogger.Log("Starting recycler validity checking.");
             _recycler.OnRecyclerUpdated += CheckValidity;
             #endif
         }
@@ -52,7 +52,7 @@ namespace Swill.Recycler.Demos
         public void Unbind()
         {
             #if UNITY_EDITOR
-            Debug.Log("Stopping recycler validity checking.");
+            TestRecyclerEditorLogger.Log("Stopping recycler validity checking.");
             _recycler.OnRecyclerUpdated -= CheckValidity;
             #endif
         }
@@ -96,9 +96,7 @@ namespace Swill.Recycler.Demos
 
             if (visibleIndexRange.Value.Start > visibleIndexRange.Value.End)
             {
-                Debug.LogError($"The visible start index \"{visibleIndexRange.Value.Start}\" should not be greater than the end index \"{visibleIndexRange.Value.End}\"");
-                Debug.Break();
-                return;
+                TestRecyclerEditorLogger.LogErrorAndBreak($"The visible start index \"{visibleIndexRange.Value.Start}\" should not be greater than the end index \"{visibleIndexRange.Value.End}\"");
             }
         }
 
@@ -121,16 +119,13 @@ namespace Swill.Recycler.Demos
                 RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TEntryData, TKeyEntryData>>();
                 if (entry == null)
                 {
-                    Debug.LogError($"{t.gameObject.name} is a child of the recycler but not an entry or endap");
-                    Debug.Break();
+                    TestRecyclerEditorLogger.LogErrorAndBreak($"{t.gameObject.name} is a child of the recycler but not an entry or endap");
                     return;
                 }
 
-                if (!activeEntries.TryGetValue(entry.Index,
-                        out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry) || entry != activeEntry)
+                if (!activeEntries.TryGetValue(entry.Index, out RecyclerScrollRectEntry<TEntryData, TKeyEntryData> activeEntry) || entry != activeEntry)
                 {
-                    Debug.LogError($"Entry with index \"{entry.Index}\" is present as a recycler child but not tracked as active");
-                    Debug.Break();
+                    TestRecyclerEditorLogger.LogErrorAndBreak($"Entry with index \"{entry.Index}\" is present as a recycler child but not tracked as active");
                     return;
                 }
 
@@ -139,7 +134,7 @@ namespace Swill.Recycler.Demos
 
             if (activeEntries.Any())
             {
-                Debug.LogError($"Entries: \"{string.Join(',', activeEntries.Keys)}\" are reported as active but not present as a child in the recycler");
+                TestRecyclerEditorLogger.LogErrorAndBreak($"Entries: \"{string.Join(',', activeEntries.Keys)}\" are reported as active but not present as a child in the recycler");
             }
         }
 
@@ -180,8 +175,7 @@ namespace Swill.Recycler.Demos
                 {
                     if (!visibleIndices.Remove(entry.Index))
                     {
-                        Debug.LogError($"{entry.Index} should be in the visible index window.\n\n {activeEntriesWindow.PrintRanges()}");
-                        Debug.Break();
+                        TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the visible index window.\n\n {activeEntriesWindow.PrintRanges()}");
                         return;
                     }
                 }
@@ -192,8 +186,7 @@ namespace Swill.Recycler.Demos
                     {
                         if (!indicesInStartCache.Remove(entry.Index))
                         {
-                            Debug.LogError($"{entry.Index} should be in the start cache window.\n\n {activeEntriesWindow.PrintRanges()}");
-                            Debug.Break();
+                            TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the start cache window.\n\n {activeEntriesWindow.PrintRanges()}");
                             return;
                         }
                     }
@@ -201,8 +194,7 @@ namespace Swill.Recycler.Demos
                     {
                         if (!indicesInEndCache.Remove(entry.Index))
                         {
-                            Debug.LogError($"{entry.Index} should be in the end cache window.\n\n {activeEntriesWindow.PrintRanges()}");
-                            Debug.Break();
+                            TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the end cache window.\n\n {activeEntriesWindow.PrintRanges()}");
                             return;
                         }
                     }
@@ -214,8 +206,7 @@ namespace Swill.Recycler.Demos
                     {
                         if (!indicesInStartCache.Remove(entry.Index))
                         {
-                            Debug.LogError($"{entry.Index} should be in the start cache window.\n\n {activeEntriesWindow.PrintRanges()}");
-                            Debug.Break();
+                            TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the start cache window.\n\n {activeEntriesWindow.PrintRanges()}");
                             return;
                         }
                     }
@@ -224,8 +215,7 @@ namespace Swill.Recycler.Demos
                     {
                         if (!indicesInEndCache.Remove(entry.Index))
                         {
-                            Debug.LogError($"{entry.Index} should be in the end cache window.\n\n {activeEntriesWindow.PrintRanges()}");
-                            Debug.Break();
+                            TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the end cache window.\n\n {activeEntriesWindow.PrintRanges()}");
                             return;
                         }
                     }
@@ -235,23 +225,19 @@ namespace Swill.Recycler.Demos
             // Ensure there are no leftover indices that don't match with actual entries in the list
             if (indicesInStartCache.Any())
             {
-                Debug.LogError($"The following entries were reported in the start cache window but couldn't be found in the start cache: {string.Join(',', indicesInStartCache)}");
-                Debug.Break();
+                TestRecyclerEditorLogger.LogErrorAndBreak($"The following entries were reported in the start cache window but couldn't be found in the start cache: {string.Join(',', indicesInStartCache)}");
                 return;
             }
 
             if (indicesInEndCache.Any())
             {
-                Debug.LogError($"The following entries were reported to be in the end cache window but weren't found in the end cache: {string.Join(',', indicesInEndCache)}");
-                Debug.Break();
+                TestRecyclerEditorLogger.LogErrorAndBreak($"The following entries were reported to be in the end cache window but weren't found in the end cache: {string.Join(',', indicesInEndCache)}");
                 return;
             }
 
             if (visibleIndices.Any())
             {
-                Debug.LogError($"The following entries were reported to be visible window but weren't found to be visible: {string.Join(',', visibleIndices)}");
-                Debug.Break();
-                return;
+                TestRecyclerEditorLogger.LogErrorAndBreak($"The following entries were reported to be visible window but weren't found to be visible: {string.Join(',', visibleIndices)}");
             }
         }
 
@@ -271,15 +257,13 @@ namespace Swill.Recycler.Demos
 
             if (!hasLastEntry && isEndcapActive)
             {
-                Debug.LogError("Endcap should not be active if the last entry is not active.");
-                Debug.Break();
+                TestRecyclerEditorLogger.LogErrorAndBreak("Endcap should not be active if the last entry is not active.");
                 return;
             }
 
             if (hasLastEntry && !isEndcapActive)
             {
-                Debug.LogError("Endcap should be active if the last entry is active.");
-                Debug.Break();
+                TestRecyclerEditorLogger.LogErrorAndBreak("Endcap should be active if the last entry is active.");
                 return;
             }
 
@@ -288,13 +272,11 @@ namespace Swill.Recycler.Demos
                 int endcapSiblingIndex = endcap.transform.GetSiblingIndex();
                 if (EndCachePosition == RecyclerPosition.Top && endcapSiblingIndex != 0)
                 {
-                    Debug.LogError("Endcap should be the first sibling when the end cache is at the top. No entries should come before it");
-                    Debug.Break();
+                    TestRecyclerEditorLogger.LogErrorAndBreak("Endcap should be the first sibling when the end cache is at the top. No entries should come before it");
                 }
                 else if (EndCachePosition == RecyclerPosition.Bot && endcapSiblingIndex != _recycler.content.childCount - 1)
                 {
-                    Debug.LogError("Endcap should be the last sibling when the end cache is at the bottom. No entries should come after it");
-                    Debug.Break();
+                    TestRecyclerEditorLogger.LogErrorAndBreak("Endcap should be the last sibling when the end cache is at the bottom. No entries should come after it");
                 }
             }
         }
@@ -314,8 +296,7 @@ namespace Swill.Recycler.Demos
                 {
                     if (foundEndcap != null)
                     {
-                        Debug.LogError("DUPLICATE ENDCAP");
-                        Debug.Break();
+                        TestRecyclerEditorLogger.LogErrorAndBreak("DUPLICATE ENDCAP");
                         return;
                     }
 
@@ -329,8 +310,7 @@ namespace Swill.Recycler.Demos
 
                 if (seenIndices.Contains(currentIndex))
                 {
-                    Debug.LogError($"DUPLICATE INDEX: {currentIndex}");
-                    Debug.Break();
+                    TestRecyclerEditorLogger.LogErrorAndBreak($"DUPLICATE INDEX: {currentIndex}");
                     return;
                 }
 
@@ -355,8 +335,7 @@ namespace Swill.Recycler.Demos
                 int currentIndex = entry.Index;
                 if (lastIndex.HasValue && Mathf.Abs(lastIndex.Value - currentIndex) > 1f)
                 {
-                    Debug.LogError($"Index jumped by more than one: {currentIndex}");
-                    Debug.Break();
+                    TestRecyclerEditorLogger.LogErrorAndBreak($"Index jumped by more than one: {currentIndex}");
                     return;
                 }
 
@@ -381,8 +360,7 @@ namespace Swill.Recycler.Demos
 
                 if (mappedIndex != i)
                 {
-                    Debug.LogError($"The mapped index {mappedIndex} for key \"{key}\" does not match its actual index {i}");
-                    Debug.Break();
+                    TestRecyclerEditorLogger.LogErrorAndBreak($"The mapped index {mappedIndex} for key \"{key}\" does not match its actual index {i}");
                     return;
                 }
             }
@@ -433,8 +411,7 @@ namespace Swill.Recycler.Demos
                         TKeyEntryData key = _recycler.DataForEntries[indexInRange].Key;
                         if (!keysRange.Remove(key))
                         {
-                            Debug.LogError(errorIndexButNoKey.Invoke(indexInRange, key));
-                            Debug.Break();
+                            TestRecyclerEditorLogger.LogErrorAndBreak(errorIndexButNoKey.Invoke(indexInRange, key));
                             return;
                         }
                     }
@@ -442,9 +419,7 @@ namespace Swill.Recycler.Demos
 
                 if (keysRange.Any())
                 {
-                    Debug.LogError(errorKeyButNoIndex);
-                    Debug.Break();
-                    return;
+                    TestRecyclerEditorLogger.LogErrorAndBreak(errorKeyButNoIndex.Invoke(keysRange));
                 }
             }
         }
@@ -464,23 +439,20 @@ namespace Swill.Recycler.Demos
             {
                 if (!entry.IsVisible.HasValue)
                 {
-                    Debug.LogError($"All active entries should have a non-null {entry.IsVisible} value");
-                    Debug.Break();
+                    TestRecyclerEditorLogger.LogErrorAndBreak($"All active entries should have a non-null {entry.IsVisible} value");
                     return;
                 }
 
                 bool isEntryInViewport = IsInViewport(entry.RectTransform, _recycler.viewport, _rootCanvas.worldCamera);
                 if (isEntryInViewport && !entry.IsVisible.Value)
                 {
-                    Debug.LogError($"Entry \"{entry.Index}\" is visible in the viewport but its state reports it's not visible");
-                    Debug.Break();
+                    TestRecyclerEditorLogger.LogErrorAndBreak($"Entry \"{entry.Index}\" is visible in the viewport but its state reports it's not visible");
                     return;
                 }
 
                 if (!isEntryInViewport && entry.IsVisible.Value)
                 {
-                    Debug.LogError($"Entry \"{entry.Index}\" is not visible in the viewport but its state reports it's visible");
-                    Debug.Break();
+                    TestRecyclerEditorLogger.LogErrorAndBreak($"Entry \"{entry.Index}\" is not visible in the viewport but its state reports it's visible");
                     return;
                 }
 
@@ -491,8 +463,7 @@ namespace Swill.Recycler.Demos
             {
                 if (pooledEntry.IsVisible.HasValue)
                 {
-                    Debug.LogError($"An entry \"{pooledEntry.Index}\" in the pool has an {nameof(pooledEntry.IsVisible)} value of non-null");
-                    Debug.Break();
+                    TestRecyclerEditorLogger.LogErrorAndBreak($"An entry \"{pooledEntry.Index}\" in the pool has an {nameof(pooledEntry.IsVisible)} value of non-null");
                     return;
                 }
             }
@@ -507,31 +478,25 @@ namespace Swill.Recycler.Demos
             {
                 if (!endcap.IsVisible.HasValue)
                 {
-                    Debug.LogError($"An active endcap should have a non-null {endcap.IsVisible} value");
-                    Debug.Break();
+                    TestRecyclerEditorLogger.LogErrorAndBreak($"An active endcap should have a non-null {endcap.IsVisible} value");
                     return;
                 }
 
                 bool isEndcapInViewport = IsInViewport(endcap.RectTransform, _recycler.viewport, _rootCanvas.worldCamera);
                 if (isEndcapInViewport && !endcap.IsVisible.Value)
                 {
-                    Debug.LogError($"The endcap is visible in the viewport but its state reports it's not visible");
-                    Debug.Break();
+                    TestRecyclerEditorLogger.LogErrorAndBreak($"The endcap is visible in the viewport but its state reports it's not visible");
                     return;
                 }
 
                 if (!isEndcapInViewport && endcap.IsVisible.Value)
                 {
-                    Debug.LogError($"The endcap is not visible in the viewport but its state reports it's visible");
-                    Debug.Break();
-                    return;
+                    TestRecyclerEditorLogger.LogErrorAndBreak($"The endcap is not visible in the viewport but its state reports it's visible");
                 }
             }
             else if (endcap.IsVisible.HasValue)
             {
-                Debug.LogError($"An inactive endcap should have a null {endcap.IsVisible} value");
-                Debug.Break();
-                return;
+                TestRecyclerEditorLogger.LogErrorAndBreak($"An inactive endcap should have a null {endcap.IsVisible} value");
             }
         }
 
@@ -556,8 +521,7 @@ namespace Swill.Recycler.Demos
             {
                 if (entry.transform.parent != _poolParent)
                 {
-                    Debug.LogError($"Entries not active in the recycler should be in the recycling pool. Entry \"{entry.Index}\" isn't.");
-                    Debug.Break();
+                    TestRecyclerEditorLogger.LogErrorAndBreak($"Entries not active in the recycler should be in the recycling pool. Entry \"{entry.Index}\" isn't.");
                     return;
                 }
             }
@@ -565,7 +529,7 @@ namespace Swill.Recycler.Demos
             RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> endcap = _recycler.Endcap;
             if (endcap != null && !endcap.gameObject.activeInHierarchy && endcap.transform.parent != _endcapParent)
             {
-                Debug.LogError($"An inactive endcap should be waiting in its recycling pool.");
+                TestRecyclerEditorLogger.LogErrorAndBreak($"An inactive endcap should be waiting in its recycling pool.");
             }
         }
 
