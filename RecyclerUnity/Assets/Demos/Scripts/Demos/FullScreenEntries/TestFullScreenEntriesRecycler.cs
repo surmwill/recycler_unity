@@ -24,10 +24,10 @@ namespace Swill.Recycler.Demos
         {
             $"0 (key 'A'): Appends {NumEntriesToAppend} entries.",
             $"1 (key 'D'): Deletes the last entry.",
-            $"2 (keys 'R' and 'A'): Inserts an entry into a random index in the active entry window.",
-            $"3 (keys 'R' and 'D'): Deletes an entry at a random index in the active entry window.",
-            $"4 (keys 'S' and 'T') Immediately scrolls to the top of topmost entry.",
-            $"5 (keys 'S' and 'B') Immediately scrolls to the bottom of the bottommost entry."
+            $"2 (keys 'R' and then 'A'): Inserts an entry into a random index in the active entry window.",
+            $"3 (keys 'R' and then 'D'): Deletes an entry at a random index in the active entry window.",
+            $"4 (keys 'S' and then 'T') Immediately scrolls to the top of topmost entry.",
+            $"5 (keys 'S' and then 'B') Immediately scrolls to the bottom of the bottommost entry."
         };
 
         private IRecyclerScrollRectActiveEntriesWindow<EmptyRecyclerData, string> _indexWindow;

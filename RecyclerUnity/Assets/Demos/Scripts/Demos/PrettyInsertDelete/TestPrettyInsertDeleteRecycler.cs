@@ -31,8 +31,8 @@ namespace Swill.Recycler.Demos
         {
             "0 (key 'A'): Inserts an entry at the end of the list.",
             "1 (key 'D'): Deletes the first entry starting at the end of the visible window that is not currently in the process of being deleted.",
-            $"2 (keys 'M' and 'A'): Adds {NumEntriesInsertedAtMiddle} entries to the middle of the visible window.",
-            $"3 (keys 'M' and 'D'): Deletes {NumEntriesDeletedBeforeMiddle + 1 + NumEntriesDeletedAfterMiddle} entries from the middle of the visible window.",
+            $"2 (keys 'M' and then 'A'): Adds {NumEntriesInsertedAtMiddle} entries to the middle of the visible window.",
+            $"3 (keys 'M' and then 'D'): Deletes {NumEntriesDeletedBeforeMiddle + 1 + NumEntriesDeletedAfterMiddle} entries from the middle of the visible window.",
         };
 
         protected override void Start()

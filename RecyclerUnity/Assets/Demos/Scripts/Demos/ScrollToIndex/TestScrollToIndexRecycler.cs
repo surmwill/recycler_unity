@@ -28,19 +28,19 @@ namespace Swill.Recycler.Demos
 
         protected override string[] DemoButtonDescriptions => new[]
         {
-            $"0 (keys 'A' and 'M'): Scrolls to the middle index {ScrollToMiddleIndex}.",
-            $"1 (keys 'A' and 'T'): Scrolls to the top index 0.",
-            $"2 (keys 'A' and 'B'): Scrolls to the bottom index {InitNumEntries - 1}.",
+            $"0 (keys 'A' and then 'M'): Scrolls to the middle index {ScrollToMiddleIndex}.",
+            $"1 (keys 'A' and then 'T'): Scrolls to the top index 0.",
+            $"2 (keys 'A' and then 'B'): Scrolls to the bottom index {InitNumEntries - 1}.",
 
-            $"3 (keys 'F' and 'G'): Scrolls to the middle index {ScrollToMiddleIndex} while making the bottom visible entry grow, scrolling over the expanding entry.",
-            $"4 (keys 'F' and 'S'): Scrolls to the middle index {ScrollToMiddleIndex} while making the bottom visible entry shrink, scrolling over the shrinking entry.",
+            $"3 (keys 'F' and then 'G'): Scrolls to the middle index {ScrollToMiddleIndex} while making the bottom visible entry grow, scrolling over the expanding entry.",
+            $"4 (keys 'F' and then 'S'): Scrolls to the middle index {ScrollToMiddleIndex} while making the bottom visible entry shrink, scrolling over the shrinking entry.",
             
-            $"5 (keys 'I' and 'M'): Scrolls immediately to the middle index {ScrollToMiddleIndex}.",
-            $"6 (keys 'I' and 'T'): Scrolls immediately to the top index 0.",
-            $"7 (keys 'I' and 'B'): Scrolls immediately to the bottom index {InitNumEntries - 1}.",
+            $"5 (keys 'I' and then 'M'): Scrolls immediately to the middle index {ScrollToMiddleIndex}.",
+            $"6 (keys 'I' and then 'T'): Scrolls immediately to the top index 0.",
+            $"7 (keys 'I' and then 'B'): Scrolls immediately to the bottom index {InitNumEntries - 1}.",
             
-            $"8 (keys 'E' and 'T'): Scrolls immediately to the top edge of the middle index {ScrollToMiddleIndex}.",
-            $"9 (keys 'E' and 'B'): Scrolls immediately to the bottom edge of the middle index {ScrollToMiddleIndex}.",
+            $"8 (keys 'E' and then 'T'): Scrolls immediately to the top edge of the middle index {ScrollToMiddleIndex}.",
+            $"9 (keys 'E' and then 'B'): Scrolls immediately to the bottom edge of the middle index {ScrollToMiddleIndex}.",
 
             $"10 (key 'C'): Cancels the current scroll call.",
             $"11 (key 'V'): Toggles the middle indicator on/off to know if we've properly centered on an index."
