@@ -25,9 +25,9 @@ They don't offer control. Many basic recyclers assume a static list of data with
 - Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases ("World Space" is untested)
 - Only uses native Unity UI elements
 - Fully commented and documented
-- Easy GameObject set up: simply add the Recycler component to a RectTransform.
 - List of demos for learning and debugging
 - An always up-to-date and queryable state of the currently active entries
+- Easy GameObject set up: simply add the Recycler component to a RectTransform.
 
 # Feature Videos
 ### Basic Functionality
