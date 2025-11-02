@@ -1,1 +1,2 @@
-PREREQUISITE: These demos require a reference to a DOTween asmdef. If one does not exist in your project in can be created through the DoTweenUtilityPanel: Tools -> Demigiant -> DoTween Utility Panel, and then clicking on "Create ASMDEF..."
+PREREQUISITE: 
+These demos require the DOTween package and a reference to the DOTween asmdef. If one does not exist in your project in can be created through the DoTweenUtilityPanel: Tools -> Demigiant -> DoTween Utility Panel, and then clicking on "Create ASMDEF..."
