@@ -1028,7 +1028,7 @@ namespace Swill.Recycler
         /// This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will
         /// be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
-        [CalledByRecyclerContent]
+        [UsedByRecyclerContent]
         public void RecalculateEntryHeight(RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry, float? newHeight, FixEntries fixEntries = FixEntries.Below)
         {
             if (_activeEntries.ContainsKey(entry.Index))
@@ -1048,7 +1048,7 @@ namespace Swill.Recycler
         /// This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored, and the parameter will
         /// be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
-        [CalledByRecyclerContent]
+        [UsedByRecyclerContent]
         public void RecalculateEndcapHeight(float? newHeight, FixEntries? fixEntries = null)
         {
             if (IsEndcapActive)

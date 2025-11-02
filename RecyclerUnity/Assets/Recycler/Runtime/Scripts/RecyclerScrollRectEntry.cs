@@ -38,6 +38,7 @@ namespace Swill.Recycler
         /// <summary>
         /// A unique id representing the GameObject this entry lives on.
         /// </summary>
+        [UsedByRecycler]
         public int UidGameObject { get; private set; }
 
         /// <summary>
@@ -124,7 +125,7 @@ namespace Swill.Recycler
         /// </summary>
         /// <param name="index"> The index of the entry. </param>
         /// <param name="entryData"> The data for the entry. </param>
-        [CalledByRecycler]
+        [UsedByRecycler]
         public void BindNewData(int index, TEntryData entryData)
         {
             Data = entryData;
@@ -135,7 +136,7 @@ namespace Swill.Recycler
         /// <summary>
         /// Called by the recycler to rebind the entry to its currently bound data.
         /// </summary>
-        [CalledByRecycler]
+        [UsedByRecycler]
         public void RebindExistingData()
         {
             OnCachedRebind();
@@ -144,7 +145,7 @@ namespace Swill.Recycler
         /// <summary>
         /// Called by the recycler when the entry gets recycled.
         /// </summary>
-        [CalledByRecycler]
+        [UsedByRecycler]
         public void Recycle()
         {
             if (IsVisible.HasValue)
@@ -159,7 +160,7 @@ namespace Swill.Recycler
         /// <summary>
         /// Called by the recycler to reset the entry to its default unbound index.
         /// </summary>
-        [CalledByRecycler]
+        [UsedByRecycler]
         public void UnbindIndex()
         {
             SetIndex(UnboundIndex);
@@ -168,7 +169,7 @@ namespace Swill.Recycler
         /// <summary>
         /// Called by the recycler to set the entry's index.
         /// </summary>
-        [CalledByRecycler]
+        [UsedByRecycler]
         public void SetIndex(int index)
         {
             Index = index;
@@ -179,7 +180,7 @@ namespace Swill.Recycler
         /// Called by the recycler to set the current visible state of the entry
         /// </summary>
         /// <param name="isVisible"> Whether the entry is visible (null indicates the entry is in the pool) </param>
-        [CalledByRecycler]
+        [UsedByRecycler]
         public void SetVisibility(bool? isVisible)
         {
             bool? lastIsVisible = IsVisible;

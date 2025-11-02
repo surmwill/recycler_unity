@@ -64,7 +64,7 @@ namespace Swill.Recycler
         /// <summary>
         /// Lifecycle method called when the endcap becomes active, being fetched from its pool.
         /// </summary>
-        [CalledByRecycler]
+        [UsedByRecycler]
         protected virtual void OnFetchedFromPool()
         {
             // Empty   
@@ -73,7 +73,7 @@ namespace Swill.Recycler
         /// <summary>
         /// Lifecycle method called when the endcap gets returned to its pool.
         /// </summary>
-        [CalledByRecycler]
+        [UsedByRecycler]
         protected virtual void OnReturnedToPool()
         {
             // Empty
@@ -96,7 +96,7 @@ namespace Swill.Recycler
         /// <summary>
         /// Called by the recycler when the endcap gets fetched from the pool
         /// </summary>
-        [CalledByRecycler]
+        [UsedByRecycler]
         public void FetchFromPool()
         {
             OnFetchedFromPool();
@@ -105,7 +105,7 @@ namespace Swill.Recycler
         /// <summary>
         /// Called by the recycler when the endcap gets returned to the pool
         /// </summary>
-        [CalledByRecycler]
+        [UsedByRecycler]
         public void ReturnToPool()
         {
             if (IsVisible.HasValue)
@@ -121,7 +121,7 @@ namespace Swill.Recycler
         /// Called by the recycler to set the current visible state of the entry
         /// </summary>
         /// <param name="isVisible"> Whether the entry is visible (null indicates the entry is in the pool) </param>
-        [CalledByRecycler]
+        [UsedByRecycler]
         public void SetVisibility(bool? isVisible)
         {
             bool? lastIsVisible = IsVisible;
