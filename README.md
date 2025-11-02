@@ -503,46 +503,6 @@ public TEndcap GetEndcap<TEndcap>()
 
 Returns the endcap if it exists, or null otherwise.
 
-### RecalculateEntryHeight
-```
-public void RecalculateEntrySize(RecyclerScrollRectEntry<TEntryData, TKeyEntryData> entry, float? newHeight, FixEntries fixEntries)
-```
-Called when an entry needs to update its height in the recycler. This should never need to be called directly, instead using `RecyclerScrollRectEntry.RecalculateHeight`.
-Note that this triggers a layout rebuild of the entry, incorporating any changes in its auto-calculated size.
-
-<ins>Parameters</ins>
-- `entry:` the entry with an updated dimensions
-- `newHeight:` The new height the entry should be set to, null if it should be auto-calculated.
-- `fixEntries:` if we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy. This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
-
-### RecalculateEndcapHeight
-```
-public void RecalculateEndcapHeight(float? newHeight, FixEntries fixEntries)
-```
-Called when an endcap needs to update its height in the recycler. This should never need to be called directly, instead using `RecyclerScrollRectEndcap.RecalculateHeight`.
-
-<ins>Parameters</ins>
-- `newHeight:` the new height of the endcap, null if it is auto-calculated.
-- `fixEntries:` if we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy. This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
-
-### OnPointerDown
-```
-public void OnPointerDown(PointerEventData eventData)
-```
-Unity input event for when the user starts holding down the recycler. Stops any `ScrollToIndex/Key` calls.
-
-<ins>Parameters</ins>
-- `eventData:` data about the pointer down event
-
-### OnPointerUp
-```
-public void OnPointerUp(PointerEventData eventData)
-```
-Unity input event for when the user stops holding down the recycler. Permits new `ScrollToIndex/Key` calls.
-
-<ins>Parameters</ins>
-- `eventData:` data about the pointer up event
-
 ### DataForEntries
 ```
 public IReadOnlyList<TEntryData> DataForEntries { get; }
@@ -562,14 +522,14 @@ Returns the currently active entries: visible and cached. The key is their index
 public IRecyclerScrollRectActiveEntriesWindow ActiveEntriesWindow { get; }
 ```
 
-Returns information about the current index ranges of active entries.
+Returns information about the current index and key ranges of active entries.
 
 ### Endcap
 ```
 public RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> Endcap { get; }
 ```
 
-Returns a reference to the endcap - if it exists.
+Returns a reference to the endcap, if it exists.
 
 ### AppendTo
 ```
@@ -610,15 +570,6 @@ public TEntryData Data { get; }
 
 The data this entry is currently bound to.
 
-### State
-```
-public RecyclerScrollRectContentState State { get; }
-```
-
-The current state of the entry.
-
-Note that until binding/rebinding is complete, the state will report as in the pool.
-
 ### Recyler
 ```
 public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; }
@@ -633,16 +584,16 @@ public RectTransform { get; }
 
 The entry's RectTransform.
 
-### UIDGameObject
+### IsVisible
 ```
-public int UidGameObject { get; private set; }
+public bool? IsVisible { get; } 
 ```
 
-A unique id representing the GameObject this entry lives on.
+Whether the entry is visible on screen, or not visible and in the cache. A null value indicatees it's inactive and in the recycling pool.
 
-### OnBindNewData
+### OnBind
 ```
-protected abstract void OnBindNewData(TEntryData entryData)
+protected abstract void OnBind(TEntryData entryData)
 ```
 
 Lifecycle method called when the entry becomes active and bound to a new piece of data.
@@ -650,42 +601,53 @@ Lifecycle method called when the entry becomes active and bound to a new piece o
 <ins>Parameters</ins>
 - `entryData:` the data the entry is being bound to.
 
-### OnRebindExistingData
+### OnCachedRebind
 ```
-protected virtual void OnRebindExistingData()
+protected virtual void OnCachedRebind()
 ```
 
-Lifecycle method called instead of `OnBindNewData` when the data to be bound to is the same data that's already bound. 
+Lifecycle method called instead of `OnBind` when the data to be bound is the same data that it's already bound to.
 (Note that entries maintain their state when recycled, only losing it when being bound to new data).
 
-### OnSentToRecycling
+### OnRecycled
 ```
-protected virtual void OnSentToRecyling()
+protected virtual void OnRecycled()
 ```
 
 Lifecycle method called when the entry gets sent back to the recycling pool.
 
-### OnStateChanged
+### OnVisibilityChanged
 ```
-protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+protected virtual void OnVisibilityChanged(bool isVisible, bool isInitial)
 ```
 
-Lifecycle method called when the state of the entry changes.
-Note that if entry's previous state was in the pool, the new state is the initial state of the entry post-binding/rebinding.
+Lifecycle method called when the visibility of an active entry changes.
+(Note that recycled entries will not have this invoked).
 
 <ins>Parameters</ins>
-- `prevState:` the previous state of the entry
-- `newState:` the current state of the entry
+- `isVisible:` whether the entry is visible in the viewport or not
+- `isInitial:` whether this is the first visible state after data binding.
 
 ### RecalculateHeight
 ```
-protected void RecalculateHeight(float? newHeight, FixEntries fixEntries)
+protected void RecalculateHeight(float newHeight, FixEntries fixEntries)
 ```
 
 Called when an entry needs to update its height in the recycler.
 
 <ins>Parameters</ins>
-- `newHeight:` the new height the entry should be set to, null if it should be auto-calculated.
+- `newHeight:` the new height the entry should be set to
+- `fixEntries:` if we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
+This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
+
+### AutoRecalculateHeight
+```
+protected void AutoRecalculateHeight(FixEntries fixEntries)
+```
+
+Called when an entry needs to recalculate its auto-sized height in the recycler.
+
+<ins>Parameters</ins>
 - `fixEntries:` if we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
 This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
