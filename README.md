@@ -736,8 +736,7 @@ A unique key identifying the piece of data.
 
 ## IRecyclerScrollRectActiveEntriesWindow
 
-Interface for the user to query the various index ranges of active entries in the recycler. 
-Can be combined with the `RecyclerScrollRect.ActiveEntries` dictionary.
+Interface for the user to query the various index/key ranges of active entries in the recycler. 
 
 ### Exists
 ```
@@ -772,7 +771,33 @@ The range of entry indices contained in the end cache. Null if the range is empt
 public (int Start, int End)? ActiveEntriesRange { get; }
 ```
 
-The range of indices of active entries: both visible and cached. Null if the range is empty.
+### IsVisible
+```
+public bool IsVisible(int index)
+```
+
+Returns true if the entry with the given index is visible
+
+### IsInStartCache
+```
+public bool IsInStartCache(int index)
+```
+
+Returns true if the entry with the given index is in the start cache
+
+### IsInEndCache
+```
+public bool IsInEndCache(int index)
+```
+
+Returns true if the entry with the given index is in the end cache
+
+### Contains
+```
+public bool Contains(int index)
+```
+
+Returns true if the entry with the given index is active (visible, in the start cache, or in the end cache)
 
 ### PrintRanges
 ```
@@ -787,6 +812,77 @@ public IEnumerator<int> GetEnumerator()
 ```
 
 Returns the indices of all the active entries in increasing order.
+
+The range of indices of active entries: both visible and cached. Null if the range is empty.
+
+### GetActiveKeys
+```
+public IEnumerable<TKeyEntryData> GetActiveKeys()
+```
+
+The range of keys of active entries: both visible and cached. Empty if the range is empty.
+
+### GetStartCacheKeys
+```
+public IEnumerable<TKeyEntryData> GetStartCacheKeys()
+```
+
+Returns the keys of the entries currently in the start cache. Empty if the range is empty.
+
+### GetEndCacheKeys
+```
+public IEnumerable<TKeyEntryData> GetEndCacheKeys()
+```
+
+Returns the keys of the entries currently in the end cache. Empty if the range is empty.
+
+### IsKeyVisible
+```
+public bool IsKeyVisible(TKeyEntryData key)
+```
+
+Returns true if the entry with the given key is visible.
+
+<ins>Parameters</ins>
+- `key:` the key of the entry
+
+### IsKeyInStartCache
+```
+public bool IsKeyInStartCache(TKeyEntryData key)
+```
+
+Returns true if the entry with the given key is in the start cache
+
+<ins>Parameters</ins>
+- `key:` the key of the entry
+
+### IsKeyInEndCache
+```
+public bool IsKeyInEndCache(TKeyEntryData key)
+```
+
+Returns true if the entry with the given key is in the end cache
+
+<ins>Parameters</ins>
+- `key:` the key of the entry
+
+
+### ContainsKey
+```
+public bool ContainsKey(TKeyEntryData key)
+```
+
+Returns true if the entry with the given key is active (visible, in the start cache, or in the end cache)
+
+<ins>Parameters</ins>
+- `key:` the key of the entry
+
+### PrintKeyRanges
+```
+public string PrintKeyRanges()
+```
+
+Returns a string detailing the current range of active entry keys
 
 ## FixEntries
 
