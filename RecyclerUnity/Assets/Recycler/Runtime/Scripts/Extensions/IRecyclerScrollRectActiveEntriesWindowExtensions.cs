@@ -100,7 +100,7 @@ public static class IRecyclerScrollRectActiveEntriesWindowExtensions
     }
     
     /// <summary>
-    /// Returns information about the current ranges of entry ikeys
+    /// Returns information about the current ranges of entry keys
     /// </summary>
     /// <returns> A string detailing the current ranges of entry keys </returns>
     public static string PrintKeyRanges<TKeyEntryData, TEntryData>(this IRecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> activeEntriesWindow)

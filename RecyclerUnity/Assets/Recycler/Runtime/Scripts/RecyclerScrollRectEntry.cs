@@ -69,7 +69,7 @@ namespace Swill.Recycler
         }
         
         /// <summary>
-        /// Called when an entry needs to recalculate its height in the recycler.
+        /// Called when an entry needs to recalculate its auto-sized height in the recycler.
         /// </summary>
         /// <param name="fixEntries">
         /// If we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
@@ -90,7 +90,7 @@ namespace Swill.Recycler
         protected abstract void OnBind(TEntryData entryData);
 
         /// <summary>
-        /// Lifecycle method called instead of OnBind when the data to be bound to is the same data that's already bound.
+        /// Lifecycle method called instead of OnBind when the data to be bound is the same data that it's already bound to.
         /// (Entries maintain their data/state when recycled, only losing it when being bound to new data).
         /// </summary>
         protected virtual void OnCachedRebind()
@@ -107,7 +107,7 @@ namespace Swill.Recycler
         }
         
         /// <summary>
-        /// Called when the visibility of the entry changes as it enters and leaves the viewport
+        /// Called when the visibility of an active entry changes. (Note that recycled entries will not have this invoked).
         /// </summary>
         /// <param name="isVisible"> Whether the entry is visible in the viewport </param>
         /// <param name="isInitial"> Whether this is the initial visible state of the entry </param> 

@@ -64,7 +64,6 @@ namespace Swill.Recycler
         /// <summary>
         /// Lifecycle method called when the endcap becomes active, being fetched from its pool.
         /// </summary>
-        [UsedByRecycler]
         protected virtual void OnFetchedFromPool()
         {
             // Empty   
@@ -73,14 +72,13 @@ namespace Swill.Recycler
         /// <summary>
         /// Lifecycle method called when the endcap gets returned to its pool.
         /// </summary>
-        [UsedByRecycler]
         protected virtual void OnReturnedToPool()
         {
             // Empty
         }
         
         /// <summary>
-        /// Called when the visibility of the endcap changes as it enters and leaves the viewport
+        /// Called when the visibility of the endcap changes as it enters and leaves the viewport. (Note that a pooled endcap will not have this invoked)
         /// </summary>
         /// <param name="isVisible"> Whether the endcap is visible in the viewport </param>
         /// <param name="isInitial"> Whether this is the initial visible state of the endcap </param> 
