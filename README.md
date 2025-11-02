@@ -22,7 +22,7 @@ They don't offer control. Many basic recyclers assume a static list of data with
 - Endcaps
 - Scrolling to any index (including those off-screen)
 - State changes (know when an entry becomes visible or not)
-- Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases ("World Space" is untested)
+- Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases
 - Only uses native Unity UI elements
 - Fully commented and documented
 - List of demos for learning and debugging
