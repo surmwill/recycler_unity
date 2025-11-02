@@ -1,8 +1,5 @@
-using System.IO;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Swill.Recycler.Demos
 {
@@ -13,23 +10,12 @@ namespace Swill.Recycler.Demos
     {
         [SerializeField]
         private DemoMenuRecycler _demoMenuRecycler = null;
-
-        [SerializeField]
-        private string[] _sceneNames = null;
         
         private void Start()
         {
-            _demoMenuRecycler.AppendEntries(_sceneNames.Select(sceneName => new DemoMenuData(sceneName)));
-        }
-
-        private void OnValidate()
-        {
-            #if UNITY_EDITOR
-            _sceneNames = EditorBuildSettings.scenes
-                .Select(scenePath => Path.GetFileNameWithoutExtension(scenePath.path))
-                .Where(sceneName => sceneName != SceneManager.GetActiveScene().name)
-                .ToArray();
-            #endif
+            _demoMenuRecycler.AppendEntries(RecyclerDemoSceneNames.Names
+                .Where(sceneName => sceneName != RecyclerDemoSceneNames.DemoMenuSceneName)
+                .Select(sceneName => new DemoMenuData(sceneName)));
         }
     }
 }

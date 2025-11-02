@@ -5,6 +5,8 @@ namespace Swill.Recycler.Demos
     public static class RecyclerDemoSceneNames
     {
         private const string Prefix = "RecyclerDemo_";
+
+        public static string DemoMenuSceneName => Names[0];
         
         public static readonly string[] Names = new [] 
         {
