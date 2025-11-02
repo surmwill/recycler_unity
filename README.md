@@ -1,35 +1,17 @@
 # Intro
-A UI Recycler View for Unity, as a native one is not provided.
+- A UI Recycler View for Unity for efficently displaying long lists of data.
+- Works out-of-the-box with Unity's UI library, no external dependencies.
+- Basic functionality for simple cases (static, same sized entries), advanced functionality for advanced cases (insertion, deletion, different sized entries).
 
 ### Why do I need a Recycler?
-Lists of things to display often take up more space than what is available on screen (think of endlessly scrolling through emails or text messages).
-It makes no sense to waste resources on displaying what can't be seen. If we can only see 20 text messages, why spend time creating the entire 1000 message conversation?
+It is common for UIs to display long lists of items. While the list of items might be large, the size of your screen is not. A recycler ensures that only the items that fit on your screen are rendered. Instead of rendering all 2000 items for example, only the 8 that can be displayed on your screen are rendered. Those 8 items will have continually be re-used, having different data swapped into and out of them as navigate our current position in the list. In short, we use a very small amount of objects to represent a huge list of data.
 
-Recyclers address this. Instead of creating the entire list of things, we only create what can be seen, and a few entries just off-screen to smoothly scroll into.
-If we can only see 20 text messages on screen at a time, and we keep 2 extra messages cached on each end, waiting just above and below the screen to smoothly scroll into, we'll be managing the lifecycle of 24 things to display instead of the full 1000.
-This increases performance and reduces headaches. Once an entry has gone far enough offscreen, it is not thrown away but re-used for the next visible entry we are scrolling in to.
+### The problem with other Recyclers
+They don't offer control. Many basic recyclers assume a static list of data with entries of fixed size, but this is inadequate, for example, for chat messages of varying sizes being continually inserted, deleted, and modified. This basic functionality falls short for many applications, and using a basic recycler for advanced cases can leave a UI lacking polish. Additionally, there is little insight into what entries are currently on-screen and their state. 
 
-In the feature videos below, on the left hand side (the hierarchy), you will see the current list of entries. The numbers on these entries will change as we scroll through the list.
-Each number represents the current piece of data (its index) that an entry is displaying. 
-Importantly, the number of entries stays small; even when we're scrolling through a list of 100s of pieces of data we always have < 20 active at any given moment. 
-The changing numbers is exactly the process of recycling: re-using an old entry with new data.
+The aim of this recycler is to make it feel like a powerful tool, instead of a black box you're forced to work around.
 
-### Why choose this Recycler?
-Transforming Unity's ScrollRect into a Recycler is already difficult, and other packages can be found implementing a Recycler, but none offer the functionality given here.
-**Other Recylers assume:**
-- **Entries have static dimensions.**
-  <br>(A text message would be unable to resize after creation to show an asynchronously loaded link preview.)
-- **Entries all have the same dimensions.**
-  <br>(Each text message would be required to take up the same amount of room in the conversation, leaving lots of empty space.)
-- **The data stays static:** no inserting or removing entries without recreating the entire list.
-  <br>(No inserting or deleting text messages.)
-- **No endcaps**: sometimes you want one slightly different entry from the rest at the bottom of the list, as it serves a different purpose.
-  <br>(A loading indicator that fetches and appends the next page of text messages from a database.)
-- **No scrolling to an entry:** unless you calculate it's (x,y) or normalized scroll position yourself, which is usually unintuitive.
-- **No auto-calculated layouts** you must know the size of your entries before creating them.
-  <br>(You would manually have to calculate the size of each encompassing chat bubble for every message.) 
-
-Here, **all those cases are covered with the following features:** 
+### Features
 - Appending
 - Prepending
 - Insertion
@@ -38,13 +20,14 @@ Here, **all those cases are covered with the following features:**
 - Dynamically sized entries (auto-calculation supported)
 - Resizing (auto-calculation supported)
 - Endcaps
-- Scrolling to any index (including those off screen)
-- State changes (know when an entry is cached, visible, or in the recycling pool)
+- Scrolling to any index (including those off-screen)
+- State changes (know when an entry becomes visible or not)
 - Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases ("World Space" is untested)
-- Fully tested: 10+ demos isolating and testing individual pieces of functionality, 7 debug checks running every frame ensuring a valid recycler. (Note: all tests run outside of the package as per Unity Asset Store guidlines.) 
 - Only uses native Unity UI elements
 - Fully commented and documented
-- Easy GameObject set up: simply add your recycler component to a RectTransform.
+- Easy GameObject set up: simply add the Recycler component to a RectTransform.
+- List of demos for learning and debugging
+- An always up-to-date and queryable state of the currently active entries
 
 # Feature Videos
 ### Basic Functionality
