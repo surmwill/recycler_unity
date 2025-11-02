@@ -452,47 +452,56 @@ public void CancelScrollTo()
 ```
 Cancels the current `ScrollToIndex/Key` call.
 
-### GetCurrentIndexForKey
+### GetActiveEntryWithIndex
 ```
-public int GetCurrentIndexForKey(TKeyEntryData key)
+public TEntry GetActiveEntryWithIndex<TEntry>(int index)
 ```
-Returns the current index of the entry with a given key.
 
 <ins>Parameters</ins>
-- `key:` the key of the entry to get the current index of
+- `index:` the index of the active entry
 
-### GetKeyForCurrentIndex
-```
-public TKeyEntryData GetKeyForCurrentIndex(int index)
-```
-Returns the key of the entry at the give index.
+- <ins>Exceptions</ins>
+- `ArgumentException:` thrown when the index of the entry is not active
 
-<ins>Parameters</ins>
-- `index:` the index of entry to get the key of
+### TryGetActiveEntryWithIndex
+```
+public bool TryGetActiveEntryWithIndex<TEntry>(int index, out TEntry entry)
+```
 
-### GetStateOfEntryWithIndex
-```
-public RecyclerScrollRectContentState GetStateOfEntryWithIndex(int index)
-```
-Returns the state of the entry with a given index.
+Tries to get the active entry at a given index, returning true and the entry if the index is indeed active, and false otherwise.
 
 <ins>Parameters</ins>
-- `index:` the index of the entry to check the state of
+- `index:` the index of the active entry to try and get
+- `entry:` the active entry with the given index or null
 
-### GetStateOfEntryWithKey
+### GetActiveEntryWithKey
 ```
-public RecyclerScrollRectContentState GetStateOfEntryWithCurrentIndex(TKeyEntryData key)
+public TEntry GetActiveEntryWithKey<TEntry>(TKeyEntryData key)
 ```
-Returns the state of the entry with the given key.
 
 <ins>Parameters</ins>
-- `key:` the key of the entry to check the state of
+- `key:` the key of the active entry
 
-### GetStateOfEndcap
+- <ins>Exceptions</ins>
+- `ArgumentException:` thrown when the entry with the given key is not active
+
+### TryGetActiveEntryWithKey
 ```
-public RecyclerScrollRectContentState GetStateOfEndcap()
+public bool TryGetActiveEntryWithKey<TEntry>(TKeyEntryData key, out TEntry entry)
 ```
-Returns the state of the endcap.
+
+Tries to get the active entry with the given key, returning true and the entry if it is indeed active, and false otherwise.
+
+<ins>Parameters</ins>
+- `key:` the key of the active entry
+- `entry:` the active entry with the given key or null
+
+### GetEndcap
+```
+public TEndcap GetEndcap<TEndcap>()
+```
+
+Returns the endcap if it exists, or null otherwise.
 
 ### RecalculateEntryHeight
 ```
