@@ -460,7 +460,7 @@ public TEntry GetActiveEntryWithIndex<TEntry>(int index)
 <ins>Parameters</ins>
 - `index:` the index of the active entry
 
-- <ins>Exceptions</ins>
+<ins>Exceptions</ins>
 - `ArgumentException:` thrown when the index of the entry is not active
 
 ### TryGetActiveEntryWithIndex
@@ -482,7 +482,7 @@ public TEntry GetActiveEntryWithKey<TEntry>(TKeyEntryData key)
 <ins>Parameters</ins>
 - `key:` the key of the active entry
 
-- <ins>Exceptions</ins>
+<ins>Exceptions</ins>
 - `ArgumentException:` thrown when the entry with the given key is not active
 
 ### TryGetActiveEntryWithKey
