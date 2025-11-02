@@ -833,31 +833,31 @@ An enum defining two important locations of the recycler list: the top and botto
 
 # Nuances
 
-### Entries set their own auto-size.
+### Entries control their own auto-size.
 
-If your content is auto-sized, then entries must control their own width and height as a side effect of necessary performance concessions (editor checks will ensure this).
+If your content is auto-sized, then entries must control their own width and height as a side effect of necessary performance concessions, and use their own `ContentSizeFitters`.
 
 Instead of what is typically done, with having the root (Entries) controlling sizes:
 
 <pre>
-Entries
-  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked)
-  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked)
-  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked)
+Entries (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> and a <strong>ContentSizeFitter</strong>)
+  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked)
+  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked)
+  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked)
 </pre>
   
 We need:
 
 <pre>
-Entries
-  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
-  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
-  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i>, <i>controlChildWidth</i> checked, and a <strong>ContentSizeFitter</strong>)
+Entries (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> and a <strong>ContentSizeFitter</strong>)
+  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
+  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
+  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
 </pre>
 
 ### Entries are default expanded to the Recycler's width.
 
-The root transform of each entry will be force expanded to the width of the recycler. Should you want a different width, a child transform with the desired width can be created and the root left empty.
+The root transform of each entry will be expanded to the width of the recycler regardless of if their width is being force expanded by `Entries' layout group or not. Should you want a different width, a child transform with the desired width can be created and the root left empty.
 
 ### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots is `LayoutGroups` and `ContentSizeFitters`.
 
