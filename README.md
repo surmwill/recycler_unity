@@ -9,7 +9,7 @@ It is common for UIs to display long lists of items. While the list of items mig
 ### The problem with other Recyclers
 They don't offer control. Many basic recyclers assume a static list of data with entries of fixed size, but this is inadequate, for example, for chat messages of varying sizes being continually inserted, deleted, and modified. This basic functionality falls short for many applications, and using a basic recycler for advanced cases can leave a UI lacking polish. Additionally, there is little insight into what entries are currently on-screen and their state. 
 
-The aim of this recycler is to make it feel like a powerful tool, instead of a black box you're forced to work around.
+<b>The aim of this recycler is to make it feel like a powerful tool, instead of a black box you're forced to work around.</b>
 
 ### Features
 - Appending
