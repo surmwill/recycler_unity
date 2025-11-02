@@ -651,40 +651,6 @@ Called when an entry needs to recalculate its auto-sized height in the recycler.
 - `fixEntries:` if we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
 This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
-### Other
-
-Below are public functions called on the entries by the recycler to manage their state and lifecycle. **They are not intended for the user to call.** They are listed here for the sake of completeness.
-
-#### BindNewData
-`public void BindNewData(int index, TEntryData entryData)`
-
-Called by the recycler to bind the entry to a new set of data.
-
-#### RebindExisingData
-`public void RebindExistingData()`
-
-Called by the recycler to rebind the entry to its currently bound data.
-
-#### OnRecycled
-`public void OnRecycled()`
-
-Called by the recycler when the entry gets recycled.
-
-#### UnbindIndex
-`public void UnbindIndex()`
-
-Called by the recycler to reset the entry to its default unbound index.
-
-#### SetIndex
-`public void SetIndex(int index)`
-
-Called by the recycler to set the the entry's index.
-
-#### SetState
-`public void SetState(RecyclerScrollRectContentState newState)`
-
-Called by the recycler to set the current state of the entry.
-
 ## RecyclerScrollRectEndcap
 
 ### Recyler
@@ -694,14 +660,12 @@ public RecyclerScrollRect<TEntryData, TKeyEntryData> Recycler { get; }
 
 The Recycler this endcap is a part of.
 
-### State
+### IsVisible
 ```
-public RecyclerScrollRectContentState State { get; }
+public bool? IsVisible { get; }
 ```
 
-The current state of the endcap.
-
-Note that until fetching is complete, the state will report as in the pool.
+Whether the endcap is visible in the viewport or not. Null indicates it is pooled.
 
 ### RectTransform
 ```
@@ -724,16 +688,17 @@ public virtual void OnReturnedToPool()
 
 Lifecycle method called by the recycler when the end-cap gets returned to its pool.
 
-### OnStateChanged
+### OnVisiblityChanged
 ```
-protected virtual void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+protected virtual void OnVisibilityChanged(bool isVisible, bool isInitial)
 ```
 
-Lifecycle method called when the state of the endcap changes.
+Called when the visibility of the endcap changes as it enters and leaves the viewport.
+(Note that a pooled endcap will not have this invoked.)
 
 <ins>Parameters</ins>
-- `prevState:` the previous state the endcap was in.
-- `newState:` the new state the endcap is currently in.
+- `isVisible:` whether the endcap is visible in the viewport or not.
+- `isInitial:` whether this is the first visible state of the endcap after being fetched from the pool.
 
 ### RecalculateHeight
 ```
@@ -747,12 +712,16 @@ Called when the endcap needs to update its height in the recycler.
 - `fixEntries:` if we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy.
 This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
-### Other (SetState)
+### AutoRecalculateHeight
 ```
-public void SetState(RecyclerScrollRectContentState newState)
+protected void AutoRecalculateHeight(FixEntries? fixEntries)
 ```
 
-This method is intended to be called by the recycler **and not the user** to update the endcap's state. It is listed here for the sake of completeness.
+Called when the endcap needs to recalculate its auto-sized height.
+
+<ins>Parameters</ins>
+- `fixEntries:` if we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy.
+This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
 ## IRecyclerScrollRectData
 
