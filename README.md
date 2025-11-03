@@ -37,7 +37,7 @@ They don't offer control. Many basic recyclers assume a static list of data with
 - An always up-to-date and queryable state of the currently active entries
 - Easy GameObject set up: simply add the Recycler component to a RectTransform.
 
-See videos of the features https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculateheight
+See videos of the features [](https://github.com/surmwill/recycler_unity/blob/master/README.md#feature-videos)
 
 # Getting Started
 
