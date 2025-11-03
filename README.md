@@ -37,44 +37,7 @@ They don't offer control. Many basic recyclers assume a static list of data with
 - An always up-to-date and queryable state of the currently active entries
 - Easy GameObject set up: simply add the Recycler component to a RectTransform.
 
-# Feature Videos
-### Basic Functionality
-![](README_Images/recycler_basic_functionality.gif)
-
-### Insertion and deletion
-Adding and deleting from the end.
-
-![](README_Images/recycler_pretty_insert_and_delete_end.gif)
-
-Adding and deleting from the middle.
-
-![](README_Images/recycler_pretty_insert_and_delete_middle.gif)
-
-### Appending/Prepending/Endcap
-- Equivalent behaviour is available for prepending.
-- Similar to insertion but more efficient.
-  
-![](README_Images/recycler_appending_and_endcap.gif)
-
-### Scrolling to index
-- Here we are scrolling to index 45.
-- Includes indices that are not currently active in the recycler.
-- Works with dynamically sized entries.
-- Center on different part of the entry: middle, top edge, bottom edge.
-- An immediate scroll is available.
-  
-![](README_Images/recycler_scroll_to_index.gif)
-
-### Auto-sized entries
-- Here each entry generates a random number of lines of text. The entry is auto-sized to fit the text using a `VerticalLayoutGroup` and a `ContentSizeFitter`.
-
-![](README_Images/recycler_autosize.gif)
-
-### State changes
-- Know when an entry is visible or not.
-- Here entries become yellow when visible, and blue when off-screen.
-
-![](README_Images/recycler_visibility_change.gif)
+See videos of the features https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculateheight
 
 # Getting Started
 
@@ -944,13 +907,52 @@ This includes things such as `Images`, which should go under a child transform i
 
 ### Entries must update their height through the recycler.
 
-In order for height changes to be properly reflected in the recycler, the entry must call [RecalculateHeight](https://github.com/surmwill/recycler_unity/tree/master/README.md#recalculateheight) to set its new height.
+In order for height changes to be properly reflected in the recycler, the entry must call `RecalculateHeight` to set its new height.
 
 For example, to animate an entry growing using DoTween, the below code is used to update the Recycler at each step.
 
 ```
 DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight), TargetHeight, Time);
 ```
+
+# Feature Videos
+### Basic Functionality
+![](README_Images/recycler_basic_functionality.gif)
+
+### Insertion and deletion
+Adding and deleting from the end.
+
+![](README_Images/recycler_pretty_insert_and_delete_end.gif)
+
+Adding and deleting from the middle.
+
+![](README_Images/recycler_pretty_insert_and_delete_middle.gif)
+
+### Appending/Prepending/Endcap
+- Entries are appended once the endcap becomes visible for a time
+- Equivalent behaviour can be achieved for prepending
+  
+![](README_Images/recycler_appending_and_endcap.gif)
+
+### Scrolling to index
+- Here we are scrolling to index 45.
+- Includes indices that are not currently active in the recycler.
+- Works with dynamically sized entries.
+- Center on different part of the entry: middle, top edge, bottom edge.
+- An immediate scroll to any index is also available.
+  
+![](README_Images/recycler_scroll_to_index.gif)
+
+### Auto-sized entries
+- Here each entry generates a random number of lines of text. The entry is auto-sized to fit the text using a `VerticalLayoutGroup` and a `ContentSizeFitter`.
+
+![](README_Images/recycler_autosize.gif)
+
+### State changes
+- Know when an entry is visible or not.
+- Here entries become yellow when visible, and blue when off-screen.
+
+![](README_Images/recycler_visibility_change.gif)
 
 # Repo Organization
 The package is self-contained under the directory:
