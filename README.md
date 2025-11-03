@@ -3,6 +3,12 @@
 - Works out-of-the-box with Unity's UI library, no external dependencies.
 - Basic functionality for simple cases (static, same sized entries), advanced functionality for advanced cases (insertion, deletion, different sized entries).
 
+### Basic
+![](README_Images/recycler_basic_functionality.gif)
+
+### Advanced
+![](README_Images/recycler_pretty_preview.gif)
+
 ### Why do I need a Recycler?
 It is common for UIs to display long lists of items. While the list of items might be large, the size of your screen is not. A recycler ensures that only the items that fit on your screen are rendered. Instead of rendering all 2000 items for example, only the 8 that can be displayed on your screen are rendered. Those 8 items will have continually be re-used, having different data swapped into and out of them as navigate our current position in the list. In short, we use a very small amount of objects to represent a huge list of data.
 
