@@ -1,0 +1,29 @@
+﻿{
+  "name": "com.swill.recycler",
+  "version": "1.0.0",
+  "displayName": "Recycler Scroll Rect",
+  "description": "A UI recycler tool for efficiently displaying long lists of data.",
+  "unity": "2022.3",
+  "keywords": [
+    "tools",
+    "utilities",
+    "UI",
+    "recycler",
+    "list",
+    "scroll",
+    "ScrollRect"
+  ],
+  "author": {
+    "name": "William Surmak",
+    "url": "https://github.com/surmwill/recycler_unity"
+  },
+  "documentationUrl": "https://github.com/surmwill/recycler_unity",
+  "licensesUrl": "https://github.com/surmwill/recycler_unity/blob/master/RecyclerUnity/Assets/Recycler/LICENSE.md",
+  "samples": [
+    {
+      "displayName": "All Examples",
+      "description": "A main menu containing options to demo each individual feature.",
+      "path": "Samples~"
+    }
+  ]
+}
