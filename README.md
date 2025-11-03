@@ -96,7 +96,7 @@ public class DemoRecyclerData : IRecyclerScrollRectData<string>
 ### 2. The Recycler Entry
 
 Recycler entries are prefabs that get passed pieces of data for display. The prefab must contain a `RecyclerScrollRectEntry<TEntryDataKey, TEntryData>` component at the root of the prefab. 
-Note that as generic classes cannot be components, you must inherit from this generic class and supply your concrete types parameters (here `class DemoRecyclerEntry : RecyclerScrollRectEntry<string, DemoRecyclerData> { ... }`) to create a valid component.
+Note that as generic classes cannot be components, you must inherit from this generic class and supply your concrete types parameters (`class DemoRecyclerEntry : RecyclerScrollRectEntry<string, DemoRecyclerData> { ... }`) to create a valid component.
 
 Upon creating the class you will be asked to implement one necessary lifecycle method, and you can optionally implement others.
 
