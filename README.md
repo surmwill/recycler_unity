@@ -96,7 +96,7 @@ public class DemoRecyclerData : IRecyclerScrollRectData<string>
 ### 2. The Recycler Entry
 
 Recycler entries are prefabs that get passed pieces of data for display. The prefab must contain a `RecyclerScrollRectEntry<TEntryDataKey, TEntryData>` component at the root of the prefab. 
-Note that as generic classes cannot be components, you must inherit from this generic class and supply your concrete types parameters `class DemoRecyclerEntry : RecyclerScrollRectEntry<string, DemoRecyclerData>` to create a valid component.
+Note that as generic classes cannot be components, you must inherit from this generic class and supply your concrete types parameters (here `class DemoRecyclerEntry : RecyclerScrollRectEntry<string, DemoRecyclerData> { ... }`) to create a valid component.
 
 Upon creating the class you will be asked to implement one necessary lifecycle method, and you can optionally implement others.
 
@@ -208,33 +208,30 @@ private void Start()
 
 ![](README_Images/creating_recycler_end_result.gif)
 
-### (Optional) Endcap
+### 4. (Optional) Endcap
 
-It might be useful to have a different entry at the end of the list than the others. 
-For example, this entry could have a button to fetch the next page of entries, or do so automatically upon becoming visible for a set amount of time.
-(Note: while we have no problem displaying a large amount of entries, fetching all the data to make them from a database could be costly $. Hence paging is still a useful concept.) 
+It might be useful to have a different entry (endcap) at the end of the list that looks and works different from all the others. For example, this endcap could have a button to fetch the next page of entries.
 
-The process is similar to creating a normal entry. Construct your prefab, then to make it operable with the Recycler include a `RecyclerScrollRectEndcap<TEntryData, TEntryDataKey>` component at the root, filled in
-with your corresponding key and data types. Again, as generic classes cannot be components we must create an instance of the generic class ourselves, and use that: `public class DemoEndcap : RecyclerScrollRectEndcap<DemoRecyclerData, string>`.
+The process is similar to creating a normal entry. Construct your prefab, and to make it operable with the Recycler include a `RecyclerScrollRectEndcap<TEntryData, TEntryDataKey>` component at the root.  
+Again, as generic classes cannot be components we must inherit from the class and supply our concrete types: `public class DemoEndcap : RecyclerScrollRectEndcap<DemoRecyclerData, string> { ... }`.
 
 We can optionally implement these two lifecycle methods, but they are not needed here.
 
 ```
 // Optional
-public virtual void OnFetchedFromPool()
+protected virtual void OnFetchedFromPool()
 {
-  // Called when the endcap has been fetched from its pool and become active.
-  // It is either visible on screen or waiting just offscreen in the cache.        
+  // Called when the endcap has been fetched from its pool and become active.      
 }
 
 // Optional
-public virtual void OnReturnedToPool()
+protected virtual void OnReturnedToPool()
 {
   // Called when the endcap has been returned to its pool
 }
 ```
 
-Serialize the endcap prefab in Recyler. A new pool for the endcap will get created:
+Serialize the endcap prefab in Recyler component. A new pool for the endcap will get created:
 
 ![](README_Images/creating_recycler_adding_endcap.gif)
 
