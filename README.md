@@ -38,6 +38,7 @@ They don't offer control. Many basic recyclers assume a static list of data with
 - List of demos for learning and debugging
 - An always up-to-date and queryable state of the currently active entries
 - Easy GameObject set up: simply add the Recycler component to a RectTransform.
+- Currently only vertical recyclers are supported
 
 <b>See videos of all the features [below](https://github.com/surmwill/recycler_unity/blob/master/README.md#feature-videos)</b>
 
