@@ -3,6 +3,8 @@
 - Works out-of-the-box with Unity's UI library, no external dependencies.
 - Basic functionality for simple cases (static, same sized entries), advanced functionality for advanced cases (insertion, deletion, different sized entries).
 
+The package is self-contained under RecyclerUnity/Assets/Recycler. The "Samples" folder is optional and can be safely deleted unless you wish to look at some demos.
+
 ### Basic
 ![](README_Images/recycler_basic_functionality.gif)
 
