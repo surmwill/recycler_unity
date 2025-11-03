@@ -848,22 +848,6 @@ Enum defining the position within an entry to center on when we scroll to it.
 - `EntryBottom:` center on the bottom edge of the entry.
 - `EntryTop:` center on the top edge of the entry.
 
-## RecyclerScrollRectContentState
-
-An enum describing the states that recycler entries or the endcap can be in.
-
-<ins>Values</ins>
-- `InactiveInPool:` the object is inactive in its pool, waiting to become active.
-- `ActiveVisible:` the object is active and visible on-screen.
-- `ActiveInStartCache:` the object is active, waiting just offscreen to be scrolled to.
-- `ActiveInEndCache:`  the object is active, waiting just offscreen to be scrolled to.
-
-Objects start as `InactiveInPool`, move to a `ActiveInStartCache` or `ActiveInEndCache` as we begin to scoll closer toward them, 
-become `ActiveVisible` upon entering the viewport, move to `ActiveInStartCache` or `ActiveInEndCache` as we begin to scroll away from them,
-and return to `InActiveInPool` once we have scrolled far enough away.
-
-If the scroll is particularly large, objects can move from `InactiveInPool` to `ActiveVisible` immediately.
-
 ## RecyclerPosition
 
 An enum defining two important locations of the recycler list: the top and bottom.
@@ -955,20 +939,3 @@ Adding and deleting from the middle.
 - Here entries become yellow when visible, and blue when off-screen.
 
 ![](README_Images/recycler_visibility_change.gif)
-
-# Repo Organization
-The package is self-contained under the directory:
-- [RecyclerUnity/Assets/Recycler/](RecyclerUnity/Assets/Recycler/)
-
-Its scripts can be found under:
-- [RecyclerUnity/Assets/Recycler/Scripts/](RecyclerUnity/Assets/Recycler/Scripts/)
-
-The two core classes - the Recycler and its entries - can be found under: 
-- [RecyclerUnity/Assets/Recycler/Scripts/RecyclerScrollRect.cs](RecyclerUnity/Assets/Recycler/Scripts/RecyclerScrollRect.cs)
-- [RecyclerUnity/Assets/Recycler/Scripts/RecyclerScrollRectEntry.cs](RecyclerUnity/Assets/Recycler/Scripts/RecyclerScrollRectEntry.cs) 
-
-Demo Scenes used for isolating and testing behaviour can be found under:
-- [RecyclerUnity/Assets/NonPackage/Scenes/Demos/](RecyclerUnity/Assets/NonPackage/Scenes/Demos/)
-
-The code used in the demos can be found under:
-- [RecyclerUnity/Assets/NonPackage/Scripts/Demos/](RecyclerUnity/Assets/NonPackage/Scripts/Demos/)
