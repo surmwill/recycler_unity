@@ -71,10 +71,10 @@ Adding and deleting from the middle.
 ![](README_Images/recycler_autosize.gif)
 
 ### State changes
-- Know when an entry is cached, visible, or in the recycling pool.
-- Here entries become yellow when visible, blue when in the start cache, and green when in the end cache.
+- Know when an entry is visible or not.
+- Here entries become yellow when visible, and blue when off-screen.
 
-![](README_Images/recycler_state_change.gif)
+![](README_Images/recycler_visibility_change.gif)
 
 # Getting Started
 
