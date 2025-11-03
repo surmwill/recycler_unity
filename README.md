@@ -73,18 +73,18 @@ Adding and deleting from the middle.
 # Getting Started
 
 You will need 3 things:
-1. The data you will pass to the Recycler (a normal C# class).
-2. A recycler entry to bind the data to (a prefab).
+1. The data you want to display in a list (a normal C# class).
+2. A recycler entry that takes your data and displays it (a prefab).
 3. The Recycler itself (a component).
 
-### The Data
+### 1. The Data
 
-Here is some sample data in which we store a word to display and a background color.
+Here is some sample data which contains a word we'd like to display along with a background color.
 
 ```
 public class DemoRecyclerData : IRecyclerScrollRectData<string>
 {
-    // IRecyclerScrollRectData<string> implementation
+    // Interface implementation. Each piece of data needs a unique key identifying it.
     public string Key => Word;
 
     public string Word { get; private set; }
@@ -93,63 +93,53 @@ public class DemoRecyclerData : IRecyclerScrollRectData<string>
 }
 ```
 
-Each piece of data is required to have a unique key, implemented by the `IRecyclerScrollRectData<TEntryDataKey>` interface. 
-As entries get added and removed their indices change. Instead of keeping track of all the shifting yourself, you can reference pieces of data by their unchanging keys.
+### 2. The Recycler Entry
 
-(Tip: a quick way to generate unique keys without much thought or structure is to generate a `Guid.NewGuid().ToString()` as a key. Keys are passed as a parameter to reference specific pieces of data;
-if you do not require such methods, the actual key is not that important apart from needing _something_ that is unique).
+Recycler entries are prefabs that get passed pieces of data for display. The prefab must contain a `RecyclerScrollRectEntry<TEntryDataKey, TEntryData>` component at the root of the prefab. 
+Note that as generic classes cannot be components, you must inherit from this generic class and supply your concrete types parameters `class DemoRecyclerEntry : RecyclerScrollRectEntry<string, DemoRecyclerData>` to create a valid component.
 
-### The Recycler Entry
+Upon creating the class you will be asked to implement one necessary lifecycle method, and you can optionally implement others.
 
-Recycler entries are prefabs that will get bound to your data. To begin, create the prefab. 
-
-To make it operable with the Recycler you must include a `RecyclerScrollRectEntry<TEntryData, TEntryDataKey>` component at the root of the prefab. 
-Specifically, as generic classes cannot be components, you must create an of instance of the generic class with your data and its corresponding key as the types `class DemoRecyclerEntry : RecyclerScrollRectEntry<DemoRecyclerData, string>`
-
-Upon creating the class you will be asked to implement one mandatory lifecycle method, with 3 other optional ones:
+The lifecycle can be described as:
+1. `OnBind/OnCachedRebind` - Initialization
+2. `OnVisibilityChanged` - State changes will initialized
+3. `OnRecycled` - Shutdown
 
 ```
 // Mandatory
-protected override void OnBindNewData(DemoRecyclerData entryData)
+protected override void OnBind(DemoRecyclerData entryData)
 {
-    // Called when this entry has been retrieved from the recycling pool and is being bound to new data
+    // This entry is being passed new data to display. Set images, text, etc...
 }
 
 // Optional
-protected override void OnRebindExistingData()
+protected override void OnCachedRebind()
 {
-    // Called instead of OnBindNewData when this entry is retrieved from the recycling pool and bound.
-    // Here, the only difference is the data being bound is the same data that the entry had before (and still currently contains).
-    // By default, nothing gets reset when an entry gets sent to recycling; hence we can pick up from the state right where we left off, just before it got recycled.
-    // We might, for example, resume a paused async operation here instead of starting it all over again.
+    // Called instead of OnBind when the entry is being bound with data it is already bound to.
+    // Note that entries stay bound to their last piece data until it is replaced with something new.
+    // Therefore images, text, etc... have already been set and remain available from the last OnBind.
+    // For this reason it is an optional method that can often be ignored.
 }
 
 // Optional
-protected override void OnSentToRecycling()
+protected override void OnRecycled()
 {
-    // Called when this entry has been sent back to the recycling pool.   
+    // Called when this entry has been sent back to the recycling pool.
+    // Any cleanup code can go here.
 }
 
 // Optional
-protected override void OnStateChanged(RecyclerScrollRectContentState prevState, RecyclerScrollRectContentState newState)
+protected override void OnVisibilityChanged(bool isVisible, bool isInitial)
 {
-    // Called when the state of the entry changes
+    // Called when the visible state of the entry changes.
+    // This callback is only invoked for active (non-recycled) entries.
 }
 ```
 
-We will use the passed data in `OnBindNewData` to adjust the appearance of the entry:
+For our simple example we implement `OnBind` to adjust the appearance of the entry:
 
 ```
-[SerializeField]
-private Text _wordText = null;
-
-[SerializeField]
-private Text _indexText = null;
-
-[SerializeField]
-private Image _background = null;
-
-protected override void OnBindNewData(DemoRecyclerData entryData)
+protected override void OnBind(DemoRecyclerData entryData)
 {
     // Set the word and background color to whatever is passed in the data
     _wordText.text = entryData.Word;
@@ -160,24 +150,26 @@ protected override void OnBindNewData(DemoRecyclerData entryData)
 }
 ```
 
-### The Recycler
+### 3. The Recycler
 
-Similar to creating the entry, we have a base `class RecyclerScrollRect<TEntryData, TKeyEntryData>`, but must create an instance of this generic class (working with our data and its key) to be used as a component.
+We now have the data and the means of displaying a piece of that data. What's left is to wrap it all in a Recycler component. The Recycler will pass your data to your entries as we scroll through the list.
+
+Similar to creating the entry, there is a base `class RecyclerScrollRect<TKeyEntryData, TEntryData>`, to use as a Recycler. However, we must inherit from this generic class with our concrete types for it to be a valid component. 
 
 ```
-public class DemoRecycler : RecyclerScrollRect<DemoRecyclerData, string>
+public class DemoRecycler : RecyclerScrollRect<string, DemoRecyclerData>
 {
-    // Empty, unless the user wishes to add something
+    // Usually empty, unless the user wishes to add something custom
 }
 ```
 
-Then create an empty RectTransform with the desired dimensions for the Recycler. Add our `DemoRecycler` component to that RectTransform. 
+Add the `DemoRecycler` component to an empty RectTransform you wish for the list to appear in.
 
-Two child GameObjects will be created: `Entries` and `Pool`
+Two child GameObjects will be automatically created: `Entries` and `Pool`
 
 ![](README_Images/creating_recycler_blank.gif)
 
-Serialize our entry prefab in the Recycler component. The pool is now filled up with entries.
+Serialize the entry prefab in the Recycler component. The pool is now filled up with entries.
 
 ![](README_Images/creating_recycler_adding_entries.gif)
 
