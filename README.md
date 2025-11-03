@@ -43,7 +43,7 @@ They don't offer control. Many basic recyclers assume a static list of data with
 
 # Getting Started
 
-You will need 3 things:
+You will need 3 things, and this will be the same for every recycler:
 1. The data you want to display in a list (a normal C# class).
 2. A recycler entry that takes your data and displays it (a prefab).
 3. The Recycler itself (a component).
