@@ -46,7 +46,7 @@ namespace Swill.Recycler.Demos
             // Inserts an entry at the end of the list
             if ((!Input.GetKey(KeyCode.M) && Input.GetKeyDown(KeyCode.A)) || DemoToolbar.GetButtonDown(0))
             {
-                _recycler.InsertAtIndex(_recycler.DataForEntries.Count, new PrettyInsertDeleteData(true, FixEntries.Below));
+                _recycler.InsertAtIndex(_recycler.DataForEntries.Count, new PrettyInsertDeleteData(true, FixEntries.VerticalBelow));
                 return;
             }
 
@@ -61,7 +61,7 @@ namespace Swill.Recycler.Demos
             // Add entries at middle of the visible window
             if ((Input.GetKey(KeyCode.M) && Input.GetKeyDown(KeyCode.A)) || DemoToolbar.GetButtonDown(2))
             {
-                _recycler.InsertRangeAtIndex(middleEntryIndex, PrettyInsertDeleteData.GenerateData(NumEntriesInsertedAtMiddle, true, FixEntries.Mid));  
+                _recycler.InsertRangeAtIndex(middleEntryIndex, PrettyInsertDeleteData.GenerateData(NumEntriesInsertedAtMiddle, true, FixEntries.Middle));  
             }
             // Delete entries in the middle of the visible window 
             else if ((Input.GetKey(KeyCode.M) && Input.GetKeyDown(KeyCode.D)) || DemoToolbar.GetButtonDown(3))
@@ -72,7 +72,7 @@ namespace Swill.Recycler.Demos
                 for (int i = startDeleteIndex; i <= endDeleteIndex; i++)
                 {
                     PrettyInsertDeleteEntry entry = (PrettyInsertDeleteEntry) _recycler.ActiveEntries[i];
-                    entry.AnimateOutAndDelete(FixEntries.Mid);
+                    entry.AnimateOutAndDelete(FixEntries.Middle);
                 }
             }
             // Deletes the first entry starting at the end of the visible window that is not currently in the process of being deleted
@@ -83,7 +83,7 @@ namespace Swill.Recycler.Demos
                     PrettyInsertDeleteEntry entry = (PrettyInsertDeleteEntry) _recycler.ActiveEntries[i];
                     if (!entry.IsDeleting)
                     {
-                        entry.AnimateOutAndDelete(FixEntries.Below);
+                        entry.AnimateOutAndDelete(FixEntries.VerticalBelow);
                         break;
                     }
                 }

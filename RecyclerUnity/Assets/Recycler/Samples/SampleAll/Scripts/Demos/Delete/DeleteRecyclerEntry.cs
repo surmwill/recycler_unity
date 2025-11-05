@@ -36,11 +36,11 @@ namespace Swill.Recycler.Demos
             float initHeight = RectTransform.sizeDelta.y;
 
             _deleteSequence = DOTween.Sequence()
-                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight, FixEntries.Mid), 0f, DeleteTime))
+                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight, FixEntries.Middle), 0f, DeleteTime))
                 .SetEase(Ease.OutBounce)
                 .OnKill(() =>
                 {
-                    Recycler.RemoveAtIndex(Index, FixEntries.Above);
+                    Recycler.RemoveAtIndex(Index, FixEntries.VerticalAbove);
                     _deleteSequence = null;
                     RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(initHeight);
                 });

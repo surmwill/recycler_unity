@@ -15,35 +15,35 @@ namespace Swill.Recycler
         /// For example, fixing below entries doesn't make sense in a horizontal list. If they provide an invalid value
         /// then a fallback valid one will be substituted and warning relayed.
         /// </summary>
-        /// <param name="candidateFixEntries"></param>
-        /// <param name="orientation"></param>
-        /// <returns></returns>
+        /// <param name="candidateFixEntries"> The FixEntries value the user is trying to use </param>
+        /// <param name="orientation"> The orientation of the recycler </param>
+        /// <returns> A valid value of FixEntries for the Recycler </returns>
         public static FixEntries ValidateWithOrientation(this FixEntries candidateFixEntries, RecyclerScrollRectOrientation orientation)
         {
             _validFixEntries = null;
             
             if (orientation.IsHorizontal())
             {
-                if (candidateFixEntries == FixEntries.Above)
+                if (candidateFixEntries == FixEntries.VerticalAbove)
                 {
-                    _validFixEntries = FixEntries.Left;
+                    _validFixEntries = FixEntries.HorizontalLeft;
                 }
                 
-                if (candidateFixEntries == FixEntries.Below)
+                if (candidateFixEntries == FixEntries.VerticalBelow)
                 {
-                    _validFixEntries = FixEntries.Right;
+                    _validFixEntries = FixEntries.HorizontalRight;
                 }
             }
             else
             {
-                if (candidateFixEntries == FixEntries.Left)
+                if (candidateFixEntries == FixEntries.HorizontalLeft)
                 {
-                    _validFixEntries = FixEntries.Above;
+                    _validFixEntries = FixEntries.VerticalAbove;
                 }
 
-                if (candidateFixEntries == FixEntries.Right)
+                if (candidateFixEntries == FixEntries.HorizontalRight)
                 {
-                    _validFixEntries = FixEntries.Below;
+                    _validFixEntries = FixEntries.VerticalBelow;
                 }
             }
 

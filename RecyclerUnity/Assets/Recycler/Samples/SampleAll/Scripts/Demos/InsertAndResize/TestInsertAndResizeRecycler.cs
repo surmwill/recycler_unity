@@ -52,12 +52,12 @@ namespace Swill.Recycler.Demos
             // Immediately inserts a batch of entries at the end.
             else if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(1))
             {
-                _recycler.InsertRangeAtIndex(_recycler.DataForEntries.Count - 1, CreateDataForEntries(NumInsertionEntries, false), FixEntries.Above);
+                _recycler.InsertRangeAtIndex(_recycler.DataForEntries.Count - 1, CreateDataForEntries(NumInsertionEntries, false), FixEntries.VerticalAbove);
             }
             // Immediately inserts a full screen of entries at the end.
             else if (Input.GetKeyDown(KeyCode.F) || DemoToolbar.GetButtonDown(2))
             {
-                _recycler.InsertRangeAtIndex(_recycler.DataForEntries.Count - 1, CreateDataForEntries(MoreThanFullScreenNumEntries, false), FixEntries.Above);
+                _recycler.InsertRangeAtIndex(_recycler.DataForEntries.Count - 1, CreateDataForEntries(MoreThanFullScreenNumEntries, false), FixEntries.VerticalAbove);
             }
             // Inserts and grows a random active entry.
             else if (Input.GetKeyDown(KeyCode.R) || DemoToolbar.GetButtonDown(3))
@@ -65,7 +65,7 @@ namespace Swill.Recycler.Demos
                 int insertionIndex = Random.Range(Start, End);
                 TestRecyclerEditorLogger.Log($"Inserting at {insertionIndex}");
                 
-                _recycler.InsertAtIndex(insertionIndex, new InsertAndResizeData(true), FixEntries.Above);
+                _recycler.InsertAtIndex(insertionIndex, new InsertAndResizeData(true), FixEntries.VerticalAbove);
             }
         }
 

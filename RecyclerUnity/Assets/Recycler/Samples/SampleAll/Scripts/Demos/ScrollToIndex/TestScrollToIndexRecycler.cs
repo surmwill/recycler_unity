@@ -88,13 +88,13 @@ namespace Swill.Recycler.Demos
             else if ((Input.GetKey(KeyCode.F) && Input.GetKeyDown(KeyCode.G)) || DemoToolbar.GetButtonDown(3))
             {
                 _recycler.ScrollToIndex(ScrollToMiddleIndex, scrollSpeedViewportsPerSecond:ScrollWhileGrowShrinkingSpeed);
-                ((ScrollToIndexRecyclerScrollRectEntry) _recycler.ActiveEntries[_window.VisibleIndexRange.Value.End]).Grow(FixEntries.Above);
+                ((ScrollToIndexRecyclerScrollRectEntry) _recycler.ActiveEntries[_window.VisibleIndexRange.Value.End]).Grow(FixEntries.VerticalAbove);
             }
             // Scroll to the middle while making the bottom visible entry shrink, scrolling over the shrinking entry
             else if ((Input.GetKey(KeyCode.F) && Input.GetKeyDown(KeyCode.S)) || DemoToolbar.GetButtonDown(4))
             {
                 _recycler.ScrollToIndex(ScrollToMiddleIndex, scrollSpeedViewportsPerSecond:ScrollWhileGrowShrinkingSpeed);
-                ((ScrollToIndexRecyclerScrollRectEntry) _recycler.ActiveEntries[_window.VisibleIndexRange.Value.End]).Shrink(FixEntries.Above);
+                ((ScrollToIndexRecyclerScrollRectEntry) _recycler.ActiveEntries[_window.VisibleIndexRange.Value.End]).Shrink(FixEntries.VerticalAbove);
             }
 
             /*** Immediate Scroll ***/
@@ -118,12 +118,12 @@ namespace Swill.Recycler.Demos
             // Scroll immediate top edge
             else if ((Input.GetKey(KeyCode.E) && Input.GetKeyDown(KeyCode.T)) || DemoToolbar.GetButtonDown(8))
             {
-                _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex, ScrollToAlignment.EntryTop);
+                _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex, ScrollToAlignment.VerticalEntryTop);
             }
             // Scroll immediate bottom edge
             else if ((Input.GetKey(KeyCode.E) && Input.GetKeyDown(KeyCode.B)) || DemoToolbar.GetButtonDown(9))
             {
-                _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex, ScrollToAlignment.EntryBottom);
+                _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex, ScrollToAlignment.VerticalEntryBottom);
             }
             
             /*** Other ***/

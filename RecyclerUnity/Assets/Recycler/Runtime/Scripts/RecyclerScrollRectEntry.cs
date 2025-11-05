@@ -63,7 +63,7 @@ namespace Swill.Recycler
         /// This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored,
         /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
-        protected void RecalculateDimension(float newHeightOrWidth, FixEntries fixEntries = FixEntries.Mid)
+        protected void RecalculateDimension(float newHeightOrWidth, FixEntries fixEntries = FixEntries.Middle)
         {
             Recycler.RecalculateEntryDimension(this, newHeightOrWidth, fixEntries);
         }
@@ -76,7 +76,7 @@ namespace Swill.Recycler
         /// This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored,
         /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
-        protected void AutoRecalculateDimension(FixEntries fixEntries = FixEntries.Mid)
+        protected void AutoRecalculateDimension(FixEntries fixEntries = FixEntries.Middle)
         {
             Recycler.RecalculateEntryDimension(this, null, fixEntries);
         }

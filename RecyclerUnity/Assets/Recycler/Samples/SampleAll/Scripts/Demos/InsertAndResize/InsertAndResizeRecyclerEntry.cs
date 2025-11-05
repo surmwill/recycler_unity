@@ -52,14 +52,14 @@ namespace Swill.Recycler.Demos
 
             if (!initialIsVisible)
             {
-                RecalculateDimension(GrowSize, FixEntries.Below);
+                RecalculateDimension(GrowSize, FixEntries.VerticalBelow);
                 return;
             }
             
             RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(0f);
             _displayNumber.alpha = 0f;
             _growSequence = DOTween.Sequence()
-                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight, FixEntries.Below), GrowSize, GrowTimeSeconds))
+                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight, FixEntries.VerticalBelow), GrowSize, GrowTimeSeconds))
                 .Append(_displayNumber.DOFade(1f, FadeTimeSeconds));
         }
 

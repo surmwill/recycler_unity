@@ -51,7 +51,7 @@ namespace Swill.Recycler.Demos
                     int insertionIndex = Random.Range(Start, End);
                     TestRecyclerEditorLogger.Log($"Inserting at {insertionIndex}");
                 
-                    _recycler.InsertAtIndex(insertionIndex, new EmptyRecyclerData(), FixEntries.Below);
+                    _recycler.InsertAtIndex(insertionIndex, new EmptyRecyclerData(), FixEntries.VerticalBelow);
                     return;
                 }
                 
@@ -61,7 +61,7 @@ namespace Swill.Recycler.Demos
                     int deletionIndex = Random.Range(Start, End);
                     TestRecyclerEditorLogger.Log($"Deleting at {deletionIndex}");
                 
-                    _recycler.RemoveAtIndex(deletionIndex, FixEntries.Below);
+                    _recycler.RemoveAtIndex(deletionIndex, FixEntries.VerticalBelow);
                     return;
                 }   
             }
@@ -76,7 +76,7 @@ namespace Swill.Recycler.Demos
             // Deletes the last entry
             if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(1))
             {
-                _recycler.RemoveAtIndex(_recycler.DataForEntries.Count - 1, FixEntries.Below);
+                _recycler.RemoveAtIndex(_recycler.DataForEntries.Count - 1, FixEntries.VerticalBelow);
                 return;
             }
 
@@ -85,14 +85,14 @@ namespace Swill.Recycler.Demos
                 // Immediately scrolls to the top of the topmost entry
                 if ((Input.GetKey(KeyCode.S) && Input.GetKeyDown(KeyCode.T)) || DemoToolbar.GetButtonDown(4))
                 {
-                    _recycler.ScrollToIndexImmediate(0, ScrollToAlignment.EntryTop);
+                    _recycler.ScrollToIndexImmediate(0, ScrollToAlignment.VerticalEntryTop);
                     return;
                 }
                 
                 // Immediately scrolls to the bottom of the bottommost entry
                 if (Input.GetKey(KeyCode.S) && Input.GetKeyDown(KeyCode.B) || DemoToolbar.GetButtonDown(5))
                 {
-                    _recycler.ScrollToIndexImmediate(_recycler.DataForEntries.Count - 1, ScrollToAlignment.EntryBottom);
+                    _recycler.ScrollToIndexImmediate(_recycler.DataForEntries.Count - 1, ScrollToAlignment.VerticalEntryBottom);
                     return;
                 }   
             }

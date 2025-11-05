@@ -34,7 +34,7 @@ namespace Swill.Recycler.Demos
         /// <summary>
         /// Generates a number of pieces of data
         /// </summary>
-        public static IEnumerable<PrettyInsertDeleteData> GenerateData(int num, bool animateIn, FixEntries animateInFixEntries = FixEntries.Mid)
+        public static IEnumerable<PrettyInsertDeleteData> GenerateData(int num, bool animateIn, FixEntries animateInFixEntries = FixEntries.Middle)
         {
             return Enumerable.Repeat<object>(null, num).Select(_ => new PrettyInsertDeleteData(animateIn, animateInFixEntries));
         }

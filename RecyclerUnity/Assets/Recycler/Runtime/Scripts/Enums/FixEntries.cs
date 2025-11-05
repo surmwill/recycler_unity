@@ -8,12 +8,12 @@ namespace Swill.Recycler
     /// </summary>
     public enum FixEntries
     {
-        Below = 0,      // All entries below the one modified will stay unmoved. 
-        Above = 1,      // All entries above the one modified will stay unmoved. 
+        VerticalBelow = 0,      // All entries below the one modified will stay unmoved. 
+        VerticalAbove = 1,      // All entries above the one modified will stay unmoved. 
         
-        Left = 2,       // All entries to the left of the one modified will stay unmoved.
-        Right = 3,      // All entries to the right of the one modified will stay unmoved.
+        HorizontalLeft = 2,       // All entries to the left of the one modified will stay unmoved.
+        HorizontalRight = 3,      // All entries to the right of the one modified will stay unmoved.
         
-        Mid = 4,        // All entries above and below the one modified, or to the left and right of the one modified, will be moved equally.
+        Middle = 4,        // All entries above and below the one modified, or to the left and right of the one modified, will be moved equally.
     }
 }
