@@ -8,7 +8,7 @@ namespace Swill.Recycler
     public static class ScrollRectWithDragSensitivityExtensions
     {
         /// <summary>
-        /// Returns the normalized scroll position that centers the viewport on a child of a ScrollRectWithDragSensitivity.
+        /// Returns the vertical normalized scroll position that centers the viewport on a child of a ScrollRectWithDragSensitivity.
         /// </summary>
         /// <param name="scrollRect"> The ScrollRectWithDragSensitivity containing the child content. </param>
         /// <param name="childContent"> The child content in the ScrollRectWithDragSensitivity to get the normalized position of. </param>
@@ -20,8 +20,7 @@ namespace Swill.Recycler
             float normalizedPositionInChild)
         {
             (RectTransform content, RectTransform viewport) = (scrollRect.content, scrollRect.viewport);
-            (WorldRect contentWorldRect, WorldRect viewportWorldRect, WorldRect childContentWorldRect) = (
-                content.GetWorldRect(), viewport.GetWorldRect(), childContent.GetWorldRect());
+            (WorldRect contentWorldRect, WorldRect viewportWorldRect, WorldRect childContentWorldRect) = (content.GetWorldRect(), viewport.GetWorldRect(), childContent.GetWorldRect());
 
             Vector3 contentTopPosition = contentWorldRect.TopLeftCorner;
             Vector3 contentBotPosition = contentWorldRect.BotLeftCorner;
@@ -62,6 +61,59 @@ namespace Swill.Recycler
             return normalizedPositionInViewportBotToTop;
         }
 
+        /// <summary>
+        /// Returns the horizontal normalized scroll position that centers the viewport on a child of a ScrollRectWithDragSensitivity.
+        /// </summary>
+        /// <param name="scrollRect"> The ScrollRectWithDragSensitivity containing the child content. </param>
+        /// <param name="childContent"> The child content in the ScrollRectWithDragSensitivity to get the normalized position of. </param>
+        /// <param name="normalizedPositionInChild"> The position within the child to center the viewport on. </param>
+        /// <returns> The normalized scroll position that centers the viewport on a child of a ScrollRectWithDragSensitivity. </returns>
+        public static float GetNormalizedHorizontalPositionOfChild(
+            this ScrollRectWithDragSensitivity scrollRect, 
+            RectTransform childContent,
+            float normalizedPositionInChild)
+        {
+            (RectTransform content, RectTransform viewport) = (scrollRect.content, scrollRect.viewport);
+            (WorldRect contentWorldRect, WorldRect viewportWorldRect, WorldRect childContentWorldRect) = (content.GetWorldRect(), viewport.GetWorldRect(), childContent.GetWorldRect());
+
+            Vector3 contentLeftPosition = contentWorldRect.BotLeftCorner;
+            Vector3 contentRightPosition = contentWorldRect.BotRightCorner;
+
+            // The viewport travels along this content line and the child lies on this content line.
+            Vector3 contentLeftToRight = contentLeftPosition - contentRightPosition;
+            Vector3 contentLeftToRightNormalized = contentLeftToRight.normalized;
+
+            // The viewport's center can only travel in these positions along the content line without one if its edges hitting the end of the content.
+            float viewportWidth = viewportWorldRect.Width;
+            Vector3 viewportLeftmostPosition = contentLeftPosition + (contentLeftToRightNormalized * viewportWidth / 2f);
+            Vector3 viewportRightmostPosition = contentRightPosition - (contentLeftToRightNormalized * viewportWidth / 2f);
+            Vector3 viewportPositionsLeftToRight = viewportRightmostPosition - viewportLeftmostPosition;
+
+            // Where in the child are we scrolling to (ex: its middle, left edge, right edge, etc...).
+            Vector3 positionInChild = childContentWorldRect.Center + childContent.right * ((normalizedPositionInChild - 0.5f) * childContentWorldRect.Width);
+            
+            // Find where the child lies along the viewport line.
+            Vector3 childViewportPosition = viewportLeftmostPosition + Vector3.Project(positionInChild - viewportLeftmostPosition, viewportPositionsLeftToRight);
+
+            Vector3 viewportLeftmostToChildPosition = childViewportPosition - viewportLeftmostPosition;
+            Vector3 viewportRightmostToChildPosition = childViewportPosition - viewportRightmostPosition;
+
+            // To the right of where the viewport can center on 
+            if (Vector3.Dot(viewportRightmostToChildPosition, viewportPositionsLeftToRight) > 0)
+            {
+                return 1f + viewportRightmostToChildPosition.magnitude / viewportPositionsLeftToRight.magnitude;
+            }
+
+            // To the left of where the viewport can center on
+            if (Vector3.Dot(viewportLeftmostToChildPosition, -viewportPositionsLeftToRight) > 0)
+            {
+                return -viewportLeftmostToChildPosition.magnitude / viewportPositionsLeftToRight.magnitude;
+            }
+
+            // In range of where the viewport can center on
+            float normalizedPositionInViewportLeftToRight = viewportLeftmostToChildPosition.magnitude / viewportPositionsLeftToRight.magnitude;
+            return normalizedPositionInViewportLeftToRight;
+        }
        
         /// <summary>
         /// Returns true if the ScrollRectWithDragSensitivity has sufficient size to be scrollable.
