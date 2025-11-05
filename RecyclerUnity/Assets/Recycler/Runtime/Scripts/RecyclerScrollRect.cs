@@ -173,7 +173,7 @@ namespace Swill.Recycler
             // Ensure content's RectTransform is set up correctly
             SetContentTracker();
             
-            // Our pivot moves around once we have > full-screen's worth of content, but should be reset when we have <= 
+            // Our pivot moves around once we have > full-screen's worth of content, but should be reset when we have <= a full-screen of content
             _initPivot = content.pivot;
 
             // Cache the endcap's layout behaviours if there are any. These will be disabled when not in use for performance reasons.
@@ -895,7 +895,7 @@ namespace Swill.Recycler
         /// <summary>
         /// Adds a child under the (parent) content. This is not straightforward.
         ///
-        /// The root of all of entries is a VerticalLayoutGroup with a ContentSizeFitter. Every time an entry is added, removed,
+        /// The root of all the entries is a VerticalLayoutGroup with a ContentSizeFitter. Every time an entry is added, removed,
         /// or resized we need to trigger a recalculation of the size of the entire list. This beckons problems.
         ///
         /// 1.) Performance problems: VerticalLayoutGroup size recalculations propagate. If a child entry also has a VerticalLayoutGroup
@@ -907,9 +907,9 @@ namespace Swill.Recycler
         /// we enable any LayoutGroups and ContentSizeFitters on the child during this time, trigger a layout recalculation of just that child
         /// which sets its RectTransform values accordingly, then disable those components and treat the child like any other plain RectTransform.
         ///
-        /// 2.) Because of the above, LayoutGroups and ContentSizeFitters are disabled on children almost all of the time. If the root of all entries
+        /// 2.) Because of the above, LayoutGroups and ContentSizeFitters are disabled on children almost all the time. If the root of all entries
         /// ControlsChildSize Width/Height then we will get entries with 0 height and 0 width. With the components disabled, this is dimensions they report.
-        /// Enabling them during size recalculation re-introduces the performance issues. Thus the root of all entries cannot ControlChildSize Width/Height.
+        /// Enabling them during size recalculation re-introduces the performance issues. Thus, the root of all entries cannot ControlChildSize Width/Height.
         ///
         /// (Note: upon further thought, we may be temped to check ControlChildSize Width and ChildForceExpand Width. If we're force expanding the width, this
         /// does not care about any disabled components reporting 0 values as we don't care what they report; we simply set it to the maximum width. However,
@@ -921,12 +921,13 @@ namespace Swill.Recycler
             child.SetParent(content, false);
             child.SetSiblingIndex(siblingIndex);
 
-            // Force expand the width (as we cannot do so through the root VerticalLayoutGroup without also controlling the child size).
-            // We assume this is the desired behaviour of most recyclers.
+            // Force expand the entries width if the list is vertical, or the height if the list is horizontal.
+            // (Note: we cannot do so through forcing expanding the root entries' LayoutGroup without also controlling the child size and introducing inefficiencies.
+            // We assume this is the desired behaviour of most recyclers.)
             (child.anchorMin, child.anchorMax) = (Vector2.one * 0.5f, Vector2.one * 0.5f);
-            child.sizeDelta = child.sizeDelta.WithX(viewport.rect.width);
+            child.sizeDelta = Orientation.IsVertical() ? child.sizeDelta.WithX(viewport.rect.width) : child.sizeDelta.WithY(viewport.rect.height);
 
-            // Calculate the auto-sized height of the child
+            // Calculate the auto-sized dimensions of the child
             if (layoutBehaviours != null && layoutBehaviours.Length > 0)
             {
                 SetBehavioursEnabled(layoutBehaviours, true);
@@ -935,12 +936,19 @@ namespace Swill.Recycler
             }
 
             // Calculate the change in parent size given the child's size
-            RecalculateContentSize(fixEntries);
+            if (Orientation.IsVertical())
+            {
+                RecalculateContentSizeVertical(fixEntries);   
+            }
+            else
+            {
+                RecalculateContentSizeHorizontal(fixEntries);
+            }
         }
 
         private RectTransform RemoveFromContent(RectTransform child, FixEntries fixEntries = FixEntries.Below)
         {
-            // If the child is not visible then shrink in the direction which keeps it off screen and preserves the currently visible entries
+            // If the child is not visible then shrink in the direction which keeps it off-screen and preserves the currently visible entries
             if (!IsInViewport(child, viewport, _rootCanvas.worldCamera))
             {
                 fixEntries = IsAboveViewportCenter(child, viewport) ? FixEntries.Below : FixEntries.Above;
@@ -1048,8 +1056,10 @@ namespace Swill.Recycler
         /// to the size of element 6 to stay on element 10. However, there is no way to add this offset directly; instead, we move the pivot, where the start drag happened,
         /// equal to the offset.
         /// </summary>
-        private void RecalculateContentSize(FixEntries fixEntries)
+        private void RecalculateContentSizeVertical(FixEntries fixEntries)
         {
+            fixEntries = fixEntries.ValidateWithOrientation(Orientation);
+            
             // Initial state
             Vector2 initPivot = content.pivot;
             float initY = content.anchoredPosition.y;
@@ -1086,11 +1096,8 @@ namespace Swill.Recycler
                 Vector2 contentTopToViewportTop = Vector3.Project(viewportRect.TopLeftCorner - contentRect.TopLeftCorner, viewportUp);
                 Vector2 contentBotToViewportBot = Vector3.Project(viewportRect.BotLeftCorner - contentRect.BotLeftCorner, viewportUp);
 
-                bool shiftViewportUp = Vector3.Dot(contentTopToViewportTop, viewportUp) > 0f &&
-                                       contentTopToViewportTop.sqrMagnitude > sqrTolerance;
-
-                bool shiftViewportDown = Vector3.Dot(contentBotToViewportBot, -viewportUp) > 0f &&
-                                         contentBotToViewportBot.sqrMagnitude > sqrTolerance;
+                bool shiftViewportUp = Vector3.Dot(contentTopToViewportTop, viewportUp) > 0f && contentTopToViewportTop.sqrMagnitude > sqrTolerance;
+                bool shiftViewportDown = Vector3.Dot(contentBotToViewportBot, -viewportUp) > 0f && contentBotToViewportBot.sqrMagnitude > sqrTolerance;
 
                 // Note: if we need to shift the list both up and down then this implies we have < a full-screen's worth of content, which should have been handled earlier.
                 if (shiftViewportUp)
@@ -1112,6 +1119,81 @@ namespace Swill.Recycler
                 content.SetPivotWithoutMoving(initPivot);
                 float diffY = content.anchoredPosition.y - initY;
                 content.SetPivotWithoutMoving(content.pivot + Vector2.up * -diffY / contentHeight);   
+            }
+
+            bool HasEntryWithIndex(int index)
+            {
+                return content.Children().Any(c => c.gameObject.name == index.ToString());
+            }
+        }
+        
+        /// <summary>
+        /// Recalculates the size of the ScrollRect's content, reflecting any size changes of its elements.
+        /// See RecalculateContentSizeVertical for more information.
+        /// </summary>
+        private void RecalculateContentSizeHorizontal(FixEntries fixEntries)
+        {
+            fixEntries = fixEntries.ValidateWithOrientation(Orientation);
+            
+            // Initial state
+            Vector2 initPivot = content.pivot;
+            float initX = content.anchoredPosition.x;
+            
+            // Recalculate the content layout and size
+            content.SetPivotWithoutMoving(content.pivot.WithX(fixEntries == FixEntries.Left ? 0f : fixEntries == FixEntries.Right ? 1f : 0.5f));
+            LayoutRebuilder.ForceRebuildLayoutImmediate(content);
+            
+            bool hasFullContent = content.childCount == DataForEntries.Count + (IsEndcapActive ? 1 : 0);
+            
+            // When we have < fullscreen worth of content to show, the pivot controls where that content is centered in the viewport.
+            // As the pivot moves around to preserve scrolls, reset it to what we started with (not that we can scroll anyway).
+            if (!this.IsScrollable() && hasFullContent)
+            {
+                content.pivot = _initPivot;
+                normalizedPosition = normalizedPosition.WithX(1f);
+                return;
+            }
+            
+            // Note: visibility has not yet been updated, so we cannot rely on our active window to tell which indices are active or not
+            bool hasFirstEntry = HasEntryWithIndex(0);
+            bool hasLastEntry = _hasEndcap ? IsEndcapActive : HasEntryWithIndex(DataForEntries.Count - 1);
+
+            // If we're reducing the size of the first or last entries, then we might be creating extra space at the right or left of the list
+            // that can't be filled by future entries. Shift the list left or right to occupy this space.
+            if (hasFirstEntry || hasLastEntry)
+            {
+                (WorldRect viewportRect, WorldRect contentRect) = (viewport.GetWorldRect(), content.GetWorldRect());
+            
+                Vector3 viewportRight = viewport.right;
+                float viewportWidth = viewportRect.Width;
+                float sqrTolerance = Mathf.Pow(viewportWidth * 0.001f, 2);
+            
+                Vector2 contentLeftToViewportLeft = Vector3.Project(viewportRect.BotLeftCorner - contentRect.BotLeftCorner, viewportRight);
+                Vector2 contentRightToViewportRight = Vector3.Project(viewportRect.BotRightCorner - contentRect.BotRightCorner, viewportRight);
+
+                bool shiftViewportLeft = Vector3.Dot(contentLeftToViewportLeft, -viewportRight) > 0f && contentLeftToViewportLeft.sqrMagnitude > sqrTolerance;
+                bool shiftViewportRight = Vector3.Dot(contentRightToViewportRight, viewportRight) > 0f && contentRightToViewportRight.sqrMagnitude > sqrTolerance;
+
+                // Note: if we need to shift the list both left and right then this implies we have < a full-screen's worth of content, which should have been handled earlier.
+                if (shiftViewportLeft)
+                {
+                    content.SetPivotWithoutMoving(content.pivot.WithX(0f));
+                    normalizedPosition = normalizedPosition.WithX(0f);
+                }
+                else if (shiftViewportRight)
+                {
+                    content.SetPivotWithoutMoving(content.pivot.WithX(1f));
+                    normalizedPosition = normalizedPosition.WithX(1f);
+                }   
+            }
+
+            // Maintain our current scroll, preventing jumps, by moving the anchor equal to the size change
+            float contentWidth = content.rect.width;
+            if (contentWidth > 0)
+            {
+                content.SetPivotWithoutMoving(initPivot);
+                float diffX = content.anchoredPosition.x - initX;
+                content.SetPivotWithoutMoving(content.pivot + Vector2.right * -diffX / contentWidth);   
             }
 
             bool HasEntryWithIndex(int index)
