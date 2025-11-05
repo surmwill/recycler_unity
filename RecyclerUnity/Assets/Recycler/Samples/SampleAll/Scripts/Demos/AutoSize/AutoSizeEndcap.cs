@@ -26,7 +26,7 @@ namespace Swill.Recycler.Demos
         {
             _layoutGroup.padding.top += GrowShrinkAmount / 2;
             _layoutGroup.padding.bottom += GrowShrinkAmount / 2;
-            AutoRecalculateHeight();
+            AutoRecalculateDimension();
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Swill.Recycler.Demos
             _layoutGroup.padding.top = Mathf.Max(_layoutGroup.padding.top, MinLayoutGroupHeight);
             _layoutGroup.padding.bottom = Mathf.Max(_layoutGroup.padding.bottom, MinLayoutGroupHeight);
             
-            AutoRecalculateHeight();
+            AutoRecalculateDimension();
         }
     }
 }

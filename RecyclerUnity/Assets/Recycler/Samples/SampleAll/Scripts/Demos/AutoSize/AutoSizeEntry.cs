@@ -31,7 +31,7 @@ namespace Swill.Recycler.Demos
         {
             Data.NumAppendedLines += Random.Range(AppendMinLinesOfText, AppendMaxLinesOfText);
             UpdateLines();
-            AutoRecalculateHeight(FixEntries.Above);
+            AutoRecalculateDimension(FixEntries.Above);
         }
 
         private void UpdateLines()

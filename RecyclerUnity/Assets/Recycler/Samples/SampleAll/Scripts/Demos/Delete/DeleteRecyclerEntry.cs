@@ -36,7 +36,7 @@ namespace Swill.Recycler.Demos
             float initHeight = RectTransform.sizeDelta.y;
 
             _deleteSequence = DOTween.Sequence()
-                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight, FixEntries.Mid), 0f, DeleteTime))
+                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight, FixEntries.Mid), 0f, DeleteTime))
                 .SetEase(Ease.OutBounce)
                 .OnKill(() =>
                 {

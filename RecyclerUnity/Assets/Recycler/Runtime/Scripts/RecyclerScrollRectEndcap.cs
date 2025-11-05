@@ -29,9 +29,9 @@ namespace Swill.Recycler
         }
 
         /// <summary>
-        /// Called when the endcap needs to update its height in the recycler.
+        /// Called when the endcap needs to update its height in a vertical recycler or width in a horizontal recycler.
         /// </summary>
-        /// <param name="newHeight"> The height to set the endcap to, null if it should be auto-calculated. </param>
+        /// <param name="newHeightOrWidth"> The new height or width to set the endcap to </param>
         /// <param name="fixEntries">
         /// If we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy.
         /// This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored,
@@ -39,13 +39,13 @@ namespace Swill.Recycler
         ///
         /// Being positioned at the end of the list, the default null value will fix all the entries that come before it.
         /// </param>
-        protected void RecalculateHeight(float newHeight, FixEntries? fixEntries = null)
+        protected void RecalculateDimension(float newHeightOrWidth, FixEntries? fixEntries = null)
         {
-            Recycler.RecalculateEndcapHeight(newHeight, fixEntries);
+            Recycler.RecalculateEndcapDimension(newHeightOrWidth, fixEntries);
         }
         
         /// <summary>
-        /// Called when the endcap needs to recalculate its height in the recycler.
+        /// Called when the endcap needs to auto-recalculate its height in a vertical recycler or width in a horizontal recycler
         /// </summary>
         /// <param name="fixEntries">
         /// If we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy.
@@ -54,9 +54,9 @@ namespace Swill.Recycler
         ///
         /// Being positioned at the end of the list, the default null value will fix all the entries that come before it.
         /// </param>
-        protected void AutoRecalculateHeight(FixEntries? fixEntries = null)
+        protected void AutoRecalculateDimension(FixEntries? fixEntries = null)
         {
-            Recycler.RecalculateEndcapHeight(null, fixEntries);
+            Recycler.RecalculateEndcapDimension(null, fixEntries);
         }
         
         #region LIFECYCLE_METHODS

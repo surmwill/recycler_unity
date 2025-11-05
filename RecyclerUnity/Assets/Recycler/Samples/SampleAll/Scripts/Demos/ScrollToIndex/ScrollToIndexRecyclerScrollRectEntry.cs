@@ -38,7 +38,7 @@ namespace Swill.Recycler.Demos
         {
             _sequence?.Kill();
             _sequence = DOTween.Sequence()
-                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight, fixEntries), GrowSize, GrowShrinkTime));
+                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight, fixEntries), GrowSize, GrowShrinkTime));
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Swill.Recycler.Demos
         {
             _sequence?.Kill();
             _sequence = DOTween.Sequence()
-                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight, fixEntries), ShrinkSize, GrowShrinkTime));
+                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight, fixEntries), ShrinkSize, GrowShrinkTime));
         }
 
         private void Update()

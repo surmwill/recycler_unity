@@ -60,7 +60,7 @@ namespace Swill.Recycler.Demos
         {
             _backgroundGlow.fillAmount = 1f;
             _animateInSequence = DOTween.Sequence()
-                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight, Data.AnimateInFixEntries), Height, AnimateInOutTime))
+                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight, Data.AnimateInFixEntries), Height, AnimateInOutTime))
                 .Join(_backgroundGlow.DOFillAmount(0f, AnimateInOutTime))
                 .OnKill(() => _animateInSequence = null);
         }
@@ -81,7 +81,7 @@ namespace Swill.Recycler.Demos
             _backgroundGlow.fillAmount = 0f;
             
             _animateOutSequence = DOTween.Sequence()
-                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight, fixEntries), 0f, AnimateInOutTime))
+                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight, fixEntries), 0f, AnimateInOutTime))
                 .Join(_backgroundGlow.DOFillAmount(1f, AnimateInOutTime))
                 .OnKill(() =>
                 {

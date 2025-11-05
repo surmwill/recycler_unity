@@ -30,7 +30,7 @@ namespace Swill.Recycler.Demos
         public void ResetSizeToNormal()
         {
             StopResizeAndComplete();
-            RecalculateHeight(NormalSize);
+            RecalculateDimension(NormalSize);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Swill.Recycler.Demos
         /// </summary>
         public void Grow()
         {
-            _resizeTween ??= DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight), GrowSize, GrowTimeSeconds);
+            _resizeTween ??= DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight), GrowSize, GrowTimeSeconds);
         }
     }
 }

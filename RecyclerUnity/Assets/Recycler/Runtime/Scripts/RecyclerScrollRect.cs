@@ -951,36 +951,57 @@ namespace Swill.Recycler
             // If the child is not visible then shrink in the direction which keeps it off-screen and preserves the currently visible entries
             if (!IsInViewport(child, viewport, _rootCanvas.worldCamera))
             {
-                fixEntries = IsAboveViewportCenter(child, viewport) ? FixEntries.Below : FixEntries.Above;
+                if (Orientation.IsVertical())
+                {
+                    fixEntries = IsAboveViewportCenter(child, viewport) ? FixEntries.Below : FixEntries.Above;   
+                }
+                else
+                {
+                    fixEntries = IsLeftOfViewportCenter(child, viewport) ? FixEntries.Right : FixEntries.Left; 
+                }
             }
 
             // Remove the child and recalculate the parent's size
             child.gameObject.SetActive(false);
-            RecalculateContentSize(fixEntries);
+            if (Orientation.IsVertical())
+            {
+                RecalculateContentSizeVertical(fixEntries);   
+            }
+            else
+            {
+                RecalculateContentSizeHorizontal(fixEntries);
+            }
 
             return child;
         }
 
         /// <summary>
-        /// Called when a child needs to update its height in the recycler.
+        /// Called when a child needs to update its height (with a vertical recycler) or width (with a horizontal recycler)
         /// </summary>
-        private void RecalculateContentChildHeight(RectTransform contentChild, float? newHeight, Behaviour[] layoutBehaviours, FixEntries fixEntries = FixEntries.Below)
+        private void RecalculateContentChildDimension(RectTransform contentChild, float? newHeightOrWidth, Behaviour[] layoutBehaviours, FixEntries fixEntries = FixEntries.Below)
         {
             // If the child is not visible then grow in the direction which keeps it off-screen and preserves the currently visible entries
             if (!IsInViewport(contentChild, viewport, _rootCanvas.worldCamera))
             {
-                fixEntries = IsAboveViewportCenter(contentChild, viewport) ? FixEntries.Below : FixEntries.Above;
+                if (Orientation.IsVertical())
+                {
+                    fixEntries = IsAboveViewportCenter(contentChild, viewport) ? FixEntries.Below : FixEntries.Above;   
+                }
+                else
+                {
+                    fixEntries = IsLeftOfViewportCenter(contentChild, viewport) ? FixEntries.Right : FixEntries.Left; 
+                }
             }
 
-            // Directly set the height of the child
-            if (newHeight.HasValue)
+            // Directly set the height/width of the child
+            if (newHeightOrWidth.HasValue)
             {
                 (Vector2 prevAnchorMin, Vector2 prevAnchorMax) = (contentChild.anchorMin, contentChild.anchorMax);
                 (contentChild.anchorMin, contentChild.anchorMax) = (Vector2.one * 0.5f, Vector2.one * 0.5f);
-                contentChild.sizeDelta = contentChild.sizeDelta.WithY(newHeight.Value);
+                contentChild.sizeDelta = Orientation.IsVertical() ? contentChild.sizeDelta.WithY(newHeightOrWidth.Value) : content.sizeDelta.WithX(newHeightOrWidth.Value);
                 (contentChild.anchorMin, contentChild.anchorMax) = (prevAnchorMin, prevAnchorMax);
             }
-            // Auto-calculate the height of the child
+            // Auto-calculate the height/width of the child
             else if (layoutBehaviours != null && layoutBehaviours.Length > 0)
             {
                 SetBehavioursEnabled(layoutBehaviours, true);
@@ -989,46 +1010,53 @@ namespace Swill.Recycler
             }
 
             // Calculate the change in parent size given the change in the child's size
-            RecalculateContentSize(fixEntries);
+            if (Orientation.IsVertical())
+            {
+                RecalculateContentSizeVertical(fixEntries);   
+            }
+            else
+            {
+                RecalculateContentSizeHorizontal(fixEntries);
+            }
         }
 
         /// <summary>
-        /// Called when an entry needs to update its height in the recycler.
-        /// This should never need to be called directly, instead using RecyclerScrollRectEntry.RecalculateHeight.
+        /// Called when an entry needs to update its height in a vertical recycler or width in a horizontal recycler.
+        /// This should never need to be called directly, instead using RecyclerScrollRectEntry.RecalculateDimension.
         /// </summary>
-        /// <param name="entry"> The entry to update the height of. </param>
-        /// <param name="newHeight"> The new height the entry should be set to, null if it should be auto-calculated. </param>
+        /// <param name="entry"> The entry to update the dimension of. </param>
+        /// <param name="newHeightOrWidth"> The new height or width the entry should be set to, null if it should be auto-calculated. </param>
         /// <param name="fixEntries">
         /// If we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
         /// This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will
         /// be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
         [UsedByRecyclerContent]
-        public void RecalculateEntryHeight(RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry, float? newHeight, FixEntries fixEntries = FixEntries.Below)
+        public void RecalculateEntryDimension(RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry, float? newHeightOrWidth, FixEntries fixEntries = FixEntries.Below)
         {
             if (_activeEntries.ContainsKey(entry.Index))
             {
-                RecalculateContentChildHeight(entry.RectTransform, newHeight, _entryGameObjectLayoutBehaviours[entry.UidGameObject], fixEntries);
+                RecalculateContentChildDimension(entry.RectTransform, newHeightOrWidth, _entryGameObjectLayoutBehaviours[entry.UidGameObject], fixEntries);
                 RecalculateActiveEntries();   
             }
         }
 
         /// <summary>
-        /// Called when an endcap needs to update its height in the recycler.
-        /// This should never need to be called directly, instead using RecyclerScrollRectEndcap.RecalculateHeight.
+        /// Called when an endcap needs to update its height in a vertical recycler or width in a horizontal recycler.
+        /// This should never need to be called directly, instead using RecyclerScrollRectEndcap.RecalculateDimension.
         /// </summary>
-        /// <param name="newHeight"> The new height of the endcap, null if it is auto-calculated. </param>
+        /// <param name="newHeightOrWidth"> The new height or width of the endcap, null if it is auto-calculated. </param>
         /// <param name="fixEntries">
-        /// if we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy.
+        /// If we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy.
         /// This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored, and the parameter will
         /// be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
         [UsedByRecyclerContent]
-        public void RecalculateEndcapHeight(float? newHeight, FixEntries? fixEntries = null)
+        public void RecalculateEndcapDimension(float? newHeightOrWidth, FixEntries? fixEntries = null)
         {
             if (IsEndcapActive)
             {
-                RecalculateContentChildHeight(_endcap.RectTransform, newHeight, _endcapLayoutBehaviours, fixEntries ?? (Orientation == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Above : FixEntries.Below));
+                RecalculateContentChildDimension(_endcap.RectTransform, newHeightOrWidth, _endcapLayoutBehaviours, fixEntries ?? (Orientation == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Above : FixEntries.Below));
                 RecalculateActiveEntries();   
             }
         }

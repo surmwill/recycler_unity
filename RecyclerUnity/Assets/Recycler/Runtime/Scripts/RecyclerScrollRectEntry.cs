@@ -55,30 +55,30 @@ namespace Swill.Recycler
         }
         
         /// <summary>
-        /// Called when an entry needs to update its height in the recycler.
+        /// Called when an entry needs to update its height in a vertical recycler or width in a horizontal recycler.
         /// </summary>
-        /// <param name="newHeight"> The new height the entry should be set to </param>
+        /// <param name="newHeightOrWidth"> The new height or width the entry should be set to </param>
         /// <param name="fixEntries">
         /// If we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
         /// This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored,
         /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
-        protected void RecalculateHeight(float newHeight, FixEntries fixEntries = FixEntries.Mid)
+        protected void RecalculateDimension(float newHeightOrWidth, FixEntries fixEntries = FixEntries.Mid)
         {
-            Recycler.RecalculateEntryHeight(this, newHeight, fixEntries);
+            Recycler.RecalculateEntryDimension(this, newHeightOrWidth, fixEntries);
         }
         
         /// <summary>
-        /// Called when an entry needs to recalculate its auto-sized height in the recycler.
+        /// Called when an entry needs to recalculate its auto-sized height in a vertical recycler or width in a horizontal recycler.
         /// </summary>
         /// <param name="fixEntries">
         /// If we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
         /// This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored,
         /// and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
         /// </param>
-        protected void AutoRecalculateHeight(FixEntries fixEntries = FixEntries.Mid)
+        protected void AutoRecalculateDimension(FixEntries fixEntries = FixEntries.Mid)
         {
-            Recycler.RecalculateEntryHeight(this, null, fixEntries);
+            Recycler.RecalculateEntryDimension(this, null, fixEntries);
         }
 
         #region LIFECYCLE_METHODS
