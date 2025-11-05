@@ -1152,7 +1152,6 @@ namespace Swill.Recycler
             }
         }
 
-
         /// <summary>
         /// Scrolls to the entry at a given index. The entry doesn't need to be on screen at the time of the call.
         /// </summary>

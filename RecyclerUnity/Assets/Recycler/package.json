@@ -22,8 +22,8 @@
   "samples": [
     {
       "displayName": "All Examples",
-      "description": "A main menu containing options to demo each individual feature.",
-      "path": "Samples~"
+      "description": "A menu encompassing demos of each individual feature.",
+      "path": "Samples~/SamplesAll"
     }
   ]
 }
