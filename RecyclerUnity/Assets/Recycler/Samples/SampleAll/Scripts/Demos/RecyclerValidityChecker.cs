@@ -17,9 +17,9 @@ namespace Swill.Recycler.Demos
         private readonly RectTransform _recyclerViewport;
         private readonly Canvas _rootCanvas;
 
-        private Orientation StartCachePosition => EndCachePosition == Orientation.BottomToTop ? Orientation.TopToBottom : Orientation.BottomToTop;
+        private RecyclerScrollRectOrientation StartCachePosition => EndCachePosition == RecyclerScrollRectOrientation.BottomToTop ? RecyclerScrollRectOrientation.TopToBottom : RecyclerScrollRectOrientation.BottomToTop;
 
-        private Orientation EndCachePosition => _recycler.AppendTo;
+        private RecyclerScrollRectOrientation EndCachePosition => _recycler.AppendTo;
 
         public RecyclerValidityChecker(RecyclerScrollRect<TKeyEntryData, TEntryData> recycler)
         {
@@ -182,7 +182,7 @@ namespace Swill.Recycler.Demos
                 // Entries that are above the viewport should be reported as in the start/end cache, depending on orientation
                 else if (IsAboveViewportCenter(entry.RectTransform, _recyclerViewport))
                 {
-                    if (StartCachePosition == Orientation.TopToBottom)
+                    if (StartCachePosition == RecyclerScrollRectOrientation.TopToBottom)
                     {
                         if (!indicesInStartCache.Remove(entry.Index))
                         {
@@ -190,7 +190,7 @@ namespace Swill.Recycler.Demos
                             return;
                         }
                     }
-                    else if (EndCachePosition == Orientation.TopToBottom)
+                    else if (EndCachePosition == RecyclerScrollRectOrientation.TopToBottom)
                     {
                         if (!indicesInEndCache.Remove(entry.Index))
                         {
@@ -202,7 +202,7 @@ namespace Swill.Recycler.Demos
                 // Entries that are below the viewport should be reported as in the start/end cache, depending on orientation
                 else
                 {
-                    if (StartCachePosition == Orientation.BottomToTop)
+                    if (StartCachePosition == RecyclerScrollRectOrientation.BottomToTop)
                     {
                         if (!indicesInStartCache.Remove(entry.Index))
                         {
@@ -211,7 +211,7 @@ namespace Swill.Recycler.Demos
                         }
                     }
 
-                    if (EndCachePosition == Orientation.BottomToTop)
+                    if (EndCachePosition == RecyclerScrollRectOrientation.BottomToTop)
                     {
                         if (!indicesInEndCache.Remove(entry.Index))
                         {
@@ -270,11 +270,11 @@ namespace Swill.Recycler.Demos
             if (isEndcapActive)
             {
                 int endcapSiblingIndex = endcap.transform.GetSiblingIndex();
-                if (EndCachePosition == Orientation.TopToBottom && endcapSiblingIndex != 0)
+                if (EndCachePosition == RecyclerScrollRectOrientation.TopToBottom && endcapSiblingIndex != 0)
                 {
                     TestRecyclerEditorLogger.LogErrorAndBreak("Endcap should be the first sibling when the end cache is at the top. No entries should come before it");
                 }
-                else if (EndCachePosition == Orientation.BottomToTop && endcapSiblingIndex != _recycler.content.childCount - 1)
+                else if (EndCachePosition == RecyclerScrollRectOrientation.BottomToTop && endcapSiblingIndex != _recycler.content.childCount - 1)
                 {
                     TestRecyclerEditorLogger.LogErrorAndBreak("Endcap should be the last sibling when the end cache is at the bottom. No entries should come after it");
                 }

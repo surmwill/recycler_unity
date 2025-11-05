@@ -36,7 +36,7 @@ namespace Swill.Recycler
 
         [Tooltip("The orientation of the recycler. Defines the position of the starting entry and where entries get appended.")]
         [SerializeField]
-        private Orientation _appendTo = DefaultAppendTo;
+        private RecyclerScrollRectOrientation _appendTo = DefaultOrientation;
 
         [Tooltip("The transform under which our entries waiting to be bound/rebound wait.")]
         [Header("Pool")]
@@ -96,18 +96,18 @@ namespace Swill.Recycler
         /// <summary>
         /// The position in the recycler that appended entries are added to.
         /// </summary>
-        public Orientation AppendTo => _appendTo;
+        public RecyclerScrollRectOrientation AppendTo => _appendTo;
 
-        private bool IsZerothEntryAtTop => _appendTo == Orientation.BottomToTop;
+        private bool IsZerothEntryAtTop => _appendTo == RecyclerScrollRectOrientation.BottomToTop;
 
         private bool IsEndcapActive => _hasEndcap && _endcap.gameObject.activeSelf;
 
-        private Orientation StartCachePosition => IsZerothEntryAtTop ? Orientation.TopToBottom : Orientation.BottomToTop;
+        private RecyclerScrollRectOrientation StartCachePosition => IsZerothEntryAtTop ? RecyclerScrollRectOrientation.TopToBottom : RecyclerScrollRectOrientation.BottomToTop;
 
-        private Orientation EndCachePosition => IsZerothEntryAtTop ? Orientation.BottomToTop : Orientation.TopToBottom;
+        private RecyclerScrollRectOrientation EndCachePosition => IsZerothEntryAtTop ? RecyclerScrollRectOrientation.BottomToTop : RecyclerScrollRectOrientation.TopToBottom;
         
         private const float DefaultScrollSpeedViewportsPerSecond = 1f;
-        private const Orientation DefaultAppendTo = Orientation.BottomToTop;
+        private const RecyclerScrollRectOrientation DefaultOrientation = RecyclerScrollRectOrientation.BottomToTop;
 
         private readonly List<TEntryData> _dataForEntries = new();
         private readonly Dictionary<TKeyEntryData, int> _entryKeyToCurrentIndex = new();
@@ -221,11 +221,11 @@ namespace Swill.Recycler
             int siblingIndex = GetSiblingIndexForEntry(index);
             if (_activeEntriesWindow.IsInStartCache(index))
             {
-                CreateAndAddEntry(index, siblingIndex, StartCachePosition == Orientation.TopToBottom ? FixEntries.Below : FixEntries.Above);
+                CreateAndAddEntry(index, siblingIndex, StartCachePosition == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Below : FixEntries.Above);
             }
             else if (_activeEntriesWindow.IsInEndCache(index))
             {
-                CreateAndAddEntry(index, siblingIndex, EndCachePosition == Orientation.TopToBottom ? FixEntries.Below : FixEntries.Above);
+                CreateAndAddEntry(index, siblingIndex, EndCachePosition == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Below : FixEntries.Above);
             }
             else
             {
@@ -553,7 +553,7 @@ namespace Swill.Recycler
                     }
                     
                     // Create new entries in the start cache
-                    bool isStartCacheAtTop = StartCachePosition == Orientation.TopToBottom;
+                    bool isStartCacheAtTop = StartCachePosition == RecyclerScrollRectOrientation.TopToBottom;
                     current = _newCachedStartEntries.First;
                     
                     while (current != null)
@@ -564,7 +564,7 @@ namespace Swill.Recycler
                     }
 
                     // Create new entries in the end cache
-                    bool isEndCacheAtTop = EndCachePosition == Orientation.TopToBottom;
+                    bool isEndCacheAtTop = EndCachePosition == RecyclerScrollRectOrientation.TopToBottom;
                     current = _newCachedEndEntries.First;
                     
                     while (current != null)
@@ -653,13 +653,13 @@ namespace Swill.Recycler
                     _endcap.RectTransform,
                     _endcapLayoutBehaviours,
                     IsZerothEntryAtTop ? content.childCount : 0,
-                    EndCachePosition == Orientation.TopToBottom ? FixEntries.Below : FixEntries.Above);
+                    EndCachePosition == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Below : FixEntries.Above);
             }
         }
 
         private void RecycleEndcap()
         {
-            RemoveFromContent(_endcap.RectTransform, EndCachePosition == Orientation.TopToBottom ? FixEntries.Below : FixEntries.Above).SetParent(_endcapParent, false);
+            RemoveFromContent(_endcap.RectTransform, EndCachePosition == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Below : FixEntries.Above).SetParent(_endcapParent, false);
             _endcap.ReturnToPool();
         }
 
@@ -1029,7 +1029,7 @@ namespace Swill.Recycler
         {
             if (IsEndcapActive)
             {
-                RecalculateContentChildHeight(_endcap.RectTransform, newHeight, _endcapLayoutBehaviours, fixEntries ?? (EndCachePosition == Orientation.BottomToTop ? FixEntries.Above : FixEntries.Below));
+                RecalculateContentChildHeight(_endcap.RectTransform, newHeight, _endcapLayoutBehaviours, fixEntries ?? (EndCachePosition == RecyclerScrollRectOrientation.BottomToTop ? FixEntries.Above : FixEntries.Below));
                 RecalculateActiveEntries();   
             }
         }
