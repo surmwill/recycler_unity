@@ -234,6 +234,7 @@ namespace Swill.Recycler.Demos
             if (visibleIndices.Any())
             {
                 TestRecyclerEditorLogger.LogErrorAndBreak($"The following entries were reported to be visible window but weren't found to be visible: {string.Join(',', visibleIndices)}");
+                return;
             }
         }
 
