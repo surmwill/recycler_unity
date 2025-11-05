@@ -12,7 +12,7 @@ namespace Swill.Recycler.Editor
         // General
         private SerializedProperty _recyclerEntryPrefab = null;
         private SerializedProperty _numCachedAtEachEnd = null;
-        private SerializedProperty _appendTo = null;
+        private SerializedProperty _orientation = null;
 
         // Pool
         private SerializedProperty _poolParent = null;
@@ -33,7 +33,7 @@ namespace Swill.Recycler.Editor
             // General
             _recyclerEntryPrefab = serializedObject.FindProperty(nameof(_recyclerEntryPrefab));
             _numCachedAtEachEnd = serializedObject.FindProperty(nameof(_numCachedAtEachEnd));
-            _appendTo = serializedObject.FindProperty(nameof(_appendTo));
+            _orientation = serializedObject.FindProperty(nameof(_orientation));
 
             // Pool
             _poolParent = serializedObject.FindProperty(nameof(_poolParent));
@@ -56,7 +56,7 @@ namespace Swill.Recycler.Editor
             // General
             EditorGUILayout.PropertyField(_recyclerEntryPrefab);
             EditorGUILayout.PropertyField(_numCachedAtEachEnd);
-            EditorGUILayout.PropertyField(_appendTo);
+            EditorGUILayout.PropertyField(_orientation);
 
             // Pool
             EditorGUILayout.PropertyField(_poolParent);

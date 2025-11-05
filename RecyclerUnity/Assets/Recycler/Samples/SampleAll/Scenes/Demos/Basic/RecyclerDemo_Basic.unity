@@ -1314,7 +1314,7 @@ MonoBehaviour:
       m_Calls: []
   _recyclerEntryPrefab: {fileID: 3871649767620459988, guid: ce0fa7edcc6744c4dade2dcc7278afa5, type: 3}
   _numCachedAtEachEnd: 2
-  _appendTo: 1
+  _orientation: 0
   _poolParent: {fileID: 1322206725}
   _poolSize: 15
   _endcapPrefab: {fileID: 5586736797443459203, guid: a9ceb1fe8a64e414497461c5f6f68fc2, type: 3}

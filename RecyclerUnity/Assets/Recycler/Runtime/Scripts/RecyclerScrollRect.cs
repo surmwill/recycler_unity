@@ -36,7 +36,7 @@ namespace Swill.Recycler
 
         [Tooltip("The orientation of the recycler. Defines the position of the starting entry and where entries get appended.")]
         [SerializeField]
-        private RecyclerScrollRectOrientation _appendTo = DefaultOrientation;
+        private RecyclerScrollRectOrientation _orientation = DefaultOrientation;
 
         [Tooltip("The transform under which our entries waiting to be bound/rebound wait.")]
         [Header("Pool")]
@@ -94,17 +94,17 @@ namespace Swill.Recycler
         public RecyclerScrollRectEndcap<TKeyEntryData, TEntryData> Endcap => _endcap;
 
         /// <summary>
-        /// The position in the recycler that appended entries are added to.
+        /// The origin of the first position and the direction that entries get appended to
         /// </summary>
-        public RecyclerScrollRectOrientation AppendTo => _appendTo;
+        public RecyclerScrollRectOrientation Orientation => _orientation;
 
-        private bool IsZerothEntryAtTop => _appendTo == RecyclerScrollRectOrientation.BottomToTop;
+        // private bool IsZerothEntryAtTop => _orientation == RecyclerScrollRectOrientation.BottomToTop;
 
         private bool IsEndcapActive => _hasEndcap && _endcap.gameObject.activeSelf;
 
-        private RecyclerScrollRectOrientation StartCachePosition => IsZerothEntryAtTop ? RecyclerScrollRectOrientation.TopToBottom : RecyclerScrollRectOrientation.BottomToTop;
+        // private RecyclerScrollRectOrientation StartCachePosition => IsZerothEntryAtTop ? RecyclerScrollRectOrientation.TopToBottom : RecyclerScrollRectOrientation.BottomToTop;
 
-        private RecyclerScrollRectOrientation EndCachePosition => IsZerothEntryAtTop ? RecyclerScrollRectOrientation.BottomToTop : RecyclerScrollRectOrientation.TopToBottom;
+        // private RecyclerScrollRectOrientation EndCachePosition => IsZerothEntryAtTop ? RecyclerScrollRectOrientation.BottomToTop : RecyclerScrollRectOrientation.TopToBottom;
         
         private const float DefaultScrollSpeedViewportsPerSecond = 1f;
         private const RecyclerScrollRectOrientation DefaultOrientation = RecyclerScrollRectOrientation.BottomToTop;
@@ -221,11 +221,11 @@ namespace Swill.Recycler
             int siblingIndex = GetSiblingIndexForEntry(index);
             if (_activeEntriesWindow.IsInStartCache(index))
             {
-                CreateAndAddEntry(index, siblingIndex, StartCachePosition == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Below : FixEntries.Above);
+                CreateAndAddEntry(index, siblingIndex, Orientation == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Below : FixEntries.Above);
             }
             else if (_activeEntriesWindow.IsInEndCache(index))
             {
-                CreateAndAddEntry(index, siblingIndex, EndCachePosition == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Below : FixEntries.Above);
+                CreateAndAddEntry(index, siblingIndex, Orientation == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Above : FixEntries.Below);
             }
             else
             {
@@ -553,24 +553,20 @@ namespace Swill.Recycler
                     }
                     
                     // Create new entries in the start cache
-                    bool isStartCacheAtTop = StartCachePosition == RecyclerScrollRectOrientation.TopToBottom;
                     current = _newCachedStartEntries.First;
-                    
                     while (current != null)
                     {
                         _newCachedStartEntries.RemoveFirst();
-                        CreateAndAddEntry(current.Value, GetSiblingIndexForEntry(current.Value), isStartCacheAtTop ? FixEntries.Below : FixEntries.Above);
+                        CreateAndAddEntry(current.Value, GetSiblingIndexForEntry(current.Value), Orientation == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Below : FixEntries.Above);
                         current = _newCachedStartEntries.First;
                     }
 
                     // Create new entries in the end cache
-                    bool isEndCacheAtTop = EndCachePosition == RecyclerScrollRectOrientation.TopToBottom;
                     current = _newCachedEndEntries.First;
-                    
                     while (current != null)
                     {
                         _newCachedEndEntries.RemoveFirst();
-                        CreateAndAddEntry(current.Value, GetSiblingIndexForEntry(current.Value), isEndCacheAtTop ? FixEntries.Below : FixEntries.Above);
+                        CreateAndAddEntry(current.Value, GetSiblingIndexForEntry(current.Value), Orientation == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Above : FixEntries.Below);
                         current = _newCachedEndEntries.First;
                     }
                 
@@ -608,15 +604,16 @@ namespace Swill.Recycler
         
         private int GetSiblingIndexForEntry(int entryIndex)
         {
-            int siblingIndex = IsZerothEntryAtTop ? 0 : content.childCount;
             foreach (Transform entryTransform in content)
             {
                 if (entryTransform.gameObject.name == (entryIndex - 1).ToString())
                 {
-                    siblingIndex = entryTransform.GetSiblingIndex() + (IsZerothEntryAtTop ? 1 : 0);
+                    return entryTransform.GetSiblingIndex() + (Orientation == RecyclerScrollRectOrientation.TopToBottom ? 1 : 0);
                 }
             }
-            return siblingIndex;
+         
+            // Default as zeroth entry
+            return Orientation == RecyclerScrollRectOrientation.TopToBottom ? 0 : content.childCount;
         }
 
         /// <summary>
@@ -652,14 +649,14 @@ namespace Swill.Recycler
                 AddToContent(
                     _endcap.RectTransform,
                     _endcapLayoutBehaviours,
-                    IsZerothEntryAtTop ? content.childCount : 0,
-                    EndCachePosition == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Below : FixEntries.Above);
+                    Orientation == RecyclerScrollRectOrientation.TopToBottom ? content.childCount : 0,
+                    Orientation == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Above : FixEntries.Below);
             }
         }
 
         private void RecycleEndcap()
         {
-            RemoveFromContent(_endcap.RectTransform, EndCachePosition == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Below : FixEntries.Above).SetParent(_endcapParent, false);
+            RemoveFromContent(_endcap.RectTransform, Orientation == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Above : FixEntries.Below).SetParent(_endcapParent, false);
             _endcap.ReturnToPool();
         }
 
@@ -749,8 +746,8 @@ namespace Swill.Recycler
                 bool wentOffTop = Vector3.Dot(entry.RectTransform.position - viewport.transform.position, viewport.transform.up) > 0;
 
                 // Note that for any entry to be non-visible there must be at least one other entry pushing it offscreen.
-                // This means there's a guaranteed existent entry below/above it and we can be safe adding +/- 1 to our index window bounds.
-                if (IsZerothEntryAtTop)
+                // This means there's a guaranteed existent entry below/above it, and we can be safe adding +/- 1 to our index window bounds.
+                if (Orientation == RecyclerScrollRectOrientation.TopToBottom)
                 {
                     // Anything off the top means we are scrolling down, away from entry 0, away from lesser indices
                     if (wentOffTop && _activeEntriesWindow.VisibleIndexRange.Value.Start <= entryIndex)
@@ -796,7 +793,7 @@ namespace Swill.Recycler
         /// </summary>
         public void ResetToBeginning()
         {
-            ScrollToIndexImmediate(0, IsZerothEntryAtTop ? ScrollToAlignment.EntryTop : ScrollToAlignment.EntryBottom);
+            ScrollToIndexImmediate(0, Orientation == RecyclerScrollRectOrientation.TopToBottom ? ScrollToAlignment.EntryTop : ScrollToAlignment.EntryBottom);
         }
 
         /// <summary>
@@ -1029,7 +1026,7 @@ namespace Swill.Recycler
         {
             if (IsEndcapActive)
             {
-                RecalculateContentChildHeight(_endcap.RectTransform, newHeight, _endcapLayoutBehaviours, fixEntries ?? (EndCachePosition == RecyclerScrollRectOrientation.BottomToTop ? FixEntries.Above : FixEntries.Below));
+                RecalculateContentChildHeight(_endcap.RectTransform, newHeight, _endcapLayoutBehaviours, fixEntries ?? (Orientation == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.Above : FixEntries.Below));
                 RecalculateActiveEntries();   
             }
         }
@@ -1078,6 +1075,7 @@ namespace Swill.Recycler
                 return;
             }
             
+            // Note: visibility has not yet been updated, so we cannot rely on our active window to tell which indices are active or not
             bool hasFirstEntry = HasEntryWithIndex(0);
             bool hasLastEntry = _hasEndcap ? IsEndcapActive : HasEntryWithIndex(DataForEntries.Count - 1);
 
@@ -1206,12 +1204,12 @@ namespace Swill.Recycler
                     // Scroll toward lesser indices
                     if (index < _activeEntriesWindow.ActiveEntriesRange.Value.Start)
                     {
-                        newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 1 : 0, normalizedScrollDistanceLeftToTravelThisFrame);
+                        newNormalizedY = Mathf.MoveTowards(currNormalizedY, Orientation == RecyclerScrollRectOrientation.TopToBottom ? 1 : 0, normalizedScrollDistanceLeftToTravelThisFrame);
                     }
                     // Scroll toward greater indices
                     else if (index > _activeEntriesWindow.ActiveEntriesRange.Value.End)
                     {
-                        newNormalizedY = Mathf.MoveTowards(currNormalizedY, IsZerothEntryAtTop ? 0 : 1, normalizedScrollDistanceLeftToTravelThisFrame);
+                        newNormalizedY = Mathf.MoveTowards(currNormalizedY, Orientation == RecyclerScrollRectOrientation.TopToBottom ? 0 : 1, normalizedScrollDistanceLeftToTravelThisFrame);
                     }
                     
                     normalizedPosition = normalizedPosition.WithY(newNormalizedY);
@@ -1571,9 +1569,9 @@ namespace Swill.Recycler
         private void SetContentTracker()
         {
             _tracker.Add(this, content, DrivenTransformProperties.AnchorMin | DrivenTransformProperties.AnchorMax | DrivenTransformProperties.Pivot);
-            content.anchorMin = new Vector2(0f, IsZerothEntryAtTop ? 1f : 0f);
-            content.anchorMax = new Vector2(1f, IsZerothEntryAtTop ? 1f: 0f);
-            content.pivot = new Vector2(0.5f, IsZerothEntryAtTop ? 1f : 0f);
+            content.anchorMin = new Vector2(0f, Orientation == RecyclerScrollRectOrientation.TopToBottom ? 1f : 0f);
+            content.anchorMax = new Vector2(1f, Orientation == RecyclerScrollRectOrientation.TopToBottom ? 1f: 0f);
+            content.pivot = new Vector2(0.5f, Orientation == RecyclerScrollRectOrientation.TopToBottom ? 1f : 0f);
         }
 
         private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)
