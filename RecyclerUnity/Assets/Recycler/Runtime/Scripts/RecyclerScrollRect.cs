@@ -98,13 +98,7 @@ namespace Swill.Recycler
         /// </summary>
         public RecyclerScrollRectOrientation Orientation => _orientation;
 
-        // private bool IsZerothEntryAtTop => _orientation == RecyclerScrollRectOrientation.BottomToTop;
-
         private bool IsEndcapActive => _hasEndcap && _endcap.gameObject.activeSelf;
-
-        // private RecyclerScrollRectOrientation StartCachePosition => IsZerothEntryAtTop ? RecyclerScrollRectOrientation.TopToBottom : RecyclerScrollRectOrientation.BottomToTop;
-
-        // private RecyclerScrollRectOrientation EndCachePosition => IsZerothEntryAtTop ? RecyclerScrollRectOrientation.BottomToTop : RecyclerScrollRectOrientation.TopToBottom;
         
         private const float DefaultScrollSpeedViewportsPerSecond = 1f;
         private const RecyclerScrollRectOrientation DefaultOrientation = RecyclerScrollRectOrientation.BottomToTop;
@@ -580,8 +574,8 @@ namespace Swill.Recycler
             if (didActiveEntriesChange)
             {
                 _updateStateOfEntries = new LinkedList<int>(_activeEntriesWindow);
-            
                 LinkedListNode<int> current = _updateStateOfEntries.First;
+                
                 while (current != null)
                 {
                     _updateStateOfEntries.RemoveFirst();
