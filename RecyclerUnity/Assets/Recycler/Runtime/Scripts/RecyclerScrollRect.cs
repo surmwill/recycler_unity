@@ -172,11 +172,11 @@ namespace Swill.Recycler
                 _unboundEntries.Enqueue(entry);
             }
             
-            // Our pivot moves around once we have > full-screen's worth of content, but should be reset when we have <= a full-screen of content
-            _initPivot = content.pivot;
-            
             // Ensure the entries' RectTransform has appropriate values for the recycler orientation
             DriveContentRectTransform();
+            
+            // Our pivot moves around once we have > full-screen's worth of content, but should be reset when we have <= a full-screen of content
+            _initPivot = content.pivot;
 
             // Cache the endcap's layout behaviours if there are any. These will be disabled when not in use for performance reasons.
             _hasEndcap = _endcap != null;
@@ -909,7 +909,7 @@ namespace Swill.Recycler
             // Recycle all the entries
             foreach (RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry in _activeEntries.Values.ToList())
             {
-                SendToRecycling(entry);
+                SendToRecycling(entry, Orientation.IsVertical() ? FixEntries.VerticalBelow : FixEntries.HorizontalRight);
             }
 
             // Unbind everything
