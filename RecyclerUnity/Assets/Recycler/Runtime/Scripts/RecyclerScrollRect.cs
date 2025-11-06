@@ -1372,7 +1372,15 @@ namespace Swill.Recycler
 
             _currScrollingToIndex = index;
             _onScrollCancelled = onScrollCancelled;
-            _scrollToIndexCoroutine = StartCoroutine(ScrollToIndexInner(scrollToAlignment.ValidateWithOrientation(Orientation), scrollSpeedViewportsPerSecond, onScrollComplete));
+            
+            if (Orientation.IsVertical()) 
+            {
+                _scrollToIndexCoroutine = StartCoroutine(ScrollToIndexVertical(scrollToAlignment, scrollSpeedViewportsPerSecond, onScrollComplete));
+            }
+            else
+            {
+                _scrollToIndexCoroutine = StartCoroutine(ScrollToIndexHorizontal(scrollToAlignment, scrollSpeedViewportsPerSecond, onScrollComplete));
+            }
         }
 
         /// <summary>
@@ -1393,10 +1401,10 @@ namespace Swill.Recycler
             ScrollToIndex(_entryKeyToCurrentIndex[key], scrollToAlignment, scrollSpeedViewportsPerSecond, onScrollComplete, onScrollCancelled);
         }
 
-        private IEnumerator ScrollToIndexInner(ScrollToAlignment scrollToAlignment, float scrollSpeedViewportsPerSecond, Action onScrollComplete)
+        private IEnumerator ScrollToIndexVertical(ScrollToAlignment scrollToAlignment, float scrollSpeedViewportsPerSecond, Action onScrollComplete)
         {
             // The position within the child the scroll will center on (ex: middle, top edge, bottom edge)
-            float normalizedPositionWithinChild = ScrollAlignmentToNormalizedPosition(scrollToAlignment);
+            float normalizedPositionWithinChild = ScrollAlignmentToNormalizedPosition(scrollToAlignment.ValidateWithOrientation(Orientation));
             
             float distanceLeftToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
             for (;;)
@@ -1480,6 +1488,96 @@ namespace Swill.Recycler
             {
                 // Subtracting the viewport from the content height leaves the available space the viewport can move (the scroll distance)
                 return normalizedScrollDistance * (content.rect.height - viewport.rect.height);
+            }
+        }
+        
+        private IEnumerator ScrollToIndexHorizontal(ScrollToAlignment scrollToAlignment, float scrollSpeedViewportsPerSecond, Action onScrollComplete)
+        {
+            // The position within the child the scroll will center on (ex: middle, left edge, right edge)
+            float normalizedPositionWithinChild = ScrollAlignmentToNormalizedPosition(scrollToAlignment.ValidateWithOrientation(Orientation));
+            
+            float distanceLeftToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
+            for (;;)
+            {
+                int index = _currScrollingToIndex.Value;
+
+                float normalizedScrollDistanceLeftToTravelThisFrame = DistanceToNormalizedScrollDistance(distanceLeftToTravelThisFrame);
+                float currNormalizedX = normalizedPosition.x;
+                float newNormalizedX = 0f;
+
+                // Scroll through entries until the entry we want is active, then we'll know the exact position to center on
+                if (!_activeEntriesWindow.Contains(index))
+                {
+                    // Scroll toward lesser indices
+                    if (index < _activeEntriesWindow.ActiveEntriesRange.Value.Start)
+                    {
+                        newNormalizedX = Mathf.MoveTowards(currNormalizedX, Orientation == RecyclerScrollRectOrientation.LeftToRight ? 0 : 1, normalizedScrollDistanceLeftToTravelThisFrame);
+                    }
+                    // Scroll toward greater indices
+                    else if (index > _activeEntriesWindow.ActiveEntriesRange.Value.End)
+                    {
+                        newNormalizedX = Mathf.MoveTowards(currNormalizedX, Orientation == RecyclerScrollRectOrientation.LeftToRight ? 1 : 0, normalizedScrollDistanceLeftToTravelThisFrame);
+                    }
+                    
+                    normalizedPosition = normalizedPosition.WithX(newNormalizedX);
+                }
+                // Find and scroll to the exact position of the now active entry
+                else
+                {
+                    float entryNormalizedX = this.GetNormalizedVerticalPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild);
+                    
+                    // If we're centered on the position, then we're done scrolling
+                    if (this.IsAtNormalizedPosition(normalizedPosition.WithX(entryNormalizedX)))
+                    {
+                        break;
+                    }
+                    
+                    float prevNormalizedPosX = normalizedPosition.x;
+                    newNormalizedX = Mathf.MoveTowards(currNormalizedX, Mathf.Clamp01(entryNormalizedX), normalizedScrollDistanceLeftToTravelThisFrame);
+                    normalizedPosition = normalizedPosition.WithX(newNormalizedX);
+
+                    // If we can't scroll anymore (we've hit the very end of the list), then we're done scrolling
+                    if (Mathf.Approximately(prevNormalizedPosX, normalizedPosition.x))
+                    {
+                        break;
+                    }
+                }
+                
+                distanceLeftToTravelThisFrame -= NormalizedScrollDistanceToDistance(Mathf.Abs(newNormalizedX - currNormalizedX));
+                RecalculateActiveEntries();
+                
+                // If we have less than 0.1% left of a viewport to travel this frame, we say we've travelled enough this frame
+                if (distanceLeftToTravelThisFrame < 0.001f * viewport.rect.width)
+                {
+                    yield return null;
+                    distanceLeftToTravelThisFrame = GetFullDistanceToTravelInThisFrame();
+                }
+            }
+
+            _currScrollingToIndex = null;
+            _scrollToIndexCoroutine = null;
+            _onScrollCancelled = null;
+            
+            onScrollComplete?.Invoke();
+
+            // Returns the distance we'd like to scroll in a single frame
+            float GetFullDistanceToTravelInThisFrame()
+            {
+                return scrollSpeedViewportsPerSecond * viewport.rect.width * Time.deltaTime;
+            }
+
+            // Returns the normalized scroll distance corresponding to a certain non-normalized distance.
+            float DistanceToNormalizedScrollDistance(float distance)
+            {
+                // Subtracting the viewport from the content height leaves the available space the viewport can move (the scroll distance)
+                return Mathf.InverseLerp(0, content.rect.width - viewport.rect.width, distance);
+            }
+
+            // Returns the distance corresponding to scrolling a certain normalized distance
+            float NormalizedScrollDistanceToDistance(float normalizedScrollDistance)
+            {
+                // Subtracting the viewport from the content width leaves the available space the viewport can move (the scroll distance)
+                return normalizedScrollDistance * (content.rect.width - viewport.rect.width);
             }
         }
         
