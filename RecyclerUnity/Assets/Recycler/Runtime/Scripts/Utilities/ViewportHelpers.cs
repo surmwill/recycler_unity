@@ -78,7 +78,7 @@ namespace Swill.Recycler
         /// <returns> True if the given RectTransform is to the right of the center of the viewport. </returns>
         public static bool IsRightOfViewportCenter(RectTransform rectTransform, RectTransform viewport)
         {
-            return Vector3.Dot(Vector3.ProjectOnPlane(rectTransform.position - viewport.GetWorldRect().Center, viewport.right), viewport.right) > 0;
+            return Vector3.Dot(Vector3.ProjectOnPlane(rectTransform.position - viewport.GetWorldRect().Center, viewport.forward), viewport.right) > 0;
         }
         
         /// <summary>
@@ -89,7 +89,7 @@ namespace Swill.Recycler
         /// <returns> True if the given RectTransform is to the left of the center of the viewport. </returns>
         public static bool IsLeftOfViewportCenter(RectTransform rectTransform, RectTransform viewport)
         {
-            return Vector3.Dot(Vector3.ProjectOnPlane(rectTransform.position - viewport.GetWorldRect().Center, viewport.right), -viewport.right) > 0;
+            return Vector3.Dot(Vector3.ProjectOnPlane(rectTransform.position - viewport.GetWorldRect().Center, viewport.forward), -viewport.right) > 0;
         }
     }
 }

@@ -165,7 +165,7 @@ namespace Swill.Recycler
             // Keeps track of what indices are visible, and subsequently which indices are cached
             _activeEntriesWindow = new RecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData>(this, _numCachedAtEachEnd);
 
-            // All the entries in the pool are initially unbound
+            // All the entries in the pool are initially unbound    
             RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry = null;
             foreach (Transform _ in _poolParent.Children().Where(t => t.TryGetComponent(out entry)))
             {

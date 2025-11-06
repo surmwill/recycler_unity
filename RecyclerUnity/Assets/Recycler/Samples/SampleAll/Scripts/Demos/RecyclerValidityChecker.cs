@@ -175,46 +175,94 @@ namespace Swill.Recycler.Demos
                         return;
                     }
                 }
-                // Entries that are above the viewport should be reported as in the start/end cache, depending on orientation
-                else if (IsAboveViewportCenter(entry.RectTransform, _recyclerViewport))
-                {
-                    if (_recycler.Orientation == RecyclerScrollRectOrientation.TopToBottom)
+                else if (_recycler.Orientation.IsVertical())
+                { 
+                    // Entries that are above the viewport should be reported as in the start/end cache, depending on orientation
+                    if (IsAboveViewportCenter(entry.RectTransform, _recyclerViewport))
                     {
-                        if (!indicesInStartCache.Remove(entry.Index))
+                        if (_recycler.Orientation == RecyclerScrollRectOrientation.TopToBottom)
                         {
-                            TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the start cache window.\n\n {activeEntriesWindow.PrintRanges()}");
-                            return;
+                            if (!indicesInStartCache.Remove(entry.Index))
+                            {
+                                TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the start cache window.\n\n {activeEntriesWindow.PrintRanges()}");
+                                return;
+                            }
+                        }
+                        else if (_recycler.Orientation == RecyclerScrollRectOrientation.BottomToTop)
+                        {
+                            if (!indicesInEndCache.Remove(entry.Index))
+                            {
+                                TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the end cache window.\n\n {activeEntriesWindow.PrintRanges()}");
+                                return;
+                            }
                         }
                     }
-                    else if (_recycler.Orientation == RecyclerScrollRectOrientation.BottomToTop)
+                    // Entries that are below the viewport should be reported as in the start/end cache, depending on orientation
+                    else
                     {
-                        if (!indicesInEndCache.Remove(entry.Index))
+                        if (_recycler.Orientation == RecyclerScrollRectOrientation.BottomToTop)
                         {
-                            TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the end cache window.\n\n {activeEntriesWindow.PrintRanges()}");
-                            return;
+                            if (!indicesInStartCache.Remove(entry.Index))
+                            {
+                                TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the start cache window.\n\n {activeEntriesWindow.PrintRanges()}");
+                                return;
+                            }
                         }
-                    }
+
+                        if (_recycler.Orientation == RecyclerScrollRectOrientation.TopToBottom)
+                        {
+                            if (!indicesInEndCache.Remove(entry.Index))
+                            {
+                                TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the end cache window.\n\n {activeEntriesWindow.PrintRanges()}");
+                                return;
+                            }
+                        }
+                    }   
                 }
-                // Entries that are below the viewport should be reported as in the start/end cache, depending on orientation
+                // Recycler orientation is horizontal
                 else
                 {
-                    if (_recycler.Orientation == RecyclerScrollRectOrientation.BottomToTop)
+                    // Entries that are to the left of the viewport should be reported as in the start/end cache, depending on orientation
+                    if (IsLeftOfViewportCenter(entry.RectTransform, _recyclerViewport))
                     {
-                        if (!indicesInStartCache.Remove(entry.Index))
+                        if (_recycler.Orientation == RecyclerScrollRectOrientation.LeftToRight)
                         {
-                            TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the start cache window.\n\n {activeEntriesWindow.PrintRanges()}");
-                            return;
+                            if (!indicesInStartCache.Remove(entry.Index))
+                            {
+                                TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the start cache window.\n\n {activeEntriesWindow.PrintRanges()}");
+                                return;
+                            }
+                        }
+                        else if (_recycler.Orientation == RecyclerScrollRectOrientation.RightToLeft)
+                        {
+                            if (!indicesInEndCache.Remove(entry.Index))
+                            {
+                                TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the end cache window.\n\n {activeEntriesWindow.PrintRanges()}");
+                                return;
+                            }
                         }
                     }
+                    // Entries that are to the right of the viewport should be reported as in the start/end cache, depending on orientation
+                    else
+                    {
+                        if (_recycler.Orientation == RecyclerScrollRectOrientation.RightToLeft)
+                        {
+                            if (!indicesInStartCache.Remove(entry.Index))
+                            {
+                                TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the start cache window.\n\n {activeEntriesWindow.PrintRanges()}");
+                                return;
+                            }
+                        }
 
-                    if (_recycler.Orientation == RecyclerScrollRectOrientation.TopToBottom)
-                    {
-                        if (!indicesInEndCache.Remove(entry.Index))
+                        if (_recycler.Orientation == RecyclerScrollRectOrientation.LeftToRight)
                         {
-                            TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the end cache window.\n\n {activeEntriesWindow.PrintRanges()}");
-                            return;
+                            if (!indicesInEndCache.Remove(entry.Index))
+                            {
+                                TestRecyclerEditorLogger.LogErrorAndBreak($"{entry.Index} should be in the end cache window.\n\n {activeEntriesWindow.PrintRanges()}");
+                                return;
+                            }
                         }
-                    }
+                    }   
                 }
             }
 
@@ -267,13 +315,13 @@ namespace Swill.Recycler.Demos
             if (isEndcapActive)
             {
                 int endcapSiblingIndex = endcap.transform.GetSiblingIndex();
-                if (_recycler.Orientation == RecyclerScrollRectOrientation.TopToBottom && endcapSiblingIndex != _recycler.content.childCount - 1)
+                if ((_recycler.Orientation == RecyclerScrollRectOrientation.TopToBottom || _recycler.Orientation == RecyclerScrollRectOrientation.LeftToRight) && endcapSiblingIndex != _recycler.content.childCount - 1)
                 {
-                    TestRecyclerEditorLogger.LogErrorAndBreak("Endcap should be the first sibling when the end cache is at the top. No entries should come before it");
+                    TestRecyclerEditorLogger.LogErrorAndBreak("Endcap should be the first sibling when the end cache is at the top/left. No entries should come before it");
                 }
-                else if (_recycler.Orientation == RecyclerScrollRectOrientation.BottomToTop && endcapSiblingIndex != 0)
+                else if ((_recycler.Orientation == RecyclerScrollRectOrientation.BottomToTop || _recycler.Orientation == RecyclerScrollRectOrientation.RightToLeft) && endcapSiblingIndex != 0)
                 {
-                    TestRecyclerEditorLogger.LogErrorAndBreak("Endcap should be the last sibling when the end cache is at the bottom. No entries should come after it");
+                    TestRecyclerEditorLogger.LogErrorAndBreak("Endcap should be the last sibling when the end cache is at the bottom/right. No entries should come after it");
                 }
             }
         }
@@ -301,17 +349,14 @@ namespace Swill.Recycler.Demos
                     continue;
                 }
 
-                RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry =
-                    t.GetComponent<RecyclerScrollRectEntry<TKeyEntryData, TEntryData>>();
+                RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry = t.GetComponent<RecyclerScrollRectEntry<TKeyEntryData, TEntryData>>();
                 int currentIndex = entry.Index;
 
-                if (seenIndices.Contains(currentIndex))
+                if (!seenIndices.Add(currentIndex))
                 {
                     TestRecyclerEditorLogger.LogErrorAndBreak($"DUPLICATE INDEX: {currentIndex}");
                     return;
                 }
-
-                seenIndices.Add(currentIndex);
             }
         }
 
