@@ -1526,7 +1526,7 @@ namespace Swill.Recycler
                 // Find and scroll to the exact position of the now active entry
                 else
                 {
-                    float entryNormalizedX = this.GetNormalizedVerticalPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild);
+                    float entryNormalizedX = this.GetNormalizedHorizontalPositionOfChild(_activeEntries[index].RectTransform, normalizedPositionWithinChild);
                     
                     // If we're centered on the position, then we're done scrolling
                     if (this.IsAtNormalizedPosition(normalizedPosition.WithX(entryNormalizedX)))

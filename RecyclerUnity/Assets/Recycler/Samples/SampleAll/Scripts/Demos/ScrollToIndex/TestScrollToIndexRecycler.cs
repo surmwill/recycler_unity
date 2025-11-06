@@ -28,9 +28,9 @@ namespace Swill.Recycler.Demos
 
         protected override string[] DemoButtonDescriptions => new[]
         {
-            $"0 (keys 'A' and then 'M'): Scrolls to the middle index {ScrollToMiddleIndex}.",
-            $"1 (keys 'A' and then 'T'): Scrolls to the top index 0.",
-            $"2 (keys 'A' and then 'B'): Scrolls to the bottom index {InitNumEntries - 1}.",
+            $"0 (keys 'A' and then 'M'): Scrolls to the middle of index {ScrollToMiddleIndex}.",
+            $"1 (keys 'A' and then 'T'): Scrolls to the top/left of index 0.",
+            $"2 (keys 'A' and then 'B'): Scrolls to the bottom/right of index {InitNumEntries - 1}.",
 
             $"3 (keys 'F' and then 'G'): Scrolls to the middle index {ScrollToMiddleIndex} while making the bottom visible entry grow, scrolling over the expanding entry.",
             $"4 (keys 'F' and then 'S'): Scrolls to the middle index {ScrollToMiddleIndex} while making the bottom visible entry shrink, scrolling over the shrinking entry.",
@@ -58,7 +58,7 @@ namespace Swill.Recycler.Demos
         private void Update()
         {
             /*** Animate scroll ***/
-            // Scroll to middle index
+            // Scroll to middle of index
             if ((Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.M)) || DemoToolbar.GetButtonDown(0))
             {
                 _recycler.ScrollToIndex(ScrollToMiddleIndex, 
@@ -66,18 +66,20 @@ namespace Swill.Recycler.Demos
                     onScrollComplete:() => TestRecyclerEditorLogger.Log("Middle index scroll complete."),
                     onScrollCancelled:() => TestRecyclerEditorLogger.Log("Middle index scroll cancelled."));
             }
-            // Scroll to top index
+            // Scroll to top/left of index
             else if ((Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.T)) || DemoToolbar.GetButtonDown(1))
             {
                 _recycler.ScrollToIndex(0,
+                    _recycler.Orientation.IsVertical() ? ScrollToAlignment.VerticalEntryTop : ScrollToAlignment.HorizontalEntryLeft,
                     scrollSpeedViewportsPerSecond:NormalScrollSpeed,
                     onScrollComplete:() => TestRecyclerEditorLogger.Log("Top index scroll complete."),
                     onScrollCancelled:() => TestRecyclerEditorLogger.Log("Top index scroll cancelled."));
             }
-            // Scroll to bot index
+            // Scroll to bot/right of index
             else if ((Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.B)) || DemoToolbar.GetButtonDown(2))
             {
                 _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, 
+                    _recycler.Orientation.IsVertical() ? ScrollToAlignment.VerticalEntryBottom : ScrollToAlignment.HorizontalEntryRight,
                     scrollSpeedViewportsPerSecond:NormalScrollSpeed,
                     onScrollComplete:() => TestRecyclerEditorLogger.Log("Bottom index scroll complete."),
                     onScrollCancelled:() => TestRecyclerEditorLogger.Log("Bottom index scroll cancelled."));

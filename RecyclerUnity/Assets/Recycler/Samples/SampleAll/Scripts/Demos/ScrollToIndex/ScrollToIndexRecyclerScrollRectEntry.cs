@@ -28,7 +28,7 @@ namespace Swill.Recycler.Demos
         protected override void OnRecycled()
         {
             _sequence?.Kill();
-            RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(NormalSize);
+            RectTransform.sizeDelta = new Vector2(NormalSize, NormalSize);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Swill.Recycler.Demos
         {
             _sequence?.Kill();
             _sequence = DOTween.Sequence()
-                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight, fixEntries), GrowSize, GrowShrinkTime));
+                .Append(DOTween.To(() => Recycler.Orientation.IsVertical() ? RectTransform.sizeDelta.y : RectTransform.sizeDelta.x, newHeight => RecalculateDimension(newHeight, fixEntries), GrowSize, GrowShrinkTime));   
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Swill.Recycler.Demos
         {
             _sequence?.Kill();
             _sequence = DOTween.Sequence()
-                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight, fixEntries), ShrinkSize, GrowShrinkTime));
+                .Append(DOTween.To(() => Recycler.Orientation.IsVertical() ? RectTransform.sizeDelta.y : RectTransform.sizeDelta.x, newHeight => RecalculateDimension(newHeight, fixEntries), ShrinkSize, GrowShrinkTime));
         }
 
         private void Update()

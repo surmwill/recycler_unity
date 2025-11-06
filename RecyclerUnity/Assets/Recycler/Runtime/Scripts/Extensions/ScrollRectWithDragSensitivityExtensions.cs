@@ -80,7 +80,7 @@ namespace Swill.Recycler
             Vector3 contentRightPosition = contentWorldRect.BotRightCorner;
 
             // The viewport travels along this content line and the child lies on this content line.
-            Vector3 contentLeftToRight = contentLeftPosition - contentRightPosition;
+            Vector3 contentLeftToRight = contentRightPosition - contentLeftPosition;
             Vector3 contentLeftToRightNormalized = contentLeftToRight.normalized;
 
             // The viewport's center can only travel in these positions along the content line without one if its edges hitting the end of the content.
