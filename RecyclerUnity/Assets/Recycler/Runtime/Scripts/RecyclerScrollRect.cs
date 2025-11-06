@@ -1875,9 +1875,18 @@ namespace Swill.Recycler
         private void SetContentTracker()
         {
             _tracker.Add(this, content, DrivenTransformProperties.AnchorMin | DrivenTransformProperties.AnchorMax | DrivenTransformProperties.Pivot);
-            content.anchorMin = new Vector2(0f, Orientation == RecyclerScrollRectOrientation.TopToBottom ? 1f : 0f);
-            content.anchorMax = new Vector2(1f, Orientation == RecyclerScrollRectOrientation.TopToBottom ? 1f: 0f);
-            content.pivot = new Vector2(0.5f, Orientation == RecyclerScrollRectOrientation.TopToBottom ? 1f : 0f);
+            if (Orientation.IsVertical())
+            {
+                content.anchorMin = new Vector2(0f, Orientation == RecyclerScrollRectOrientation.TopToBottom ? 1f : 0f);
+                content.anchorMax = new Vector2(1f, Orientation == RecyclerScrollRectOrientation.TopToBottom ? 1f : 0f);
+                content.pivot = new Vector2(0.5f, Orientation == RecyclerScrollRectOrientation.TopToBottom ? 1f : 0f);   
+            }
+            else 
+            {
+                content.anchorMin = new Vector2(Orientation == RecyclerScrollRectOrientation.LeftToRight ? 0f : 1f, 0f);
+                content.anchorMax = new Vector2(Orientation == RecyclerScrollRectOrientation.LeftToRight ? 0f : 1f, 1f);
+                content.pivot = new Vector2(Orientation == RecyclerScrollRectOrientation.LeftToRight ? 0f : 1f, 0.5f);       
+            }
         }
 
         private static void SetBehavioursEnabled(Behaviour[] behaviours, bool isEnabled)
