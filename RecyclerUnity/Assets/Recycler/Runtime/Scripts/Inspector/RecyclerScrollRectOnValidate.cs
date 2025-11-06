@@ -174,7 +174,7 @@ namespace Swill.Recycler
             }
 
             // Ensure the root of all entries has the proper anchor values.
-            // Importantly, the anchored position will treated differently if the y's don't match (although the value we choose isn't important)
+            // Importantly, the anchored position will be treated differently if the y's don't match (although the value we choose isn't important)
             if (content != _lastContent)
             {
                 _tracker.Clear();

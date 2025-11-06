@@ -11,7 +11,7 @@ namespace Swill.Recycler
         private static FixEntries? _validFixEntries;
         
         /// <summary>
-        /// The user should be using the appropriate value of FixEntries depending on the orientation of the list.
+        /// The user should be using the appropriate values of FixEntries depending on the orientation of the list.
         /// For example, fixing below entries doesn't make sense in a horizontal list. If they provide an invalid value
         /// then a fallback valid one will be substituted and warning relayed.
         /// </summary>
@@ -49,8 +49,8 @@ namespace Swill.Recycler
 
             if (_validFixEntries.HasValue)
             {
-                Debug.LogWarning($"Recycler: a FixEntries value `{candidateFixEntries}` does not align with the current recycler `{(orientation.IsVertical() ? "vertical" : "horizontal")}` orientation. " +
-                                 $"Falling back to a FixEntries value of `{_validFixEntries.Value}`.");
+                Debug.LogWarning($"Recycler: a {nameof(FixEntries)} value `{candidateFixEntries}` does not align with the current recycler `{(orientation.IsVertical() ? "vertical" : "horizontal")}` orientation. " +
+                                 $"Falling back to a {nameof(FixEntries)} value of `{_validFixEntries.Value}`.");
             }
             else
             {

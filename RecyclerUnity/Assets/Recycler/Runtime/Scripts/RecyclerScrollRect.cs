@@ -1372,7 +1372,7 @@ namespace Swill.Recycler
 
             _currScrollingToIndex = index;
             _onScrollCancelled = onScrollCancelled;
-            _scrollToIndexCoroutine = StartCoroutine(ScrollToIndexInner(scrollToAlignment, scrollSpeedViewportsPerSecond, onScrollComplete));
+            _scrollToIndexCoroutine = StartCoroutine(ScrollToIndexInner(scrollToAlignment.ValidateWithOrientation(Orientation), scrollSpeedViewportsPerSecond, onScrollComplete));
         }
 
         /// <summary>
@@ -1393,10 +1393,7 @@ namespace Swill.Recycler
             ScrollToIndex(_entryKeyToCurrentIndex[key], scrollToAlignment, scrollSpeedViewportsPerSecond, onScrollComplete, onScrollCancelled);
         }
 
-        private IEnumerator ScrollToIndexInner(
-            ScrollToAlignment scrollToAlignment, 
-            float scrollSpeedViewportsPerSecond,
-            Action onScrollComplete)
+        private IEnumerator ScrollToIndexInner(ScrollToAlignment scrollToAlignment, float scrollSpeedViewportsPerSecond, Action onScrollComplete)
         {
             // The position within the child the scroll will center on (ex: middle, top edge, bottom edge)
             float normalizedPositionWithinChild = ScrollAlignmentToNormalizedPosition(scrollToAlignment);
@@ -1571,17 +1568,16 @@ namespace Swill.Recycler
         {
             switch (scrollToAlignment)
             {
-                // Top edge
                 case ScrollToAlignment.VerticalEntryTop:
+                case ScrollToAlignment.HorizontalEntryRight:
                     return 1f;
                 
-                // Bottom edge
                 case ScrollToAlignment.VerticalEntryBottom:
+                case ScrollToAlignment.HorizontalEntryLeft:
                     return 0f;
                 
-                // Center
                 case ScrollToAlignment.EntryMiddle:
-                    default:
+                default:
                     return 0.5f;
             }
         }
