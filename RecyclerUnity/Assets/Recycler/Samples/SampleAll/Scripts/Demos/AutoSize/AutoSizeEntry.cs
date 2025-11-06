@@ -20,7 +20,16 @@ namespace Swill.Recycler.Demos
 
         protected override void OnBind(AutoSizeData entryData)
         {
-            _titleText.text = $"Randomly Generated <color=red>{entryData.NumLines}</color> Line(s)";
+            if (Recycler.Orientation.IsVertical())
+            {
+                _titleText.text = $"Randomly Generated <color=red>{entryData.NumLines}</color> Line(s)";   
+            }
+            else
+            {
+                _titleText.text = string.Empty;
+                _linesText.text = string.Empty;
+            }
+            
             UpdateLines();
         }
 
@@ -31,15 +40,21 @@ namespace Swill.Recycler.Demos
         {
             Data.NumAppendedLines += Random.Range(AppendMinLinesOfText, AppendMaxLinesOfText);
             UpdateLines();
-            AutoRecalculateDimension(FixEntries.VerticalAbove);
+            AutoRecalculateDimension(Recycler.Orientation.IsVertical() ? FixEntries.VerticalAbove : FixEntries.HorizontalLeft);
         }
 
         private void UpdateLines()
         {
-            _linesText.text = Enumerable.Range(0, Data.NumLines).Aggregate(string.Empty, (s, i) => s + $"Line {i + 1}\n").Trim();
-            _linesText.text += Data.NumAppendedLines > 0 ? "\n" : string.Empty;
-            _linesText.text += Enumerable.Range(0, Data.NumAppendedLines).Aggregate(string.Empty, (s, i) => s + $"Appended line {i + 1}\n").Trim();
-
+            if (Recycler.Orientation.IsVertical())
+            {
+                _linesText.text = Enumerable.Range(0, Data.NumLines).Aggregate(string.Empty, (s, i) => s + $"Line {i + 1}\n").Trim();
+                _linesText.text += Data.NumAppendedLines > 0 ? "\n" : string.Empty;
+                _linesText.text += Enumerable.Range(0, Data.NumAppendedLines).Aggregate(string.Empty, (s, i) => s + $"Appended line {i + 1}\n").Trim();   
+            }
+            else
+            {
+                _linesText.text = Enumerable.Range(1, Data.NumLines + Data.NumAppendedLines).Aggregate("Appended: ", (str, lineIndex) => str + lineIndex);
+            }
         }
     }
 }

@@ -52,12 +52,12 @@ namespace Swill.Recycler.Demos
                 _autoSizeRecycler.GetActiveEntryWithIndex<AutoSizeEntry>(indexToAppend).AppendLines();
             }
             // Increases the size of the endcap through its layout group.
-            else if (Input.GetKeyDown(KeyCode.S) || DemoToolbar.GetButtonDown(1))
+            else if (Input.GetKeyDown(KeyCode.G) || DemoToolbar.GetButtonDown(1))
             {
                 _autoSizeRecycler.GetEndcap<AutoSizeEndcap>().Grow();
             }
             // Decreases the size of the endcap through its layout group.
-            else if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(2))
+            else if (Input.GetKeyDown(KeyCode.S) || DemoToolbar.GetButtonDown(2))
             {
                 _autoSizeRecycler.GetEndcap<AutoSizeEndcap>().Shrink();
             }

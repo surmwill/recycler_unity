@@ -247,7 +247,7 @@ GameObject:
   - component: {fileID: 8950197404122878209}
   - component: {fileID: 841842849533241474}
   m_Layer: 0
-  m_Name: AutoSizeEntry
+  m_Name: AutoSizeEntry_Vertical
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
