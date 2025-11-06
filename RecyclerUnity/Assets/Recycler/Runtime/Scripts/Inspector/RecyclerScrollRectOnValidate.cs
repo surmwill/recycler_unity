@@ -16,8 +16,7 @@ namespace Swill.Recycler
         private const string ContentName = "Entries";
         private const string PoolParentName = "Pool";
         private const string EndcapParentName = "Endcap";
-
-        private RectTransform _lastContent;
+        
         private (bool, bool)? _lastOrientation;
         private MovementType? _lastMovementType;
 
@@ -31,17 +30,8 @@ namespace Swill.Recycler
             _numCachedAtEachEnd = Mathf.Max(1, _numCachedAtEachEnd);
             _poolSize = Mathf.Max(0, _poolSize);
 
-            // Vertical only (for now)
-            if (!vertical || horizontal)
-            {
-                if (_lastOrientation.HasValue)
-                {
-                    Debug.LogWarning("Only vertical RecyclerScrollRects are currently supported. Setting appropriately.");   
-                }
-                
-                (vertical, horizontal) = (true, false);
-                _lastOrientation = (vertical, horizontal);
-            }
+            // Proper scroll direction
+            (horizontal, vertical) = (Orientation.IsHorizontal(), Orientation.IsVertical());
 
             // Clamped only
             if (movementType != MovementType.Clamped)
@@ -74,11 +64,23 @@ namespace Swill.Recycler
                 (content.localPosition, content.localRotation, content.localScale) = (Vector3.zero, Quaternion.identity, Vector3.one);
                 (content.offsetMin, content.offsetMax) = (Vector2.zero, Vector2.zero);
                 
-                InspectorCheckRootEntriesComponents();
-                
                 // Default have the entries under their own canvas as they're constantly moving and dirtying themselves, but the user can change this
                 content.gameObject.AddComponent<Canvas>();
                 content.gameObject.AddComponent<GraphicRaycaster>();
+            }
+            
+            // Set up the entries list for the orientation
+            if (Orientation.IsVertical() && content.GetComponent<HorizontalLayoutGroup>() != null)
+            {
+                EditorUtils.OnValidateDestroy(content.GetComponent<HorizontalLayoutGroup>(), ValidateLayoutGroups);
+            }
+            else if (Orientation.IsHorizontal() && content.GetComponent<VerticalLayoutGroup>() != null)
+            {
+                EditorUtils.OnValidateDestroy(content.GetComponent<VerticalLayoutGroup>(), ValidateLayoutGroups);
+            }
+            else
+            {
+                ValidateLayoutGroups();
             }
 
             // Create a default pool
@@ -114,7 +116,7 @@ namespace Swill.Recycler
                     entry.name = RecyclerScrollRectEntry<TKeyEntryData, TEntryData>.UnboundIndex.ToString();
                     entry.gameObject.SetActive(false);
                 }
-
+    
                 // Delete any extra entries
                 if (poolDifference < 0)
                 {
@@ -144,14 +146,11 @@ namespace Swill.Recycler
                 // Ensure the endcap exists in the pool
                 if (_endcap == null)
                 {
-                    _endcap = _endcapParent.GetComponentsInChildren<RecyclerScrollRectEndcap<TKeyEntryData, TEntryData>>(true)
-                        .FirstOrDefault(IsInstanceOfEndcapPrefab);
+                    _endcap = _endcapParent.GetComponentsInChildren<RecyclerScrollRectEndcap<TKeyEntryData, TEntryData>>(true).FirstOrDefault(IsInstanceOfEndcapPrefab);
 
                     if (_endcap == null)
                     {
-                        _endcap = ((GameObject) PrefabUtility.InstantiatePrefab(_endcapPrefab.gameObject, _endcapParent))
-                            .GetComponent<RecyclerScrollRectEndcap<TKeyEntryData, TEntryData>>();
-                        
+                        _endcap = ((GameObject) PrefabUtility.InstantiatePrefab(_endcapPrefab.gameObject, _endcapParent)).GetComponent<RecyclerScrollRectEndcap<TKeyEntryData, TEntryData>>();
                         _endcap.gameObject.SetActive(false);
                     }
                 }
@@ -163,9 +162,78 @@ namespace Swill.Recycler
             }
         }
 
+        private void ValidateLayoutGroups()
+        {
+            // Ensure we have the proper layout group present
+            if (Orientation.IsVertical() && content.GetComponent<VerticalLayoutGroup>() == null)
+            {
+                VerticalLayoutGroup v = content.gameObject.AddComponent<VerticalLayoutGroup>();
+                (v.childControlWidth, v.childControlHeight) = (false, false);
+                (v.childForceExpandWidth, v.childForceExpandHeight) = (false, false);
+            }
+            else if (Orientation.IsHorizontal() && content.GetComponent<HorizontalLayoutGroup>() == null)
+            {
+                HorizontalLayoutGroup h = content.gameObject.AddComponent<HorizontalLayoutGroup>();
+                (h.childControlWidth, h.childControlHeight) = (false, false);
+                (h.childForceExpandWidth, h.childForceExpandHeight) = (false, false);
+            } 
+            
+            // Ensure the entries' root is not controlling the entries' widths or heights
+            HorizontalOrVerticalLayoutGroup layoutGroup = content.GetComponent<HorizontalOrVerticalLayoutGroup>();
+            if (layoutGroup.childControlWidth || layoutGroup.childControlHeight || layoutGroup.childForceExpandWidth || layoutGroup.childControlHeight)
+            {
+                Debug.LogWarning(
+                    $"The {nameof(HorizontalOrVerticalLayoutGroup)} on the entries' root cannot control the entries' dimensions, it only positions them. Setting appropriately.\n" +
+                    $"Entries can still be auto-sized using their own {nameof(HorizontalOrVerticalLayoutGroup)} and {nameof(ContentSizeFitter)}.\n" +
+                    $"See Documentation or Samples for more.");
+
+                (layoutGroup.childControlWidth, layoutGroup.childControlHeight) = (false, false);
+                (layoutGroup.childForceExpandWidth, layoutGroup.childForceExpandHeight) = (false, false);
+            }
+
+            // Ensure the content resizes along with the total size of the entries
+            ContentSizeFitter csf = content.GetComponent<ContentSizeFitter>();
+            if (csf == null)
+            {
+                csf = content.gameObject.AddComponent<ContentSizeFitter>();
+                if (Orientation.IsVertical())
+                {
+                    csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+                    csf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+                }
+                else
+                {
+                    csf.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+                    csf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;  
+                }
+            }
+
+            bool csfHasWrongValues = false;
+            
+            if (Orientation.IsVertical() && (csf.verticalFit != ContentSizeFitter.FitMode.PreferredSize || csf.horizontalFit != ContentSizeFitter.FitMode.Unconstrained))
+            {
+                csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+                csf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+                csfHasWrongValues = true;
+            } 
+            else if (Orientation.IsHorizontal() && (csf.horizontalFit != ContentSizeFitter.FitMode.PreferredSize || csf.verticalFit != ContentSizeFitter.FitMode.Unconstrained))
+            {
+                csf.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+                csf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+                csfHasWrongValues = true;  
+            }
+
+            if (csfHasWrongValues)
+            {
+                Debug.LogWarning($"The {nameof(ContentSizeFitter)} on the entries' root must have a vertical fit of {csf.verticalFit} " +
+                                 $"and horizontal fit {csf.horizontalFit} to match the orientation of the recycler. Setting appropriately.");
+            }
+        }
+
         /// <summary>
         /// Ensure the root of all the entries has the necessary components with the necessary fields checked
         /// </summary>
+        /*
         private void InspectorCheckRootEntriesComponents()
         {
             if (content == null)
@@ -181,38 +249,8 @@ namespace Swill.Recycler
                 _lastContent = content;
             }
             SetContentTracker();
-            
-            // Ensure the entries' root is not controlling the entries' widths or heights
-            VerticalLayoutGroup v = content.GetComponent<VerticalLayoutGroup>();
-            if (v == null)
-            {
-                v = content.gameObject.AddComponent<VerticalLayoutGroup>();
-            }
-
-            if (v.childControlWidth || v.childControlHeight)
-            {
-                Debug.LogWarning(
-                    $"The {nameof(VerticalLayoutGroup)} on the entries' root cannot have {nameof(v.childControlWidth)} or {nameof(v.childControlHeight)} checked for performance reasons. Setting appropriately.\n" +
-                    $"Entries can still be auto-sized by controlling their own width and height through their own {nameof(ContentSizeFitter)}.\n" +
-                    $"See Documentation for more.");
-
-                (v.childControlWidth, v.childControlHeight) = (false, false);
-            }
-
-            // Ensure the content resizes along with the total size of the entries
-            ContentSizeFitter csf = content.GetComponent<ContentSizeFitter>();
-            if (csf == null)
-            {
-                csf = content.gameObject.AddComponent<ContentSizeFitter>();
-                csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            }
-
-            if (csf.verticalFit != ContentSizeFitter.FitMode.PreferredSize)
-            {
-                Debug.LogWarning($"The {nameof(ContentSizeFitter)} on the entries' root must have a vertical fit of {nameof(ContentSizeFitter.FitMode.PreferredSize)} to match the size of the list of entries. Setting appropriately.");
-                csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;   
-            }
         }
+        */
         
         private bool IsInstanceOfEntryPrefab(RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry)
         {

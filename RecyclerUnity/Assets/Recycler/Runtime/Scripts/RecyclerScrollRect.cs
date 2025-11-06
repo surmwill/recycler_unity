@@ -116,6 +116,8 @@ namespace Swill.Recycler
         private RecyclerScrollRectActiveEntriesWindow<TKeyEntryData, TEntryData> _activeEntriesWindow;
 
         private DrivenRectTransformTracker _tracker;
+        private RectTransform _lastContent;
+        
         private Vector2 _initPivot;
 
         private Coroutine _scrollToIndexCoroutine;
@@ -169,12 +171,12 @@ namespace Swill.Recycler
             {
                 _unboundEntries.Enqueue(entry);
             }
-
-            // Ensure content's RectTransform is set up correctly
-            SetContentTracker();
             
             // Our pivot moves around once we have > full-screen's worth of content, but should be reset when we have <= a full-screen of content
             _initPivot = content.pivot;
+            
+            // Ensure the entries' RectTransform has appropriate values for the recycler orientation
+            DriveContentRectTransform();
 
             // Cache the endcap's layout behaviours if there are any. These will be disabled when not in use for performance reasons.
             _hasEndcap = _endcap != null;
@@ -477,13 +479,13 @@ namespace Swill.Recycler
         {
             // Handles scrolling
             base.LateUpdate();
-
+            
             // The base ScrollRect has [ExecuteAlways] but the recycler does not work as such
             if (!Application.isPlaying)
             {
-                // Ensure our hierarchy with its components are set up properly
+                // Ensure the content RectTransform is not modified in an invalid way
                 #if UNITY_EDITOR
-                InspectorCheckRootEntriesComponents();
+                DriveContentRectTransform();
                 #endif
                 
                 return;
@@ -1766,13 +1768,14 @@ namespace Swill.Recycler
 
         protected override void OnDestroy()
         {
-            base.OnDestroy();
             _tracker.Clear();
 
             if (_setTargetFrameRateTo60)
             {
                 Application.targetFrameRate = _initFrameRate;
             }
+            
+            base.OnDestroy();
         }
 
         /// <summary>
@@ -1872,8 +1875,14 @@ namespace Swill.Recycler
             }
         }
 
-        private void SetContentTracker()
+        private void DriveContentRectTransform()
         {
+            if (content != _lastContent)
+            {
+                _lastContent = content;
+                _tracker.Clear();
+            }
+            
             _tracker.Add(this, content, DrivenTransformProperties.AnchorMin | DrivenTransformProperties.AnchorMax | DrivenTransformProperties.Pivot);
             if (Orientation.IsVertical())
             {

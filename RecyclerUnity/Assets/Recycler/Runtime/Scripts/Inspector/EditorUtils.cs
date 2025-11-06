@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
+using System;
 using UnityEditor;
-using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Swill.Recycler
 {
@@ -14,9 +15,13 @@ namespace Swill.Recycler
         /// If we wish to destroy something during OnValidate we'll need to move the actual destruction outside of the call.
         /// </summary>
         /// <param name="obj"> The object to destroy </param>
-        public static void OnValidateDestroy(Object obj)
+        public static void OnValidateDestroy(Object obj, Action callback = null)
         {
-            EditorApplication.delayCall += () => Object.DestroyImmediate(obj);
+            EditorApplication.delayCall += () =>
+            {
+                Object.DestroyImmediate(obj);
+                callback?.Invoke();
+            };
         }
     }
 }
