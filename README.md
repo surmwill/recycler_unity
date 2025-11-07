@@ -477,12 +477,12 @@ public RecyclerScrollRectEndcap<TEntryData, TKeyEntryData> Endcap { get; }
 
 Returns a reference to the endcap, if it exists.
 
-### AppendTo
+### Orientation
 ```
-public RecyclerPosition AppendTo { get; }
+public RecyclerScrollRectOrientation Orientation { get; }
 ```
 
-The position in the recycler that appended entries are added to.
+Defines orientation of the list (vertical or horizontal).
 
 ### OnRecyclerUpdated
 ```
@@ -574,24 +574,24 @@ Lifecycle method called when the visibility of an active entry changes.
 - `isVisible:` whether the entry is visible in the viewport or not
 - `isInitial:` whether this is the first visible state after data binding.
 
-### RecalculateHeight
+### RecalculateDimension
 ```
-protected void RecalculateHeight(float newHeight, FixEntries fixEntries)
+protected void RecalculateDimension(float newHeightOrWidth, FixEntries fixEntries)
 ```
 
-Called when an entry needs to update its height in the recycler.
+Called when an entry needs to update its height in a vertical recycler or width in a horizontal recycler.
 
 <ins>Parameters</ins>
-- `newHeight:` the new height the entry should be set to
+- `newWidthOrHeight:` the new width or height the entry should be set to
 - `fixEntries:` if we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
 This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
 ### AutoRecalculateHeight
 ```
-protected void AutoRecalculateHeight(FixEntries fixEntries)
+protected void AutoRecalculateDimension(FixEntries fixEntries)
 ```
 
-Called when an entry needs to recalculate its auto-sized height in the recycler.
+Called when an entry needs to recalculate its auto-sized height in a vertical recycler or width in a horizontal recycler.
 
 <ins>Parameters</ins>
 - `fixEntries:` if we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
@@ -646,24 +646,24 @@ Called when the visibility of the endcap changes as it enters and leaves the vie
 - `isVisible:` whether the endcap is visible in the viewport or not.
 - `isInitial:` whether this is the first visible state of the endcap after being fetched from the pool.
 
-### RecalculateHeight
+### RecalculateDimension
 ```
-protected void RecalculateHeight(float? newHeight, FixEntries? fixEntries)
+protected void RecalculateDimension(float? newHeightOrWidth, FixEntries? fixEntries)
 ```
 
-Called when the endcap needs to update its height in the recycler.
+Called when the endcap needs to update its height in a vertical recycler or width in a horizontal recycler.
 
 <ins>Parameters</ins>
-- `newHeight:` the height to set the endcap to, null if it should be auto-calculated.
+- `newHeightOrWidth:` the height/width to set the endcap to.
 - `fixEntries:` if we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy.
 This defines how and what entries will get moved. If we're not updating an endcap in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
-### AutoRecalculateHeight
+### AutoRecalculateDimension
 ```
-protected void AutoRecalculateHeight(FixEntries? fixEntries)
+protected void AutoRecalculateDimension(FixEntries? fixEntries)
 ```
 
-Called when the endcap needs to recalculate its auto-sized height.
+Called when the endcap needs to auto-recalculate its height in a vertical recycler or width in a horizontal recycler
 
 <ins>Parameters</ins>
 - `fixEntries:` if we're updating the size of a visible endcap, then we'll either be pushing other entries or creating extra space for other entries to occupy.
@@ -836,26 +836,22 @@ If we're updating the size of a visible entry, then we'll either be pushing othe
 This enum specifies how and what entries will get moved.
 
 <ins>Values</ins>
-- `Below:` all entries below the one modified will stay unmoved. 
-- `Above:` all entries above the one modified will stay unmoved. 
-- `Mid:` all entries above and below the one modified will be moved equally.
+- `VerticalBelow:` all entries below the one modified will stay unmoved. 
+- `VerticalAbove:` all entries above the one modified will stay unmoved.
+- `HorizontalLeft:` all entries to the left of the one modified will stay unmoved.
+- `HorizontalRight:` all entries to the right of the one modified will stay unmoved.
+- `Middle:` all entries above and below, or to the left and right of the one modified will be moved equally.
 
 ## ScrollToAlignment
 
 Enum defining the position within an entry to center on when we scroll to it.
 
 <ins>Values</ins>
+- `VerticalEntryBottom:` center on the bottom edge of the entry.
+- `VerticalEntryTop:` center on the top edge of the entry.
+- `VerticalEntryLeft:` center on the left edge of the entry.
+- `VerticalEntryRight:` center on the right edge of the entry.
 - `EntryMiddle:` center on the middle of the entry.
-- `EntryBottom:` center on the bottom edge of the entry.
-- `EntryTop:` center on the top edge of the entry.
-
-## RecyclerPosition
-
-An enum defining two important locations of the recycler list: the top and bottom.
-
-<ins>Values</ins>
-- `Top:` the top of the recycler list.
-- `Bot:` the bottom of the recycler list.
 
 # Nuances
 
@@ -863,7 +859,7 @@ An enum defining two important locations of the recycler list: the top and botto
 
 If your content is auto-sized, then entries must control their own width and height as a side effect of necessary performance concessions, and use their own `ContentSizeFitters`.
 
-Instead of what is typically done, with having the root (Entries) controlling sizes:
+Instead of what is typically done (vertically), with having the root (Entries) controlling sizes:
 
 <pre>
 Entries (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> and a <strong>ContentSizeFitter</strong>)
@@ -881,9 +877,9 @@ Entries (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> and
   |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
 </pre>
 
-### Entries are default expanded to the Recycler's width.
+### Entries are default expanded to the Recycler's width (vertical) or height (horizontal).
 
-The root transform of each entry will be expanded to the width of the recycler regardless of if their width is being force expanded by `Entries' layout group or not. Should you want a different width, a child transform with the desired width can be created and the root left empty.
+Each entry will be expanded to the full width of the vertical recycler (or the full height for a horizontal recycler), regardless of if they're being force expanded by a layout group or not. Should you want a different width or height, a child transform with the desired width can be created and the root left empty.
 
 ### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots is `LayoutGroups` and `ContentSizeFitters`.
 
@@ -892,14 +888,14 @@ This includes things such as `Images`, which should go under a child transform i
 
 `LayoutGroups` and `ContentSizeFitters` can still go on the root as they are needed for auto-size calculations.
 
-### Entries must update their height through the recycler.
+### Entries must update their own height (vertical) or width (horizontal) through the recycler.
 
-In order for height changes to be properly reflected in the recycler, the entry must call `RecalculateHeight` to set its new height.
+If we have a vertical recycler, in order for a height change to be properly reflected in the recycler, the entry must call `RecalculateDimension` to set its new height.
 
 For example, to animate an entry growing using DoTween, the below code is used to update the Recycler at each step.
 
 ```
-DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateHeight(newHeight), TargetHeight, Time);
+DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight), TargetHeight, Time);
 ```
 
 # Feature Videos
