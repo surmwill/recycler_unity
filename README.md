@@ -22,6 +22,7 @@ They don't offer control. Many basic recyclers assume a static list of data with
 <b>The aim of this recycler is to make it feel like a powerful tool, instead of a black box you're forced to work around.</b>
 
 ### Features
+- Vertical and horizontal orientations are supported.
 - Appending
 - Prepending
 - Insertion
@@ -33,12 +34,11 @@ They don't offer control. Many basic recyclers assume a static list of data with
 - Scrolling to any index (including those off-screen)
 - State changes (know when an entry becomes visible or not)
 - Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases
+- Fully queryable state of what entries are active
 - Only uses native Unity UI elements
 - Fully commented and documented
 - List of demos for learning and debugging
-- An always up-to-date and queryable state of the currently active entries
-- Easy GameObject set up: simply add the Recycler component to a RectTransform.
-- Vertical and horizontal orientations are supported.
+- Easy GameObject set up: simply add the Recycler component to a RectTransform
 
 <b>See videos of all the features [below](https://github.com/surmwill/recycler_unity/blob/master/README.md#feature-videos)</b>
 
