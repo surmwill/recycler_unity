@@ -32,8 +32,8 @@ namespace Swill.Recycler.Demos
             $"1 (keys 'A' and then 'T'): Scrolls to the top/left of index 0.",
             $"2 (keys 'A' and then 'B'): Scrolls to the bottom/right of index {InitNumEntries - 1}.",
 
-            $"3 (keys 'F' and then 'G'): Scrolls to the middle index {ScrollToMiddleIndex} while making the bottom visible entry grow, scrolling over the expanding entry.",
-            $"4 (keys 'F' and then 'S'): Scrolls to the middle index {ScrollToMiddleIndex} while making the bottom visible entry shrink, scrolling over the shrinking entry.",
+            $"3 (keys 'F' and then 'G'): Scrolls to the middle index {ScrollToMiddleIndex} while making an intermediate entry grow, scrolling over the expanding entry.",
+            $"4 (keys 'F' and then 'S'): Scrolls to the middle index {ScrollToMiddleIndex} while making the intermediate entry shrink, scrolling over the shrinking entry.",
             
             $"5 (keys 'I' and then 'M'): Scrolls immediately to the middle index {ScrollToMiddleIndex}.",
             $"6 (keys 'I' and then 'T'): Scrolls immediately to the top index 0.",
@@ -90,43 +90,31 @@ namespace Swill.Recycler.Demos
             else if ((Input.GetKey(KeyCode.F) && Input.GetKeyDown(KeyCode.G)) || DemoToolbar.GetButtonDown(3))
             {
                 _recycler.ScrollToIndex(ScrollToMiddleIndex, scrollSpeedViewportsPerSecond:ScrollWhileGrowShrinkingSpeed);
-                FixEntries fixEntries = default;
-
+                
                 if (!_window.Contains(ScrollToMiddleIndex))
                 {
                     (int Start, int End) = _window.VisibleIndexRange.Value;
-
-                    switch (_recycler.Orientation)
-                    {
-                        case RecyclerScrollRectOrientation.TopToBottom:
-                            fixEntries = ScrollToMiddleIndex > End ? FixEntries.VerticalAbove : FixEntries.VerticalBelow;
-                            break;
-                        
-                        case RecyclerScrollRectOrientation.BottomToTop:
-                            fixEntries = ScrollToMiddleIndex > End ? FixEntries.VerticalBelow : FixEntries.VerticalAbove;
-                            break;
-                        
-                        case RecyclerScrollRectOrientation.LeftToRight:
-                            fixEntries = ScrollToMiddleIndex > End ? FixEntries.HorizontalLeft : FixEntries.HorizontalRight;
-                            break;
-                        
-                        case RecyclerScrollRectOrientation.RightToLeft:
-                            fixEntries = ScrollToMiddleIndex > End ? FixEntries.HorizontalRight : FixEntries.HorizontalLeft;
-                            break;
-                    }
-                    
-                    ((ScrollToIndexRecyclerScrollRectEntry) _recycler.ActiveEntries[ScrollToMiddleIndex > End ? End : Start]).Grow(fixEntries);   
+                    ((ScrollToIndexRecyclerScrollRectEntry) _recycler.ActiveEntries[ScrollToMiddleIndex > End ? End : Start]).Grow(GrowShrinkInSameDirectionAsScrollToMiddle());   
                 }
                 else
                 {
-                    TestRecyclerEditorLogger.LogWarning($"Entry {ScrollToMiddleIndex} is currently visible. Cannot test this behavior.");
+                    TestRecyclerEditorLogger.LogWarning($"Cannot test this behaviour while the middle entry {ScrollToMiddleIndex} is currently visible.");
                 }
             }
             // Scroll to the middle while making the bottom visible entry shrink, scrolling over the shrinking entry
             else if ((Input.GetKey(KeyCode.F) && Input.GetKeyDown(KeyCode.S)) || DemoToolbar.GetButtonDown(4))
             {
                 _recycler.ScrollToIndex(ScrollToMiddleIndex, scrollSpeedViewportsPerSecond:ScrollWhileGrowShrinkingSpeed);
-                ((ScrollToIndexRecyclerScrollRectEntry) _recycler.ActiveEntries[_window.VisibleIndexRange.Value.End]).Shrink(FixEntries.VerticalAbove);
+                
+                if (!_window.Contains(ScrollToMiddleIndex))
+                {
+                    (int Start, int End) = _window.VisibleIndexRange.Value;
+                    ((ScrollToIndexRecyclerScrollRectEntry) _recycler.ActiveEntries[ScrollToMiddleIndex > End ? End : Start]).Shrink(GrowShrinkInSameDirectionAsScrollToMiddle());   
+                }
+                else
+                {
+                    TestRecyclerEditorLogger.LogWarning($"Cannot test this behaviour while the middle entry {ScrollToMiddleIndex} is currently visible");
+                }
             }
 
             /*** Immediate Scroll ***/
@@ -168,6 +156,30 @@ namespace Swill.Recycler.Demos
             else if (Input.GetKeyDown(KeyCode.V) || DemoToolbar.GetButtonDown(11))
             {
                 _middleIndicator.SetActive(!_middleIndicator.activeSelf);
+            }
+        }
+        
+        private FixEntries GrowShrinkInSameDirectionAsScrollToMiddle()
+        {
+            (int Start, int End) = _window.VisibleIndexRange.Value;
+
+            switch (_recycler.Orientation)
+            {
+                case RecyclerScrollRectOrientation.TopToBottom:
+                    return ScrollToMiddleIndex > End ? FixEntries.VerticalAbove : FixEntries.VerticalBelow;
+
+                case RecyclerScrollRectOrientation.BottomToTop:
+                    return ScrollToMiddleIndex > End ? FixEntries.VerticalBelow : FixEntries.VerticalAbove;
+
+                case RecyclerScrollRectOrientation.LeftToRight:
+                    return ScrollToMiddleIndex > End ? FixEntries.HorizontalLeft : FixEntries.HorizontalRight;
+
+                case RecyclerScrollRectOrientation.RightToLeft:
+                    return ScrollToMiddleIndex > End ? FixEntries.HorizontalRight : FixEntries.HorizontalLeft;
+                
+                default:
+                    TestRecyclerEditorLogger.LogWarning($"Unknown {nameof(FixEntries)} value needed to grow/shrink in the same direction as scrolling to the middle index.");
+                    return _recycler.Orientation.IsVertical() ? FixEntries.VerticalAbove : FixEntries.HorizontalLeft;
             }
         }
 
