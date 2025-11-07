@@ -21,7 +21,7 @@ namespace Swill.Recycler.Demos
         protected override string[] DemoButtonDescriptions => new[]
         {
             "0 (key 'A'): Appends a new entry.",
-            "1 (key 'D'): Deletes the first entry",
+            "1 (key 'D'): Deletes the last entry",
             "2 (key 'C'): Clears the entries",
             "3 (key 'R'): Resets the list to the beginning entries."
         };
@@ -34,7 +34,14 @@ namespace Swill.Recycler.Demos
             }
             else if ((Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(1)) && _recycler.DataForEntries.Count > 0)
             {
-                _recycler.RemoveAtIndex(0);
+                if (_recycler.Orientation.IsVertical())
+                {
+                    _recycler.RemoveAtIndex(0, _recycler.Orientation == RecyclerScrollRectOrientation.TopToBottom ? FixEntries.VerticalAbove : FixEntries.VerticalBelow);   
+                }
+                else
+                {
+                    _recycler.RemoveAtIndex(0, _recycler.Orientation == RecyclerScrollRectOrientation.LeftToRight ? FixEntries.HorizontalLeft : FixEntries.HorizontalRight);   
+                }
             }
             else if (Input.GetKeyDown(KeyCode.C) || DemoToolbar.GetButtonDown(2))
             {
