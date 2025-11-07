@@ -33,16 +33,16 @@ namespace Swill.Recycler.Demos
                 return;
             }
 
-            float initHeight = RectTransform.sizeDelta.y;
+            float initHeightOrWidth = Recycler.Orientation.IsVertical() ? RectTransform.sizeDelta.y : RectTransform.sizeDelta.x;
 
             _deleteSequence = DOTween.Sequence()
-                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight, FixEntries.Middle), 0f, DeleteTime))
+                .Append(DOTween.To(() => Recycler.Orientation.IsVertical() ? RectTransform.sizeDelta.y : RectTransform.sizeDelta.x, newHeightOrWidth => RecalculateDimension(newHeightOrWidth, FixEntries.Middle), 0f, DeleteTime))
                 .SetEase(Ease.OutBounce)
                 .OnKill(() =>
                 {
-                    Recycler.RemoveAtIndex(Index, FixEntries.VerticalAbove);
+                    Recycler.RemoveAtIndex(Index, Recycler.Orientation.IsVertical() ? FixEntries.VerticalAbove : FixEntries.HorizontalLeft);
                     _deleteSequence = null;
-                    RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(initHeight);
+                    RectTransform.sizeDelta = Recycler.Orientation.IsVertical() ? RectTransform.sizeDelta.WithY(initHeightOrWidth) : RectTransform.sizeDelta.WithX(initHeightOrWidth);
                 });
         }
 

@@ -15,6 +15,7 @@ namespace Swill.Recycler.Demos
 
         private const int DeleteAtIndex = 15;
         private const int NumEntriesToDelete = 3;
+        private const int NumEntriesToAppend = 10;
 
         protected override RecyclerScrollRect<string, EmptyRecyclerData> ValidateRecycler => _deleteRecycler;
 
@@ -24,10 +25,11 @@ namespace Swill.Recycler.Demos
 
         protected override string[] DemoButtonDescriptions => new[]
         {
-            $"0 (key 'A'): Starting starting at {DeleteAtIndex}, shrinks and deletes {NumEntriesToDelete}.",
+            $"0 (key 'M'): Starting starting at {DeleteAtIndex}, shrinks and deletes {NumEntriesToDelete}.",
             $"1 (key 'D'): Batch deletes the last {NumEntriesToDelete} entries instantly.",
             $"2 (key 'C'): Deletes the entire range of active entries instantly.",
-            $"3 (key 'R'): Shrinks and deletes an entry from a random active index."
+            $"3 (key 'R'): Shrinks and deletes an entry from a random active index.",
+            $"4 (key 'A'): Appends {NumEntriesToAppend} entries.",
         };
         
         private IRecyclerScrollRectActiveEntriesWindow<string, EmptyRecyclerData> _activeEntriesWindow;
@@ -44,7 +46,7 @@ namespace Swill.Recycler.Demos
             (int Start, int End)? activeEntriesRange = _activeEntriesWindow.ActiveEntriesRange;
             
             // Shrink and delete delete
-            if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
+            if (Input.GetKeyDown(KeyCode.M) || DemoToolbar.GetButtonDown(0))
             {
                 string[] deleteKeys = Enumerable.Range(DeleteAtIndex, NumEntriesToDelete)
                     .Where(i => i < _deleteRecycler.DataForEntries.Count)
@@ -67,13 +69,14 @@ namespace Swill.Recycler.Demos
             { 
                 _deleteRecycler.RemoveRangeAtIndex(
                     Mathf.Max(_deleteRecycler.DataForEntries.Count - NumEntriesToDelete, 0), 
-                    Mathf.Min(NumEntriesToDelete, _deleteRecycler.DataForEntries.Count));
+                    Mathf.Min(NumEntriesToDelete, _deleteRecycler.DataForEntries.Count),
+                    _deleteRecycler.Orientation.IsVertical() ? FixEntries.VerticalAbove : FixEntries.HorizontalLeft);
             }
             // Delete the entire range of active entries.
             else if ((Input.GetKeyDown(KeyCode.C) || DemoToolbar.GetButtonDown(2)) && activeEntriesRange.HasValue)
             {
                 (int Start, int End) = activeEntriesRange.Value;
-                _deleteRecycler.RemoveRangeAtIndex(Start, End - Start + 1);
+                _deleteRecycler.RemoveRangeAtIndex(Start, End - Start + 1, _deleteRecycler.Orientation.IsVertical() ? FixEntries.VerticalAbove : FixEntries.HorizontalLeft);
             }
             // Deletes and shrinks a random active entry.
             else if ((Input.GetKeyDown(KeyCode.R) || DemoToolbar.GetButtonDown(3)) && activeEntriesRange.HasValue)
@@ -81,6 +84,11 @@ namespace Swill.Recycler.Demos
                 int deletionIndex = Random.Range(activeEntriesRange.Value.Start, activeEntriesRange.Value.End);
                 TestRecyclerEditorLogger.Log($"Deleting at {deletionIndex}");
                 _deleteRecycler.GetActiveEntryWithIndex<DeleteRecyclerEntry>(deletionIndex).ShrinkAndDelete();
+            }
+            // Appends entries
+            else if ((Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(4)))
+            {
+                _deleteRecycler.AppendEntries(EmptyRecyclerData.GenerateEmptyData(NumEntriesToAppend));
             }
         }
 
