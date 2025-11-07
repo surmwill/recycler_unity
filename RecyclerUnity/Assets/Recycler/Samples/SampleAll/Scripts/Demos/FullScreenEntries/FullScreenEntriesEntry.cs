@@ -11,14 +11,14 @@ namespace Swill.Recycler.Demos
         [SerializeField]
         private Text _indexText = null;
 
-        private const float BufferPct = 0.1f;
+        private const float Buffer = 1.1f;
 
         protected override void OnBind(EmptyRecyclerData entryData)
         {
             _indexText.text = Index.ToString();
             
             // Add a bit of a buffer just to be safe
-            RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(Screen.height + Screen.height * BufferPct);
+            RectTransform.sizeDelta = Recycler.Orientation.IsVertical() ? RectTransform.sizeDelta.WithY(Screen.height * Buffer) : RectTransform.sizeDelta.WithX(Screen.width * Buffer);
         }
 
         private void Update()
