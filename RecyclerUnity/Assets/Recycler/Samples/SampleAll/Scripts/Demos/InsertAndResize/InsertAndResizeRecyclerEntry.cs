@@ -15,8 +15,11 @@ namespace Swill.Recycler.Demos
         [SerializeField]
         private Text _numberText = null;
 
-        private const int NormalSize = 250;
-        private const int GrowSize = 500;
+        private const int NormalHeightVertical = 300;
+        private const int GrowHeightVertical = 600;
+        
+        private const int NormalWidthHorizontal = 800;
+        private const int GrowWidthHorizontal = 1200;
 
         private const float GrowTimeSeconds = 1.5f;
         private const float FadeTimeSeconds = 0.4f;
@@ -26,7 +29,15 @@ namespace Swill.Recycler.Demos
         protected override void OnBind(InsertAndResizeData entryData)
         {
             _numberText.text = Index.ToString();
-            RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(entryData.DidGrow ? GrowSize : (entryData.ShouldGrow ? 0f : NormalSize));
+
+            if (Recycler.Orientation.IsVertical())
+            {
+                RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(entryData.DidGrow ? GrowHeightVertical : (entryData.ShouldGrow ? 0f : NormalHeightVertical));   
+            }
+            else
+            {
+                RectTransform.sizeDelta = RectTransform.sizeDelta.WithX(entryData.DidGrow ? GrowWidthHorizontal : (entryData.ShouldGrow ? 0f : NormalWidthHorizontal));   
+            }
         }
 
         protected override void OnRecycled()
@@ -49,17 +60,21 @@ namespace Swill.Recycler.Demos
                 return;
             }
             Data.DidGrow = true;
-
+            
+            float growHeightOrWidth = Recycler.Orientation.IsVertical() ? GrowHeightVertical : GrowWidthHorizontal;
+            FixEntries fixEntries = Recycler.Orientation.IsVertical() ? FixEntries.VerticalAbove : FixEntries.HorizontalLeft;
+            
             if (!initialIsVisible)
             {
-                RecalculateDimension(GrowSize, FixEntries.VerticalBelow);
+                RecalculateDimension(growHeightOrWidth, fixEntries);
                 return;
             }
             
-            RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(0f);
+            RectTransform.sizeDelta = Recycler.Orientation.IsVertical() ? RectTransform.sizeDelta.WithY(0f) : RectTransform.sizeDelta.WithX(0f);
             _displayNumber.alpha = 0f;
+            
             _growSequence = DOTween.Sequence()
-                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight, FixEntries.VerticalBelow), GrowSize, GrowTimeSeconds))
+                .Append(DOTween.To(() => Recycler.Orientation.IsVertical() ? RectTransform.sizeDelta.y : RectTransform.sizeDelta.x, newHeightOrWidth => RecalculateDimension(newHeightOrWidth, fixEntries), growHeightOrWidth, GrowTimeSeconds))
                 .Append(_displayNumber.DOFade(1f, FadeTimeSeconds));
         }
 

@@ -43,21 +43,22 @@ namespace Swill.Recycler.Demos
         private void Update()
         {
             (int Start, int End) = _activeEntriesWindow.ActiveEntriesRange.Value;
+            FixEntries fixEntries = _recycler.Orientation.IsVertical() ? FixEntries.VerticalAbove : FixEntries.HorizontalLeft;
             
             // Inserts and grows entries.
             if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
             {
-                _recycler.InsertRangeAtIndex(InsertionIndex, CreateDataForEntries(NumInsertionEntries, true));
+                _recycler.InsertRangeAtIndex(InsertionIndex, CreateDataForEntries(NumInsertionEntries, true), fixEntries);
             }
             // Immediately inserts a batch of entries at the end.
             else if (Input.GetKeyDown(KeyCode.D) || DemoToolbar.GetButtonDown(1))
             {
-                _recycler.InsertRangeAtIndex(_recycler.DataForEntries.Count - 1, CreateDataForEntries(NumInsertionEntries, false), FixEntries.VerticalAbove);
+                _recycler.InsertRangeAtIndex(_recycler.DataForEntries.Count - 1, CreateDataForEntries(NumInsertionEntries, false), fixEntries);
             }
             // Immediately inserts a full screen of entries at the end.
             else if (Input.GetKeyDown(KeyCode.F) || DemoToolbar.GetButtonDown(2))
             {
-                _recycler.InsertRangeAtIndex(_recycler.DataForEntries.Count - 1, CreateDataForEntries(MoreThanFullScreenNumEntries, false), FixEntries.VerticalAbove);
+                _recycler.InsertRangeAtIndex(_recycler.DataForEntries.Count - 1, CreateDataForEntries(MoreThanFullScreenNumEntries, false), fixEntries);
             }
             // Inserts and grows a random active entry.
             else if (Input.GetKeyDown(KeyCode.R) || DemoToolbar.GetButtonDown(3))
@@ -65,7 +66,7 @@ namespace Swill.Recycler.Demos
                 int insertionIndex = Random.Range(Start, End);
                 TestRecyclerEditorLogger.Log($"Inserting at {insertionIndex}");
                 
-                _recycler.InsertAtIndex(insertionIndex, new InsertAndResizeData(true), FixEntries.VerticalAbove);
+                _recycler.InsertAtIndex(insertionIndex, new InsertAndResizeData(true), fixEntries);
             }
         }
 
