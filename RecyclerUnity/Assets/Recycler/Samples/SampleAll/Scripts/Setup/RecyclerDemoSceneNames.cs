@@ -21,7 +21,8 @@ namespace Swill.Recycler.Demos
         {
             "DemoMenu",
             "AppendPrepend",
-            "AutoSize",
+            "AutoSize_Vertical",
+            "AutoSize_Horizontal",
             "Basic",
             "CanvasCamera",
             "ClearAndFill",

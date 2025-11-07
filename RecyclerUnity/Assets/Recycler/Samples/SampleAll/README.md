@@ -6,7 +6,7 @@ Click the "Setup" button on the "SetupRecyclerDemos" ScriptableObject. This adds
 
 Play the "RecyclerDemo_DemoMenu.unity" scene. This is an all encompassing demo containing a menu which allows you to navigate to and from individual functionalities. Note that each functionality has its own scene and can be explored individually through their folder under ./Scenes/Demos/{SomeDemo}
 
-The prefabs for each demo can be found under ./Scenes/Demos/{SomeDemo} and the scripts for each demo can be founder under ./Scripts/Demos/{SomeDemo}
+The prefabs for each demo can be found under ./Scenes/Demos/{SomeDemo} and the scripts for each demo can be founder under ./Scripts/Demos/{SomeDemo}. Each demo should work if you change the recycler's orientation in the scene from vertical to horizontal, or back again. If this is not possible, instead there will be two scenes, one for testing the vertical orientation and one for the horizontal.
 
 Each demo has a toolbar with a question mark explaining what functionality it tests and how to test it. You can also return back to the main demo menu through there.
 
