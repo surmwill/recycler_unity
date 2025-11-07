@@ -586,7 +586,7 @@ Called when an entry needs to update its height in a vertical recycler or width 
 - `fixEntries:` if we're updating the size of a visible entry, then we'll either be pushing other entries or creating extra space for other entries to occupy.
 This defines how and what entries will get moved. If we're not updating an entry in the visible window, this is ignored, and the parameter will be overriden with whatever value only moves other offscreen entries, preserving the view of what's on-screen.
 
-### AutoRecalculateHeight
+### AutoRecalculateDimension
 ```
 protected void AutoRecalculateDimension(FixEntries fixEntries)
 ```
