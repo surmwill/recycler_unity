@@ -2215,8 +2215,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 2124007056}
-  m_Horizontal: 1
-  m_Vertical: 0
+  m_Horizontal: 0
+  m_Vertical: 1
   m_MovementType: 2
   m_Elasticity: 0.1
   m_Inertia: 1
@@ -2235,7 +2235,7 @@ MonoBehaviour:
       m_Calls: []
   _recyclerEntryPrefab: {fileID: 1357053102421773413, guid: 597de4276cca3cb48a87a58a736506e2, type: 3}
   _numCachedAtEachEnd: 2
-  _orientation: 3
+  _orientation: 0
   _poolParent: {fileID: 2047481638}
   _poolSize: 15
   _endcapPrefab: {fileID: 0}
@@ -2516,11 +2516,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2059316594}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &2124007057
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2573,8 +2573,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HorizontalFit: 2
-  m_VerticalFit: 0
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!114 &2124007060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2584,7 +2584,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2124007055}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
