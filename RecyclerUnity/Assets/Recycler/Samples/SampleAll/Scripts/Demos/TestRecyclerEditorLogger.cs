@@ -17,6 +17,17 @@ namespace Swill.Recycler.Demos
             Debug.Log(message);
             #endif
         }
+        
+        /// <summary>
+        /// Logs a debug warning message, but only if we're in the editor
+        /// </summary>
+        /// <param name="message"> The debug message </param>
+        public static void LogWarning(string message)
+        {
+            #if UNITY_EDITOR
+            Debug.LogWarning(message);
+            #endif
+        }
 
         /// <summary>
         /// Logs a debug error message, but only if we're in the editor

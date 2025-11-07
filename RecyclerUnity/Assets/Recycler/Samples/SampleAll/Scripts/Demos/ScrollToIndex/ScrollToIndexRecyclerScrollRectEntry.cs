@@ -38,7 +38,7 @@ namespace Swill.Recycler.Demos
         {
             _sequence?.Kill();
             _sequence = DOTween.Sequence()
-                .Append(DOTween.To(() => Recycler.Orientation.IsVertical() ? RectTransform.sizeDelta.y : RectTransform.sizeDelta.x, newHeight => RecalculateDimension(newHeight, fixEntries), GrowSize, GrowShrinkTime));   
+                .Append(DOTween.To(() => Recycler.Orientation.IsVertical() ? RectTransform.sizeDelta.y : RectTransform.sizeDelta.x, newHeightOrWidth => RecalculateDimension(newHeightOrWidth, fixEntries), GrowSize, GrowShrinkTime));   
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Swill.Recycler.Demos
         {
             _sequence?.Kill();
             _sequence = DOTween.Sequence()
-                .Append(DOTween.To(() => Recycler.Orientation.IsVertical() ? RectTransform.sizeDelta.y : RectTransform.sizeDelta.x, newHeight => RecalculateDimension(newHeight, fixEntries), ShrinkSize, GrowShrinkTime));
+                .Append(DOTween.To(() => Recycler.Orientation.IsVertical() ? RectTransform.sizeDelta.y : RectTransform.sizeDelta.x, newHeightOrWidth => RecalculateDimension(newHeightOrWidth, fixEntries), ShrinkSize, GrowShrinkTime));
         }
 
         private void Update()

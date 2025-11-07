@@ -1097,7 +1097,7 @@ namespace Swill.Recycler
             {
                 (Vector2 prevAnchorMin, Vector2 prevAnchorMax) = (contentChild.anchorMin, contentChild.anchorMax);
                 (contentChild.anchorMin, contentChild.anchorMax) = (Vector2.one * 0.5f, Vector2.one * 0.5f);
-                contentChild.sizeDelta = Orientation.IsVertical() ? contentChild.sizeDelta.WithY(newHeightOrWidth.Value) : content.sizeDelta.WithX(newHeightOrWidth.Value);
+                contentChild.sizeDelta = Orientation.IsVertical() ? contentChild.sizeDelta.WithY(newHeightOrWidth.Value) : contentChild.sizeDelta.WithX(newHeightOrWidth.Value);
                 (contentChild.anchorMin, contentChild.anchorMax) = (prevAnchorMin, prevAnchorMax);
             }
             // Auto-calculate the height/width of the child

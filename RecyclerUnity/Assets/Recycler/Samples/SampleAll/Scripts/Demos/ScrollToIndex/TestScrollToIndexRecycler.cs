@@ -72,8 +72,8 @@ namespace Swill.Recycler.Demos
                 _recycler.ScrollToIndex(0,
                     _recycler.Orientation.IsVertical() ? ScrollToAlignment.VerticalEntryTop : ScrollToAlignment.HorizontalEntryLeft,
                     scrollSpeedViewportsPerSecond:NormalScrollSpeed,
-                    onScrollComplete:() => TestRecyclerEditorLogger.Log("Top index scroll complete."),
-                    onScrollCancelled:() => TestRecyclerEditorLogger.Log("Top index scroll cancelled."));
+                    onScrollComplete:() => TestRecyclerEditorLogger.Log("Top/left index scroll complete."),
+                    onScrollCancelled:() => TestRecyclerEditorLogger.Log("Top/left index scroll cancelled."));
             }
             // Scroll to bot/right of index
             else if ((Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.B)) || DemoToolbar.GetButtonDown(2))
@@ -81,8 +81,8 @@ namespace Swill.Recycler.Demos
                 _recycler.ScrollToIndex(_recycler.DataForEntries.Count - 1, 
                     _recycler.Orientation.IsVertical() ? ScrollToAlignment.VerticalEntryBottom : ScrollToAlignment.HorizontalEntryRight,
                     scrollSpeedViewportsPerSecond:NormalScrollSpeed,
-                    onScrollComplete:() => TestRecyclerEditorLogger.Log("Bottom index scroll complete."),
-                    onScrollCancelled:() => TestRecyclerEditorLogger.Log("Bottom index scroll cancelled."));
+                    onScrollComplete:() => TestRecyclerEditorLogger.Log("Bottom/right index scroll complete."),
+                    onScrollCancelled:() => TestRecyclerEditorLogger.Log("Bottom/right index scroll cancelled."));
             }
 
             /*** Fighting ***/
@@ -90,7 +90,37 @@ namespace Swill.Recycler.Demos
             else if ((Input.GetKey(KeyCode.F) && Input.GetKeyDown(KeyCode.G)) || DemoToolbar.GetButtonDown(3))
             {
                 _recycler.ScrollToIndex(ScrollToMiddleIndex, scrollSpeedViewportsPerSecond:ScrollWhileGrowShrinkingSpeed);
-                ((ScrollToIndexRecyclerScrollRectEntry) _recycler.ActiveEntries[_window.VisibleIndexRange.Value.End]).Grow(FixEntries.VerticalAbove);
+                FixEntries fixEntries = default;
+
+                if (!_window.Contains(ScrollToMiddleIndex))
+                {
+                    (int Start, int End) = _window.VisibleIndexRange.Value;
+
+                    switch (_recycler.Orientation)
+                    {
+                        case RecyclerScrollRectOrientation.TopToBottom:
+                            fixEntries = ScrollToMiddleIndex > End ? FixEntries.VerticalAbove : FixEntries.VerticalBelow;
+                            break;
+                        
+                        case RecyclerScrollRectOrientation.BottomToTop:
+                            fixEntries = ScrollToMiddleIndex > End ? FixEntries.VerticalBelow : FixEntries.VerticalAbove;
+                            break;
+                        
+                        case RecyclerScrollRectOrientation.LeftToRight:
+                            fixEntries = ScrollToMiddleIndex > End ? FixEntries.HorizontalLeft : FixEntries.HorizontalRight;
+                            break;
+                        
+                        case RecyclerScrollRectOrientation.RightToLeft:
+                            fixEntries = ScrollToMiddleIndex > End ? FixEntries.HorizontalRight : FixEntries.HorizontalLeft;
+                            break;
+                    }
+                    
+                    ((ScrollToIndexRecyclerScrollRectEntry) _recycler.ActiveEntries[ScrollToMiddleIndex > End ? End : Start]).Grow(fixEntries);   
+                }
+                else
+                {
+                    TestRecyclerEditorLogger.LogWarning($"Entry {ScrollToMiddleIndex} is currently visible. Cannot test this behavior.");
+                }
             }
             // Scroll to the middle while making the bottom visible entry shrink, scrolling over the shrinking entry
             else if ((Input.GetKey(KeyCode.F) && Input.GetKeyDown(KeyCode.S)) || DemoToolbar.GetButtonDown(4))
