@@ -29,6 +29,7 @@ namespace Swill.Recycler.Demos
         private const float AnimateInOutTime = 2f;
 
         private const int Height = 300;
+        private const int Width = 800;
 
         private Sequence _animateInSequence;
         private Sequence _animateOutSequence;
@@ -36,7 +37,15 @@ namespace Swill.Recycler.Demos
         protected override void OnBind(PrettyInsertDeleteData entryData)
         {
             _indexText.text = Index.ToString();
-            RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(entryData.AnimateIn ? 0f : Height);
+
+            if (Recycler.Orientation.IsVertical())
+            {
+                RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(entryData.AnimateIn ? 0f : Height);   
+            }
+            else
+            {
+                RectTransform.sizeDelta = RectTransform.sizeDelta.WithX(entryData.AnimateIn ? 0f : Width);   
+            }
             
             _background.color = AnimateInColor;
             _backgroundGlow.fillAmount = 0f;
@@ -52,15 +61,24 @@ namespace Swill.Recycler.Demos
         {
             _animateInSequence?.Kill(true);
             _animateOutSequence?.Kill(true);
-            
-            RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(Data.AnimateIn ? 0f : Height);
+
+            if (Recycler.Orientation.IsVertical())
+            {
+                RectTransform.sizeDelta = RectTransform.sizeDelta.WithY(Data.AnimateIn ? 0f : Height);   
+            }
+            else
+            {
+                RectTransform.sizeDelta = RectTransform.sizeDelta.WithX(Data.AnimateIn ? 0f : Width); 
+            }
         }
 
         private void AnimateIn()
         {
             _backgroundGlow.fillAmount = 1f;
+
+            float targetHeightOrWidth = Recycler.Orientation.IsVertical() ? Height : Width;
             _animateInSequence = DOTween.Sequence()
-                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight, Data.AnimateInFixEntries), Height, AnimateInOutTime))
+                .Append(DOTween.To(() => Recycler.Orientation.IsVertical() ? RectTransform.sizeDelta.y : RectTransform.sizeDelta.x, newHeightOrWidth => RecalculateDimension(newHeightOrWidth, Data.AnimateInFixEntries), targetHeightOrWidth, AnimateInOutTime))
                 .Join(_backgroundGlow.DOFillAmount(0f, AnimateInOutTime))
                 .OnKill(() => _animateInSequence = null);
         }
@@ -81,12 +99,12 @@ namespace Swill.Recycler.Demos
             _backgroundGlow.fillAmount = 0f;
             
             _animateOutSequence = DOTween.Sequence()
-                .Append(DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight, fixEntries), 0f, AnimateInOutTime))
+                .Append(DOTween.To(() => Recycler.Orientation.IsVertical() ? RectTransform.sizeDelta.y : RectTransform.sizeDelta.x, newHeightOrWidth => RecalculateDimension(newHeightOrWidth, fixEntries), 0f, AnimateInOutTime))
                 .Join(_backgroundGlow.DOFillAmount(1f, AnimateInOutTime))
                 .OnKill(() =>
                 {
                     _animateOutSequence = null;
-                    Recycler.RemoveAtIndex(Index);
+                    Recycler.RemoveAtIndex(Index, Recycler.Orientation.IsVertical() ? FixEntries.VerticalAbove : FixEntries.HorizontalLeft);
                 });
         }
 

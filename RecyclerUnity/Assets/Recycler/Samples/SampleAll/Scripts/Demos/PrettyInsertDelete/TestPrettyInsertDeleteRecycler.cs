@@ -46,7 +46,7 @@ namespace Swill.Recycler.Demos
             // Inserts an entry at the end of the list
             if ((!Input.GetKey(KeyCode.M) && Input.GetKeyDown(KeyCode.A)) || DemoToolbar.GetButtonDown(0))
             {
-                _recycler.InsertAtIndex(_recycler.DataForEntries.Count, new PrettyInsertDeleteData(true, FixEntries.VerticalBelow));
+                _recycler.InsertAtIndex(_recycler.DataForEntries.Count, new PrettyInsertDeleteData(true, _recycler.Orientation.IsVertical() ? FixEntries.VerticalBelow : FixEntries.HorizontalRight), FixEntries.Middle);
                 return;
             }
 
@@ -61,7 +61,7 @@ namespace Swill.Recycler.Demos
             // Add entries at middle of the visible window
             if ((Input.GetKey(KeyCode.M) && Input.GetKeyDown(KeyCode.A)) || DemoToolbar.GetButtonDown(2))
             {
-                _recycler.InsertRangeAtIndex(middleEntryIndex, PrettyInsertDeleteData.GenerateData(NumEntriesInsertedAtMiddle, true, FixEntries.Middle));  
+                _recycler.InsertRangeAtIndex(middleEntryIndex, PrettyInsertDeleteData.GenerateData(NumEntriesInsertedAtMiddle, true, FixEntries.Middle), FixEntries.Middle);  
             }
             // Delete entries in the middle of the visible window 
             else if ((Input.GetKey(KeyCode.M) && Input.GetKeyDown(KeyCode.D)) || DemoToolbar.GetButtonDown(3))
@@ -83,7 +83,7 @@ namespace Swill.Recycler.Demos
                     PrettyInsertDeleteEntry entry = (PrettyInsertDeleteEntry) _recycler.ActiveEntries[i];
                     if (!entry.IsDeleting)
                     {
-                        entry.AnimateOutAndDelete(FixEntries.VerticalBelow);
+                        entry.AnimateOutAndDelete(_recycler.Orientation.IsVertical() ? FixEntries.VerticalBelow : FixEntries.HorizontalRight);
                         break;
                     }
                 }

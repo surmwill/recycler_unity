@@ -225,32 +225,10 @@ namespace Swill.Recycler
 
             if (csfHasWrongValues)
             {
-                Debug.LogWarning($"The {nameof(ContentSizeFitter)} on the entries' root must have a vertical fit of {csf.verticalFit} " +
-                                 $"and horizontal fit {csf.horizontalFit} to match the orientation of the recycler. Setting appropriately.");
+                Debug.LogWarning($"The {nameof(ContentSizeFitter)} on the entries' root must have a vertical fit of `{csf.verticalFit}` " +
+                                 $"and horizontal fit `{csf.horizontalFit}` to match the orientation of the recycler. Setting appropriately.");
             }
         }
-
-        /// <summary>
-        /// Ensure the root of all the entries has the necessary components with the necessary fields checked
-        /// </summary>
-        /*
-        private void InspectorCheckRootEntriesComponents()
-        {
-            if (content == null)
-            {
-                return;
-            }
-
-            // Ensure the root of all entries has the proper anchor values.
-            // Importantly, the anchored position will be treated differently if the y's don't match (although the value we choose isn't important)
-            if (content != _lastContent)
-            {
-                _tracker.Clear();
-                _lastContent = content;
-            }
-            SetContentTracker();
-        }
-        */
         
         private bool IsInstanceOfEntryPrefab(RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry)
         {

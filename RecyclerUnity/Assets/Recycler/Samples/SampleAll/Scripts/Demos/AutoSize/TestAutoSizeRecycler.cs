@@ -12,10 +12,15 @@ namespace Swill.Recycler.Demos
         [SerializeField]
         private AutoSizeRecycler _autoSizeRecycler = null;
 
+        [SerializeField]
+        private bool _testVertical = false;
+
         private const int NumEntries = 30;
 
         private const int MinNumLines = 1;
         private const int MaxNumLines = 6;
+
+        private bool IsValid => _testVertical == _autoSizeRecycler.Orientation.IsVertical();
         
         protected override RecyclerScrollRect<string, AutoSizeData> ValidateRecycler => _autoSizeRecycler;
 
@@ -35,20 +40,31 @@ namespace Swill.Recycler.Demos
 
         protected override void Start()
         {
+            if (!IsValid)
+            {
+                TestRecyclerEditorLogger.LogError($"This demo scenes requires a {(_testVertical ? "vertically" : "horizontally")} oriented recycler");
+                return;
+            }
+            
             base.Start();
             _autoSizeRecycler.AppendEntries(Enumerable.Range(0, NumEntries).Select(_ => new AutoSizeData(Random.Range(MinNumLines, MaxNumLines + 1))));
-            _indexWindow = _autoSizeRecycler.ActiveEntriesWindow;
+            _indexWindow = _autoSizeRecycler.ActiveEntriesWindow;   
         }
 
         private void Update()
         {
+            if (!IsValid)
+            {
+                return;
+            }
+            
             (int Start, int End) = _indexWindow.ActiveEntriesRange.Value;
             
             // Randomly grow an active entry.
             if (Input.GetKeyDown(KeyCode.A) || DemoToolbar.GetButtonDown(0))
             {
                 int indexToAppend = Random.Range(Start, End);
-                Debug.Log($"Appending text to: {indexToAppend}");
+                TestRecyclerEditorLogger.Log($"Appending text to: {indexToAppend}");
                 _autoSizeRecycler.GetActiveEntryWithIndex<AutoSizeEntry>(indexToAppend).AppendLines();
             }
             // Increases the size of the endcap through its layout group.

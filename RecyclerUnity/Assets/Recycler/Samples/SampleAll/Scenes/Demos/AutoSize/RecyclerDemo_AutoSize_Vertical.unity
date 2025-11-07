@@ -2629,6 +2629,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _demoToolbar: {fileID: 1995844297}
   _autoSizeRecycler: {fileID: 2023473214}
+  _testVertical: 1
 --- !u!114 &2023473216
 MonoBehaviour:
   m_ObjectHideFlags: 0
