@@ -35,7 +35,7 @@ namespace Swill.Recycler.Demos
             $"3 (keys 'F' and then 'G'): Scrolls to the middle index {ScrollToMiddleIndex} while making an intermediate entry grow, scrolling over the expanding entry.",
             $"4 (keys 'F' and then 'S'): Scrolls to the middle index {ScrollToMiddleIndex} while making the intermediate entry shrink, scrolling over the shrinking entry.",
             
-            $"5 (keys 'I' and then 'M'): Scrolls immediately to the middle index {ScrollToMiddleIndex}.",
+            $"5 (keys 'I' and then 'M'): Scrolls immediately to the top/left of the middle index {ScrollToMiddleIndex}.",
             $"6 (keys 'I' and then 'T'): Scrolls immediately to the top index 0.",
             $"7 (keys 'I' and then 'B'): Scrolls immediately to the bottom index {InitNumEntries - 1}.",
             
@@ -118,10 +118,10 @@ namespace Swill.Recycler.Demos
             }
 
             /*** Immediate Scroll ***/
-            // Scroll immediate to middle index
+            // Scroll immediate to top/left edge of the middle index
             else if ((Input.GetKey(KeyCode.I) && Input.GetKeyDown(KeyCode.M)) || DemoToolbar.GetButtonDown(5))
             {
-                _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex);
+                _recycler.ScrollToIndexImmediate(ScrollToMiddleIndex, _recycler.Orientation.IsVertical() ? ScrollToAlignment.VerticalEntryTop : ScrollToAlignment.HorizontalEntryLeft);
             }
             // Scroll immediate to top index
             else if ((Input.GetKey(KeyCode.I) && Input.GetKeyDown(KeyCode.T)) || DemoToolbar.GetButtonDown(6))

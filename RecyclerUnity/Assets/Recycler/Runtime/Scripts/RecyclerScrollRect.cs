@@ -1599,56 +1599,23 @@ namespace Swill.Recycler
             StopMovementAndDrag();
             StopScrollToIndexCoroutine();
             
-            // If the entry's already active, then scroll to it
-            if (_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TKeyEntryData, TEntryData> entry))
-            {
-               ScrollToActiveEntry(entry);
-               return;
-            }
-            
-            // Otherwise clear and fill up a new window, centering on the entry
-            foreach (RecyclerScrollRectEntry<TKeyEntryData, TEntryData> activeEntry in _activeEntries.Values.ToList())
-            {
-                SendToRecycling(activeEntry);
-            }
-
-            _activeEntriesWindow.VisibleIndexRange = null;
-            _activeEntriesWindow.UpdateCachesFromVisibleRange();
-            
-            CreateAndAddEntry(index, 0);
-            
-            content.SetPivotWithoutMoving(content.pivot.WithY(0.5f));
-            normalizedPosition = normalizedPosition.WithY(0.5f);
-            
-            RecalculateActiveEntries();
-            ScrollToActiveEntry(_activeEntries[index]);
-
-            void ScrollToActiveEntry(RecyclerScrollRectEntry<TKeyEntryData, TEntryData> activeEntry)
-            {
-                for (;;)
+            // If the entry's not active than clear the existing entries, add it, and then add the entries around it
+            if (!_activeEntries.TryGetValue(index, out RecyclerScrollRectEntry<TKeyEntryData, TEntryData> _))
+            { 
+                foreach (RecyclerScrollRectEntry<TKeyEntryData, TEntryData> activeEntry in _activeEntries.Values.ToList())
                 {
-                    float entryNormalizedY = this.GetNormalizedVerticalPositionOfChild(
-                        activeEntry.RectTransform,
-                        ScrollAlignmentToNormalizedPosition(scrollToAlignment));
-
-                    // If we're already centered on the entry we're done scrolling
-                    if (this.IsAtNormalizedPosition(normalizedPosition.WithY(entryNormalizedY)))
-                    {
-                        return;
-                    }
-                    
-                    float prevNormalizedY = normalizedPosition.y;
-                    normalizedPosition = normalizedPosition.WithY(Mathf.Clamp01(entryNormalizedY));
-                    
-                    // If we can't scroll anymore we're done scrolling
-                    if (Mathf.Approximately(prevNormalizedY, normalizedPosition.y))
-                    {
-                        return;
-                    }
-                    
-                    RecalculateActiveEntries();
+                    SendToRecycling(activeEntry, Orientation.IsVertical() ? FixEntries.VerticalAbove : FixEntries.HorizontalLeft);
                 }
+
+                _activeEntriesWindow.VisibleIndexRange = null;
+                _activeEntriesWindow.UpdateCachesFromVisibleRange();
+            
+                CreateAndAddEntry(index, 0, Orientation.IsVertical() ? FixEntries.VerticalAbove : FixEntries.HorizontalLeft);
+                RecalculateActiveEntries();
             }
+            
+            // Scroll to the active entry
+            ScrollToIndex(index, scrollToAlignment, 1000);
         }
 
         /// <summary>
