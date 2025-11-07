@@ -32,13 +32,13 @@ They don't offer control. Many basic recyclers assume a static list of data with
 - Resizing (auto-calculation supported)
 - Endcaps
 - Scrolling to any index (including those off-screen)
-- State changes (know when an entry becomes visible or not)
+- Visibility state changes (know when an entry leaves the screen or just comes on it)
+- Queryable state of the currently active entries
 - Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases
-- Fully queryable state of what entries are active
 - Only uses native Unity UI elements
 - Fully commented and documented
 - List of demos for learning and debugging
-- Easy GameObject set up: simply add the Recycler component to a RectTransform
+- Easy GameObject set up: simply add the Recycler component to a RectTransform, serialize your prefabs, and the proper hierarchy autmatically gets created for you.
 
 <b>See videos of all the features [below](https://github.com/surmwill/recycler_unity/blob/master/README.md#feature-videos)</b>
 
