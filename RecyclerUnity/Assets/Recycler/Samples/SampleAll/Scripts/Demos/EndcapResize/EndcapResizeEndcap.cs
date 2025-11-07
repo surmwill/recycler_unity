@@ -7,8 +7,8 @@ namespace Swill.Recycler.Demos
     /// </summary>
     public class EndcapResizeEndcap : RecyclerScrollRectEndcap<string, EmptyRecyclerData>
     {
-        private const int NormalSize = 300;
-        private const int GrowSize = 600;
+        private const int NormalSize = 400;
+        private const int GrowSize = 800;
         private const float GrowTimeSeconds = 2f;
 
         private Tween _resizeTween;
@@ -38,7 +38,7 @@ namespace Swill.Recycler.Demos
         /// </summary>
         public void Grow()
         {
-            _resizeTween ??= DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight), GrowSize, GrowTimeSeconds);
+            _resizeTween ??= DOTween.To(() => Recycler.Orientation.IsVertical() ? RectTransform.sizeDelta.y : RectTransform.sizeDelta.x, newHeightOrWidth => RecalculateDimension(newHeightOrWidth), GrowSize, GrowTimeSeconds);
         }
     }
 }
