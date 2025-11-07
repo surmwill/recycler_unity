@@ -22,7 +22,7 @@ They don't offer control. Many basic recyclers assume a static list of data with
 <b>The aim of this recycler is to make it feel like a powerful tool, instead of a black box you're forced to work around.</b>
 
 ### Features
-- Vertical and horizontal orientations are supported.
+- Vertical and horizontal orientations are supported
 - Appending
 - Prepending
 - Insertion
