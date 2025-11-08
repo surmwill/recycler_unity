@@ -42,7 +42,38 @@ They don't offer control. Many basic recyclers assume a static list of data with
 
 <b>See videos of all the features [below](https://github.com/surmwill/recycler_unity/blob/master/README.md#feature-videos)</b>
 
-# Getting Started
+# Getting Started (One Page)
+
+AA
+
+# Nuances
+
+### Entries are default expanded to the Recycler's width (vertical) or height (horizontal).
+
+Each entry will be expanded to the full width of the vertical recycler, or the full height for a horizontal recycler, regardless of the values you set. Should you want a different width or height, a child transform with the desired width or height can be created under the root.
+
+### Entries control their own auto-size.
+
+If your content is auto-sized, then entries must control their own width and/or height with their own `ContentSizeFitter`.
+
+### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots is `LayoutGroups` and `ContentSizeFitters`.
+
+Except during explicitly defined times all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root for performance reasons. 
+This includes things such as `Images`, which should go under a child transform instead. 
+
+`LayoutGroups` and `ContentSizeFitters` can still go on the root as they are needed for auto-size calculations.
+
+### Entries must update their own height (vertical) or width (horizontal) through the recycler.
+
+If we have a vertical recycler (for example), in order for a height change to be properly reflected in the recycler, the entry must call `RecalculateDimension` to set its new height.
+
+For example, to animate an entry growing using DoTween, the below code is used to update the Recycler at each step.
+
+```
+DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight), TargetHeight, Time);
+```
+
+# Getting Started (Detailed)
 
 You will need 3 things, and this will be the same for every recycler:
 1. The data you want to display in a list (a normal C# class).
@@ -210,33 +241,6 @@ Serialize the endcap prefab in Recyler component. A new pool for the endcap will
 And our end result looks like:
 
 ![](README_Images/creating_recycler_endcap.gif)
-
-# Nuances
-
-### Entries are default expanded to the Recycler's width (vertical) or height (horizontal).
-
-Each entry will be expanded to the full width of the vertical recycler, or the full height for a horizontal recycler, regardless of the values you set. Should you want a different width or height, a child transform with the desired width or height can be created under the root.
-
-### Entries control their own auto-size.
-
-If your content is auto-sized, then entries must control their own width and/or height with their own `ContentSizeFitter`.
-
-### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots is `LayoutGroups` and `ContentSizeFitters`.
-
-Except during explicitly defined times all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root for performance reasons. 
-This includes things such as `Images`, which should go under a child transform instead. 
-
-`LayoutGroups` and `ContentSizeFitters` can still go on the root as they are needed for auto-size calculations.
-
-### Entries must update their own height (vertical) or width (horizontal) through the recycler.
-
-If we have a vertical recycler (for example), in order for a height change to be properly reflected in the recycler, the entry must call `RecalculateDimension` to set its new height.
-
-For example, to animate an entry growing using DoTween, the below code is used to update the Recycler at each step.
-
-```
-DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight), TargetHeight, Time);
-```
 
 # Documentation
 
