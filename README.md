@@ -44,11 +44,59 @@ They don't offer control. Many basic recyclers assume a static list of data with
 
 # Getting Started (One Page)
 
+```
+// The data to display
+public class DemoRecyclerData : IRecyclerScrollRectData<string>
+{
+    public string Key => Guid.NewGuid.ToString();  // Or any unique key
+    // Other fields...
+}
+
+// (Prefab) The component which displays your data
+public class DemoRecyclerEntry : RecyclerScrollRectEntry<string, DemoRecyclerData>
+{
+    [SerializeField]
+    private Text _entryText = null;
+
+    // Bind the UI to the data
+    protected override void OnBind(DemoRecyclerData entryData)
+    {
+        _entryText.text = entryData.Key;
+    }
+}
+
+// The Recycler component which serializes your entry prefab, takes your entry data, and manages what data is bound to what entry
+public class DemoRecycler : RecyclerScrollRect<string, DemoRecyclerData>
+{
+    // Empty, only exists to define the conrete generic parameters so this can be used as a component
+}
+
+// A MonoBehaviour which passes data to the Recycler
+public class YourMonoBehaviour : MonoBehaviour
+{
+    [SerializeField]
+    private DemoRecycler _recycler;
+
+    private void Start()
+    {
+        IEnumerable<DemoRecyclerData> yourData = CreateYourData();
+        _demoRecycler.AppendEntries(yourData);
+    }
+}
+```
+
+1. Create the data class you wish to display.
+2. Create a `RecyclerScrollRectEntry` which binds your data to the entry UI.
+3. Make your `RecyclerScrollRectEntry` into a prefab.
+4. Create a `RecyclerScrollRect` and add it as a component to your desired `RectTransform`
+5. Serialize your `RecyclerScrollRectEntry` in your `RecyclerScrollRect`
+6. The `RecyclerScrollRect` manages passing your data to the `RecyclerScrollRectEntrys` on screen
+
 AA
 
 # Nuances
 
-### Entries are default expanded to the Recycler's width (vertical) or height (horizontal).
+### Entries are default expanded to the Recycler's width (vertical recycler) or height (horizontal recycler).
 
 Each entry will be expanded to the full width of the vertical recycler, or the full height for a horizontal recycler, regardless of the values you set. Should you want a different width or height, a child transform with the desired width or height can be created under the root.
 
