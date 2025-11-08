@@ -112,7 +112,7 @@ This includes things such as `Images`, which should go under a child transform i
 
 `LayoutGroups` and `ContentSizeFitters` can still go on the root as they are needed for auto-size calculations.
 
-### Entries must update their own height (vertical) or width (horizontal) through the recycler.
+### Entries must update their own height (vertical recycler) or width (horizontal recycler) through the recycler.
 
 If we have a vertical recycler (for example), in order for a height change to be properly reflected in the recycler, the entry must call `RecalculateDimension` to set its new height.
 
