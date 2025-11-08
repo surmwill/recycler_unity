@@ -17,7 +17,9 @@ It is common for UIs to display long lists of items. While the list of items mig
 <b>Recyclers take time to be bug-free and effective; people want to focus on implementing UI and moving on, not debugging a tool.</b>
 
 ### The problem with other Recyclers
-They don't offer control. Many basic recyclers assume a static list of data with entries of fixed size, but this is inadequate, for example, for chat messages of varying sizes being continually inserted, deleted, and modified. This basic functionality falls short for many applications, and using a basic recycler for advanced cases can leave a UI lacking polish. Additionally, there is little insight into what entries are currently on-screen and their state. 
+Every project I've worked on has inevitably needed a recycler at some point in time. These are always hastily built and lacking basic features I would expect from scrolling a list: insertion, deletion, entries of different sizes, and smoothly maintaining your scroll as all this is happening. As many teams cannot invest months into creating the perfect robust UI tool, their recycler's often fall short.
+
+This project was intended to remedy that by creating an out-of-the-box Unity UI recycler for any use case. It supports a dynamically sized and updated list, and offers easy querying into what entries are currently on-screen or not. Entries hook into easy-to-understand lifecycle methods allowing them to manage their state.
 
 <b>The aim of this recycler is to make it feel like a powerful tool, instead of a black box you're forced to work around.</b>
 
@@ -71,7 +73,7 @@ public class DemoRecycler : RecyclerScrollRect<string, DemoRecyclerData>
     // Empty, only exists to define the conrete generic parameters so this can be used as a component
 }
 
-// 4th class. Your MonoBehaviour which passes data to the Recycler
+// 4th class: Your MonoBehaviour which passes data to the Recycler
 public class YourMonoBehaviour : MonoBehaviour
 {
     [SerializeField]
