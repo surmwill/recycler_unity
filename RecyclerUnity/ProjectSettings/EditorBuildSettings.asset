@@ -6,45 +6,45 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Recycler/Samples/SampleAll/RecyclerDemo_DemoMenu.unity
+    path: Assets/Recycler/Samples/Sample_All/RecyclerDemo_DemoMenu.unity
     guid: 46cdddd8a89a02d479ab0cd5ae990f1a
   - enabled: 1
-    path: Assets/Recycler/Samples/SampleAll/Scenes/Demos/AppendPrepend/RecyclerDemo_AppendPrepend.unity
+    path: Assets/Recycler/Samples/Sample_All/Scenes/Demos/AppendPrepend/RecyclerDemo_AppendPrepend.unity
     guid: 6d68678f6b0b8de478b7384095d9517b
   - enabled: 1
-    path: Assets/Recycler/Samples/SampleAll/Scenes/Demos/AutoSize/RecyclerDemo_AutoSize_Vertical.unity
+    path: Assets/Recycler/Samples/Sample_All/Scenes/Demos/AutoSize/RecyclerDemo_AutoSize_Vertical.unity
     guid: 15868f8f8fe80484aa64e3c5001afc1d
   - enabled: 1
-    path: Assets/Recycler/Samples/SampleAll/Scenes/Demos/Basic/RecyclerDemo_Basic.unity
+    path: Assets/Recycler/Samples/Sample_All/Scenes/Demos/AutoSize/RecyclerDemo_AutoSize_Horizontal.unity
+    guid: dd8c4e31b9559e54ba3be44af278f081
+  - enabled: 1
+    path: Assets/Recycler/Samples/Sample_All/Scenes/Demos/Basic/RecyclerDemo_Basic.unity
     guid: 8fed2ed043c792442b2990b9f9c739a7
   - enabled: 1
-    path: Assets/Recycler/Samples/SampleAll/Scenes/Demos/CanvasCamera/RecyclerDemo_CanvasCamera.unity
+    path: Assets/Recycler/Samples/Sample_All/Scenes/Demos/CanvasCamera/RecyclerDemo_CanvasCamera.unity
     guid: 579567395fa54ac40b679d3958f03e2b
   - enabled: 1
-    path: Assets/Recycler/Samples/SampleAll/Scenes/Demos/ClearAndFill/RecyclerDemo_ClearAndFill.unity
+    path: Assets/Recycler/Samples/Sample_All/Scenes/Demos/ClearAndFill/RecyclerDemo_ClearAndFill.unity
     guid: 739c5a041c80e5344ad23deef91cd147
   - enabled: 1
-    path: Assets/Recycler/Samples/SampleAll/Scenes/Demos/Delete/RecyclerDemo_Delete.unity
+    path: Assets/Recycler/Samples/Sample_All/Scenes/Demos/Delete/RecyclerDemo_Delete.unity
     guid: f5b4c45da92f34241a6afdca89de9122
   - enabled: 1
-    path: Assets/Recycler/Samples/SampleAll/Scenes/Demos/EndcapResize/RecyclerDemo_EndcapResize.unity
+    path: Assets/Recycler/Samples/Sample_All/Scenes/Demos/EndcapResize/RecyclerDemo_EndcapResize.unity
     guid: 1a21ff43385eadc44963daa6454adb1c
   - enabled: 1
-    path: Assets/Recycler/Samples/SampleAll/Scenes/Demos/FullScreenEntries/RecyclerDemo_FullScreenEntries.unity
+    path: Assets/Recycler/Samples/Sample_All/Scenes/Demos/FullScreenEntries/RecyclerDemo_FullScreenEntries.unity
     guid: db9533480a6f2dc478372c913c64b6b9
   - enabled: 1
-    path: Assets/Recycler/Samples/SampleAll/Scenes/Demos/InsertAndResize/RecyclerDemo_InsertAndResize.unity
+    path: Assets/Recycler/Samples/Sample_All/Scenes/Demos/InsertAndResize/RecyclerDemo_InsertAndResize.unity
     guid: 544136af31d368c4f99e9aca3e0bd120
   - enabled: 1
-    path: Assets/Recycler/Samples/SampleAll/Scenes/Demos/PrettyInsertDelete/RecyclerDemo_PrettyInsertDelete.unity
+    path: Assets/Recycler/Samples/Sample_All/Scenes/Demos/PrettyInsertDelete/RecyclerDemo_PrettyInsertDelete.unity
     guid: ba772d62b6b2ba347aa9440192fb8dbc
   - enabled: 1
-    path: Assets/Recycler/Samples/SampleAll/Scenes/Demos/ScrollToIndex/RecyclerDemo_ScrollToIndex.unity
+    path: Assets/Recycler/Samples/Sample_All/Scenes/Demos/ScrollToIndex/RecyclerDemo_ScrollToIndex.unity
     guid: eb297d1def224454a8c2375dff4ad83e
   - enabled: 1
-    path: Assets/Recycler/Samples/SampleAll/Scenes/Demos/StateChanges/RecyclerDemo_StateChanges.unity
+    path: Assets/Recycler/Samples/Sample_All/Scenes/Demos/StateChanges/RecyclerDemo_StateChanges.unity
     guid: 860a5fd358f314a45b67f26b17fead46
-  - enabled: 1
-    path: Assets/Recycler/Samples/SampleAll/Scenes/Demos/AutoSize/RecyclerDemo_AutoSize_Horizontal.unity
-    guid: dd8c4e31b9559e54ba3be44af278f081
   m_configObjects: {}
