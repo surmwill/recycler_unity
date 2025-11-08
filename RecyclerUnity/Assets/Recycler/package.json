@@ -21,7 +21,7 @@
   "licensesUrl": "https://github.com/surmwill/recycler_unity/blob/master/RecyclerUnity/Assets/Recycler/LICENSE.md",
   "samples": [
     {
-      "displayName": "All Examples",
+      "displayName": "Sample_All",
       "description": "A menu encompassing demos of each individual feature.",
       "path": "Samples~/Sample_All"
     }
