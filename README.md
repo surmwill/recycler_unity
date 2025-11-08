@@ -45,14 +45,14 @@ They don't offer control. Many basic recyclers assume a static list of data with
 # Getting Started (One Page)
 
 ```
-// The data to display
+// 1st class: The data to display
 public class DemoRecyclerData : IRecyclerScrollRectData<string>
 {
     public string Key => Guid.NewGuid.ToString();  // Or any unique key
     // Other fields...
 }
 
-// (Prefab) The component which displays your data
+// 2nd class: (Prefab) The component which displays your data
 public class DemoRecyclerEntry : RecyclerScrollRectEntry<string, DemoRecyclerData>
 {
     [SerializeField]
@@ -65,13 +65,13 @@ public class DemoRecyclerEntry : RecyclerScrollRectEntry<string, DemoRecyclerDat
     }
 }
 
-// The Recycler component which serializes your entry prefab, takes your entry data, and manages what data is bound to what entry
+// 3rd class: The Recycler component which serializes your entry prefab, takes your entry data, and manages what data is bound to what entry
 public class DemoRecycler : RecyclerScrollRect<string, DemoRecyclerData>
 {
     // Empty, only exists to define the conrete generic parameters so this can be used as a component
 }
 
-// A MonoBehaviour which passes data to the Recycler
+// 4th class. Your MonoBehaviour which passes data to the Recycler
 public class YourMonoBehaviour : MonoBehaviour
 {
     [SerializeField]
@@ -91,8 +91,6 @@ public class YourMonoBehaviour : MonoBehaviour
 4. Create a `RecyclerScrollRect` and add it as a component to your desired `RectTransform`
 5. Serialize your `RecyclerScrollRectEntry` in your `RecyclerScrollRect`
 6. The `RecyclerScrollRect` manages passing your data to the `RecyclerScrollRectEntrys` on screen
-
-AA
 
 # Nuances
 
