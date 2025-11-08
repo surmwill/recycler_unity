@@ -41,6 +41,7 @@ This project was intended to remedy that by creating an out-of-the-box Unity UI 
 - Fully commented and documented
 - List of demos for learning and debugging
 - Easy GameObject set up: simply add the Recycler component to a RectTransform, serialize your prefabs, and the proper hierarchy autmatically gets created for you.
+- Open source: adapt it to your needs.
 
 <b>See videos of all the features [below](https://github.com/surmwill/recycler_unity/blob/master/README.md#feature-videos)</b>
 
