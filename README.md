@@ -211,6 +211,33 @@ And our end result looks like:
 
 ![](README_Images/creating_recycler_endcap.gif)
 
+# Nuances
+
+### Entries are default expanded to the Recycler's width (vertical) or height (horizontal).
+
+Each entry will be expanded to the full width of the vertical recycler, or the full height for a horizontal recycler, regardless of the values you set. Should you want a different width or height, a child transform with the desired width or height can be created under the root.
+
+### Entries control their own auto-size.
+
+If your content is auto-sized, then entries must control their own width and/or height with their own `ContentSizeFitter`.
+
+### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots is `LayoutGroups` and `ContentSizeFitters`.
+
+Except during explicitly defined times all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root for performance reasons. 
+This includes things such as `Images`, which should go under a child transform instead. 
+
+`LayoutGroups` and `ContentSizeFitters` can still go on the root as they are needed for auto-size calculations.
+
+### Entries must update their own height (vertical) or width (horizontal) through the recycler.
+
+If we have a vertical recycler (for example), in order for a height change to be properly reflected in the recycler, the entry must call `RecalculateDimension` to set its new height.
+
+For example, to animate an entry growing using DoTween, the below code is used to update the Recycler at each step.
+
+```
+DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight), TargetHeight, Time);
+```
+
 # Documentation
 
 ## RecyclerScrollRect
@@ -852,51 +879,6 @@ Enum defining the position within an entry to center on when we scroll to it.
 - `VerticalEntryLeft:` center on the left edge of the entry.
 - `VerticalEntryRight:` center on the right edge of the entry.
 - `EntryMiddle:` center on the middle of the entry.
-
-# Nuances
-
-### Entries control their own auto-size.
-
-If your content is auto-sized, then entries must control their own width and height as a side effect of necessary performance concessions, and use their own `ContentSizeFitters`.
-
-Instead of what is typically done (vertically), with having the root (Entries) controlling sizes:
-
-<pre>
-Entries (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> and a <strong>ContentSizeFitter</strong>)
-  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked)
-  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked)
-  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked)
-</pre>
-  
-We need:
-
-<pre>
-Entries (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> and a <strong>ContentSizeFitter</strong>)
-  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
-  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
-  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
-</pre>
-
-### Entries are default expanded to the Recycler's width (vertical) or height (horizontal).
-
-Each entry will be expanded to the full width of the vertical recycler (or the full height for a horizontal recycler), regardless of if they're being force expanded by a layout group or not. Should you want a different width or height, a child transform with the desired width can be created and the root left empty.
-
-### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots is `LayoutGroups` and `ContentSizeFitters`.
-
-Except during explicitly defined times all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root for performance reasons. 
-This includes things such as `Images`, which should go under a child transform instead. 
-
-`LayoutGroups` and `ContentSizeFitters` can still go on the root as they are needed for auto-size calculations.
-
-### Entries must update their own height (vertical) or width (horizontal) through the recycler.
-
-If we have a vertical recycler, in order for a height change to be properly reflected in the recycler, the entry must call `RecalculateDimension` to set its new height.
-
-For example, to animate an entry growing using DoTween, the below code is used to update the Recycler at each step.
-
-```
-DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight), TargetHeight, Time);
-```
 
 # Feature Videos
 ### Basic Functionality
