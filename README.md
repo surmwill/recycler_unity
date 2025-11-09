@@ -29,19 +29,21 @@ This project was intended to remedy that by creating an out-of-the-box Unity UI 
 - Insertion
 - Deletion
 - Pooling 
-- Dynamically sized entries (auto-calculation supported)
-- Resizing (auto-calculation supported)
-- Endcaps
-- Scrolling to any index (including those off-screen)
-- Visibility state changes (know when an entry leaves the screen or just comes on it)
-- Queryable state of the currently active entries
-- Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases
+- Differently sized entries
+- Dynamically sized entries (dimensions that change over time)
+- Auto-calculated dimensions with `LayoutGroups` and `ContentSizeFitters`
+- Endcap (an optional distinct entry that comes at the very end of the list)
+- Scrolling to any index, on-screen or off-screen
+- Immediately jumping to any index, on-screen or off-screen
+- Lifecycle methods for entries: when they're bound, recycled, and their visibility changes
+- Queryable state of what entries are active on-screen or not; easy retrieval of any one
+- "Screen Space - Camera" or "Screen Space - Overlay" canvases supported
 - Vertical and horizontal orientations supported
 - Only uses native Unity UI elements
 - Fully commented and documented
 - List of demos for learning and debugging
-- Easy GameObject set up: simply add the Recycler component to a RectTransform, serialize your prefabs, and the proper hierarchy autmatically gets created for you.
-- Open source: adapt it to your needs.
+- Easy scene set up: add a recycler component to a `RectTransform` and serialize an entry prefab in it
+- Open source: adapt it to your needs
 
 <b>See videos of all the features [below](https://github.com/surmwill/recycler_unity/blob/master/README.md#feature-videos)</b>
 
