@@ -33,7 +33,7 @@ Condensed documentation can be found below, full documentation is present at: ht
 // 1st class: The data you'd like to display
 public class DemoRecyclerData : IRecyclerScrollRectData<string>
 {
-    public string Key => Guid.NewGuid.ToString();  // Or any unique key
+    public string Key => Guid.NewGuid().ToString();  // Or any unique key
 
     // Anything else...
 }
