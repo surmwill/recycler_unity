@@ -17,32 +17,101 @@ It is common for UIs to display long lists of items. While the list of items mig
 <b>Recyclers take time to be bug-free and effective; people want to focus on implementing UI and moving on, not debugging a tool.</b>
 
 ### The problem with other Recyclers
-They don't offer control. Many basic recyclers assume a static list of data with entries of fixed size, but this is inadequate, for example, for chat messages of varying sizes being continually inserted, deleted, and modified. This basic functionality falls short for many applications, and using a basic recycler for advanced cases can leave a UI lacking polish. Additionally, there is little insight into what entries are currently on-screen and their state. 
+Every project I've worked on has inevitably needed a recycler at some point in time. These are always hastily built and lacking basic features I would expect from scrolling a list: insertion, deletion, entries of different sizes, and smoothly maintaining your scroll as all this is happening. As many teams cannot invest months into creating the perfect robust UI tool, their recycler's often fall short.
+
+This project was intended to remedy that by creating an out-of-the-box Unity UI recycler for any use case. It supports a dynamically sized and updated list, and offers easy querying into what entries are currently on-screen or not. Entries hook into easy-to-understand lifecycle methods allowing them to manage their state.
 
 <b>The aim of this recycler is to make it feel like a powerful tool, instead of a black box you're forced to work around.</b>
 
 ### Features
-- Vertical and horizontal orientations are supported
 - Appending
 - Prepending
 - Insertion
 - Deletion
 - Pooling 
-- Dynamically sized entries (auto-calculation supported)
-- Resizing (auto-calculation supported)
-- Endcaps
-- Scrolling to any index (including those off-screen)
-- Visibility state changes (know when an entry leaves the screen or just comes on it)
-- Queryable state of the currently active entries
-- Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases
+- Differently sized entries
+- Dynamically sized entries (dimensions that change over time)
+- Auto-calculated dimensions with `LayoutGroups` and `ContentSizeFitters`
+- Endcap (an optional distinct entry that comes at the very end of the list)
+- Scrolling to any index, on-screen or off-screen
+- Immediately jumping to any index, on-screen or off-screen
+- Lifecycle methods for entries: when they're bound, recycled, and their visibility changes
+- Queryable state of what entries are active on-screen or not; easy retrieval of any one
+- "Screen Space - Camera" or "Screen Space - Overlay" canvases supported
+- Vertical and horizontal orientations supported
 - Only uses native Unity UI elements
 - Fully commented and documented
 - List of demos for learning and debugging
-- Easy GameObject set up: simply add the Recycler component to a RectTransform, serialize your prefabs, and the proper hierarchy autmatically gets created for you.
+- Easy scene set up: add a recycler component to a `RectTransform` and serialize an entry prefab in it
+- Open source: adapt it to your needs
 
 <b>See videos of all the features [below](https://github.com/surmwill/recycler_unity/blob/master/README.md#feature-videos)</b>
 
-# Getting Started
+# Getting Started (In One Page)
+
+```
+// 1st class: The data you'd like to display
+public class DemoRecyclerData : IRecyclerScrollRectData<string>
+{
+    public string Key => Guid.NewGuid.ToString();  // Or any unique key
+
+    // Anything else...
+}
+
+// 2nd class: The recycler entry component which will display your data. Make this into a prefab
+public class DemoRecyclerEntry : RecyclerScrollRectEntry<string, DemoRecyclerData>
+{
+    [SerializeField]
+    private Text _entryText = null;
+
+    // Takes data and binds the UI to it
+    protected override void OnBind(DemoRecyclerData entryData)
+    {
+        _entryText.text = entryData.Key;
+    }
+}
+
+// 3rd class: The recycler component which displays the list of recycler entries. Add it to a `RectTransform`; drag and serialize your recycler entry prefab into it.
+public class DemoRecycler : RecyclerScrollRect<string, DemoRecyclerData>
+{
+    // Empty: only supplies generic types
+}
+
+// In your desired script, send the recycler data
+DemoRecycler recycler = GetComponent<DemoRecycler>();
+IEnumerable<DemoRecyclerData> yourData = CreateYourData();
+recycler.AppendEntries(yourData);
+```
+
+# Nuances
+
+### Entries are default expanded to the Recycler's width (for a vertical recycler) or height (for a horizontal recycler).
+
+Each entry will be expanded to the full width of the vertical recycler, or the full height for a horizontal recycler, regardless of the values you set. Should you want a different width or height, a child transform with the desired width or height can be created.
+
+### Entries control their own auto-size.
+
+If your content is auto-sized, then entries must control their own width and/or height with their own `ContentSizeFitter`. The root `LayoutGroup` of the entries will not do this for you.
+
+### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots is `LayoutGroups` and `ContentSizeFitters`.
+
+Except during explicitly defined times all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root for performance reasons. 
+This includes things such as `Images`, which should go under a child instead. 
+
+`LayoutGroups` and `ContentSizeFitters` can still go on the entry's root as they are needed for auto-size calculations.
+
+### Entries must update their own height (for a vertical recycler) or width (for a horizontal recycler) through the recycler.
+
+If we have a vertical recycler, in order for a height change to be properly reflected in the recycler, the entry must call `RecalculateDimension` to set its new height. 
+Similarly, for a horizontal recycler, we would call `RecalculateDimension`, but pass its width instead.
+
+For example, to animate an entry growing using DoTween in a vertical recycler, the below code is used to update the Recycler at each step.
+
+```
+DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight), TargetHeight, Time);
+```
+
+# Getting Started (Detailed)
 
 You will need 3 things, and this will be the same for every recycler:
 1. The data you want to display in a list (a normal C# class).
@@ -852,51 +921,6 @@ Enum defining the position within an entry to center on when we scroll to it.
 - `VerticalEntryLeft:` center on the left edge of the entry.
 - `VerticalEntryRight:` center on the right edge of the entry.
 - `EntryMiddle:` center on the middle of the entry.
-
-# Nuances
-
-### Entries control their own auto-size.
-
-If your content is auto-sized, then entries must control their own width and height as a side effect of necessary performance concessions, and use their own `ContentSizeFitters`.
-
-Instead of what is typically done (vertically), with having the root (Entries) controlling sizes:
-
-<pre>
-Entries (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> and a <strong>ContentSizeFitter</strong>)
-  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked)
-  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked)
-  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked)
-</pre>
-  
-We need:
-
-<pre>
-Entries (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> and a <strong>ContentSizeFitter</strong>)
-  |- Entry 1 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
-  |- Entry 2 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
-  |- Entry 3 (<strong>VerticalLayoutGroup</strong> with <i>controlChildHeight</i> checked, and a <strong>ContentSizeFitter</strong>)
-</pre>
-
-### Entries are default expanded to the Recycler's width (vertical) or height (horizontal).
-
-Each entry will be expanded to the full width of the vertical recycler (or the full height for a horizontal recycler), regardless of if they're being force expanded by a layout group or not. Should you want a different width or height, a child transform with the desired width can be created and the root left empty.
-
-### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots is `LayoutGroups` and `ContentSizeFitters`.
-
-Except during explicitly defined times all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root for performance reasons. 
-This includes things such as `Images`, which should go under a child transform instead. 
-
-`LayoutGroups` and `ContentSizeFitters` can still go on the root as they are needed for auto-size calculations.
-
-### Entries must update their own height (vertical) or width (horizontal) through the recycler.
-
-If we have a vertical recycler, in order for a height change to be properly reflected in the recycler, the entry must call `RecalculateDimension` to set its new height.
-
-For example, to animate an entry growing using DoTween, the below code is used to update the Recycler at each step.
-
-```
-DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight), TargetHeight, Time);
-```
 
 # Feature Videos
 ### Basic Functionality
