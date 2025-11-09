@@ -1,6 +1,6 @@
 # Intro
 - A UI Recycler View for Unity for efficently displaying long lists of data.
-- Works out-of-the-box with Unity's UI library, no external dependencies.
+- Works out-of-the-box with Unity's UI library (uGUI), no external dependencies.
 - Basic functionality for simple cases (static, same sized entries), advanced functionality for advanced cases (insertion, deletion, different sized entries).
 
 The package is self-contained under ![RecyclerUnity/Assets/Recycler](RecyclerUnity/Assets/Recycler). The "Samples" folder is optional and can be safely deleted unless you wish to look at some demos.
@@ -39,7 +39,7 @@ This project was intended to remedy that by creating an out-of-the-box Unity UI 
 - Queryable state of what entries are active on-screen or not; easy retrieval of any one
 - "Screen Space - Camera" or "Screen Space - Overlay" canvases supported
 - Vertical and horizontal orientations supported
-- Only uses native Unity UI elements
+- Only uses native Unity UI elements (uGUI)
 - Fully commented and documented
 - List of demos for learning and debugging
 - Easy scene set up: add a recycler component to a `RectTransform` and serialize an entry prefab in it
