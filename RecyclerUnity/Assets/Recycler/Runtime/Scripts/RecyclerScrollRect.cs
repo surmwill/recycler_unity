@@ -36,7 +36,7 @@ namespace Swill.Recycler
 
         [Tooltip("The orientation of the recycler. Defines the position of the starting entry and where entries get appended.")]
         [SerializeField]
-        private RecyclerScrollRectOrientation _orientation = DefaultOrientation;
+        private RecyclerScrollRectOrientation _orientation = RecyclerScrollRectOrientation.TopToBottom;
 
         [Tooltip("The transform under which our entries waiting to be bound/rebound wait.")]
         [Header("Pool")]
@@ -101,7 +101,6 @@ namespace Swill.Recycler
         private bool IsEndcapActive => _hasEndcap && _endcap.gameObject.activeSelf;
         
         private const float DefaultScrollSpeedViewportsPerSecond = 1f;
-        private const RecyclerScrollRectOrientation DefaultOrientation = RecyclerScrollRectOrientation.BottomToTop;
 
         private readonly List<TEntryData> _dataForEntries = new();
         private readonly Dictionary<TKeyEntryData, int> _entryKeyToCurrentIndex = new();
