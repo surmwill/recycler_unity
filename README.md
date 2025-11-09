@@ -12,8 +12,8 @@
 ### Install
 
 There are multiple ways to install the package:
-1. Add the package through Unity's package manager using the git url (optionally includes samples): https://github.com/surmwill/recycler_unity.git?path=/RecyclerUnity/Assets/Recycler#v1.0.0
-2. Download the .unitypackage [here](https://github.com/surmwill/recycler_unity/releases) and drag it into your project (no samples)
+1. Add the package through Unity's package manager using the git url (this way optionally includes samples): https://github.com/surmwill/recycler_unity.git?path=/RecyclerUnity/Assets/Recycler#v1.0.0
+2. Download the .unitypackage from [releases](https://github.com/surmwill/recycler_unity/releases) and drag it into your project (no samples)
 3. Clone this repo. The package is self-contained under ![RecyclerUnity/Assets/Recycler](RecyclerUnity/Assets/Recycler). The "Samples~" folder is optional and can be safely deleted unless you wish to look at some demos
 
 ### Why do I need a Recycler?
