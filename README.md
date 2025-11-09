@@ -53,7 +53,7 @@ This project was intended to remedy that by creating an out-of-the-box Unity UI 
 // 1st class: The data you'd like to display
 public class DemoRecyclerData : IRecyclerScrollRectData<string>
 {
-    public string Key => Guid.NewGuid.ToString();  // Or any unique key
+    public string Key => Guid.NewGuid().ToString();  // Or any unique key
 
     // Anything else...
 }
