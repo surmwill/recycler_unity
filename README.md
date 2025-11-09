@@ -69,7 +69,7 @@ public class DemoRecyclerEntry : RecyclerScrollRectEntry<string, DemoRecyclerDat
     }
 }
 
-// 3rd class: The recycler component which displays the list of recycler entries. Add it to a `RectTransform`; drag and serialize your recycler entry prefab into it
+// 3rd class: The recycler component which displays the list of recycler entries. Add it to a `RectTransform`; drag and serialize your recycler entry prefab into it.
 public class DemoRecycler : RecyclerScrollRect<string, DemoRecyclerData>
 {
     // Empty: only supplies generic types
