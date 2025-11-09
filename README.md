@@ -45,55 +45,41 @@ This project was intended to remedy that by creating an out-of-the-box Unity UI 
 
 <b>See videos of all the features [below](https://github.com/surmwill/recycler_unity/blob/master/README.md#feature-videos)</b>
 
-# Getting Started (One Page)
+# Getting Started (In One Page)
 
 ```
-// 1st class: The data to display
+// 1st class: The data you'd like to display
 public class DemoRecyclerData : IRecyclerScrollRectData<string>
 {
     public string Key => Guid.NewGuid.ToString();  // Or any unique key
-    // Other fields...
+
+    // Anything else...
 }
 
-// 2nd class: (Prefab) The component which displays your data
+// 2nd class: The recycler entry component which will display your data. Make this into a prefab
 public class DemoRecyclerEntry : RecyclerScrollRectEntry<string, DemoRecyclerData>
 {
     [SerializeField]
     private Text _entryText = null;
 
-    // Bind the UI to the data
+    // Takes data and binds the UI to it
     protected override void OnBind(DemoRecyclerData entryData)
     {
         _entryText.text = entryData.Key;
     }
 }
 
-// 3rd class: The Recycler component which serializes your entry prefab, takes your entry data, and manages what data is bound to what entry
+// 3rd class: The recycler component which displays the list of recycler entries. Add it to a `RectTransform`; drag and serialize your recycler entry prefab into it
 public class DemoRecycler : RecyclerScrollRect<string, DemoRecyclerData>
 {
-    // Empty, only exists to define the conrete generic parameters so this can be used as a component
+    // Empty: only supplies generic types
 }
 
-// 4th class: Your MonoBehaviour which passes data to the Recycler
-public class YourMonoBehaviour : MonoBehaviour
-{
-    [SerializeField]
-    private DemoRecycler _recycler;
-
-    private void Start()
-    {
-        IEnumerable<DemoRecyclerData> yourData = CreateYourData();
-        _demoRecycler.AppendEntries(yourData);
-    }
-}
+// In your desired script, send the recycler data
+DemoRecycler recycler = GetComponent<DemoRecycler>();
+IEnumerable<DemoRecyclerData> yourData = CreateYourData();
+recycler.AppendEntries(yourData);
 ```
-
-1. Create the data class you wish to display.
-2. Create a `RecyclerScrollRectEntry` which binds your data to the entry UI.
-3. Make your `RecyclerScrollRectEntry` into a prefab.
-4. Create a `RecyclerScrollRect` and add it as a component to your desired `RectTransform`
-5. Serialize your `RecyclerScrollRectEntry` in your `RecyclerScrollRect`
-6. The `RecyclerScrollRect` manages passing your data to the `RecyclerScrollRectEntrys` on screen
 
 # Nuances
 
