@@ -24,7 +24,6 @@ This project was intended to remedy that by creating an out-of-the-box Unity UI 
 <b>The aim of this recycler is to make it feel like a powerful tool, instead of a black box you're forced to work around.</b>
 
 ### Features
-- Vertical and horizontal orientations are supported
 - Appending
 - Prepending
 - Insertion
@@ -37,6 +36,7 @@ This project was intended to remedy that by creating an out-of-the-box Unity UI 
 - Visibility state changes (know when an entry leaves the screen or just comes on it)
 - Queryable state of the currently active entries
 - Works with "Screen Space - Camera" or "Screen Space - Overlay" canvases
+- Vertical and horizontal orientations supported
 - Only uses native Unity UI elements
 - Fully commented and documented
 - List of demos for learning and debugging
