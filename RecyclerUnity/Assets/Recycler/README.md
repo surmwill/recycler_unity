@@ -22,7 +22,7 @@ Condensed documentation can be found below, full documentation is present at: ht
 - Queryable state of what entries are active on-screen or not; easy retrieval of any one
 - "Screen Space - Camera" or "Screen Space - Overlay" canvases supported
 - Vertical and horizontal orientations supported
-- Only uses native Unity UI elements
+- Only uses native Unity UI elements (uGUI)
 - Fully commented and documented
 - List of demos for learning and debugging
 - Easy scene set up: add a recycler component to a `RectTransform` and serialize an entry prefab in it

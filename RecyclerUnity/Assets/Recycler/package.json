@@ -8,10 +8,18 @@
     "tools",
     "utilities",
     "UI",
+    "performance",
+    "optomization",
     "recycler",
+    "recycle",
     "list",
+    "listview",
+    "list-recycling",
     "scroll",
-    "ScrollRect"
+    "scrollview",
+    "scrollrect",
+    "virtual-scrolling",
+    "ugui"
   ],
   "author": {
     "name": "William Surmak",
