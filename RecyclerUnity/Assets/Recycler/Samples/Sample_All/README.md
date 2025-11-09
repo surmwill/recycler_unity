@@ -1,3 +1,5 @@
+This folder contains demos of the recycler for learning purposes. It is not the dependency of anything and can be safely deleted if desired.
+
 SETUP: 
 
 For animation purposes, these demos require the DOTween package (https://dotween.demigiant.com/) and a reference to the DOTween asmdef. If one does not exist in your project in can be created through the DoTweenUtilityPanel: Tools -> Demigiant -> DoTween Utility Panel, and then clicking on "Create ASMDEF..."
