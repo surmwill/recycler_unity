@@ -82,3 +82,6 @@ crashlytics-build.properties
 # Resources
 /[Aa]ssets/Resources
 /[Aa]ssets/Resources.meta
+
+# SymLink
+/[Aa]ssets/Recycler/Samples
