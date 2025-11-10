@@ -37,7 +37,7 @@ This project was intended to remedy that by creating an out-of-the-box Unity UI 
 - Differently sized entries
 - Dynamically sized entries (dimensions that change over time)
 - Auto-calculated dimensions with `LayoutGroups` and `ContentSizeFitters`
-- Endcap (an optional distinct entry that comes at the very end of the list)
+- Endcap (an optional unique entry that comes at the very end of the list)
 - Scrolling to any index, on-screen or off-screen
 - Immediately jumping to any index, on-screen or off-screen
 - Lifecycle methods for entries: when they're bound, recycled, and their visibility changes
@@ -48,7 +48,7 @@ This project was intended to remedy that by creating an out-of-the-box Unity UI 
 - Fully commented and documented
 - List of demos for learning and debugging
 - Easy scene set up: add a recycler component to a `RectTransform` and serialize an entry prefab in it
-- Open source: adapt it to your needs
+- Free and open source: adapt it to your needs
 
 <b>See videos of all the features [below](https://github.com/surmwill/recycler_unity/blob/master/README.md#feature-videos)</b>
 
