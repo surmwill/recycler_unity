@@ -3,13 +3,18 @@
 - Works out-of-the-box with Unity's UI library (uGUI), no external dependencies.
 - Basic functionality for simple cases (static, same sized entries), advanced functionality for advanced cases (insertion, deletion, different sized entries).
 
-The package is self-contained under ![RecyclerUnity/Assets/Recycler](RecyclerUnity/Assets/Recycler). The "Samples" folder is optional and can be safely deleted unless you wish to look at some demos.
-
 ### Basic
 ![](README_Images/recycler_basic_functionality.gif)
 
 ### Advanced
 ![](README_Images/recycler_pretty_preview.gif)
+
+### Install
+
+There are multiple ways to install the package:
+1. Add the package through Unity's package manager using this git url: https://github.com/surmwill/recycler_unity.git?path=/RecyclerUnity/Assets/Recycler#v1.0.0 (optionally includes samples)
+2. Download the `.unitypackage` from [releases](https://github.com/surmwill/recycler_unity/releases) and drag it into your project (no samples)
+3. Clone this repo. The package is self-contained under ![RecyclerUnity/Assets/Recycler](RecyclerUnity/Assets/Recycler). The "Samples~" folder is optional and can be safely deleted unless you wish to look at some demos
 
 ### Why do I need a Recycler?
 It is common for UIs to display long lists of items. While the list of items might be large, the size of your screen is not. A recycler ensures that only the items that fit on your screen are rendered. Instead of rendering all 2000 items for example, only the 8 that can be displayed on your screen are rendered. Those 8 items will have continually be re-used, having different data swapped into and out of them as navigate our current position in the list. In short, we use a very small amount of objects to represent a huge list of data.
@@ -32,7 +37,7 @@ This project was intended to remedy that by creating an out-of-the-box Unity UI 
 - Differently sized entries
 - Dynamically sized entries (dimensions that change over time)
 - Auto-calculated dimensions with `LayoutGroups` and `ContentSizeFitters`
-- Endcap (an optional distinct entry that comes at the very end of the list)
+- Endcap (an optional unique entry that comes at the very end of the list)
 - Scrolling to any index, on-screen or off-screen
 - Immediately jumping to any index, on-screen or off-screen
 - Lifecycle methods for entries: when they're bound, recycled, and their visibility changes
@@ -43,7 +48,7 @@ This project was intended to remedy that by creating an out-of-the-box Unity UI 
 - Fully commented and documented
 - List of demos for learning and debugging
 - Easy scene set up: add a recycler component to a `RectTransform` and serialize an entry prefab in it
-- Open source: adapt it to your needs
+- Free and open source: adapt it to your needs
 
 <b>See videos of all the features [below](https://github.com/surmwill/recycler_unity/blob/master/README.md#feature-videos)</b>
 
