@@ -15,7 +15,7 @@ Condensed documentation can be found below, full documentation is present at: ht
 - Differently sized entries
 - Dynamically sized entries (dimensions that change over time)
 - Auto-calculated dimensions with `LayoutGroups` and `ContentSizeFitters`
-- Endcap (an optional distinct entry that comes at the very end of the list)
+- Endcap (an optional unique entry that comes at the very end of the list)
 - Scrolling to any index, on-screen or off-screen
 - Immediately jumping to any index, on-screen or off-screen
 - Lifecycle methods for entries: when they're bound, recycled, and their visibility changes
@@ -26,7 +26,7 @@ Condensed documentation can be found below, full documentation is present at: ht
 - Fully commented and documented
 - List of demos for learning and debugging
 - Easy scene set up: add a recycler component to a `RectTransform` and serialize an entry prefab in it
-- Open source: adapt it to your needs
+- Free and open source: adapt it to your needs
 
 # Getting Started (In One Page)
 ```
@@ -61,4 +61,32 @@ public class DemoRecycler : RecyclerScrollRect<string, DemoRecyclerData>
 DemoRecycler recycler = GetComponent<DemoRecycler>();
 IEnumerable<DemoRecyclerData> yourData = CreateYourData();
 recycler.AppendEntries(yourData);
+```
+
+# Nuances
+
+### Entries are default expanded to the Recycler's width (for a vertical recycler) or height (for a horizontal recycler).
+
+Each entry will be expanded to the full width of the vertical recycler, or the full height for a horizontal recycler, regardless of the values you set. Should you want a different width or height, a child transform with the desired width or height can be created.
+
+### Entries control their own auto-size.
+
+If your content is auto-sized, then entries must control their own width and/or height with their own `ContentSizeFitter`. The root `LayoutGroup` of the entries will not do this for you.
+
+### The only `ILayoutElements` and `ILayoutControllers` entries should have present on their roots is `LayoutGroups` and `ContentSizeFitters`.
+
+Except during explicitly defined times all `ILayoutElements` and `ILayoutControllers` will be disabled on an entry's root for performance reasons. 
+This includes things such as `Images`, which should go under a child instead. 
+
+`LayoutGroups` and `ContentSizeFitters` can still go on the entry's root as they are needed for auto-size calculations.
+
+### Entries must update their own height (for a vertical recycler) or width (for a horizontal recycler) through the recycler.
+
+If we have a vertical recycler, in order for a height change to be properly reflected in the recycler, the entry must call `RecalculateDimension` to set its new height. 
+Similarly, for a horizontal recycler, we would call `RecalculateDimension`, but pass its width instead.
+
+For example, to animate an entry growing using DoTween in a vertical recycler, the below code is used to update the Recycler at each step.
+
+```
+DOTween.To(() => RectTransform.sizeDelta.y, newHeight => RecalculateDimension(newHeight), TargetHeight, Time);
 ```
