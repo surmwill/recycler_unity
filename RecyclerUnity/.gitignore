@@ -85,3 +85,6 @@ crashlytics-build.properties
 
 # SymLink
 /[Aa]ssets/Recycler/Samples
+
+# Packages
+/Packages
