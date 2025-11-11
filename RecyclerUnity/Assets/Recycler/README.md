@@ -4,7 +4,7 @@ A UI tool to efficently display long lists of data. Only the section of the list
 
 Therefore, an infinite list of data can be displayed with a small finite list of visual elements.
 
-Condensed documentation can be found below, full documentation is present at: https://github.com/surmwill/recycler_unity.
+Condensed documentation can be found below, full documentation is present at: https://github.com/surmwill/recycler_unity
 
 ### Features
 - Appending
