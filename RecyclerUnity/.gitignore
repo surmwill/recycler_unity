@@ -87,4 +87,7 @@ crashlytics-build.properties
 /[Aa]ssets/Recycler/Samples
 
 # Packages
-/Packages
+Packages/*
+!Packages/manifest.json
+!Packages/packages-lock.json
+!Packages/Settings
