@@ -50,6 +50,9 @@ This project was intended to remedy that by creating an out-of-the-box Unity UI 
 - Easy scene set up: add a recycler component to a `RectTransform` and serialize an entry prefab in it
 - Free and open source: adapt it to your needs
 
+### Not supported (currently)
+- Scrollbars
+
 <b>See videos of all the features [below](https://github.com/surmwill/recycler_unity/blob/master/README.md#feature-videos)</b>
 
 # Getting Started (In One Page)
@@ -58,7 +61,9 @@ This project was intended to remedy that by creating an out-of-the-box Unity UI 
 // 1st class: The data you'd like to display
 public class DemoRecyclerData : IRecyclerScrollRectData<string>
 {
-    public string Key => Guid.NewGuid().ToString();  // Or any unique key
+	// Or any unique key
+    public string Key => _key;  
+	private readonly string _key = Guid.NewGuid().ToString(); 
 
     // Anything else...
 }
